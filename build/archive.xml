@@ -32,6 +32,21 @@
        </fileset>
     </jar>
 
+    <jar jarfile="${build.lib}/${archive.name.esp}" manifest="${build.etc}/default.mf">
+       <fileset dir="${build.esp}">
+         <include name="org/firebirdsql/**"/>
+       </fileset>
+       <fileset dir="${build.resources.esp}">
+         <include name="**/*.*"/>
+       </fileset>
+    </jar>
+
+    <jar jarfile="${build.lib}/${archive.name.esp.examples}" manifest="${build.etc}/default.mf">
+       <fileset dir="${build.esp}">
+         <include name="firebird/**"/>
+       </fileset>
+    </jar>
+
     <jar jarfile="${build.lib}/${archive.name.full}" manifest="${build.etc}/default.mf">
        <fileset dir="${build.classes}">
          <include name="org/firebirdsql/**"/>

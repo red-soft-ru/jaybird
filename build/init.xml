@@ -88,8 +88,10 @@
     <property name="source.examples" value="${module.examples}"/>
     <property name="source.examples" value="${module.root}/examples"/>
     <property name="source.resources" value="${module.source}/resources"/>
+    <property name="source.resources.esp" value="${module.source}/resources.esp"/>
     <property name="source.stylesheets" value="${module.source}/stylesheets"/>
     <property name="source.test" value="${module.source}/test"/>
+    <property name="source.esp" value="${module.source}/esp"/>
     <property name="source.test.30" value="${module.source}/test_30"/>
     <property name="source.pool" value="${module.source}/pool"/>
     <property name="source.compatibility" value="${module.source}/compatibility"/>
@@ -105,6 +107,7 @@
     <property name="build.pool" value="${module.output}/pool"/>
     <property name="build.compatibility" value="${module.output}/compatibility"/>
     <property name="build.test" value="${module.output}/test"/>
+    <property name="build.esp" value="${module.output}/esp"/>
     <property name="build.lib" value="${module.output}/lib"/>
     <property name="build.api" value="${module.output}/api"/>
     <property name="build.examples" value="${module.output}/examples"/>
@@ -112,6 +115,7 @@
     <property name="build.bin" value="${module.output}/bin"/>
     <property name="build.docs" value="${module.output}/docs"/>
     <property name="build.resources" value="${module.output}/resources"/>
+    <property name="build.resources.esp" value="${module.output}/resources.esp"/>
     <property name="build.stylesheets" value="${module.output}/stylesheets"/>
     <property name="build.reports.pure_java" value="${module.output}/reports/pure_java"/>
     <property name="build.reports.native" value="${module.output}/reports/native"/>
@@ -126,6 +130,8 @@
 	
 	<property name="archive.name.rar" value="${archive.name.main}-${archive.name.version}.rar"/>
 	<property name="archive.name.pool" value="${archive.name.main}-pool-${archive.name.version}.jar"/>
+	<property name="archive.name.esp" value="${archive.name.main}-esp-${archive.name.version}.jar"/>
+	<property name="archive.name.esp.examples" value="${archive.name.main}-esp-example-${archive.name.version}.jar"/>
 	<property name="archive.name.full" value="${archive.name.main}-full-${archive.name.version}.jar"/>
 	<property name="archive.name.simple" value="${archive.name.main}-${archive.name.version}.jar"/>
 	<property name="archive.name.test" value="${archive.name.main}-test-${archive.name.version}.jar"/>
@@ -174,6 +180,11 @@
       <pathelement location="${build.classes}"/>
     </path>
     
+    <path id="javac.esp.classpath">
+      <path refid="javac.driver.classpath"/>
+      <pathelement location="${build.classes}"/>
+    </path>
+
     <path id="javac.compatibility.classpath">
       <path refid="javac.driver.classpath"/>
       <pathelement location="${build.classes}"/>

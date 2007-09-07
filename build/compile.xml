@@ -1,7 +1,7 @@
   <!-- =================================================================== -->
   <!-- Compiles the source code                                            -->
   <!-- =================================================================== -->
-  <target name="compile" depends="compile-j2ee, compile-driver, compile-pool, compile-compatibility, compile-tests, compile-etc, compile-examples, compile-resources, compile-stylesheets"/>
+  <target name="compile" depends="compile-j2ee, compile-driver, compile-pool, compile-compatibility, compile-tests, compile-etc, compile-examples, compile-resources, compile-resources-esp, compile-stylesheets, compile-esp"/>
 
   <!-- calling this unjar a compile is stretching the truth a bit-->
   <target name="compile-j2ee" depends="init">
@@ -64,6 +64,13 @@
     </path>
   </target>
 
+  <target name="set-esp-src" >
+    <path id="source.java.esp">
+      <pathelement path="${source.esp}"/>
+    </path>
+  </target>
+
+
   <target name="compile-driver" depends="set-jdbc-20-src,set-jdbc-30-src,set-wire1.3-src,set-wire1.4-src">
     <mkdir dir="${build.classes}"/>
     <javac destdir="${build.classes}"
@@ -94,6 +101,22 @@
     >
       <classpath refid="javac.pool.classpath"/>
       <src refid="source.java.pool"/>
+    </javac>
+  </target>
+  
+  <target name="compile-esp" depends="compile-driver">
+    <mkdir dir="${build.esp}"/>
+    <javac srcdir="${source.esp}"
+           destdir="${build.esp}"
+           target="${ant.java.version}"
+           debug="on"
+           deprecation="on"
+           optimize="on"
+           includes="**"
+           excludes="**/temp*"
+    >
+      <classpath refid="javac.esp.classpath"/>
+      <src refid="source.java.esp"/>
     </javac>
   </target>
   
@@ -179,6 +202,15 @@
     <mkdir dir="${build.resources}"/>
     <copy todir="${build.resources}" filtering="no">
       <fileset dir="${source.resources}">
+         <include name="**/*"/>
+      </fileset>
+    </copy>
+  </target>
+
+  <target name="compile-resources-esp" depends="init">
+    <mkdir dir="${build.resources.esp}"/>
+    <copy todir="${build.resources.esp}" filtering="no">
+      <fileset dir="${source.resources.esp}">
          <include name="**/*"/>
       </fileset>
     </copy>
