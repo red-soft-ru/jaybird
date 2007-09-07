@@ -34,7 +34,7 @@
 /*
  *	
  */
-class JIscDatabaseHandle
+class JNIEXPORT JIscDatabaseHandle
 	{
 	public:
 	
@@ -104,7 +104,7 @@ class JIscDatabaseHandle
 /*
  *	
  */
-class JIscTransactionHandle
+class JNIEXPORT JIscTransactionHandle
 	{
 	public:
 

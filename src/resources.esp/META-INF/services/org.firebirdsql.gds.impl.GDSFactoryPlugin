@@ -1,0 +1,2 @@
+org.firebirdsql.gds.impl.jni.InternalCurrentGDSFactoryPlugin
+org.firebirdsql.gds.impl.jni.InternalNewGDSFactoryPlugin

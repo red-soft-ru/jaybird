@@ -19,12 +19,13 @@
 
 #ifndef _JNGDS__InternalException
 #define _JNGDS__InternalException
+#include <jni.h>
 
 /*
  *
  *
  */
-class InternalException
+class JNIEXPORT InternalException
 	{
 	public:
 

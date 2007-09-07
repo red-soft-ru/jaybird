@@ -1194,7 +1194,7 @@ JNIEXPORT jint JNICALL Java_org_firebirdsql_gds_impl_jni_JniGDSImpl_native_1isc_
                 &rawDatabaseHandle, 
                 &eventId,
                 eventHandle.GetSize(),
-                es->eventBuffer, 
+                (ISC_UCHAR*)es->eventBuffer, 
                 (isc_callback)event_function, 
                 (void*)es);
         
@@ -1253,7 +1253,7 @@ JNIEXPORT void JNICALL Java_org_firebirdsql_gds_impl_jni_JniGDSImpl_native_1isc_
 		event_struct* es = eventStructManager.getEventStruct(eventStructPos);
 
         CALL_API(isc_event_counts)( 
-                                    stat, 
+                                    (ISC_ULONG*)stat, 
                                     eventHandle.GetSize(),
                                     es->eventBuffer,
                                     es->resultBuffer);
@@ -1302,3 +1302,7 @@ JNIEXPORT void JNICALL Java_org_firebirdsql_gds_impl_jni_JniGDSImpl_native_1isc_
     interfaceManager.ReleaseInterface(isc_api);
 }
 
+JNIEXPORT jint JNICALL InterfaceManager_AddInterface(const char *name, FirebirdApiBinding* iscbind)
+{
+	return interfaceManager.AddInterface(name,iscbind);
+}

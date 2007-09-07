@@ -327,12 +327,12 @@ typedef ISC_STATUS ISC_EXPORT prototype_isc_transaction_info(ISC_STATUS *,
                                         char *);
                                         
 typedef ISC_STATUS ISC_EXPORT prototype_isc_que_events(ISC_STATUS *,
-        isc_db_handle *,
-        ISC_LONG *,
-        short,
-        char *,
-        isc_callback,
-        void*);
+									 isc_db_handle *,
+									 ISC_LONG *,
+									 ISC_USHORT,
+									 ISC_UCHAR *,
+									 isc_callback,
+									 void *);
 
 typedef long ISC_EXPORT prototype_isc_event_block(
         char* * ,
@@ -347,18 +347,16 @@ typedef ISC_STATUS ISC_EXPORT prototype_isc_wait_for_event(
         char *,
         char *);
 
-typedef void ISC_EXPORT prototype_isc_event_counts(
-        ISC_STATUS*,
-        short,
-        char*,
-        char*);
+typedef void ISC_EXPORT prototype_isc_event_counts(ISC_ULONG *,
+								 short,
+								 char *,
+								 char *);
 
-typedef void ISC_EXPORT prototype_isc_cancel_events(
-        ISC_STATUS*,
-        isc_db_handle*,
-        ISC_LONG*);
+typedef ISC_STATUS ISC_EXPORT prototype_isc_cancel_events(ISC_STATUS *,
+										isc_db_handle *,
+										ISC_LONG *);
 
-typedef void ISC_EXPORT prototype_isc_free(char *);
+typedef ISC_LONG ISC_EXPORT prototype_isc_free(char *);
 
 
 

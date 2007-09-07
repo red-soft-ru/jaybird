@@ -17,10 +17,16 @@
  * All rights reserved.
  */
  
+#ifndef ENPOINT_CUSTOM_H
+#define ENPOINT_CUSTOM_H
+
 #include <jni.h>
 #include <new>
 #include "exceptions.h"
- 
+#include "fb_binding.h" 
 JNIEXPORT void EnsureJavaExceptionIssued(JNIEnv * javaEnvironment, InternalException& exception);
 JNIEXPORT void EnsureJavaExceptionIssued(JNIEnv * javaEnvironment);
 JNIEXPORT void MaybeIssueOutOfMemory(JNIEnv * javaEnvironment, std::bad_alloc& badAlloc);
+JNIEXPORT jint JNICALL InterfaceManager_AddInterface(const char *, FirebirdApiBinding*);
+
+#endif

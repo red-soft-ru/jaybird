@@ -31,6 +31,7 @@
 
 
 
+
 // JIscDatabaseHandle Class -------------------------------------------------------------------------------------
 
 // Static Members
@@ -764,6 +765,7 @@ EventStructManager::EventStructManager() : increment(10)
 	this->size = 10;
 	this->lastPosition = 0;
 	this->eventStructPtr = new event_struct*[this->size];
+	memset(this->eventStructPtr,0,this->size*sizeof(event_struct*));
 }
 
 EventStructManager::~EventStructManager() 
@@ -819,6 +821,7 @@ void EventStructManager::releaseEventStruct(long index)
 void EventStructManager::grow()
 {
 	event_struct** newStruct = new event_struct*[this->size + this->increment];
+	memset(newStruct ,0,(this->size + this->increment) * sizeof(event_struct*));
 	memcpy(newStruct, this->eventStructPtr, this->size * sizeof(event_struct*));
 
 	delete this->eventStructPtr;

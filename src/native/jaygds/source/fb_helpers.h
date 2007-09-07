@@ -29,12 +29,12 @@
 #include "ibase.h"
 #include "jni.h"
 
-class FirebirdStatusVector
+class JNIEXPORT FirebirdStatusVector
 	{
 	public:
 	FirebirdStatusVector();
 	
-	ISC_STATUS*		RawAccess();
+	ISC_STATUS* RawAccess();
 			
 	void		IssueExceptionsAndOrAddWarnings(JNIEnv* javaEnvironment, JIscDatabaseHandle& databaseHandle);
 	void		IssueExceptionsAndOrAddWarnings(JNIEnv* javaEnvironment, JIscStatementHandle& databaseHandle);
