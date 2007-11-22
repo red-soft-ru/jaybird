@@ -334,7 +334,7 @@ typedef ISC_STATUS ISC_EXPORT prototype_isc_que_events(ISC_STATUS *,
 									 isc_callback,
 									 void *);
 
-typedef long ISC_EXPORT prototype_isc_event_block(
+typedef ISC_LONG ISC_EXPORT_VARARG prototype_isc_event_block(
         char* * ,
         char* * ,
         unsigned short ,
