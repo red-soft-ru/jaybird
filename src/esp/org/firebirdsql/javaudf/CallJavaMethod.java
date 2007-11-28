@@ -310,7 +310,7 @@ public class CallJavaMethod {
         return r;
       return r.toString();
     }
-   }catch(Exception e){
+   }catch(Throwable e){
        throw ExpandStacktrace(e);
    }
     return null;
@@ -319,6 +319,9 @@ public class CallJavaMethod {
   public static mthCall build(String c, int n) throws ClassNotFoundException {
       Class l;
       Method m;
+      if(c!=null){
+          c = c.trim();
+      }
       if (map.containsKey(c + "$@" + n)) {
         l = (Class) map.get(c + "$@" + n);
         m = (Method) mapm.get(c + "$@" + n);
