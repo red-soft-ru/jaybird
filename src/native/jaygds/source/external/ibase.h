@@ -60,7 +60,7 @@
 #ifndef INCLUDE_TYPES_PUB_H
 #define INCLUDE_TYPES_PUB_H
 
-#if defined(_LP64) || defined(__LP64__) || defined(__arch64__)
+#if defined(_LP64) || defined(__LP64__) || defined(__arch64__) || defined(_WIN64)
 typedef unsigned int    FB_API_HANDLE;
 #else
 typedef void*           FB_API_HANDLE;
