@@ -345,6 +345,9 @@ public class CallJavaMethod {
         map.put(c + "$@" + n, l);
         mapm.put(c + "$@" + n, m);
       }
+      if(m==null){
+          return null;
+      }
       return new mthCall(l, m);
   }
   private static Exception  ExpandStacktrace(Throwable e)
