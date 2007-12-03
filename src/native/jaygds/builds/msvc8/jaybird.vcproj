@@ -266,7 +266,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				OutputFile="..\..\..\..\..\..\firebird\temp\$(PlatformName)\$(ConfigurationName)\firebird\bin\jaybird22.dll"
-				LinkIncremental="2"
+				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile=".\..\..\..\..\..\..\firebird\temp\$(PlatformName)\$(ConfigurationName)\jaybird/jaybird.pdb"
@@ -361,7 +361,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				OutputFile="..\..\..\..\..\..\firebird\temp\$(PlatformName)\$(ConfigurationName)\firebird\plugins/jaybird2.dll"
-				LinkIncremental="2"
+				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="..\..\..\..\..\..\firebird\temp\$(PlatformName)\$(ConfigurationName)\jaybird/jaybird.pdb"
