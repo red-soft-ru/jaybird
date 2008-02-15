@@ -1,10 +1,11 @@
 @echo off
 
-set ANT_HOME=.
+
 
 REM check JAVA_HOME
 if "%JAVA_HOME%" == "" goto noJavaHome
-goto slurpArgs
+if "%ANT_HOME%" == "" goto noAntHome
+goto slurpArgs 
 
 :noJavaHome
 echo.
@@ -12,10 +13,16 @@ echo Warning: JAVA_HOME environment must be set.
 echo.
 goto end
 
+:noAntHome
+echo.
+echo Warning: ANT_HOME environment must be set.
+echo.
+goto end
+
 REM Slurp the command line arguments.  This loop allows for an unlimited number of 
 REM arguments (up to the command line limit, anyway).
 :slurpArgs
-set ANT= .\bin\ant.bat
+set ANT= %~dp0bin\ant.bat
 
 set ANT_CMD_LINE_ARGS=
 
@@ -36,7 +43,7 @@ REM set PATH=%PATH%;..
 set PATH=%PATH%;"%ANT_HOME%\bin"
 set PATH=%PATH%;"%JAVA_HOME%\lib\tools.jar"
 REM for %%i in ("..\lib\*.jar") do call ".\lcp.bat" %%i
-set CLASSPATH=.\lib\junit.jar
+set CLASSPATH=%~dp0lib\junit.jar
 
 REM set common ANT options
 set JAXP_DOM_FACTORY="org.apache.xerces.jaxp.DocumentBuilderFactoryImpl"
@@ -48,6 +55,6 @@ set ANT_CMD_LINE_ARGS=%ANT_CMD_LINE_ARGS% -Djavax.xml.parsers.SAXParserFactory=%
 
 :RunAnt
 echo on
-%ANT% %ANT_CMD_LINE_ARGS%
+%~f1%ANT% %ANT_CMD_LINE_ARGS%
 
 :end

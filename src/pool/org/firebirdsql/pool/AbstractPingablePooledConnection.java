@@ -35,7 +35,7 @@ import java.util.*;
  *
  * @author <a href="mailto:rrokytskyy@users.sourceforge.net">Roman Rokytskyy</a>
  */
-public class PingablePooledConnection implements PooledConnection,
+public abstract class AbstractPingablePooledConnection implements PooledConnection,
     PooledObject, XConnectionManager,
     XPingableConnection, XStatementManager {
 
@@ -48,7 +48,7 @@ public class PingablePooledConnection implements PooledConnection,
         LoggerFactory.getLogger(PingablePooledConnection.class, false);
 
     protected Connection jdbcConnection;
-    private HashSet eventListeners = new HashSet();
+    private HashSet connectionEventListeners = new HashSet();
 
     private boolean invalid;
     private boolean inPool;
@@ -74,7 +74,7 @@ public class PingablePooledConnection implements PooledConnection,
         return log;
     }
 
-    protected PingablePooledConnection(Connection connection, 
+    protected AbstractPingablePooledConnection(Connection connection, 
                                        boolean statementPooling, 
                                        /*int transactionIsolation,*/
                                        int maxStatements, boolean keepStatements) 
@@ -106,7 +106,7 @@ public class PingablePooledConnection implements PooledConnection,
         }
     }
 
-    protected PingablePooledConnection(Connection connection,
+    protected AbstractPingablePooledConnection(Connection connection,
         String pingStatement, int pingInterval, boolean statementPooling, 
         /*int transactionIsolation,*/ int maxStatements, boolean keepStatements) 
         throws SQLException 
@@ -234,7 +234,7 @@ public class PingablePooledConnection implements PooledConnection,
      */
     public synchronized
         void addConnectionEventListener(ConnectionEventListener listener) {
-        eventListeners.add(listener);
+        connectionEventListeners.add(listener);
     }
 
     /**
@@ -244,7 +244,7 @@ public class PingablePooledConnection implements PooledConnection,
      */
     public synchronized
         void removeConnectionEventListener(ConnectionEventListener listener) {
-        eventListeners.remove(listener);
+        connectionEventListeners.remove(listener);
     }
 
     /**
@@ -259,7 +259,7 @@ public class PingablePooledConnection implements PooledConnection,
         
         ConnectionEvent event = new ConnectionEvent(this);
         
-        List tempListeners = new ArrayList(eventListeners);
+        List tempListeners = new ArrayList(connectionEventListeners);
         
         Iterator iter = tempListeners.iterator();
         while (iter.hasNext()) {
@@ -308,7 +308,7 @@ public class PingablePooledConnection implements PooledConnection,
             // and finally notify about the event
             ConnectionEvent event = new ConnectionEvent(this);
             
-            List tempListeners = new ArrayList(eventListeners);
+            List tempListeners = new ArrayList(connectionEventListeners);
             
             Iterator iter = tempListeners.iterator();
             while (iter.hasNext()) {
@@ -469,9 +469,6 @@ public class PingablePooledConnection implements PooledConnection,
             getLogChannel().info("Prepared statement cache cleaned.");
 
         }
-        
-        SQLException error = null;
-        
         synchronized (statements) {
             Iterator iter = statements.entrySet().iterator();
             while (iter.hasNext()) {
@@ -482,19 +479,9 @@ public class PingablePooledConnection implements PooledConnection,
 
                 iter.remove();
                 
-                try {
-                    stmtCache.invalidate();
-                } catch(SQLException ex) {
-                    if (error == null)
-                        error = ex;
-                    else
-                        error.setNextException(ex);
-                }
+                stmtCache.invalidate();
             }
         }
-        
-        if (error != null)
-                throw error;
     }
 
     /**
@@ -539,25 +526,12 @@ public class PingablePooledConnection implements PooledConnection,
 
         if (!keepStatements)
             cleanCache();
-        
-        try {
-            if (!jdbcConnection.getAutoCommit() && !connection.isClosed())
-                jdbcConnection.rollback();
-        } catch(SQLException ex) {
-            if (log != null && log.isWarnEnabled())
-                log.warn("Exception while trying to rollback transaction " +
-                        "before returning connection to pool.", ex);
-            
-            close();
-            
-            throw ex;
-        }
 
         currentConnection = null;
 
         ConnectionEvent event = new ConnectionEvent(this);
         
-        List tempListeners = new ArrayList(eventListeners);
+        List tempListeners = new ArrayList(connectionEventListeners);
         
         Iterator iter = tempListeners.iterator();
         while (iter.hasNext()) {
@@ -568,7 +542,7 @@ public class PingablePooledConnection implements PooledConnection,
     public void connectionErrorOccured(PooledConnectionHandler connection, SQLException ex) {
         ConnectionEvent event = new ConnectionEvent(this, ex);
 
-        List tempListeners = new ArrayList(eventListeners);
+        List tempListeners = new ArrayList(connectionEventListeners);
         
         Iterator iter = tempListeners.iterator();
         while (iter.hasNext()) {

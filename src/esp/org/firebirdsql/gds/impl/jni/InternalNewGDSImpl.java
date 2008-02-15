@@ -47,6 +47,27 @@ public class InternalNewGDSImpl extends InternalGDSImpl {
       public void iscDetachDatabase(IscDbHandle db_handle)throws GDSException
       {
       }
+	  
+		public void native_isc_attach_database(byte[] bytes, IscDbHandle iscDbHandle, byte[] bytes1) {
+	    }
+
+	    public void native_isc_create_database(byte[] bytes, IscDbHandle iscDbHandle, byte[] bytes1) {
+	    }
+
+	    public int native_isc_que_events(IscDbHandle iscDbHandle, EventHandleImp eventHandleImp, EventHandler eventHandler) throws GDSException {
+	        return 0;
+	    }
+
+	    public long native_isc_event_block(EventHandleImp eventHandleImp, String string) throws GDSException {
+	        return 0;
+	    }
+
+	    public void native_isc_event_counts(EventHandleImp eventHandleImp) throws GDSException {
+	    }
+
+	    public void native_isc_cancel_events(IscDbHandle iscDbHandle, EventHandleImp eventHandleImp) throws GDSException {
+	    }
+	  
       /**
        * Parse database info returned after attach. This method assumes that it is
        * not truncated.

@@ -640,7 +640,21 @@ public class FBResultSetMetaData implements ResultSetMetaData {
         }
     }
 
+    //----------------------------- JDBC 4.0 ----------------------------------
+    
+    public boolean isWrapperFor(Class arg0) throws SQLException {
+        return arg0 != null && arg0.isAssignableFrom(FBDatabaseMetaData.class);
+    }
 
+    public Object unwrap(Class arg0) throws SQLException {
+        if (!isWrapperFor(arg0))
+            throw new FBSQLException("No compatible class found.");
+        
+        return this;
+    }
+
+    //-------------------------------------------------------------------------
+    
     //private methods
 
     private XSQLVAR getXsqlvar(int columnIndex) {

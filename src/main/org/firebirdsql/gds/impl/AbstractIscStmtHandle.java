@@ -24,7 +24,6 @@
  */
 package org.firebirdsql.gds.impl;
 
-import org.firebirdsql.gds.ISCConstants;
 import org.firebirdsql.gds.IscStmtHandle;
 
 
@@ -33,6 +32,10 @@ import org.firebirdsql.gds.IscStmtHandle;
  * interface.
  */
 public abstract class AbstractIscStmtHandle implements IscStmtHandle {
+    
+    private String executionPlan;
+    private int statementType = TYPE_UNKNOWN;
+    public String statement;
 
     /**
      * Clear all rows that have been fetched for this statement. This 
@@ -70,13 +73,6 @@ public abstract class AbstractIscStmtHandle implements IscStmtHandle {
      * @return The number of updated rows
      */
     public abstract int getUpdateCount();
-    
-    /**
-     * Get type of the statement.
-     * 
-     * @return value from the {@link ISCConstants} class.
-     */
-    public abstract int getStatementType();
 
     /**
      * Retrieve whether this statement has an open <code>ResultSet</code>.
@@ -138,4 +134,21 @@ public abstract class AbstractIscStmtHandle implements IscStmtHandle {
      * Unregister statement from the transaction.
      */
     public abstract void unregisterTransaction();
+
+    public String getExecutionPlan() {
+        return executionPlan;
+    }
+    
+    public void setExecutionPlan(String plan) {
+        this.executionPlan = plan;
+    }
+
+    public int getStatementType() {
+        return statementType;
+    }
+    
+    public void setStatementType(int statementType) {
+        this.statementType = statementType;
+    }
+    
 }

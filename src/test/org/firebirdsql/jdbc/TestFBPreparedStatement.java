@@ -708,16 +708,32 @@ public class TestFBPreparedStatement extends FBTestBase{
                     FirebirdPreparedStatement.TYPE_UPDATE,
                     stmt.getStatementType());
             stmt.close();
-            
-            stmt = (AbstractPreparedStatement)conn.prepareStatement(
-                "INSERT INTO testtab(field1) VALUES(?) RETURNING id");
-            assertEquals(
-                "TYPE_EXEC_PROCEDURE should be returned for an UPDATE statement",
-                FirebirdPreparedStatement.TYPE_EXEC_PROCEDURE,
-                stmt.getStatementType());
-            stmt.close();
         } finally {
             conn.close();
         }
     }
+   
+   public void testInsertReturning() throws Exception {
+       Connection conn = getConnectionViaDriverManager();
+       try {
+           FirebirdPreparedStatement stmt = (FirebirdPreparedStatement)conn.prepareStatement(
+               "INSERT INTO testtab(id, field1) VALUES(gen_id(test_generator, 1), 'a') RETURNING id");
+           try {
+               assertEquals("TYPE_EXEC_PROCEDURE should be returned for an INSERT...RETURNING statement", 
+                   FirebirdPreparedStatement.TYPE_EXEC_PROCEDURE, stmt.getStatementType());
+               
+               ResultSet rs = stmt.executeQuery();
+               
+               assertTrue("Should return at least 1 row", rs.next());
+               assertTrue("Generator value should be > 0 (actual value is " + 
+                   rs.getInt(1) + ")", rs.getInt(1) > 0);
+               assertTrue("Should return exactly one row", !rs.next());
+           } finally {
+               stmt.close();
+           }
+           
+       } finally {
+           conn.close();
+       }
+   }
 }

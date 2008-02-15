@@ -110,13 +110,6 @@ public class FBSQLException extends SQLException {
             return 0;
     }
     
-    public String getSQLState() {
-        if (original instanceof GDSException)
-            return ((GDSException)original).getSQLState();
-        else
-            return super.getSQLState();
-    }
-
     public Exception getInternalException() {
         return original;
     }

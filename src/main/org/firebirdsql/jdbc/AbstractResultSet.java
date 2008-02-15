@@ -40,7 +40,7 @@ import org.firebirdsql.jdbc.field.*;
  * @author <a href="mailto:d_jencks@users.sourceforge.net">David Jencks</a>
  * @author <a href="mailto:rrokytskyy@users.sourceforge.net">Roman Rokytskyy</a>
  */
-public class FBResultSet implements ResultSet, Synchronizable, FBObjectListener.FetcherListener {
+public abstract class AbstractResultSet implements ResultSet, Synchronizable, FBObjectListener.FetcherListener {
 
     private AbstractStatement fbStatement;
     private FBFetcher fbFetcher;
@@ -100,11 +100,11 @@ public class FBResultSet implements ResultSet, Synchronizable, FBObjectListener.
      * @param fbStatement a <code>AbstractStatement</code> value
      * @param stmt an <code>isc_stmt_handle</code> value
      */
-    protected FBResultSet(GDSHelper gdsHelper, 
+    protected AbstractResultSet(GDSHelper gdsHelper, 
                           AbstractStatement fbStatement, 
                           AbstractIscStmtHandle stmt, 
                           FBObjectListener.ResultSetListener listener,
-                          boolean metaDataQuery, 
+                          boolean trimStrings, 
                           int rsType, 
                           int rsConcurrency,
                           int rsHoldability,
@@ -120,7 +120,7 @@ public class FBResultSet implements ResultSet, Synchronizable, FBObjectListener.
         this.rsConcurrency = rsConcurrency;
         this.rsHoldability = rsHoldability;
         
-        this.trimStrings = metaDataQuery;
+        this.trimStrings = trimStrings;
         
         this.xsqlvars = stmt.getOutSqlda().sqlvar;
         this.maxRows = fbStatement.getMaxRows();
@@ -129,7 +129,7 @@ public class FBResultSet implements ResultSet, Synchronizable, FBObjectListener.
         
         boolean updatableCursor = fbStatement.isUpdatableCursor();
 
-        if (rsType != ResultSet.TYPE_FORWARD_ONLY || metaDataQuery)
+        if (rsType == ResultSet.TYPE_SCROLL_INSENSITIVE)
             cached = true;
         
         if (cached) {
@@ -170,7 +170,7 @@ public class FBResultSet implements ResultSet, Synchronizable, FBObjectListener.
         }
     }
 
-    protected FBResultSet(XSQLVAR[] xsqlvars, ArrayList rows) throws SQLException {
+    protected AbstractResultSet(XSQLVAR[] xsqlvars, ArrayList rows) throws SQLException {
         maxRows = 0;
         fbFetcher = new FBCachedFetcher(rows,this);
         this.xsqlvars = xsqlvars;
@@ -3088,7 +3088,15 @@ public class FBResultSet implements ResultSet, Synchronizable, FBObjectListener.
         return fbStatement.getExecutionPlan();
     }
 
-    //--------------------------------------------------------------------
+    public int getHoldability() throws SQLException {
+        return rsHoldability;
+    }
+    
+    public boolean isClosed() throws SQLException {
+        return closed;
+    }
+
+    //-------------------------------------------------------------------------
 
      protected void addWarning(SQLWarning warning){
          if (firstWarning == null)

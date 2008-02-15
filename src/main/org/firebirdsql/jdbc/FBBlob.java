@@ -174,8 +174,7 @@ public class FBBlob implements FirebirdBlob, Synchronizable {
 
                 IscBlobHandle blob = gdsHelper.openBlob(blob_id, SEGMENTED);
                 try {
-                    GDS gds = gdsHelper.getInternalAPIHandler();
-                    return gds.iscBlobInfo(blob, items, buffer_length);
+                    return gdsHelper.getBlobInfo(blob, items, buffer_length);
                 } finally {
                     gdsHelper.closeBlob(blob);
                 }
@@ -216,14 +215,14 @@ public class FBBlob implements FirebirdBlob, Synchronizable {
      *
      * @throws SQLException if length cannot be interpreted.
      */
-    public static long interpretLength(GDS gds, byte[] info, int position) throws SQLException {
+    public static long interpretLength(GDSHelper gdsHelper, byte[] info, int position) throws SQLException { 
 
         if (info[position] != ISCConstants.isc_info_blob_total_length)
             throw new FBSQLException("Length is not available.");
 
-        int dataLength = gds.iscVaxInteger(info, position + 1, 2);
+        int dataLength = gdsHelper.iscVaxInteger(info, position + 1, 2);
 
-        return gds.iscVaxInteger(info, position + 3, dataLength);
+        return gdsHelper.iscVaxInteger(info, position + 3, dataLength);
     }
 
     /**
@@ -237,7 +236,7 @@ public class FBBlob implements FirebirdBlob, Synchronizable {
      * @throws SQLException if length cannot be interpreted.
      */
     private long interpretLength(byte[] info, int position) throws SQLException {
-       return interpretLength(gdsHelper.getInternalAPIHandler(), info, position);
+       return interpretLength(gdsHelper, info, position);
     }
 
     /**
@@ -255,11 +254,9 @@ public class FBBlob implements FirebirdBlob, Synchronizable {
         if (info[0] != ISCConstants.isc_info_blob_type)
             throw new FBSQLException("Cannot determine BLOB type");
 
-        int dataLength =
-            gdsHelper.getInternalAPIHandler().iscVaxInteger(info, 1, 2);
+        int dataLength = gdsHelper.iscVaxInteger(info, 1, 2);
 
-        int type = gdsHelper.getInternalAPIHandler().iscVaxInteger(
-            info, 3, dataLength);
+        int type = gdsHelper.iscVaxInteger(info, 3, dataLength);
 
         return type == ISCConstants.isc_bpb_type_segmented;
     }
@@ -664,7 +661,7 @@ public class FBBlob implements FirebirdBlob, Synchronizable {
             synchronized(syncObject) {
                 checkClosed();
                 try {
-                    gdsHelper.getInternalAPIHandler().iscSeekBlob(blob, position, seekMode);
+                    gdsHelper.seekBlob(blob, position, seekMode);
                 } catch (GDSException ex) {
                     /** @todo fix this */
                     throw new IOException(ex.getMessage());
@@ -681,7 +678,7 @@ public class FBBlob implements FirebirdBlob, Synchronizable {
             synchronized(syncObject) {
                 checkClosed();
                 try {
-                    byte[] info = gdsHelper.getInternalAPIHandler().iscBlobInfo(
+                    byte[] info = gdsHelper.getBlobInfo(
                         blob, new byte[] {ISCConstants.isc_info_blob_total_length}, 20);
 
                     return interpretLength(info, 0);
@@ -824,7 +821,7 @@ public class FBBlob implements FirebirdBlob, Synchronizable {
 
         public void seek(int position, int seekMode) throws SQLException {
             try {
-                gdsHelper.getInternalAPIHandler().iscSeekBlob(blob, position, seekMode);
+                gdsHelper.seekBlob(blob, position, seekMode);
             } catch(GDSException ex) {
                 throw new FBSQLException(ex);
             }
@@ -836,7 +833,7 @@ public class FBBlob implements FirebirdBlob, Synchronizable {
 
             synchronized(syncObject) {
                 try {
-                    byte[] info = gdsHelper.getInternalAPIHandler().iscBlobInfo(
+                    byte[] info = gdsHelper.getBlobInfo(
                         blob, new byte[] {ISCConstants.isc_info_blob_total_length}, 20);
 
                     return interpretLength(info, 0);
@@ -922,6 +919,29 @@ public class FBBlob implements FirebirdBlob, Synchronizable {
 
     }
 
+    public void free() throws SQLException {
+        
+    }
+
+    /**
+     * Returns an <code>InputStream</code> object that contains a partial <code>Blob</code> value, 
+     * starting  with the byte specified by pos, which is length bytes in length.
+     *
+     * @param pos the offset to the first byte of the partial value to be retrieved.
+     *  The first byte in the <code>Blob</code> is at position 1
+     * @param length the length in bytes of the partial value to be retrieved
+     * @return <code>InputStream</code> through which the partial <code>Blob</code> value can be read.
+     * @throws SQLException if pos is less than 1 or if pos is greater than the number of bytes
+     * in the <code>Blob</code> or if pos + length is greater than the number of bytes 
+     * in the <code>Blob</code>
+     *
+     * @exception SQLFeatureNotSupportedException if the JDBC driver does not support
+     * this method
+     * @since 1.6
+     */
+    public InputStream getBinaryStream(long pos, long length) throws SQLException {
+        throw new FBDriverNotCapableException();
+    }
 
 }
 

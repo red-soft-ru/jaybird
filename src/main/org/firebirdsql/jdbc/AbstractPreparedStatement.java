@@ -42,6 +42,13 @@ public abstract class AbstractPreparedStatement extends AbstractStatement implem
 
 
     private boolean metaDataQuery;
+    
+    /**
+     * This flag is needed to guarantee the correct behavior in case when it 
+     * was created without controlling Connection object (in some metadata
+     * queries we have only GDSHelper instance)
+     */
+    private boolean standaloneStatement;
 
     // this array contains either true or false indicating if parameter
     // was initialized, executeQuery, executeUpdate and execute methods
@@ -103,12 +110,13 @@ public abstract class AbstractPreparedStatement extends AbstractStatement implem
             int rsConcurrency, int rsHoldability,
             FBObjectListener.StatementListener statementListener,
             FBObjectListener.BlobListener blobListener,
-            boolean metaDataQuery)
+            boolean metaDataQuery, boolean someOtherFlag)
             throws SQLException {
         super(c, rsType, rsConcurrency, rsHoldability, statementListener);
 
         this.blobListener = blobListener;
         this.metaDataQuery = metaDataQuery;
+        this.standaloneStatement = someOtherFlag;
         
         notifyStatementStarted();
 
@@ -127,6 +135,16 @@ public abstract class AbstractPreparedStatement extends AbstractStatement implem
             
         if (!completed)
             notifyStatementCompleted();
+    }
+
+    protected void notifyStatementCompleted(boolean success)
+            throws SQLException {
+        try {
+            super.notifyStatementCompleted(success);
+        } finally {
+            if (metaDataQuery && standaloneStatement)
+                close();
+        }
     }
 
     /**
@@ -1154,6 +1172,7 @@ public abstract class AbstractPreparedStatement extends AbstractStatement implem
      */
     protected void prepareFixedStatement(String sql, boolean describeBind)
             throws GDSException, SQLException {
+        
         super.prepareFixedStatement(sql, describeBind);
 
         XSQLDA inSqlda = fixedStmt.getInSqlda();
@@ -1194,7 +1213,7 @@ public abstract class AbstractPreparedStatement extends AbstractStatement implem
                         .setTrimString(trimStrings);
         }
 
-        this.isExecuteProcedureStatement = fixedStmt.getStatementType() == FirebirdPreparedStatement.TYPE_EXEC_PROCEDURE;
+        this.isExecuteProcedureStatement = isExecuteProcedureStatement(fixedStmt);
     }
 
     /**
