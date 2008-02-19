@@ -1,10 +1,8 @@
 @echo off
-
-
-
 REM check JAVA_HOME
 if "%JAVA_HOME%" == "" goto noJavaHome
 if "%ANT_HOME%" == "" goto noAntHome
+if "%ANT_HOME:~-1%"=="\" set ANT_HOME=%ANT_HOME:~0,-1%
 goto slurpArgs 
 
 :noJavaHome
