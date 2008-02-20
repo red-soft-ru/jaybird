@@ -10,16 +10,10 @@
   <!ENTITY compile  SYSTEM "file:./build/compile.xml">
   <!ENTITY archive  SYSTEM "file:./build/archive.xml">
 ]>
-       
+
 <project name="FirebirdSQL" default="jars" basedir=".">
 	&init;
 	&util;
 	&compile;
 	&archive;
 </project>
-
-
-
-
-
-
