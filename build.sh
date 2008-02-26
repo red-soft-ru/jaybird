@@ -7,8 +7,24 @@ if test "$JAVA_HOME" = ""; then
 fi
 	
 if test "$ANT_HOME" = ""; then
-    echo "Error: ANT_HOME environment variable must be set"
-    exit 1
+    ANT=`which ant 2>/dev/null`
+    if test "$ANT" = ""; then
+	echo "Error: ANT_HOME environment variable must be set"
+	exit 1
+    else
+	echo "Ant binary was found in $ANT"
+    fi
+else
+    if [ -e $ANT_HOME/bin/ant ]
+    then
+	ANT=$ANT_HOME/bin/ant
+    elif [ -e $ANT_HOME/ant ]
+    then
+	ANT=$ANT_HOME/ant
+    else
+	echo "Error: ant binary was not found in ANT_HOME"
+	exit 1
+    fi
 fi
 
 CLASSPATH=
@@ -18,7 +34,6 @@ TARGET_CLASSPATH=`echo ../../lib/*.jar | tr ' ' ':'`
 
 TARGET_CLASSPATH=${TARGET_CLASSPATH}:${JAVA_HOME}/lib/tools.jar
 
-ANT=$ANT_HOME/bin/ant
 #xerces/xalan for test support.
 JAXP_DOM_FACTORY="org.apache.xerces.jaxp.DocumentBuilderFactoryImpl"
 JAXP_SAX_FACTORY="org.apache.xerces.jaxp.SAXParserFactoryImpl"
