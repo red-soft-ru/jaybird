@@ -1,5 +1,30 @@
 #!/bin/sh
 
+ParseArg()
+{
+ArgStr=$1
+ArgName=$2
+
+AwkProgram="(\$1 == \"$ArgName\") {print \$2}"			
+
+echo $ArgStr | awk -F= "$AwkProgram"
+}
+
+for arg in "$@" ; do
+    TempArg=`ParseArg $arg "--java"`
+    if test "$TempArg" != ""; then
+	JAVA_HOME=$TempArg; export JAVA_HOME 
+    else
+	TempArg=`ParseArg $arg "--ant"`
+	if test "$TempArg" != ""; then
+	    echo $TempArg
+	    ANT_HOME=$TempArg; export ANT_HOME 
+	else
+	    ANT_OPTS="$ANT_OPTS $arg"
+	fi
+    fi    
+done						  
+
 # Checking JAVA_HOME and ANT_HOME environment variables
 if test "$JAVA_HOME" = ""; then
     echo "Error: JAVA_HOME environment variable must be set"
@@ -41,4 +66,4 @@ JAXP_SAX_FACTORY="org.apache.xerces.jaxp.SAXParserFactoryImpl"
 ANT_OPTS="$ANT_OPTS -Djavax.xml.parsers.DocumentBuilderFactory=$JAXP_DOM_FACTORY"
 ANT_OPTS="$ANT_OPTS -Djavax.xml.parsers.SAXParserFactory=$JAXP_SAX_FACTORY"
 
-exec $ANT $ANT_OPTIONS "$@"
+exec $ANT $ANT_OPTS
