@@ -25,7 +25,7 @@
 #include "ibase.h"
 #include "jni.h"
 
-#if !defined(_INTPTR_T_DEFINED)
+#if !defined(_INTPTR_T_DEFINED) && !defined(__intptr_t_defined)
 #if defined(_WIN64)
 typedef __int64 intptr_t;
 typedef unsigned __int64 uintptr_t;
