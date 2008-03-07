@@ -25,6 +25,15 @@
 #include "ibase.h"
 #include "jni.h"
 
+#if !defined(_INTPTR_T_DEFINED)
+#if defined(_WIN64)
+typedef __int64 IPTR;
+typedef unsigned __int64 UIPTR;
+#else
+typedef long IPTR;
+typedef unsigned long UIPTR;
+#endif
+#endif
 
 // Event API definitions
 #define EVENT_UNINITIALIZED 0
@@ -427,7 +436,7 @@ class JEventHandle
         int GetEventId();
 
         int GetEventStructHandle();
-        void SetEventStructHandle(int handle);
+        void SetEventStructHandle(IPTR handle);
         
 
 	/*

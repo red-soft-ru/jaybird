@@ -705,7 +705,7 @@ int JEventHandle::GetEventStructHandle()
     return sMethodBinding_GetEventStructHandle.CallInteger(mJavaEnvironment, mJavaObjectHandle);
 }
 
-void JEventHandle::SetEventStructHandle(int handle)
+void JEventHandle::SetEventStructHandle(IPTR handle)
 {
     sMethodBinding_SetEventStructHandle.CallVoid(mJavaEnvironment, mJavaObjectHandle, handle);
 }

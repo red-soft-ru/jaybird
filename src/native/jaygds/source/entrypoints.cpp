@@ -1149,7 +1149,7 @@ JNIEXPORT jint JNICALL Java_org_firebirdsql_gds_impl_jni_JniGDSImpl_native_1isc_
         {
             es = (event_struct*)malloc(sizeof(event_struct));
             es->state = EVENT_UNINITIALIZED;
-            eventHandle.SetEventStructHandle((int)es);
+            eventHandle.SetEventStructHandle((IPTR)es);
 
             jobject globalEventHandler = 
                 javaEnvironment->NewGlobalRef(eventHandler);
