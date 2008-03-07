@@ -24,7 +24,6 @@
 
 #include "fb_binding.h"
 #include "fb_helpers.h"
-#include "handle_wrappers.h"
 #include "jni_helpers.h"
 #include "xsqlda_wrapper.h"
 
@@ -33,6 +32,7 @@
 #include "ibase.h"
 
 #include "jni.h"
+#include "handle_wrappers.h"
 
 #include <new>
 

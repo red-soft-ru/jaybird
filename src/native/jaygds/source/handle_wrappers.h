@@ -27,13 +27,16 @@
 
 #if !defined(_INTPTR_T_DEFINED)
 #if defined(_WIN64)
-typedef __int64 IPTR;
-typedef unsigned __int64 UIPTR;
+typedef __int64 intptr_t;
+typedef unsigned __int64 uintptr_t;
 #else
-typedef long IPTR;
-typedef unsigned long UIPTR;
+typedef long intptr_t;
+typedef unsigned long uintptr_t;
 #endif
 #endif
+
+typedef intptr_t IPTR;
+typedef uintptr_t U_IPTR;
 
 // Event API definitions
 #define EVENT_UNINITIALIZED 0
