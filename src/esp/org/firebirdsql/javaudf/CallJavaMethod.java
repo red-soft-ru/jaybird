@@ -13,12 +13,12 @@ import java.util.TreeMap;
 import org.firebirdsql.jdbc.AbstractConnection;
 import org.firebirdsql.gds.impl.GDSHelper;
 import org.firebirdsql.gds.impl.jni.InternalNewGDSImpl;
-//import org.firebirdsql.jdbc.FBConnectionHelper;
 import org.firebirdsql.encodings.EncodingFactory;
 import java.io.*;
 import org.firebirdsql.gds.impl.jni.GDSInternalHelper;
 import java.sql.Statement;
 import java.sql.Connection;
+import java.math.BigDecimal;
 /*
  * <p>Title:Firebird Open Source support Java users function and external procedure</p>
  *
@@ -371,7 +371,47 @@ public class CallJavaMethod {
 
     public Object call(Object a[]) throws IllegalAccessException,
         InvocationTargetException {
-      return m.invoke(null, a);
+      Object JavaParams[] = ConvertParam(a);
+      return m.invoke(null, JavaParams);
+    }
+
+    private Object[] ConvertParam(Object a[])
+    {
+        Object convertParams[] = new Object[a.length];
+        int pos = 0;
+        for(Object parTypes : m.getParameterTypes())
+        {
+            convertParams[pos] = a[pos];
+            if ((a[pos] != null) && (a[pos].getClass() != parTypes))
+            {
+                String str = new String(parTypes.toString());
+                if ((a[pos] instanceof Integer)  && (str.equals("class java.lang.Long")))
+                {
+                    Long val = new Long(((Integer)a[pos]).longValue());
+                    convertParams[pos] = val;
+                }
+
+                else if ((a[pos] instanceof Integer)  && (str.equals("class java.lang.Short")))
+                {
+                    Short val = new Short(((Integer)a[pos]).shortValue());
+                    convertParams[pos] = val;
+                }
+
+                else if ((a[pos] instanceof BigDecimal)  && (str.equals("class java.lang.Double")))
+                {
+                    Double val = new Double(((BigDecimal)a[pos]).doubleValue());
+                    convertParams[pos] = val;
+                }
+
+                else if ((a[pos] instanceof BigDecimal)  && (str.equals("class java.lang.Float")))
+                {
+                    Float val = new Float(((BigDecimal)a[pos]).floatValue());
+                    convertParams[pos] = val;
+                }
+            }
+            pos++;
+        }
+        return convertParams;
     }
 }
 //
