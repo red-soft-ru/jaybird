@@ -385,25 +385,25 @@ public class CallJavaMethod {
             if ((a[pos] != null) && (a[pos].getClass() != parTypes))
             {
                 String str = new String(parTypes.toString());
-                if ((a[pos] instanceof Integer)  && (str.equals("class java.lang.Long")))
+                if ((a[pos] instanceof Integer)  && (str.equals("class java.lang.Long") || str.equals("long")))
                 {
                     Long val = new Long(((Integer)a[pos]).longValue());
                     convertParams[pos] = val;
                 }
 
-                else if ((a[pos] instanceof Integer)  && (str.equals("class java.lang.Short")))
+                else if ((a[pos] instanceof Integer)  && (str.equals("class java.lang.Short") || str.equals("short")))
                 {
                     Short val = new Short(((Integer)a[pos]).shortValue());
                     convertParams[pos] = val;
                 }
 
-                else if ((a[pos] instanceof BigDecimal)  && (str.equals("class java.lang.Double")))
+                else if ((a[pos] instanceof BigDecimal)  && (str.equals("class java.lang.Double") || str.equals("double")))
                 {
                     Double val = new Double(((BigDecimal)a[pos]).doubleValue());
                     convertParams[pos] = val;
                 }
 
-                else if ((a[pos] instanceof BigDecimal)  && (str.equals("class java.lang.Float")))
+                else if ((a[pos] instanceof BigDecimal)  && (str.equals("class java.lang.Float") || str.equals("float")))
                 {
                     Float val = new Float(((BigDecimal)a[pos]).floatValue());
                     convertParams[pos] = val;
