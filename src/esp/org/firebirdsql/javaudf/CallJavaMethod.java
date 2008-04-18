@@ -147,7 +147,7 @@ public class CallJavaMethod {
    * @return Object
    */
   public static Object getTm(int i)
-  {return (new datetime(0,0)).toTime();}
+  {return (new datetime(0,i)).toTime();}
   /**
    * Convert primitive type to java object
    * @param i float
