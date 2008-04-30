@@ -1,23 +1,24 @@
 package org.firebirdsql.javaudf;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.sql.Date;
-import java.sql.Time;
-import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.text.Collator;
+import java.text.SimpleDateFormat;
+import java.text.ParseException;
+import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.TreeMap;
 import org.firebirdsql.jdbc.AbstractConnection;
+import org.firebirdsql.jdbc.FBBlob;
+import org.firebirdsql.jdbc.field.FBField;
 import org.firebirdsql.gds.impl.GDSHelper;
 import org.firebirdsql.gds.impl.jni.InternalNewGDSImpl;
 import org.firebirdsql.encodings.EncodingFactory;
 import java.io.*;
 import org.firebirdsql.gds.impl.jni.GDSInternalHelper;
-import java.sql.Statement;
-import java.sql.Connection;
+
+import java.sql.*;
 import java.math.BigDecimal;
 /*
  * <p>Title:Firebird Open Source support Java users function and external procedure</p>
@@ -92,6 +93,48 @@ public class CallJavaMethod {
     }
     return null;
   }
+
+  /**
+   *
+   * @param rs ResultSet
+   * @param i int
+   * @return Object
+   * @throws SQLException
+   */
+  public static Object getBlobId(java.sql.ResultSet rs, int i) throws Exception {
+    try {
+        FBBlob blb = (FBBlob) rs.getBlob(i);
+        if (blb != null) {
+            Long blob_id = new Long(blb.getBlobId());
+            return blob_id;
+        }
+        return null;
+    }
+    catch (Exception e) {
+      throw ExpandStacktrace(e);
+    }
+  }
+
+
+   /**
+   *
+   * @param blb FBBlob
+   * @return Object
+   * @throws SQLException
+   */
+  public static Object getBlobId(FBBlob blb) throws Exception {
+    try {
+        if (blb != null) {
+            Long blob_id = new Long(blb.getBlobId());
+            return blob_id;
+        }
+        return null;
+    }
+    catch (Exception e) {
+      throw ExpandStacktrace(e);
+    }
+  }
+
   /**
    * Convert primitive type to java object
    * @param i boolean
@@ -273,12 +316,14 @@ public class CallJavaMethod {
    */
   public static Object getObject(java.sql.ResultSet rs, int i) throws Exception {
     try {
-      return rs.getObject(i);
+        return rs.getObject(i);
     }
     catch (Exception e) {
       throw ExpandStacktrace(e);
     }
   }
+
+
 
   public CallJavaMethod() {}
 
@@ -306,7 +351,8 @@ public class CallJavaMethod {
           (r instanceof Time) ||
           (r instanceof Timestamp) ||
           (r instanceof java.sql.ResultSet) ||
-          (r instanceof String))
+          (r instanceof String) ||
+          (r instanceof FBBlob))
         return r;
       return r.toString();
     }
@@ -370,13 +416,12 @@ public class CallJavaMethod {
     }
 
     public Object call(Object a[]) throws IllegalAccessException,
-        InvocationTargetException {
+        InvocationTargetException, ParseException{
       Object JavaParams[] = ConvertParam(a);
       return m.invoke(null, JavaParams);
     }
 
-    private Object[] ConvertParam(Object a[])
-    {
+    private Object[] ConvertParam(Object a[]) throws ParseException, RuntimeException {
         Object convertParams[] = new Object[a.length];
         int pos = 0;
         for(Object parTypes : m.getParameterTypes())
@@ -385,34 +430,116 @@ public class CallJavaMethod {
             if ((a[pos] != null) && (a[pos].getClass() != parTypes))
             {
                 String str = new String(parTypes.toString());
-                if ((a[pos] instanceof Integer)  && (str.equals("class java.lang.Long") || str.equals("long")))
-                {
-                    Long val = new Long(((Integer)a[pos]).longValue());
-                    convertParams[pos] = val;
+                // from Integer to Long, Short, BigDecimal, Float, Double
+                if ((a[pos] instanceof Integer)  && (str.equals("class java.lang.Long") || str.equals("long"))) {
+                    convertParams[pos] = new Long(((Integer)a[pos]).longValue());
                 }
-
-                else if ((a[pos] instanceof Integer)  && (str.equals("class java.lang.Short") || str.equals("short")))
-                {
-                    Short val = new Short(((Integer)a[pos]).shortValue());
-                    convertParams[pos] = val;
+                else if ((a[pos] instanceof Integer) && (((Integer)a[pos] >= Short.MIN_VALUE) && ((Integer)a[pos] <= Short.MAX_VALUE))
+                        && (str.equals("class java.lang.Short") || str.equals("short"))) {
+                    convertParams[pos] = new Short(((Integer)a[pos]).shortValue());
                 }
-
-                else if ((a[pos] instanceof BigDecimal)  && (str.equals("class java.lang.Double") || str.equals("double")))
-                {
-                    Double val = new Double(((BigDecimal)a[pos]).doubleValue());
-                    convertParams[pos] = val;
+                else if ((a[pos] instanceof Integer)  && (str.equals("class java.math.BigDecimal"))) {
+                    convertParams[pos] = new BigDecimal(((Integer)a[pos]).intValue());
                 }
-
-                else if ((a[pos] instanceof BigDecimal)  && (str.equals("class java.lang.Float") || str.equals("float")))
-                {
-                    Float val = new Float(((BigDecimal)a[pos]).floatValue());
-                    convertParams[pos] = val;
+                else if ((a[pos] instanceof Integer)  && (str.equals("class java.lang.Float") || str.equals("float"))) {
+                    convertParams[pos] = new Float(((Integer)a[pos]).floatValue());
+                }
+                else if ((a[pos] instanceof Integer)  && (str.equals("class java.lang.Double") || str.equals("double"))) {
+                    convertParams[pos] = new Double(((Integer)a[pos]).doubleValue());
+                }
+                // from Long to Integer, Short, BigDecimal, Double, Float
+                else if ((a[pos] instanceof Long)  && (((Long)a[pos] >= Short.MIN_VALUE) && ((Long)a[pos] <= Short.MAX_VALUE)) &&
+                        (str.equals("class java.lang.Short") || str.equals("short"))) {
+                    convertParams[pos] = new Short(((Long)a[pos]).shortValue());
+                }
+                else if ((a[pos] instanceof Long)  && (((Long)a[pos] >= Integer.MIN_VALUE) && ((Long)a[pos] <= Integer.MAX_VALUE)) &&
+                        (str.equals("class java.lang.Integer") || str.equals("int"))) {
+                    convertParams[pos] = new Integer(((Long)a[pos]).intValue());
+                }
+                else if ((a[pos] instanceof Long)  && (str.equals("class java.math.BigDecimal"))) {
+                    convertParams[pos] = new BigDecimal(((Long)a[pos]).intValue());
+                }
+                else if ((a[pos] instanceof Long)  && (str.equals("class java.lang.Double") || str.equals("double"))) {
+                    convertParams[pos] = new Double(((Long)a[pos]).doubleValue());
+                }
+                else if ((a[pos] instanceof Long)  && (str.equals("class java.lang.Float") || str.equals("float"))) {
+                    convertParams[pos] = new Float(((Long)a[pos]).floatValue());
+                }
+                //from BigDecimal to Double, Float
+                else if ((a[pos] instanceof BigDecimal)  && (str.equals("class java.lang.Double") || str.equals("double"))) {
+                    convertParams[pos] = new Double(((BigDecimal)a[pos]).doubleValue());
+                }
+                else if ((a[pos] instanceof BigDecimal)  && (str.equals("class java.lang.Float") || str.equals("float"))) {
+                    convertParams[pos] = new Float(((BigDecimal)a[pos]).floatValue());
+                }
+                //from String to Time, Date, Timestamp
+                else if ((a[pos] instanceof String)  && str.equals("class java.sql.Time")) {
+                    convertParams[pos] = dateParser.parseTime(((String)a[pos]).trim());
+                }
+                else if ((a[pos] instanceof String)  && str.equals("class java.sql.Date")) {
+                    convertParams[pos] = dateParser.parseDate(((String)a[pos]).trim());
+                }
+                else if ((a[pos] instanceof String)  && str.equals("class java.sql.Timestamp")) {
+                    convertParams[pos] = dateParser.parseTimestamp(((String)a[pos]));
                 }
             }
             pos++;
         }
         return convertParams;
     }
+}
+
+private static class dateParser {
+
+    static String[] datePatternList = { "yyyy-MM-dd", "yyyy/MM/dd", "yyyy.MM.dd",
+                                    "dd-MM-yyyy", "dd/MM/yyyy", "dd.MM.yyyy",
+                                    "dd-MM-yy", "dd/MM/yy", "dd.MM.yy"};
+    static String[] timePatternList = {"HH:mm:ss.SSSS", "HH:mm:ss",  "HH:mm"};
+    public static java.sql.Date parseDate(String parseString){
+        for(String str : datePatternList){
+            SimpleDateFormat timeFmt  = new SimpleDateFormat(str);
+            java.util.Date date;
+            try {
+                date = timeFmt.parse((parseString).trim());
+            } catch (ParseException e) {
+                continue;
+            }
+            return new java.sql.Date(date.getTime());
+        }
+        throw new RuntimeException("argument type mismatch");
+    }
+
+    public static java.sql.Time parseTime(String parseString){
+        for(String str : timePatternList){
+            SimpleDateFormat timeFmt  = new SimpleDateFormat(str);
+            java.util.Date date;
+            try {
+                date = timeFmt.parse((parseString).trim());
+            } catch (ParseException e) {
+                continue;
+            }
+            return new java.sql.Time(date.getTime());
+        }
+        throw new RuntimeException("argument type mismatch");
+    }
+
+     public static java.sql.Timestamp parseTimestamp(String parseString){
+         String datetimestr;
+         for (String datestr : datePatternList) {
+            for(String timestr : timePatternList){
+                datetimestr = datestr + " " + timestr;
+                SimpleDateFormat timeFmt  = new SimpleDateFormat(datetimestr);
+                java.util.Date date;
+                try {
+                    date = timeFmt.parse((parseString).trim());
+                } catch (ParseException e) {
+                    continue;
+                }
+                return new java.sql.Timestamp(date.getTime());
+            }
+         }
+        throw new RuntimeException("argument type mismatch");
+     }
 }
 //
 // Helper Class to encode/decode times/dates
