@@ -472,6 +472,11 @@ public class CallJavaMethod {
                 else if ((a[pos] instanceof BigDecimal)  && (str.equals("class java.lang.Float") || str.equals("float"))) {
                     convertParams[pos] = new Float(((BigDecimal)a[pos]).floatValue());
                 }
+                //from Double to float, Float
+                else if ((a[pos] instanceof Double)  && (str.equals("class java.lang.Float") || str.equals("float"))
+                        && ((Double)a[pos] >= Float.MIN_VALUE) && ((Double)a[pos] <= Float.MAX_VALUE)) {
+                    convertParams[pos] = new Float(((Double)a[pos]).floatValue());
+                }
                 //from String to Time, Date, Timestamp
                 else if ((a[pos] instanceof String)  && str.equals("class java.sql.Time")) {
                     convertParams[pos] = dateParser.parseTime(((String)a[pos]).trim());
@@ -481,6 +486,10 @@ public class CallJavaMethod {
                 }
                 else if ((a[pos] instanceof String)  && str.equals("class java.sql.Timestamp")) {
                     convertParams[pos] = dateParser.parseTimestamp(((String)a[pos]));
+                }
+                // from String to byte array
+                else if ((a[pos] instanceof String)  && str.equals("class [B")) {
+                    convertParams[pos] = ((String)a[pos]).getBytes();
                 }
             }
             pos++;
