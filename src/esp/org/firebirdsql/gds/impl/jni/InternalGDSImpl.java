@@ -28,17 +28,17 @@ public abstract class InternalGDSImpl extends JniGDSImpl {
     nativeInitilize();
   }
 
-  protected String getServerUrl(String file_name) throws GDSException {      return file_name;  }
+  protected String getServerUrl(String file_name) throws GDSException { return file_name; }
 
   public native void native_isc_get_curret_attachment_and_transactional(IscTrHandle tr_handle,IscDbHandle db_handle) throws GDSException;
 
-  public static native Object native_isc_get_trigger_field(String name,int is_new) throws      GDSException;
+  public native Object native_isc_get_trigger_field(String name,int is_new, IscDbHandle db_handle) throws GDSException;
 
-  public static native void native_isc_set_trigger_field(String name,int is_new,Object field) throws GDSException;
+  public native void native_isc_set_trigger_field(String name,int is_new,Object field, IscDbHandle db_handle) throws GDSException;
 
-  public static native int native_isc_get_trigger_action() throws GDSException;
+  public native int native_isc_get_trigger_action() throws GDSException;
 
-  public static native String native_isc_get_trigger_table_name() throws GDSException;
+  public native String native_isc_get_trigger_table_name() throws GDSException;
 
   protected native void nativeInitilize();
 

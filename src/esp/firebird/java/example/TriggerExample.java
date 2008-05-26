@@ -6,6 +6,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.firebirdsql.javaudf.Trigger;
+
 
 /**
  * Example of a static method that is called from a trigger. Most of the code
@@ -26,20 +28,22 @@ public class TriggerExample {
     public static void traceLog() throws SQLException {
         StringBuffer message = new StringBuffer();
 
-        String tableName = Trigger.getTableName();
+        Trigger tr = new Trigger();
+
+        String tableName = tr.getTable();
         message.append(" Table ").append(tableName);
 
-        int triggerAction = Trigger.getTriggerAction();
+        int triggerAction = tr.getTriggerAction();
         switch (triggerAction) {
-            case Trigger.ACTION_INSERT:
+            case Trigger.INSERT:
                 message.append(" on INSERT : ");
                 break;
 
-            case Trigger.ACTION_UPDATE:
+            case Trigger.UPDATE:
                 message.append(" on UPDATE : ");
                 break;
 
-            case Trigger.ACTION_DELETE:
+            case Trigger.DELETE:
                 message.append(" on DELETE : ");
                 break;
 
@@ -60,26 +64,26 @@ public class TriggerExample {
                     String fieldName = rs.getString(1);
 
                     switch (triggerAction) {
-                        case Trigger.ACTION_INSERT:
+                        case Trigger.INSERT:
                             message.append("new.");
                             appendValue(message, fieldName,
-                                    Trigger.getNewValue(fieldName));
+                                    tr.getObject_New(fieldName));
                             break;
 
-                        case Trigger.ACTION_UPDATE:
+                        case Trigger.UPDATE:
                             message.append("new.");
                             appendValue(message, fieldName,
-                                    Trigger.getNewValue(fieldName));
+                                    tr.getObject_New(fieldName));
 
                             message.append(", old.");
                             appendValue(message, fieldName,
-                                    Trigger.getOldValue(fieldName));
+                                    tr.getObject_Old(fieldName));
                             break;
 
-                        case Trigger.ACTION_DELETE:
+                        case Trigger.DELETE:
                             message.append("old.");
                             appendValue(message, fieldName,
-                                    Trigger.getOldValue(fieldName));
+                                    tr.getObject_Old(fieldName));
                             break;
                     }
 

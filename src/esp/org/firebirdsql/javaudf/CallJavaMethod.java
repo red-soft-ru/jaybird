@@ -474,7 +474,7 @@ public class CallJavaMethod {
                 }
                 //from Double to float, Float
                 else if ((a[pos] instanceof Double)  && (str.equals("class java.lang.Float") || str.equals("float"))
-                        && ((Double)a[pos] >= Float.MIN_VALUE) && ((Double)a[pos] <= Float.MAX_VALUE)) {
+                        && ((Double)a[pos] >= -Float.MAX_VALUE) && ((Double)a[pos] <= Float.MAX_VALUE)) {
                     convertParams[pos] = new Float(((Double)a[pos]).floatValue());
                 }
                 //from String to Time, Date, Timestamp

@@ -1,8 +1,11 @@
 package org.firebirdsql.javaudf;
 import java.sql.SQLException;
 import org.firebirdsql.gds.GDSException;
+import org.firebirdsql.gds.IscDbHandle;
 import org.firebirdsql.jdbc.FBSQLException;
 import org.firebirdsql.gds.impl.jni.InternalGDSImpl;
+import org.firebirdsql.gds.impl.jni.isc_db_handle_impl;
+
 /**
  * <p>Title: Support trigger information </p>
  * <p>Description: </p>
@@ -12,54 +15,80 @@ import org.firebirdsql.gds.impl.jni.InternalGDSImpl;
  * @version 1.0
  */
 
-public class Trigger extends UDF {
+public class Trigger extends InternalGDSImpl {
   public final static int INSERT=1;
   public final static int UPDATE=2;
   public final static int DELETE=3;
-  public Trigger() {
+
+    IscDbHandle db_handle;
+
+  public Trigger() throws FBSQLException {
+      super();
+      db_handle = new isc_db_handle_impl();
+      try {
+          native_isc_get_curret_attachment_and_transactional(null, db_handle);
+      } catch (GDSException e) {
+          e.printStackTrace();
+      }
   }
 
-  public static String getTable() throws SQLException {
+  public static java.sql.Connection getCurrentConnection() throws java.sql.SQLException {
+      return java.sql.DriverManager.getConnection("jdbc:default:connection:");
+  }
+
+  public String getTable() throws SQLException {
     try {
-      return InternalGDSImpl.native_isc_get_trigger_table_name();
+      return native_isc_get_trigger_table_name();
     }
     catch (GDSException e) {
       throw new FBSQLException(e);
     }
   }
- public static int getTriggerAction()throws SQLException
+
+ public int getTriggerAction()throws SQLException
  {
    try {
-     return InternalGDSImpl.native_isc_get_trigger_action();
+     return native_isc_get_trigger_action();
    }
    catch (GDSException e) {
      throw new FBSQLException(e);
    }
  }
- public static String getString_New(String name)throws SQLException
+
+ public String getString_New(String name)throws SQLException
  {
   return (String)getObject_New(name);
  }
- protected static Object getObject_New(String name)throws SQLException
+
+ public Object getObject_New(String name)throws SQLException
  {
-   try{
-   Object o = org.firebirdsql.gds.impl.jni.InternalGDSImpl.native_isc_get_trigger_field(
-       name, 1);
-    return o;
+   try {
+     Object o = native_isc_get_trigger_field(name, 1, db_handle);
+     return o;
    }catch(GDSException e)
    {
      throw new SQLException(e.getMessage());
    }
  }
- protected static Object getObject_Old(String name)throws SQLException
+    
+ public Object getObject_Old(String name)throws SQLException
  {
    try{
-   Object o = org.firebirdsql.gds.impl.jni.InternalGDSImpl.native_isc_get_trigger_field(
-       name, 0);
-    return o;
+     Object o = native_isc_get_trigger_field(name, 0, db_handle);
+     return o;
    }catch(GDSException e)
    {
-     throw new FBSQLException(e);
+     throw new SQLException(e);
    }
  }
+
+ public void setNewValue(String name, Object newValue) throws SQLException {
+   try{
+     native_isc_set_trigger_field(name, 1, newValue, db_handle);
+   }catch(GDSException e)
+   {
+     throw new SQLException(e);
+   }
+ }
+
 }

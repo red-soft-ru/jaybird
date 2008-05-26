@@ -38,16 +38,7 @@ public class Untitled1 {
     System.out.println(s);
   */
   }
-  public static String testf()throws org.firebirdsql.gds.GDSException
-  {
-   Object o=org.firebirdsql.gds.impl.jni.InternalGDSImpl.native_isc_get_trigger_field("ID",1);
-   /*
-   if(o==null)
-    return null;
-   return o.toString();
-  */
-   return "test";
-  }
+    
   public static int tests()throws SQLException
   {
     try{

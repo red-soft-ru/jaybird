@@ -1,4 +1,6 @@
 package org.firebirdsql.javaudf;
+import org.firebirdsql.jdbc.FBSQLException;
+
 import java.sql.SQLException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -19,7 +21,8 @@ public class TrigerExamples extends Trigger {
   static{
       logger=Logger.getLogger(TrigerExamples.class.getName());
   }
-  public TrigerExamples() {
+  public TrigerExamples() throws FBSQLException {
+      super();
   }
  public static int get()throws  SQLException
  {
@@ -32,7 +35,7 @@ public class TrigerExamples extends Trigger {
    *
    * @throws SQLException
    */
-  public static void trace_log()throws  SQLException
+ public void trace_log()throws  SQLException
  {
   String s=getTable(),s1=" table ";
   s1+=s;
@@ -50,7 +53,7 @@ public class TrigerExamples extends Trigger {
    default:
      return ;
   }
-  Connection c=getCurrentConnection();
+  Connection c = getCurrentConnection();
   try{
     PreparedStatement ps=c.prepareStatement("select rdb$field_name from rdb$relation_fields where rdb$relation_name=?");
     try{

@@ -13,13 +13,10 @@ public class UDF {
   /**
    * Method returns getCurrentConnection
    *
-   * @throws SQLException
+   * @throws java.sql.SQLException
    * @return Connection
    */
   public static java.sql.Connection getCurrentConnection() throws java.sql.SQLException {
-//      try {
-//	  Class.forName("org.firebirdsql.jdbc.FBDriver");
-//      } catch (ClassNotFoundException ex) {}
       return java.sql.DriverManager.getConnection("jdbc:default:connection:");
   }
 }
