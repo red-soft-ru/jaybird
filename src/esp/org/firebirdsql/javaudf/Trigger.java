@@ -19,6 +19,11 @@ public class Trigger extends InternalGDSImpl {
   public final static int INSERT=1;
   public final static int UPDATE=2;
   public final static int DELETE=3;
+  public final static int CONNECT=4;
+  public final static int DISCONNECT=5;
+  public final static int TRANSACTION_START=6;
+  public final static int TRANSACTION_COMMIT=7;
+  public final static int TRANSACTION_ROLLBACK=8;
 
     IscDbHandle db_handle;
 
