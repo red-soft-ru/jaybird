@@ -63,6 +63,7 @@
 				ProgramDataBaseFileName="..\..\..\..\..\..\firebird\temp\$(PlatformName)\$(ConfigurationName)\jaybird\"
 				WarningLevel="3"
 				SuppressStartupBanner="true"
+				DebugInformationFormat="3"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -78,6 +79,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				OutputFile="..\..\..\..\..\..\firebird\temp\$(PlatformName)\$(ConfigurationName)\firebird\bin\jaybird22.dll"
+				GenerateDebugInformation="true"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				ProgramDatabaseFile=".\..\..\..\..\..\..\firebird\temp\$(PlatformName)\$(ConfigurationName)\jaybird/jaybird.pdb"
@@ -157,6 +159,7 @@
 				ProgramDataBaseFileName="..\..\..\..\..\..\firebird\temp\$(PlatformName)\$(ConfigurationName)\jaybird\"
 				WarningLevel="3"
 				SuppressStartupBanner="true"
+				DebugInformationFormat="3"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -177,6 +180,7 @@
 				ProgramDatabaseFile="..\..\..\..\..\..\firebird\temp\$(PlatformName)\$(ConfigurationName)\jaybird/jaybird.pdb"
 				ImportLibrary=".\..\..\..\..\..\..\firebird\temp\$(PlatformName)\$(ConfigurationName)\jaybird/jaybird.lib"
 				TargetMachine="17"
+				GenerateDebugInformation="true"
 			/>
 			<Tool
 				Name="VCALinkTool"
