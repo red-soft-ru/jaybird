@@ -83,21 +83,17 @@ public final class isc_blob_handle_impl implements IscBlobHandle {
     public void rbl_flagsRemove(int value) {
         rbl_flags &= ~value;
     }
-
+    
     public int getPosition() {
         return position;
     }
-
+    
     public void setPosition(int position) {
         this.position = position;
     }
-
+    
     // only used in the tests
     public boolean isEof() {
         return (rbl_flags & ISCConstants.RBL_eof_pending) != 0;
-    }
-
-    public void clearEof(){
-        rbl_flags &=~ ISCConstants.RBL_eof_pending;
     }
 }

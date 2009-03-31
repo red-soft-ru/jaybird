@@ -28,17 +28,17 @@ import org.firebirdsql.gds.impl.*;
  */
 
 public class GDSInternalHelper extends GDSHelper {
+  private static final InternalCurrentGDSImpl gds_int =
+          (InternalCurrentGDSImpl) ((new InternalCurrentGDSFactoryPlugin()).getGDS());
 
-    private static final InternalCurrentGDSImpl gds_int = 
-        (InternalCurrentGDSImpl) ((new InternalCurrentGDSFactoryPlugin()).getGDS());
 
-    public GDSInternalHelper() throws GDSException {
-        super(gds_int, new DatabaseParameterBufferImp(),
-                (AbstractIscDbHandle) gds_int.createIscDbHandle(), null);
-        
-        setCurrentTrHandle((AbstractIscTrHandle) gds_int.createIscTrHandle());
-        
-        gds_int.native_isc_get_curret_attachment_and_transactional(
+  public GDSInternalHelper() throws GDSException {
+    super(gds_int, new DatabaseParameterBufferImp(),
+            (AbstractIscDbHandle) gds_int.createIscDbHandle(), null);
+
+    setCurrentTrHandle((AbstractIscTrHandle) gds_int.createIscTrHandle());
+
+    gds_int.native_isc_get_curret_attachment_and_transactional(
             getCurrentTrHandle(), getCurrentDbHandle());
     }
 

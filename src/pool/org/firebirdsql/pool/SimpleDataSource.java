@@ -20,6 +20,7 @@
 package org.firebirdsql.pool;
 
 import java.sql.*;
+
 import javax.sql.*;
 
 import org.firebirdsql.jdbc.FBDatabaseMetaData;

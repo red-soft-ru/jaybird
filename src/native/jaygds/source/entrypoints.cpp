@@ -104,6 +104,7 @@ JNIEXPORT void MaybeIssueOutOfMemory(JNIEnv * javaEnvironment, std::bad_alloc& b
 bool sHasMostInitilizationBeenDone = false;
 static JavaVM *jvm;
 
+
 JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *reserved)
 {
         jvm = vm;

@@ -519,7 +519,7 @@ public class GDSHelper {
             throw ex;
         }
     }
-
+    
     public void seekBlob(IscBlobHandle blob, int position, int mode) throws GDSException {
         try {
             gds.iscSeekBlob(blob, position, mode);
@@ -548,7 +548,7 @@ public class GDSHelper {
             throw ex;
         }
     }
-
+    
     public byte[] getBlobInfo(IscBlobHandle blob, byte[] requestItems, int bufferLength) throws GDSException {
         try {
             return gds.iscBlobInfo(blob, requestItems, bufferLength);

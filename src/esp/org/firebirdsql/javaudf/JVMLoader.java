@@ -12,7 +12,7 @@ package org.firebirdsql.javaudf;
 public class JVMLoader {
   public native static void setJVM();
   static {
-  System.loadLibrary("JavaUDF");
-  setJVM();
+    System.loadLibrary("JavaUDF");
+    setJVM();
   }
 }

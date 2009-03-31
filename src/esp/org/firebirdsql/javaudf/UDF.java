@@ -11,12 +11,12 @@ package org.firebirdsql.javaudf;
 
 public class UDF {
   /**
-   * Method returns getCurrentConnection
-   *
-   * @throws java.sql.SQLException
-   * @return Connection
-   */
+  * Method returns getCurrentConnection
+  *
+  * @throws java.sql.SQLException
+  * @return Connection
+  */
   public static java.sql.Connection getCurrentConnection() throws java.sql.SQLException {
-      return java.sql.DriverManager.getConnection("jdbc:default:connection:");
+    return java.sql.DriverManager.getConnection("jdbc:default:connection:");
   }
 }

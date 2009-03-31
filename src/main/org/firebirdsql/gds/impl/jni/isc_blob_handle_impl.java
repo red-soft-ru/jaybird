@@ -23,7 +23,7 @@ import org.firebirdsql.gds.*;
 
 /**
  * Describe class <code>isc_blob_handle_impl</code> here.
- *
+ * 
  * @author <a href="mailto:d_jencks@users.sourceforge.net">David Jencks</a>
  * @version 1.0
  */
@@ -38,7 +38,7 @@ public final class isc_blob_handle_impl implements IscBlobHandle {
     private long blob_id;
 
     boolean isEndOfFile = false;
-
+    
     isc_blob_handle_impl() {
     };
 
@@ -81,9 +81,4 @@ public final class isc_blob_handle_impl implements IscBlobHandle {
     public boolean isEof() {
         return isEndOfFile;
     }
-
-    public void clearEof(){
-        isEndOfFile = false;
-    }
-
 }

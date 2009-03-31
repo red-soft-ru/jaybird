@@ -45,16 +45,14 @@ import java.math.BigDecimal;
  */
 
 public class CallJavaMethod {
-//  static final int N_MESSAGE=1024;
   static final int N_MESSAGE=8128;
-  //Коллекция классов методов
-    static TreeMap map=new TreeMap(Collator.getInstance());
-    static TreeMap mapm=new TreeMap(Collator.getInstance());
-   static {
-       try {
-           Class.forName("org.firebirdsql.jdbc.FBDriver");
-       } catch (ClassNotFoundException ex) {}
-   }
+  static TreeMap map = new TreeMap(Collator.getInstance());
+  static TreeMap mapm = new TreeMap(Collator.getInstance());
+  static {
+    try {
+      Class.forName("org.firebirdsql.jdbc.FBDriver");
+    } catch (ClassNotFoundException ex) {}
+  }
   /**
    * close
    * Method close ResultSet Statment and Connection automatic called for release

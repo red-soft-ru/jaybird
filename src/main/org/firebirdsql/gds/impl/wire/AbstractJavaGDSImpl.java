@@ -32,6 +32,8 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.Map;
 import java.util.HashMap;
 
@@ -390,7 +392,9 @@ public abstract class AbstractJavaGDSImpl extends AbstractGDS implements GDS {
 		synchronized (db) {
 			connect(db, dbai, databaseParameterBuffer);
             
-            String filenameCharset = databaseParameterBuffer.getArgumentAsString(DatabaseParameterBufferExtension.FILENAME_CHARSET);
+            String filenameCharset = databaseParameterBuffer.getArgumentAsString(
+                DatabaseParameterBufferExtension.FILENAME_CHARSET);
+            
 			try {
 				if (debug)
 					log.debug("op_attach ");
@@ -398,11 +402,30 @@ public abstract class AbstractJavaGDSImpl extends AbstractGDS implements GDS {
 				db.out.writeInt(0); // packet->p_atch->p_atch_database
 				db.out.writeString(dbai.getFileName(), filenameCharset);
 
-				databaseParameterBuffer = ((DatabaseParameterBufferExtension) databaseParameterBuffer)
-						.removeExtensionParams();
+			    databaseParameterBuffer = ((DatabaseParameterBufferExtension)
+			            databaseParameterBuffer).removeExtensionParams();
+				
+                String pidStr = getSystemPropertyPrivileged("org.firebirdsql.jdbc.pid");
+                if (pidStr != null) {
+                    
+                    try {
+                        int pid = Integer.parseInt(pidStr);
+                        
+                        databaseParameterBuffer.addArgument(
+                            DatabaseParameterBuffer.PROCESS_ID, 
+                            pid);
+                    } catch(NumberFormatException ex) {
+                        // ignore
+                    }
+                }
+                
+                String processName = getSystemPropertyPrivileged("org.firebirdsql.jdbc.processName");
+                if (processName != null)
+                    databaseParameterBuffer.addArgument(
+                        DatabaseParameterBuffer.PROCESS_NAME, 
+                        processName);
 
-				db.out.writeTyped(ISCConstants.isc_dpb_version1,
-						(Xdrable) databaseParameterBuffer);
+				db.out.writeTyped(ISCConstants.isc_dpb_version1, (Xdrable) databaseParameterBuffer);
 				db.out.flush();
 				if (debug)
 					log.debug("sent");
@@ -423,6 +446,14 @@ public abstract class AbstractJavaGDSImpl extends AbstractGDS implements GDS {
 		}
 	}
 
+	private String getSystemPropertyPrivileged(final String propertyName) {
+	    return (String)AccessController.doPrivileged(new PrivilegedAction() {
+	       public Object run() {
+	           return System.getProperty(propertyName);
+	       } 
+	    });
+	}
+	
 	public byte[] iscDatabaseInfo(IscDbHandle handle, byte[] items,
 			int buffer_length) throws GDSException {
 		boolean debug = log != null && log.isDebugEnabled();
@@ -1638,6 +1669,20 @@ public abstract class AbstractJavaGDSImpl extends AbstractGDS implements GDS {
 		}
 		return value;
 	}
+	
+	public int iscInteger(byte[] buffer, int pos, int length) {
+        int value;
+        int shift;
+
+        value = shift = 0;
+
+        int i = pos;
+        while (i < length) {
+            value = value << 8;
+            value += (buffer[i++] & 0xff);
+        }
+        return value;
+    }
 
 	// -----------------------------------------------
 	// Blob methods
@@ -2940,23 +2985,33 @@ public abstract class AbstractJavaGDSImpl extends AbstractGDS implements GDS {
                     nextOperation(db); 
 
                     int auxHandle = db.in.readInt();
+                    // garbage
+                    byte[] buffer = db.in.readRawBuffer(8);
 
-                    int port = iscVaxInteger(db.in.readRawBuffer(2), 0, 2);
+                    int respLen = db.in.readInt();
+                    respLen += respLen % 4;
 
                     // sin family
-                    db.in.readRawBuffer(2);
+                    int dummySinFamily = db.in.readShort();
+                    respLen -= 2;
+                    
+                    // sin port
+                    int port = db.in.readShort();
+                    respLen -= 2;
 
                     // IP address
                     byte[] ipBytes = db.in.readRawBuffer(4);
+                    respLen -= 4;
+                    
                     StringBuffer ipBuf = new StringBuffer();
-                    for (int i = 3; i >= 0; i--){
+                    for (int i = 0; i < 4; i++){
                         ipBuf.append((int)(ipBytes[i] & 0xff));
-                        if (i > 0) ipBuf.append(".");
+                        if (i < 3) ipBuf.append(".");
                     }
                     String ipAddress = ipBuf.toString();
 
                     // Ignore
-                    db.in.readRawBuffer(12);
+                    buffer = db.in.readRawBuffer(respLen);
                     readStatusVector(db);
 
                     db.eventCoordinator = 
@@ -3000,7 +3055,7 @@ public abstract class AbstractJavaGDSImpl extends AbstractGDS implements GDS {
             throw new GDSException(ISCConstants.isc_bad_db_handle);
         }
         
-        if (db.eventCoordinator.cancelEvents(handleImp)){
+        if (db.eventCoordinator != null && db.eventCoordinator.cancelEvents(handleImp)){
             synchronized (db){
                 try {
                     db.out.writeInt(op_cancel_events);

@@ -791,8 +791,6 @@ public class FBResultSetMetaData implements ResultSetMetaData {
             else
                 return (relationName.hashCode() ^ fieldName.hashCode()) + 11;
         }
-
-
     }
 
     /**

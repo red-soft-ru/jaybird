@@ -688,10 +688,10 @@ public class FBManagedConnectionFactory implements ManagedConnectionFactory,
                 try {
                     FirebirdLocalTransaction tempLocalTx = 
                         (FirebirdLocalTransaction) tempMc.getLocalTransaction();
-
-                long fbTransactionId = 0;
-                boolean found = false;
-
+                    
+                    long fbTransactionId = 0;
+                    boolean found = false;
+                    
                     // loop through all in-limbo transactions and look for the required one
                     tempLocalTx.begin();
                     try {
@@ -700,11 +700,11 @@ public class FBManagedConnectionFactory implements ManagedConnectionFactory,
                         for (Iterator iter = inLimboIds.iterator(); iter.hasNext();) {
                             FBXid foundXid = (FBXid) iter.next();
                             if (foundXid.equals(xid)) {
-                        found = true;
+                                found = true;
                                 fbTransactionId = foundXid.getFirebirdTransactionId();
-                    }
-                }
-
+                            }
+                        }
+                        
                     } catch(SQLException ex) {
                         if (log != null)
                             log.debug("can't perform query to fetch xids", ex);
@@ -716,23 +716,23 @@ public class FBManagedConnectionFactory implements ManagedConnectionFactory,
                     }
     
                     // if no such transaction found, notify the resource manager
-                if (!found)
-                    throw new FBXAException((commit ? "Commit" : "Rollback")
-                            + " called with unknown transaction.",
-                            XAException.XAER_NOTA);
-
+                    if (!found)
+                        throw new FBXAException((commit ? "Commit" : "Rollback")
+                                + " called with unknown transaction.",
+                                XAException.XAER_NOTA);
+    
                     IscDbHandle dbHandle = tempMc.getGDSHelper().getCurrentDbHandle();
-
+    
                     // reconnect the in-limbo transaction to temp connection
-                IscTrHandle trHandle = gds.createIscTrHandle();
+                    IscTrHandle trHandle = gds.createIscTrHandle();
                     gds.iscReconnectTransaction(trHandle, dbHandle, fbTransactionId);
-
-                // complete transaction by commit or rollback
-                if (commit)
-                    gds.iscCommitTransaction(trHandle);
-                else
-                    gds.iscRollbackTransaction(trHandle);
-                
+    
+                    // complete transaction by commit or rollback
+                    if (commit)
+                        gds.iscCommitTransaction(trHandle);
+                    else
+                        gds.iscRollbackTransaction(trHandle);
+    
                 } catch (GDSException ex) {
                     throw new FBXAException(XAException.XAER_RMERR, ex);
                 }
@@ -743,19 +743,19 @@ public class FBManagedConnectionFactory implements ManagedConnectionFactory,
             throw new FBXAException(XAException.XAER_RMERR, ex);
         }
     }
-
+    
     // simple implementation of the FieldDataProvider interface
     private static class DataProvider implements FieldDataProvider {
 
         private AbstractIscStmtHandle stmtHandle;
         private int fieldPos;
         private int row;
-
+        
         private DataProvider(AbstractIscStmtHandle stmtHandle, int fieldPos) {
             this.stmtHandle = stmtHandle;
             this.fieldPos = fieldPos;
         }
-                    
+        
         public void setRow(int row) {
             this.row = row;
         }
@@ -772,7 +772,7 @@ public class FBManagedConnectionFactory implements ManagedConnectionFactory,
         + "SELECT RDB$TRANSACTION_ID, RDB$TRANSACTION_DESCRIPTION "
         + "FROM RDB$TRANSACTIONS WHERE RDB$TRANSACTION_STATE = 1";
 
-
+    
     public static ArrayList fetchInLimboXids(GDS gds, GDSHelper gdsHelper2) throws GDSException, SQLException, ResourceException {
         ArrayList xids = new ArrayList();
 
@@ -781,12 +781,12 @@ public class FBManagedConnectionFactory implements ManagedConnectionFactory,
         
         
         gdsHelper2.prepareStatement(stmtHandle2, RECOVERY_QUERY, false);
-                    gdsHelper2.executeStatement(stmtHandle2, false);
+        gdsHelper2.executeStatement(stmtHandle2, false);
         gdsHelper2.fetch(stmtHandle2, 10);
-
+        
         DataProvider dataProvider0 = new DataProvider(stmtHandle2, 0);
         DataProvider dataProvider1 = new DataProvider(stmtHandle2, 1);
-
+        
         FBField field0 = FBField.createField(stmtHandle2.getOutSqlda().sqlvar[0], dataProvider0, gdsHelper2, false);
         FBField field1 = FBField.createField(stmtHandle2.getOutSqlda().sqlvar[1], dataProvider1, gdsHelper2, false);
         
@@ -799,23 +799,23 @@ public class FBManagedConnectionFactory implements ManagedConnectionFactory,
             if (stmtHandle2.getRows()[row] == null) {
                 row++;
                 continue;
-                }
-                
+            }
+            
             dataProvider0.setRow(row);
             dataProvider1.setRow(row);
             
             long inLimboTxId = field0.getLong();
             byte[] inLimboMessage = field1.getBytes();
         
-                try {
+            try {
                 FBXid xid = new FBXid(new ByteArrayInputStream(inLimboMessage), inLimboTxId);
                 xids.add(xid);
             } catch(FBIncorrectXidException ex) {
                 // ignore this Xid
-                }
+            }
    
             row++;
-            }
+        }
    
         gdsHelper2.closeStatement(stmtHandle2, true);
         return xids;

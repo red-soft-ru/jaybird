@@ -8,30 +8,31 @@ package firebird.java.example;
  */
 public class UDF {
 
-    /**
-     * Obtain JDBC connection for the current context. This is an entry point
-     * if Java code needs to perform some operations in context of current
-     * transaction.
-     *
-     * @return Connection instance of {@link java.sql.Connection}
-     *
-     * @throws SQLException if connection cannot be obtained.
-     */
-    public static java.sql.Connection getCurrentConnection()throws java.sql.SQLException
-    {
-      try {
-        Class.forName("org.firebirdsql.jdbc.FBDriver");
-      }
-      catch (ClassNotFoundException ex) {}
-      return java.sql.DriverManager.getConnection("jdbc:default:connection:");
+  /**
+  * Obtain JDBC connection for the current context. This is an entry point
+  * if Java code needs to perform some operations in context of current
+  * transaction.
+  *
+  * @return Connection instance of {@link java.sql.Connection}
+  *
+  * @throws java.sql.SQLException if connection cannot be obtained.
+  */
+  public static java.sql.Connection getCurrentConnection() throws java.sql.SQLException {
+    try {
+      Class.forName("org.firebirdsql.jdbc.FBDriver");
+    } catch (ClassNotFoundException ex) {
+      throw new java.sql.SQLException(ex.getMessage());
+    }
+    return java.sql.DriverManager.getConnection("jdbc:default:connection:");
     }
 
-    public static java.sql.Connection getCurrentNewTrConnection()throws java.sql.SQLException
-    {
+    public static java.sql.Connection getCurrentNewTrConnection() throws java.sql.SQLException {
       try {
         Class.forName("org.firebirdsql.jdbc.FBDriver");
       }
-      catch (ClassNotFoundException ex) {}
+      catch (ClassNotFoundException ex) {
+        throw new java.sql.SQLException(ex.getMessage());
+      }
       return java.sql.DriverManager.getConnection("jdbc:new:connection:");
     }
 }

@@ -55,20 +55,4 @@ public class InternalCurrentGDSImpl extends InternalNewGDSImpl {
     public boolean equals(Object obj) {
         return obj!=null&&getClass().getName().equals(obj.getClass().getName());
     }
-    /*
-          public void iscCommitTransaction(IscTrHandle tr_handle) throws GDSException {
-
-          }
-          public void iscCommitRetaining(IscTrHandle tr_handle) throws GDSException
-          {}
-          public void iscPrepareTransaction(IscTrHandle tr_handle) throws GDSException
-          {}
-          public void iscPrepareTransaction2(IscTrHandle tr_handle, byte[] bytes) throws GDSException
-          {}
-          public void iscRollbackRetaining(IscTrHandle tr_handle) throws GDSException
-          {}
-          public void iscRollbackTransaction(IscTrHandle tr_handle) throws GDSException
-          {}
-          */
-
 }
