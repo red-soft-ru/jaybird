@@ -358,11 +358,7 @@ typedef ISC_STATUS ISC_EXPORT prototype_isc_cancel_events(
         isc_db_handle*,
         ISC_LONG*);
 
-typedef void ISC_EXPORT prototype_isc_free(char *);
-
-
-
-
+typedef ISC_LONG ISC_EXPORT prototype_isc_free(char *);
 
 class FirebirdApiBinding
         {
