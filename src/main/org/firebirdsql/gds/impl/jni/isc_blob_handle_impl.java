@@ -81,4 +81,8 @@ public final class isc_blob_handle_impl implements IscBlobHandle {
     public boolean isEof() {
         return isEndOfFile;
     }
+
+    public void clearEof() {
+        isEndOfFile = false;
+    }
 }

@@ -669,6 +669,8 @@ public class FBBlob implements FirebirdBlob, Synchronizable {
                     /** @todo fix this */
                     throw new IOException(ex.getMessage());
                 }
+                buffer = null;
+                blob.clearEof();
             }
         }
         

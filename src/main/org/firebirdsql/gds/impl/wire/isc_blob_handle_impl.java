@@ -96,4 +96,8 @@ public final class isc_blob_handle_impl implements IscBlobHandle {
     public boolean isEof() {
         return (rbl_flags & ISCConstants.RBL_eof_pending) != 0;
     }
+
+    public void clearEof(){
+        rbl_flagsRemove(ISCConstants.RBL_eof_pending);
+    }
 }

@@ -58,4 +58,9 @@ public interface IscBlobHandle {
      */
     boolean isEof();
 
+    /**
+     * Clear eof flag for blob
+     */
+    void clearEof();
+
 }
