@@ -44,6 +44,17 @@
 		<equals arg1="${ant.java.version}" arg2="1.6"/>
 	</condition>
 	
+	<condition property="mini-j2ee" value="mini-j2ee.jar">
+		<or>
+			<istrue value="${jdbc.20}"/>
+			<istrue value="${jdbc.30}"/>
+		</or>
+	</condition>
+
+	<condition property="mini-j2ee" value="mini-j2ee_16.jar">
+		<istrue value="${jdbc.40}"/>
+	</condition>
+    
 	<property name="Name" value="Jaybird"/>
     <property name="name" value="jaybird"/>
 
@@ -182,7 +193,7 @@
     <property name="build.compiler" value="classic"/>
 
     <path id="javac.j2ee.classpath">
-      <pathelement location="${module.thirdparty}/mini-j2ee.jar"/>
+      <pathelement location="${module.thirdparty}/${mini-j2ee}"/>
       <pathelement location="${module.thirdparty}/jaas.jar"/>
     </path>
 
