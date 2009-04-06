@@ -1,10 +1,13 @@
 package org.firebirdsql.javaudf;
-import java.sql.SQLException;
+
 import org.firebirdsql.gds.GDSException;
 import org.firebirdsql.gds.IscDbHandle;
-import org.firebirdsql.jdbc.FBSQLException;
 import org.firebirdsql.gds.impl.jni.InternalGDSImpl;
-import org.firebirdsql.gds.impl.jni.isc_db_handle_impl;
+import org.firebirdsql.jdbc.FBConnection;
+import org.firebirdsql.jdbc.FBSQLException;
+
+import java.sql.SQLException;
+import java.util.Properties;
 
 /**
  * <p>Title: Support trigger information </p>
@@ -17,29 +20,25 @@ import org.firebirdsql.gds.impl.jni.isc_db_handle_impl;
 
 public class Trigger extends InternalGDSImpl {
 
-  public final static int INSERT=1;
-  public final static int UPDATE=2;
-  public final static int DELETE=3;
-  public final static int CONNECT=4;
-  public final static int DISCONNECT=5;
-  public final static int TRANSACTION_START=6;
-  public final static int TRANSACTION_COMMIT=7;
-  public final static int TRANSACTION_ROLLBACK=8;
-
-  private IscDbHandle db_handle;
+  public final static int INSERT = 1;
+  public final static int UPDATE = 2;
+  public final static int DELETE = 3;
+  public final static int CONNECT = 4;
+  public final static int DISCONNECT = 5;
+  public final static int TRANSACTION_START = 6;
+  public final static int TRANSACTION_COMMIT = 7;
+  public final static int TRANSACTION_ROLLBACK = 8;
 
   public Trigger() throws FBSQLException {
-    super();
-    db_handle = new isc_db_handle_impl();
-    try {
-      native_isc_get_curret_attachment_and_transactional(null, db_handle);
-    } catch (GDSException e) {
-      throw new FBSQLException(e.getMessage());
-    }
   }
 
-  public java.sql.Connection getCurrentConnection() throws java.sql.SQLException {
-    return java.sql.DriverManager.getConnection("jdbc:default:connection:");
+  private IscDbHandle getDbHandle() throws SQLException  {
+    FBConnection con = (FBConnection)UDF.getCurrentConnection();
+    try {
+      return con.getIscDBHandle();
+    } catch (GDSException e) {
+      throw new SQLException(e.getMessage());
+    }
   }
 
   public String getTable() throws SQLException {
@@ -66,6 +65,7 @@ public class Trigger extends InternalGDSImpl {
 
   public Object getObject_New(String name)throws SQLException {
     try {
+      final IscDbHandle db_handle = getDbHandle();
       return native_isc_get_trigger_field(name, 1, db_handle);
     } catch(GDSException e) {
       throw new SQLException(e.getMessage());
@@ -74,6 +74,7 @@ public class Trigger extends InternalGDSImpl {
 
   public Object getObject_Old(String name)throws SQLException {
     try{
+      final IscDbHandle db_handle = getDbHandle();
       return native_isc_get_trigger_field(name, 0, db_handle);
     } catch(GDSException e) {
       throw new SQLException(e.getMessage());
@@ -82,6 +83,7 @@ public class Trigger extends InternalGDSImpl {
 
   public void setNewValue(String name, Object newValue) throws SQLException {
     try{
+      final IscDbHandle db_handle = getDbHandle();
       native_isc_set_trigger_field(name, 1, newValue, db_handle);
     } catch(GDSException e) {
       throw new SQLException(e.getMessage());
