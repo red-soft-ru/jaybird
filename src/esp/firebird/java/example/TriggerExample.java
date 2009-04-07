@@ -47,7 +47,7 @@ public class TriggerExample {
     }
 
     // extract new and old values from the trigger context
-    Connection c = tr.getCurrentConnection();
+    Connection c = UDF.getCurrentConnection();
       try {
           PreparedStatement ps = c.prepareStatement("SELECT rdb$field_name "
                   + "FROM rdb$relation_fields "
