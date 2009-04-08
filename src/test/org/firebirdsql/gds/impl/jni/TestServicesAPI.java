@@ -151,8 +151,8 @@ public class TestServicesAPI extends TestCase
 
         serviceRequestBuffer.addArgument(ISCConstants.isc_spb_verbose);
         serviceRequestBuffer.addArgument(ISCConstants.isc_spb_options,   ISCConstants.isc_spb_res_create);
-        serviceRequestBuffer.addArgument(ISCConstants.isc_spb_dbname,    mAbsoluteBackupPath);
-        serviceRequestBuffer.addArgument(ISCConstants.isc_spb_bkp_file,    mAbsoluteDatabasePath);
+        serviceRequestBuffer.addArgument(ISCConstants.isc_spb_dbname, mAbsoluteDatabasePath);
+        serviceRequestBuffer.addArgument(ISCConstants.isc_spb_bkp_file, mAbsoluteBackupPath);
 
         gds.iscServiceStart( handle, serviceRequestBuffer );
         }
