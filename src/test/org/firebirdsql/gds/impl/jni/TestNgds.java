@@ -77,7 +77,12 @@ public class TestNgds extends SimpleFBTestBase {
         else
             gds = GDSFactory.getGDSForType(GDSType.getType("NATIVE"));
 
-        tpb  = new FBTpb(FBTpbMapper.getDefaultMapper(gds).getDefaultMapping());
+        tpb  = new FBTpb(gds.newTransactionParameterBuffer());
+
+        tpb.getTransactionParameterBuffer().addArgument(ISCConstants.isc_tpb_write);
+        tpb.getTransactionParameterBuffer().addArgument(ISCConstants.isc_tpb_read_committed);
+        tpb.getTransactionParameterBuffer().addArgument(ISCConstants.isc_tpb_no_rec_version);
+        tpb.getTransactionParameterBuffer().addArgument(ISCConstants.isc_tpb_wait);
         
         c= gds.createDatabaseParameterBuffer();
 
@@ -86,12 +91,6 @@ public class TestNgds extends SimpleFBTestBase {
         c.addArgument(ISCConstants.isc_dpb_sql_dialect, new byte[] {3, 0, 0, 0});
         c.addArgument(ISCConstants.isc_dpb_user_name, DB_USER);
         c.addArgument(ISCConstants.isc_dpb_password, DB_PASSWORD);
-
-        tpb.getTransactionParameterBuffer().addArgument(ISCConstants.isc_tpb_write);
-        tpb.getTransactionParameterBuffer().addArgument(ISCConstants.isc_tpb_read_committed);
-        tpb.getTransactionParameterBuffer().addArgument(ISCConstants.isc_tpb_no_rec_version);
-        tpb.getTransactionParameterBuffer().addArgument(ISCConstants.isc_tpb_wait);
-
     }
 
 
