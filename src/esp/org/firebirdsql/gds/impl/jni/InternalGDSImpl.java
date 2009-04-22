@@ -40,6 +40,8 @@ public abstract class InternalGDSImpl extends JniGDSImpl {
 
   public native String native_isc_get_trigger_table_name() throws GDSException;
 
+  public native int native_isc_get_trigger_field_type(final String fieldName, final IscDbHandle db_handle) throws GDSException;  
+
   protected native void nativeInitilize();
 
 }
