@@ -51,7 +51,7 @@ public final class isc_stmt_handle_impl extends AbstractIscStmtHandle {
     private boolean isSingletonResult = false;
     private boolean hasOpenResultSet = false;
 
-    private int statementType;
+    //private int statementType;
     private int insertCount;
     private int updateCount;
     private int deleteCount;

@@ -1120,6 +1120,7 @@ public abstract class AbstractStatement implements FirebirdStatement, Synchroniz
             fixedStmt, 
             escapedProcessing ? nativeSQL(sql) : sql, 
             describeBind);
+        getStatementType();
     }
 
     protected void addWarning(SQLWarning warning){
@@ -1186,7 +1187,7 @@ public abstract class AbstractStatement implements FirebirdStatement, Synchroniz
     private void populateStatementInfo() throws FBSQLException {
         if (fixedStmt.getExecutionPlan() == null){
             try {
-                gdsHelper.populateStatementInfo((AbstractIscStmtHandle)fixedStmt);
+                gdsHelper.populateStatementInfo(fixedStmt);
             } catch(GDSException ex) {
                 throw new FBSQLException(ex);
             }

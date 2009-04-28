@@ -54,11 +54,10 @@ public final class isc_stmt_handle_impl extends AbstractIscStmtHandle {
 
     private boolean hasOpenResultSet;
     
-    private int statementType;
     private int insertCount;
     private int updateCount;
     private int deleteCount;
-    private int selectCount; //????
+    private int selectCount;
     
     private AbstractIscTrHandle trHandle;
 

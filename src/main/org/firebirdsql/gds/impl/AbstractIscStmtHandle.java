@@ -34,7 +34,7 @@ import org.firebirdsql.gds.IscStmtHandle;
 public abstract class AbstractIscStmtHandle implements IscStmtHandle {
     
     private String executionPlan;
-    private int statementType = TYPE_UNKNOWN;
+    protected int statementType = TYPE_UNKNOWN;
     public String statement;
 
     /**
