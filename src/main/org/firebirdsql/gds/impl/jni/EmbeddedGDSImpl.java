@@ -28,7 +28,9 @@ public class EmbeddedGDSImpl extends JniGDSImpl {
 
         if (logging) log.info("Attempting to initilize native library.");
 
-        attemptToLoadAClientLibraryFromList(EMBEDDED_LIBRARIES_TO_TRY);
+        final String nativeLib = System.getProperty(JAYBIRD_FBCLIENT_PROPERTY_NAME);
+
+        attemptToLoadAClientLibraryFromList(nativeLib != null && nativeLib.length() > 0 ? new String[] {nativeLib} : EMBEDDED_LIBRARIES_TO_TRY);
 
         if (logging) log.info("Initilized native library OK.");
     }

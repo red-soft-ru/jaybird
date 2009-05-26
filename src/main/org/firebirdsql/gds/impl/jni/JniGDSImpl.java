@@ -8,13 +8,14 @@ import org.firebirdsql.logging.LoggerFactory;
 
 public abstract class JniGDSImpl extends BaseGDSImpl {
     
-    private static final boolean DEVELOPMENT_DEBUG_OUTPUT = false;
+    private static final boolean DEVELOPMENT_DEBUG_OUTPUT = true;
 
     /**
      * Name of the JNI library able to communicate with the client or embedded
      * server library.
      */
     public static final String JAYBIRD_JNI_LIBRARY = "jaybird22";
+    public static final String JAYBIRD_FBCLIENT_PROPERTY_NAME = "jaybird.fbclient";
     
     private static Logger log = LoggerFactory.getLogger(JniGDSImpl.class,
             false);
@@ -89,6 +90,9 @@ public abstract class JniGDSImpl extends BaseGDSImpl {
                 if (DEVELOPMENT_DEBUG_OUTPUT)
                     th.printStackTrace(); // Dont hide it completly
 
+                    System.out.println("Failed to load client library # " + i
+                        + " - \"" + currentClientLibraryToTry + "\"."
+                        + th.toString());
                 if (logging && DEVELOPMENT_DEBUG_OUTPUT)
                     System.out.println("Failed to load client library # " + i
                         + " - \"" + currentClientLibraryToTry + "\"."

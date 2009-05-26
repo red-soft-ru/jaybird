@@ -26,7 +26,9 @@ public class LocalGDSImpl extends JniGDSImpl {
 
         if (logging) log.info("Attempting to initilize native library.");
 
-        attemptToLoadAClientLibraryFromList(LIST_OF_CLIENT_LIBRARIES_TO_TRY);
+        final String nativeLib = System.getProperty(JAYBIRD_FBCLIENT_PROPERTY_NAME);
+
+        attemptToLoadAClientLibraryFromList(nativeLib != null && nativeLib.length() > 0 ? new String[] {nativeLib} : LIST_OF_CLIENT_LIBRARIES_TO_TRY);
 
         if (logging) log.info("Initilized native library OK.");
     }
