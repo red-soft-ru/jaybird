@@ -229,8 +229,13 @@ abstract class ParameterBufferBase implements java.io.Serializable {
             outputStream.write(type);
 
             final int value = this.value;
-
+            writeLength(4, outputStream);
             writeValue(outputStream, value);
+        }
+
+        protected void writeLength(int length,
+                ByteArrayOutputStream outputStream) {
+            outputStream.write(length);
         }
 
         protected void writeValue(ByteArrayOutputStream outputStream,
