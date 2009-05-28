@@ -36,16 +36,16 @@ SHARED_LIBRARY_HANDLE PlatformLoadLibrary(const char* const name)
     if (pos != NULL) {
         int size = pos - name;
         char* dllpath = new char[size + 1];
-        strncpy_s(dllpath, size + 1, name, size);
+        strncpy(dllpath, name, size);
         int pathlen = 0;
         pathlen = GetEnvironmentVariable("PATH", NULL, 0);
         pathlen += strlen(dllpath) + 2;
         char *path = new char[pathlen];
         GetEnvironmentVariable("PATH", path, pathlen);
         if (path[0]) 
-            sprintf_s(path, pathlen, "%s;%s", path, dllpath);
+            sprintf(path, "%s;%s", path, dllpath);
         else
-            sprintf_s(path, pathlen, "%s", dllpath);
+            sprintf(path, "%s", dllpath);
         SetEnvironmentVariable("PATH", path);
         delete[] dllpath;
         delete[] path;
