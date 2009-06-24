@@ -37,6 +37,7 @@ SHARED_LIBRARY_HANDLE PlatformLoadLibrary(const char* const name)
         int size = pos - name;
         char* dllpath = new char[size + 1];
         strncpy(dllpath, name, size);
+		dllpath[size] = 0;
         int pathlen = 0;
         pathlen = GetEnvironmentVariable("PATH", NULL, 0);
         pathlen += strlen(dllpath) + 2;
