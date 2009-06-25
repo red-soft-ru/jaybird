@@ -36,24 +36,27 @@ void processFailedEntryPoint(const char* const message)
 SHARED_LIBRARY_HANDLE PlatformLoadLibrary(const char* const name)
     {
     char* pos = strrchr((char*)name, '\\');
-    if (pos != NULL) {
+    if (pos != NULL)
+        {
         int size = pos - name;
         std:string dllpath = name;
         dllpath.resize(size);
         int pathlen = 0;
         pathlen = GetEnvironmentVariable("PATH", NULL, 0);
-        if (pathlen) {
+        if (pathlen)
+            {
             string path;
             path.reserve(pathlen);
-            GetEnvironmentVariable("PATH", (char*) path.c_str(), pathlen);
-            if ((';' + path + ';').find(';' + dllpath + ';') == string::npos) {
+            GetEnvironmentVariable("PATH", (char*)path.c_str(), pathlen);
+            if ((';' + path + ';').find(';' + dllpath + ';') == string::npos)
+                {
                 if (path[path.length() - 1] != ';') path = path + ';';
                 path = path + dllpath;
                 SetEnvironmentVariable("PATH", path.c_str());
+                }
             }
-        } else {
+        else
             SetEnvironmentVariable("PATH", dllpath.c_str());
-        }
     }
 
     SHARED_LIBRARY_HANDLE handle = LoadLibrary(name);
