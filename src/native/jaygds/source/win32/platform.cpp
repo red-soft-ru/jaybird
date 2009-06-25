@@ -24,6 +24,9 @@
 
 #include "platform.h"
 #include "exceptions.h"
+#include <string>
+using namespace std;
+
 
 void processFailedEntryPoint(const char* const message)
     {
@@ -35,21 +38,24 @@ SHARED_LIBRARY_HANDLE PlatformLoadLibrary(const char* const name)
     char* pos = strrchr((char*)name, '\\');
     if (pos != NULL) {
         int size = pos - name;
-        char* dllpath = new char[size + 1];
-        strncpy(dllpath, name, size);
-		dllpath[size] = 0;
+        std:string dllpath = name;
+        dllpath = dllpath.substr(0, size);
+        char *buf = 0;
         int pathlen = 0;
         pathlen = GetEnvironmentVariable("PATH", NULL, 0);
-        pathlen += strlen(dllpath) + 2;
-        char *path = new char[pathlen];
-        GetEnvironmentVariable("PATH", path, pathlen);
-        if (path[0]) 
-            sprintf(path, "%s;%s", path, dllpath);
-        else
-            sprintf(path, "%s", dllpath);
-        SetEnvironmentVariable("PATH", path);
-        delete[] dllpath;
-        delete[] path;
+        if (pathlen) {
+            buf = new char[pathlen];
+            GetEnvironmentVariable("PATH", buf, pathlen);
+            string path = buf;
+            delete[] buf;
+            if ((';' + path + ';').find(';' + dllpath + ';') == string::npos) {
+                if (path[path.length() - 1] != ';') path = path + ';';
+                path = path + dllpath;
+                SetEnvironmentVariable("PATH", path.c_str());
+            }
+        } else {
+            SetEnvironmentVariable("PATH", dllpath.c_str());
+        }
     }
 
     SHARED_LIBRARY_HANDLE handle = LoadLibrary(name);
