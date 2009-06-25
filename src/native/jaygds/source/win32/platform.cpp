@@ -39,15 +39,13 @@ SHARED_LIBRARY_HANDLE PlatformLoadLibrary(const char* const name)
     if (pos != NULL) {
         int size = pos - name;
         std:string dllpath = name;
-        dllpath = dllpath.substr(0, size);
-        char *buf = 0;
+        dllpath.resize(size);
         int pathlen = 0;
         pathlen = GetEnvironmentVariable("PATH", NULL, 0);
         if (pathlen) {
-            buf = new char[pathlen];
-            GetEnvironmentVariable("PATH", buf, pathlen);
-            string path = buf;
-            delete[] buf;
+            string path;
+            path.reserve(pathlen);
+            GetEnvironmentVariable("PATH", (char*) path.c_str(), pathlen);
             if ((';' + path + ';').find(';' + dllpath + ';') == string::npos) {
                 if (path[path.length() - 1] != ';') path = path + ';';
                 path = path + dllpath;
