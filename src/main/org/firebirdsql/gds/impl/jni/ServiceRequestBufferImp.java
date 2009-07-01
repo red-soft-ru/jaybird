@@ -50,6 +50,25 @@ class ServiceRequestBufferImp extends ParameterBufferBase implements
         });
     }
 
+    public void addArgument(int argumentType, int value) {
+        getArgumentsList().add(new NumericArgument(argumentType, value) {
+            protected void writeValue(ByteArrayOutputStream outputStream, final int value) {
+                outputStream.write(value);
+                outputStream.write(value >> 8);
+                outputStream.write(value >> 16);
+                outputStream.write(value >> 24);
+            }
+        });
+    }
+
+    public void addArgument(int argumentType, byte value) {
+        getArgumentsList().add(new NumericArgument(argumentType, value) {
+            protected void writeValue(ByteArrayOutputStream outputStream, final int value) {
+                outputStream.write((byte) value);
+            }
+        });
+    }
+
     /**
      * Pacakage local method for obtaining buffer suitable for passing to native
      * method.

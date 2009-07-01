@@ -41,17 +41,6 @@ abstract class ParameterBufferBase implements java.io.Serializable {
         getArgumentsList().add(new NumericArgument(argumentType, value));
     }
 
-    public void addArgument(int argumentType, byte value) {
-
-        getArgumentsList().add(new NumericArgument(argumentType, value) {
-
-            protected void writeValue(ByteArrayOutputStream outputStream,
-                    final int value) {
-                outputStream.write((byte) value);
-            }
-        });
-    }
-
     public void addArgument(int argumentType) {
         getArgumentsList().add(new SingleItem(argumentType));
     }
@@ -227,9 +216,7 @@ abstract class ParameterBufferBase implements java.io.Serializable {
 
         void writeTo(ByteArrayOutputStream outputStream) {
             outputStream.write(type);
-
             final int value = this.value;
-            writeLength(4, outputStream);
             writeValue(outputStream, value);
         }
 
@@ -240,6 +227,7 @@ abstract class ParameterBufferBase implements java.io.Serializable {
 
         protected void writeValue(ByteArrayOutputStream outputStream,
                 final int value) {
+            writeLength(4, outputStream);
             outputStream.write(value);
             outputStream.write(value >> 8);
             outputStream.write(value >> 16);
