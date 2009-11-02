@@ -62,6 +62,7 @@ public class FBManagedConnection implements ManagedConnection, XAResource, GDSHe
     private GDS gds;
     private IscDbHandle dbHandle;
     private GDSHelper gdsHelper;
+    private FBManagedConnection parent;
 
     private FBConnectionRequestInfo cri;
     private FBTpb tpb;
@@ -90,6 +91,28 @@ public class FBManagedConnection implements ManagedConnection, XAResource, GDSHe
         } catch(GDSException ex) {
             throw new FBResourceException(ex);
         }
+    }
+
+    
+    private FBManagedConnection(FBManagedConnection mc)
+    {
+    	this.parent = mc;
+        this.mcf = mc.mcf;
+        this.gds = mc.gds;
+        this.cri = mc.cri;
+        this.tpb = mc.tpb;
+        this.transactionIsolation = mc.transactionIsolation;
+        this.dbHandle = mc.dbHandle;
+
+        DatabaseParameterBuffer dpb = this.cri.getDpb();
+            
+        this.gdsHelper = new GDSHelper(this.gds, dpb, (AbstractIscDbHandle)this.dbHandle, this);
+    }
+    
+    
+    public FBManagedConnection forkManagedConnection()
+    {
+    	return new FBManagedConnection(parent != null ? parent : this);
     }
 
     /**
@@ -414,7 +437,7 @@ public class FBManagedConnection implements ManagedConnection, XAResource, GDSHe
     private void disassociateConnections() throws ResourceException {
         
         ResourceException ex = null;
-        
+        ArrayList connectionHandles = new ArrayList (this.connectionHandles); 
         for (Iterator i = connectionHandles.iterator(); i.hasNext();) {
             AbstractConnection connection = (AbstractConnection) i.next();
             
@@ -428,7 +451,7 @@ public class FBManagedConnection implements ManagedConnection, XAResource, GDSHe
             }
         }
         
-        connectionHandles.clear();
+        this.connectionHandles.clear();
         
         if (ex != null)
             throw ex;
@@ -511,6 +534,8 @@ public class FBManagedConnection implements ManagedConnection, XAResource, GDSHe
             throw new java.lang.IllegalStateException(
                 "Can't destroy managed connection  with active transaction");
         
+        if (parent != null)
+            return;
         try {
             gdsHelper.detachDatabase();
         } catch (GDSException ge) {
