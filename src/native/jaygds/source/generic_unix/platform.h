@@ -29,7 +29,13 @@
 
 #if !defined(FREEBSD)
 #include <malloc.h>
+
+#if defined(LSB) || defined(__LSB_VERSION__)
+#define alloca(size)   __builtin_alloca (size)
+#else
 #include <alloca.h>
+#endif
+
 #endif
 #include <stdio.h>
 #include <stdlib.h>
