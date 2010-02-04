@@ -30,7 +30,7 @@
 typedef __int64 intptr_t;
 typedef unsigned __int64 uintptr_t;
 #else
-#ifndef LSB
+#if !defined(LSB) && !defined(__LSB_VERSION__)
 typedef long intptr_t;
 typedef unsigned long uintptr_t;
 #endif
