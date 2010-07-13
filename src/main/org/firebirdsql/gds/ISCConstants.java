@@ -1221,6 +1221,7 @@ public final class ISCConstants {
     public final static int isc_exec_sql_invalid_var             = 335544829;
     public final static int isc_exec_sql_max_call_exceeded       = 335544830;
     public final static int isc_conf_access_denied               = 335544831;
+    public final static int isc_concurrent_transaction           = 335544878;
     public final static int isc_gfix_db_name                     = 335740929;
     public final static int isc_gfix_invalid_sw                  = 335740930;
     public final static int isc_gfix_incmp_sw                    = 335740932;
