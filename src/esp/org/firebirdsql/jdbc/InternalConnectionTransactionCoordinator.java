@@ -18,7 +18,7 @@ public class InternalConnectionTransactionCoordinator
    * @see org.firebirdsql.jdbc.InternalTransactionCoordinator#commit()
    */
   public void commit() throws SQLException {
-    throw new FBSQLException("Calling commit() in managed environment is not allowed.");
+//    throw new FBSQLException("Calling commit() in managed environment is not allowed.");
   }
 
   /* (non-Javadoc)
