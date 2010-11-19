@@ -368,57 +368,59 @@ public class GDSHelper {
                 ISCConstants.isc_info_end };
 
         try {
-            int bufferSize = 1024;
+            int bufferSize = 2048;
             byte[] buffer;
             while (true){
                 buffer = gds.iscDsqlSqlInfo(fixedStmt, REQUEST, bufferSize);
-                
-                if (buffer[0] != ISCConstants.isc_info_truncated){
+
+                if (parseStatementInfo(fixedStmt, buffer)) {
                     break;
                 } 
                 bufferSize *= 2;
             }
-
-            if (buffer[0] == ISCConstants.isc_info_end){
-                throw new GDSException(ISCConstants.isc_req_sync);
-            }
-
-            String executionPlan = null;
-            int statementType = IscStmtHandle.TYPE_UNKNOWN;
-            
-            int dataLength = -1; 
-            for (int i = 0; i < buffer.length; i++){
-                switch(buffer[i]){
-                    case ISCConstants.isc_info_sql_get_plan:
-                        dataLength = gds.iscVaxInteger(buffer, ++i, 2);
-                        i += 2;
-                        executionPlan = new String(buffer, i + 1, dataLength);
-                        i += dataLength - 1;
-                        break;
-                    case ISCConstants.isc_info_sql_stmt_type:
-                        dataLength = gds.iscVaxInteger(buffer, ++i, 2);
-                        i += 2;
-                        statementType = gds.iscVaxInteger(buffer, i, dataLength);
-                        i += dataLength;
-                    case ISCConstants.isc_info_end:
-                    case 0:
-                        break;
-                    default:
-                        throw new GDSException(ISCConstants.isc_req_sync);
-                }
-            }
-            
-            fixedStmt.setExecutionPlan(executionPlan);
-            fixedStmt.setStatementType(statementType);
-            
         } catch(GDSException ex) {
             notifyListeners(ex);
             throw ex;
         }
-
     }
 
-    /**
+    private boolean parseStatementInfo(AbstractIscStmtHandle fixedStmt, byte[] buffer) throws GDSException {
+        if (buffer[0] == ISCConstants.isc_info_end){
+            throw new GDSException(ISCConstants.isc_req_sync);
+        }
+        String executionPlan = null;
+        int statementType = IscStmtHandle.TYPE_UNKNOWN;
+
+        int dataLength = -1;
+        for (int i = 0; i < buffer.length; i++){
+            switch(buffer[i]){
+                case ISCConstants.isc_info_truncated:
+                    return false;
+                case ISCConstants.isc_info_sql_get_plan:
+                    dataLength = gds.iscVaxInteger(buffer, ++i, 2);
+                    i += 2;
+                    executionPlan = new String(buffer, i + 1, dataLength);
+                    i += dataLength - 1;
+                    break;
+                case ISCConstants.isc_info_sql_stmt_type:
+                    dataLength = gds.iscVaxInteger(buffer, ++i, 2);
+                    i += 2;
+                    statementType = gds.iscVaxInteger(buffer, i, dataLength);
+                    i += dataLength;
+                case ISCConstants.isc_info_end:
+                case 0:
+                    break;
+                default:
+                    throw new GDSException(ISCConstants.isc_req_sync);
+            }
+        }
+
+        fixedStmt.setExecutionPlan(executionPlan);
+        fixedStmt.setStatementType(statementType);
+        return true;
+    }
+
+  /**
      * Open a handle to a new blob within the current transaction with the given
      * id.
      * 
