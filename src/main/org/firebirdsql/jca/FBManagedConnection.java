@@ -100,7 +100,7 @@ public class FBManagedConnection implements ManagedConnection, XAResource, GDSHe
         this.mcf = mc.mcf;
         this.gds = mc.gds;
         this.cri = mc.cri;
-        this.tpb = mc.tpb;
+        this.tpb = new FBTpb(mc.tpb);
         this.transactionIsolation = mc.transactionIsolation;
         this.dbHandle = mc.dbHandle;
 
