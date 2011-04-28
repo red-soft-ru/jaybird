@@ -47,29 +47,6 @@
 
 package org.firebirdsql.jca;
 
-
-/*
- * @(#)UnixCrypt.java   0.9 96/11/25
- *
- * Copyright (c) 1996 Aki Yoshida. All rights reserved.
- *
- * Permission to use, copy, modify and distribute this software
- * for non-commercial or commercial purposes and without fee is
- * hereby granted provided that this copyright notice appears in
- * all copies.
-*/
-
-/**
- * Unix crypt(3C) utility
- *
- * @author  Aki Yoshida
- */
-
-/**
- * modified April 2001
- * by Iris Van den Broeke, Daniel Deville
- */
-
 /* ------------------------------------------------------------ */
 /** Unix Crypt.
  * Implements the one way cryptography used by Unix systems for
