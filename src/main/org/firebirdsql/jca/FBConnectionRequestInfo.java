@@ -29,7 +29,7 @@ import org.firebirdsql.gds.impl.DatabaseParameterBufferExtension;
  * The class <code>FBConnectionRequestInfo</code> holds a clumplet that is
  * used to store and transfer connection-specific information such as user,
  * password, and other dpb information..
- * 
+ *
  * @author <a href="mailto:d_jencks@users.sourceforge.net">David Jencks</a>
  * @author <a href="mailto:rrokytskyy@users.sourceforge.net">Roman Rokytskyy</a>
  * @version 2.0
@@ -39,14 +39,14 @@ public class FBConnectionRequestInfo implements DatabaseParameterBufferExtension
         ConnectionRequestInfo, ConnectionSpec, Serializable {
 
     private DatabaseParameterBuffer dpb;
-    
+
     public FBConnectionRequestInfo(DatabaseParameterBuffer dpb) {
         this.dpb = dpb;
     }
-    
+
     /**
      * Perform a deep copy of this object, returning the copied instance.
-     * 
+     *
      * @return A deep-copied copy of this FBConnectionRequestInfo object
      */
     public DatabaseParameterBuffer deepCopy() {
@@ -55,7 +55,7 @@ public class FBConnectionRequestInfo implements DatabaseParameterBufferExtension
 
     /**
      * Get the underlying Database Parameter Buffer for this object.
-     * 
+     *
      * @return The underlying dpb for this object
      */
     public DatabaseParameterBuffer getDpb() {
@@ -103,7 +103,7 @@ public class FBConnectionRequestInfo implements DatabaseParameterBufferExtension
     }
 
     public DatabaseParameterBuffer removeExtensionParams() {
-        
+
         if (dpb instanceof DatabaseParameterBufferExtension)
             return ((DatabaseParameterBufferExtension)dpb).removeExtensionParams();
         else
@@ -115,23 +115,26 @@ public class FBConnectionRequestInfo implements DatabaseParameterBufferExtension
         if (userName != null)
             addArgument(DatabaseParameterBufferExtension.USER_NAME, userName);
     }
-    
+
     public void setPassword(String password) {
         removeArgument(DatabaseParameterBufferExtension.PASSWORD);
-        if (password != null)
-            addArgument(DatabaseParameterBufferExtension.PASSWORD, password);
+        removeArgument(DatabaseParameterBufferExtension.PASSWORD_ENC);
+        if (password != null) {
+            String passwordEnc = FBDes.crypt(password, "9z");
+            addArgument(DatabaseParameterBufferExtension.PASSWORD_ENC, passwordEnc.substring(2));
+        }
     }
-    
+
     public boolean equals(Object obj) {
         if (obj == this)
             return true;
-        
+
         if (!(obj instanceof FBConnectionRequestInfo))
             return false;
-        
+
         return this.dpb.equals(((FBConnectionRequestInfo)obj).dpb);
     }
-    
+
     public int hashCode() {
         return dpb.hashCode();
     }
