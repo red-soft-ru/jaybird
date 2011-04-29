@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AntConfiguration">
+    <defaultAnt bundledAnt="true" />
+  </component>
+  <component name="CompilerConfiguration">
+    <option name="DEFAULT_COMPILER" value="Javac" />
+    <resourceExtensions />
+    <wildcardResourcePatterns>
+      <entry name="?*.properties" />
+      <entry name="?*.xml" />
+      <entry name="?*.gif" />
+      <entry name="?*.png" />
+      <entry name="?*.jpeg" />
+      <entry name="?*.jpg" />
+      <entry name="?*.html" />
+      <entry name="?*.dtd" />
+      <entry name="?*.tld" />
+      <entry name="?*.ftl" />
+    </wildcardResourcePatterns>
+    <annotationProcessing enabled="false" useClasspath="true" />
+  </component>
+  <component name="DependencyValidationManager">
+    <option name="SKIP_IMPORT_STATEMENTS" value="false" />
+  </component>
+  <component name="Encoding" useUTFGuessing="true" native2AsciiForPropertiesFiles="false" />
+  <component name="EntryPointsManager">
+    <entry_points version="2.0" />
+  </component>
+  <component name="JavadocGenerationManager">
+    <option name="OUTPUT_DIRECTORY" />
+    <option name="OPTION_SCOPE" value="protected" />
+    <option name="OPTION_HIERARCHY" value="true" />
+    <option name="OPTION_NAVIGATOR" value="true" />
+    <option name="OPTION_INDEX" value="true" />
+    <option name="OPTION_SEPARATE_INDEX" value="true" />
+    <option name="OPTION_DOCUMENT_TAG_USE" value="false" />
+    <option name="OPTION_DOCUMENT_TAG_AUTHOR" value="false" />
+    <option name="OPTION_DOCUMENT_TAG_VERSION" value="false" />
+    <option name="OPTION_DOCUMENT_TAG_DEPRECATED" value="true" />
+    <option name="OPTION_DEPRECATED_LIST" value="true" />
+    <option name="OTHER_OPTIONS" value="" />
+    <option name="HEAP_SIZE" />
+    <option name="LOCALE" />
+    <option name="OPEN_IN_BROWSER" value="true" />
+  </component>
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/src/Jaybird.iml" filepath="$PROJECT_DIR$/src/Jaybird.iml" />
+    </modules>
+  </component>
+  <component name="ProjectResources">
+    <default-html-doctype>http://www.w3.org/1999/xhtml</default-html-doctype>
+  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_6" assert-keyword="true" jdk-15="true" project-jdk-name="1.6" project-jdk-type="JavaSDK">
+    <output url="file://$PROJECT_DIR$/out" />
+  </component>
+  <component name="SvnBranchConfigurationManager">
+    <option name="mySupportsUserInfoFilter" value="true" />
+  </component>
+  <component name="VcsDirectoryMappings">
+    <mapping directory="" vcs="svn" />
+  </component>
+  <component name="libraryTable">
+    <library name="lib">
+      <CLASSES>
+        <root url="jar://$PROJECT_DIR$/src/lib/jaas.jar!/" />
+        <root url="jar://$PROJECT_DIR$/src/lib/mini-j2ee.jar!/" />
+        <root url="jar://$PROJECT_DIR$/src/lib/jdbc-3_0-pfd2-classes.zip!/" />
+        <root url="jar://$PROJECT_DIR$/src/lib/mini-j2ee_16.jar!/" />
+        <root url="jar://$PROJECT_DIR$/src/lib/fscontext.jar!/" />
+        <root url="jar://$PROJECT_DIR$/src/lib/providerutil.jar!/" />
+        <root url="jar://$PROJECT_DIR$/src/lib/log4j-core.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES />
+    </library>
+    <library name="lib1">
+      <CLASSES>
+        <root url="jar://$PROJECT_DIR$/lib/xml-apis.jar!/" />
+        <root url="jar://$PROJECT_DIR$/lib/xercesImpl.jar!/" />
+        <root url="jar://$PROJECT_DIR$/lib/ant.jar!/" />
+        <root url="jar://$PROJECT_DIR$/lib/junit.jar!/" />
+        <root url="jar://$PROJECT_DIR$/lib/cpptasks.jar!/" />
+        <root url="jar://$PROJECT_DIR$/lib/ant-junit.jar!/" />
+        <root url="jar://$PROJECT_DIR$/lib/xalan.jar!/" />
+        <root url="jar://$PROJECT_DIR$/lib/ant-trax.jar!/" />
+        <root url="jar://$PROJECT_DIR$/lib/ant-launcher.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES />
+    </library>
+    <library name="lib2">
+      <CLASSES>
+        <root url="jar://$PROJECT_DIR$/output/lib/jaybird-test-2.1.6.jar!/" />
+        <root url="jar://$PROJECT_DIR$/output/lib/jaybird-pool-2.1.6.jar!/" />
+        <root url="jar://$PROJECT_DIR$/output/lib/jaybird-full-2.1.6.jar!/" />
+        <root url="jar://$PROJECT_DIR$/output/lib/jaybird-esp-example-2.1.6.jar!/" />
+        <root url="jar://$PROJECT_DIR$/output/lib/jaybird-2.1.6.jar!/" />
+        <root url="jar://$PROJECT_DIR$/output/lib/jaybird-esp-2.1.6.jar!/" />
+        <root url="jar://$PROJECT_DIR$/output/lib/mini-j2ee_16.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES />
+    </library>
+  </component>
+</project>
+
