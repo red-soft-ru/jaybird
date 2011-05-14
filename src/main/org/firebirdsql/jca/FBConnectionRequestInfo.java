@@ -22,6 +22,10 @@ import java.io.Serializable;
 import javax.resource.cci.ConnectionSpec;
 import javax.resource.spi.ConnectionRequestInfo;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import sun.misc.BASE64Encoder;
+
 import org.firebirdsql.gds.DatabaseParameterBuffer;
 import org.firebirdsql.gds.impl.DatabaseParameterBufferExtension;
 
@@ -119,9 +123,27 @@ public class FBConnectionRequestInfo implements DatabaseParameterBufferExtension
     public void setPassword(String password) {
         removeArgument(DatabaseParameterBufferExtension.PASSWORD);
         removeArgument(DatabaseParameterBufferExtension.PASSWORD_ENC);
+        removeArgument(DatabaseParameterBufferExtension.PASSWORD_SHA);
         if (password != null) {
             String passwordEnc = FBDes.crypt(password, "9z");
             addArgument(DatabaseParameterBufferExtension.PASSWORD_ENC, passwordEnc.substring(2));
+        }
+    }
+
+    public void setPasswordSha(String password) {
+        removeArgument(DatabaseParameterBufferExtension.PASSWORD);
+        removeArgument(DatabaseParameterBufferExtension.PASSWORD_ENC);
+        removeArgument(DatabaseParameterBufferExtension.PASSWORD_SHA);
+        if (password != null) {
+            try {
+                MessageDigest md;
+                md = MessageDigest.getInstance("SHA-1");
+                byte[] shaHash = new byte[40];
+                md.update(password.getBytes(), 0, password.length());
+                shaHash = md.digest();
+                String passwordSha = new sun.misc.BASE64Encoder().encode(shaHash);;
+                addArgument(DatabaseParameterBufferExtension.PASSWORD_SHA, passwordSha.toString());
+            } catch (NoSuchAlgorithmException e) {  }
         }
     }
 

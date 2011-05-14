@@ -41,6 +41,7 @@ public interface ServiceParameterBuffer {
     int SYS_USER_NAME_ENC       = ISCConstants.isc_spb_sys_user_name_enc;
     int PASSWORD                = ISCConstants.isc_spb_password;
     int PASSWORD_ENC            = ISCConstants.isc_spb_password_enc;
+    int PASSWORD_SHA            = ISCConstants.isc_spb_password_sha;
     
     int COMMAND_LINE            = ISCConstants.isc_spb_command_line;
     int DBNAME                  = ISCConstants.isc_spb_dbname;

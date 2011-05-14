@@ -135,6 +135,9 @@ public final class ISCConstants {
     public final static int isc_dpb_no_db_triggers          = 72;
     public final static int isc_dpb_trusted_auth            = 73;
     public final static int isc_dpb_process_name            = 74;
+
+    // RDB 2.5 constants
+    public final static int isc_dpb_password_sha            = 156;
     
     
     /*
@@ -201,6 +204,7 @@ public final class ISCConstants {
     public final static int isc_spb_connect_timeout         = isc_dpb_connect_timeout;
     public final static int isc_spb_dummy_packet_interval   = isc_dpb_dummy_packet_interval;
     public final static int isc_spb_sql_role_name           = isc_dpb_sql_role_name;
+    public final static int isc_spb_password_sha            = 157;
 
     /*****************************
      * Service action items      *

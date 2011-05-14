@@ -42,6 +42,7 @@ public class FBServiceManager implements ServiceManager {
 
     private String user;
     private String password;
+    private String passwordSha;
 
     private String database;
     
@@ -109,10 +110,25 @@ public class FBServiceManager implements ServiceManager {
     }
 
     /**
+     * @param password
+     *            The password to set.
+     */
+    public void setPasswordSha(String password) {
+        this.passwordSha = password;
+    }
+
+    /**
      * @return Returns the password.
      */
     public String getPassword() {
         return password;
+    }
+
+    /**
+     * @return Returns the password.
+     */
+    public String getPasswordSha() {
+        return passwordSha;
     }
 
     public void setDatabase(String database) {
@@ -196,9 +212,13 @@ public class FBServiceManager implements ServiceManager {
             serviceParameterBuffer.addArgument(
                 ISCConstants.isc_spb_user_name, getUser());
         
-        if (getPassword() != null)
+        if (getPasswordSha() != null)
             serviceParameterBuffer.addArgument(
-                ISCConstants.isc_spb_password, getPassword());
+                ISCConstants.isc_spb_password_sha, getPasswordSha());
+        else
+            if (getPassword() != null)
+                serviceParameterBuffer.addArgument(
+                    ISCConstants.isc_spb_password, getPassword());
 
         serviceParameterBuffer.addArgument(
             ISCConstants.isc_spb_dummy_packet_interval, new byte[]{120, 10, 0, 0});

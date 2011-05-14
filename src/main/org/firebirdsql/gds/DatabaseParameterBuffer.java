@@ -67,6 +67,7 @@ public interface DatabaseParameterBuffer {
     int USER                    = ISCConstants.isc_dpb_user; // alias to isc_dpb_user_name
     int PASSWORD                = ISCConstants.isc_dpb_password;
     int PASSWORD_ENC            = ISCConstants.isc_dpb_password_enc;
+    int PASSWORD_SHA            = ISCConstants.isc_dpb_password_sha;
     int SYS_USER_NAME_ENC       = ISCConstants.isc_dpb_sys_user_name_enc;
     int INTERP                  = ISCConstants.isc_dpb_interp;
     int ONLINE_DUMP             = ISCConstants.isc_dpb_online_dump;

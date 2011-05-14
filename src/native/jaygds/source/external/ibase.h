@@ -1610,6 +1610,8 @@ int  ISC_EXPORT isc_get_client_minor_version ();
 #define isc_dpb_gsec_attach               69
 #define isc_dpb_address_path              70
 
+#define isc_dpb_password_sha              156
+
 /**************************************************/
 /* clumplet tags used inside isc_dpb_address_path */
 /*						 and isc_spb_address_path */
@@ -1758,6 +1760,7 @@ int  ISC_EXPORT isc_get_client_minor_version ();
 #define isc_spb_connect_timeout           isc_dpb_connect_timeout
 #define isc_spb_dummy_packet_interval     isc_dpb_dummy_packet_interval
 #define isc_spb_sql_role_name             isc_dpb_sql_role_name
+#define isc_spb_password_sha              157
 
 
 /*********************************/

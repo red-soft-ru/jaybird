@@ -35,6 +35,7 @@ public class FBConnectionProperties implements FirebirdConnectionProperties, Ser
     public static final String TIMESTAMP_USES_LOCAL_TIMEZONE_PROPERTY = "timestampUsesLocalTimezone";
     public static final String USER_NAME_PROPERTY = "userName";
     public static final String PASSWORD_PROPERTY = "password";
+    public static final String PASSWORD_SHA_PROPERTY = "passwordSha";
     public static final String BUFFERS_NUMBER_PROPERTY = "buffersNumber";
     public static final String DEFAULT_HOLDABLE_RS_PROPERTY = "defaultHoldable";
     
@@ -290,8 +291,16 @@ public class FBConnectionProperties implements FirebirdConnectionProperties, Ser
         return getStringProperty(PASSWORD_PROPERTY);
     }
 
+    public String getPasswordSha() {
+        return getStringProperty(PASSWORD_SHA_PROPERTY);
+    }
+
     public void setPassword(String password) {
         setStringProperty(PASSWORD_PROPERTY, password);
+    }
+
+    public void setPasswordSha(String password) {
+        setStringProperty(PASSWORD_SHA_PROPERTY, password);
     }
 
     public int getBuffersNumber() {

@@ -57,6 +57,8 @@ public class FBManager implements FBManagerMBean
 
     private String password;
 
+    private String passwordSha;
+
     private boolean forceCreate = false;
 
     private boolean createOnStart = false;
@@ -258,6 +260,17 @@ public class FBManager implements FBManagerMBean
         return password;
     }
 
+    /**
+     * mbean get-set pair for field password
+     * Get the value of password
+     * @return value of password
+     *
+     * @jmx:managed-attribute
+     */
+    public String getPasswordSha()
+    {
+        return passwordSha;
+    }
 
     /**
      * Set the value of password
@@ -270,6 +283,16 @@ public class FBManager implements FBManagerMBean
         this.password = password;
     }
 
+    /**
+     * Set the value of password
+     * @param password  Value to assign to password
+     *
+     * @jmx:managed-attribute
+     */
+    public void setPasswordSha(final String password)
+    {
+        this.passwordSha = password;
+    }
 
 
 

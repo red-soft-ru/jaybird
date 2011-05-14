@@ -28,7 +28,7 @@ import org.firebirdsql.jdbc.FirebirdConnectionProperties;
 import javax.resource.spi.ConnectionEvent;
 import javax.resource.spi.ConnectionEventListener;
 
-public class FBSADataSource implements DataSource, Serializable, Referenceable, FirebirdConnectionProperties,ConnectionEventListener {
+public class FBSADataSource implements DataSource, Serializable, Referenceable, FirebirdConnectionProperties, ConnectionEventListener {
     
     transient protected FBManagedConnectionFactory mcf;
     transient protected PrintWriter log;
@@ -173,6 +173,16 @@ public class FBSADataSource implements DataSource, Serializable, Referenceable, 
     public String getPassword() {
         return mcf.getPassword();
     }
+
+    /**
+     * Get password used in {@link #getConnection()} method.
+     *
+     * @return password corresponding to the user name returned by
+     * {@link #getUserName()}.
+     */
+    public String getPasswordSha() {
+        return mcf.getPasswordSha();
+    }
     
     /**
      * Set password that will be used in the {@link #getConnection()} method.
@@ -182,6 +192,16 @@ public class FBSADataSource implements DataSource, Serializable, Referenceable, 
      */
     public void setPassword(String password) {
         mcf.setPassword(password);
+    }
+
+    /**
+     * Set password that will be used in the {@link #getConnection()} method.
+     *
+     * @param password password corresponding to the user name set in
+     * {@link #setUserName(String)}.
+     */
+    public void setPasswordSha(String password) {
+        mcf.setPasswordSha(password);
     }
     
     /**
