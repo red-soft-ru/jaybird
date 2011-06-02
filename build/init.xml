@@ -233,6 +233,10 @@
       <pathelement location="${build.classes}"/>
       <pathelement location="${build.pool}"/>
     </path>
+	
+	<path id="source.java.esp">
+		<pathelement path="${source.esp}"/>
+	</path>
 
     <!--
     Determine if native code has been built and if so set 'native_library_present' property
