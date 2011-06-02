@@ -515,8 +515,7 @@ public class FBSADataSource implements DataSource, Serializable, Referenceable, 
 
 			return mc;
         } catch(ResourceException rex) {
-            
-            throw new SQLException(rex.getMessage());
+            throw new FBSQLException(rex);
             
         }
     }
