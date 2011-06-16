@@ -48,6 +48,15 @@ public class CallJavaMethod {
   static final int N_MESSAGE=8128;
   static TreeMap map = new TreeMap(Collator.getInstance());
   static TreeMap mapm = new TreeMap(Collator.getInstance());
+  
+  private static PrintStream null_stream = new PrintStream(new OutputStream() {
+	  public void close() throws IOException {}
+	  public void flush() throws IOException {}
+	  public void write(byte[] b) throws IOException {}
+	  public void write(byte[] b, int off, int len) throws IOException {}
+	  public void write(int b) throws IOException {}
+  });
+  
   static {
     try {
       Class.forName("org.firebirdsql.jdbc.FBDriver");
@@ -343,6 +352,8 @@ public class CallJavaMethod {
   static private Object call(mthCall c, Object a[]) throws Exception {
     try{
     Object r = c.call(a);
+    System.setOut(null_stream);
+    System.setErr(null_stream);
     if (r != null) {
       if ( (r instanceof Number) ||
           (r instanceof Date) ||
