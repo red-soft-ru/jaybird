@@ -536,7 +536,6 @@ public class FBSADataSource implements DataSource, Serializable, Referenceable, 
 			return mc;
         } catch(ResourceException rex) {
             throw new FBSQLException(rex);
-            
         }
     }
     
