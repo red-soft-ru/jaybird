@@ -357,10 +357,10 @@ typedef ISC_STATUS ISC_EXPORT prototype_isc_cancel_events(
 
 typedef ISC_LONG ISC_EXPORT prototype_isc_free(char *);
 
-typedef void ISC_EXPORT prototype_fb_cancel_operation(
+typedef ISC_STATUS ISC_EXPORT prototype_fb_cancel_operation(
         ISC_STATUS*,
         isc_db_handle*,
-        short);
+        unsigned short);
 
 
 
