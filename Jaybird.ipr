@@ -92,12 +92,12 @@
     </library>
     <library name="lib2">
       <CLASSES>
-        <root url="jar://$PROJECT_DIR$/output/lib/jaybird-test-2.1.6.jar!/" />
-        <root url="jar://$PROJECT_DIR$/output/lib/jaybird-pool-2.1.6.jar!/" />
-        <root url="jar://$PROJECT_DIR$/output/lib/jaybird-full-2.1.6.jar!/" />
-        <root url="jar://$PROJECT_DIR$/output/lib/jaybird-esp-example-2.1.6.jar!/" />
-        <root url="jar://$PROJECT_DIR$/output/lib/jaybird-2.1.6.jar!/" />
-        <root url="jar://$PROJECT_DIR$/output/lib/jaybird-esp-2.1.6.jar!/" />
+        <root url="jar://$PROJECT_DIR$/output/lib/jaybird-test-2.2.0.jar!/" />
+        <root url="jar://$PROJECT_DIR$/output/lib/jaybird-pool-2.2.0.jar!/" />
+        <root url="jar://$PROJECT_DIR$/output/lib/jaybird-full-2.2.0.jar!/" />
+        <root url="jar://$PROJECT_DIR$/output/lib/jaybird-esp-example-2.2.0.jar!/" />
+        <root url="jar://$PROJECT_DIR$/output/lib/jaybird-2.2.0.jar!/" />
+        <root url="jar://$PROJECT_DIR$/output/lib/jaybird-esp-2.2.0.jar!/" />
         <root url="jar://$PROJECT_DIR$/output/lib/mini-j2ee_16.jar!/" />
       </CLASSES>
       <JAVADOC />
