@@ -15,7 +15,8 @@ public abstract class JniGDSImpl extends BaseGDSImpl {
      * server library.
      */
     public static final String JAYBIRD_JNI_LIBRARY = "jaybird22";
-    public static final String JAYBIRD_JNI_LIBRARY_X64 = "jaybird22_x64";
+    public static final String JAYBIRD_JNI_LIBRARY_X64 = "jaybird22";
+//	public static final String JAYBIRD_JNI_LIBRARY_X64 = "jaybird22_x64";
     public static final String JAYBIRD_FBCLIENT_PROPERTY_NAME = "jaybird.fbclient";
     
     private static Logger log = LoggerFactory.getLogger(JniGDSImpl.class,
