@@ -118,14 +118,13 @@ public abstract class AbstractPreparedStatement extends AbstractStatement implem
             int rsConcurrency, int rsHoldability,
             FBObjectListener.StatementListener statementListener,
             FBObjectListener.BlobListener blobListener,
-            boolean metaDataQuery, boolean standaloneStatement, boolean generatedKeys)
+            boolean metaDataQuery, boolean standaloneStatement)
             throws SQLException {
         super(c, rsType, rsConcurrency, rsHoldability, statementListener);
 
         this.blobListener = blobListener;
         this.metaDataQuery = metaDataQuery;
         this.standaloneStatement = standaloneStatement;
-        this.generatedKeys = generatedKeys;
         
         notifyStatementStarted();
 
