@@ -399,21 +399,22 @@ public class FBSADataSource implements DataSource, Serializable, Referenceable, 
      * @throws SQLException if something went wrong.
      */
     public Connection getConnection() throws SQLException {
-        try
-		{
-			FBConnectionRequestInfo subjectCri = mcf.getDefaultConnectionRequestInfo();
-			FBManagedConnection mc = getManagedConnection().forkManagedConnection();
-		    mc.setManagedEnvironment(false);
-		    mc.setConnectionSharing(false);
-		    mc.addConnectionEventListener(this);
-		    Connection con = (Connection)mc.getConnection(null,subjectCri);
-		    connections.add(mc);
-			return con;
-		}
-		catch (ResourceException ex)
-		{
-            throw new FBSQLException(ex);
-		}
+      try {
+        FBConnectionRequestInfo subjectCri = mcf.getDefaultConnectionRequestInfo();
+        String shaPassword = mcf.getPasswordSha();
+        if (shaPassword != null)
+          subjectCri.setPasswordSha(shaPassword);
+        FBManagedConnection mc = getManagedConnection(subjectCri).forkManagedConnection();
+        mc.setManagedEnvironment(false);
+        mc.setConnectionSharing(false);
+        mc.addConnectionEventListener(this);
+        Connection con = (Connection) mc.getConnection(null, subjectCri);
+        connections.add(mc);
+        return con;
+      }
+      catch (ResourceException ex) {
+        throw new FBSQLException(ex);
+      }
     }
 
     /**
@@ -519,7 +520,7 @@ public class FBSADataSource implements DataSource, Serializable, Referenceable, 
      * @return
      * @throws SQLException
      */
-    protected synchronized FBManagedConnection getManagedConnection() throws SQLException {
+    protected synchronized FBManagedConnection getManagedConnection(FBConnectionRequestInfo cxRequestInfo) throws SQLException {
         if (mc != null)
             return mc;
             
@@ -528,7 +529,6 @@ public class FBSADataSource implements DataSource, Serializable, Referenceable, 
                 "Database was not specified. Cannot provide connections.");
                 
         try {
-            FBConnectionRequestInfo cxRequestInfo = mcf.getDefaultConnectionRequestInfo();
         	mc = (FBManagedConnection)mcf.createManagedConnection(null, cxRequestInfo);
 			mc.setManagedEnvironment(false);
 			mc.setConnectionSharing(false);
