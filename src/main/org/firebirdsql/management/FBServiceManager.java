@@ -214,7 +214,7 @@ public class FBServiceManager implements ServiceManager {
         
         if (getPasswordSha() != null)
             serviceParameterBuffer.addArgument(
-                ISCConstants.isc_spb_password_sha, getPasswordSha());
+                ISCConstants.isc_spb_password_enc, getPasswordSha());
         else
             if (getPassword() != null)
                 serviceParameterBuffer.addArgument(
