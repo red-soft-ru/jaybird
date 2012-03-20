@@ -65,7 +65,19 @@ class FBDateField extends FBField {
 
         return field.decodeDate(getFieldData()).toString();
     }
-    
+    public int getInt() throws SQLException {
+        final byte[] fieldData = getFieldData();
+        if (fieldData ==null) return INT_NULL_VALUE;
+        final int i = field.decodeInt(fieldData);
+        return i;
+    }
+    public long getLong() throws SQLException {
+        final byte[] fieldData = getFieldData();
+        if (fieldData ==null) return LONG_NULL_VALUE;
+        final long l = field.decodeInt(fieldData);
+        return l << 32;
+    }
+
     //--- setXXX methods
 	 
     public void setString(String value) throws SQLException {
@@ -107,5 +119,21 @@ class FBDateField extends FBField {
         }
 
         setFieldData(field.encodeDate(value));
+    }
+    public void setInteger(int value) throws SQLException {
+        if (value == INT_NULL_VALUE) {
+          setNull();
+          return;
+        }
+
+        setFieldData(field.encodeInt(value));
+    }
+    public void setLong(long value) throws SQLException {
+        if (value == LONG_NULL_VALUE) {
+          setNull();
+          return;
+        }
+        final int t = (int)(value >> 32);
+        setFieldData(field.encodeInt(t));
     }
 }
