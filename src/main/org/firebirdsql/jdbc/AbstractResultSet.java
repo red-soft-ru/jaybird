@@ -65,6 +65,7 @@ public abstract class AbstractResultSet implements ResultSet, Synchronizable, FB
     private SQLWarning firstWarning = null;
      
     private FBField[] fields = null;
+    private List closeableFields = null;
     private java.util.HashMap colNames = new java.util.HashMap();
     
     private String cursorName;
@@ -179,6 +180,7 @@ public abstract class AbstractResultSet implements ResultSet, Synchronizable, FB
     
     private void prepareVars(boolean cached) throws SQLException {
         fields = new FBField[xsqlvars.length];
+        closeableFields = null;
         colNames = new HashMap(xsqlvars.length,1);
         for (int i=0; i<xsqlvars.length; i++){
             final int fieldPosition = i;
@@ -193,8 +195,14 @@ public abstract class AbstractResultSet implements ResultSet, Synchronizable, FB
                       row[fieldPosition] = data;
                   }
               };
-              
-            fields[i] = FBField.createField(xsqlvars[i], dataProvider, gdsHelper, cached);
+
+            final FBField field = FBField.createField(xsqlvars[i], dataProvider, gdsHelper, cached);
+            if (field.isNeedClose()) {
+               if (closeableFields == null)
+                 closeableFields = new LinkedList();
+               closeableFields.add(field);
+            }
+            fields[i] = field;
         }
     }
     
@@ -219,13 +227,20 @@ public abstract class AbstractResultSet implements ResultSet, Synchronizable, FB
         wasNullValid = false;
 
         // close current fields, so that resources are freed.
-        for(int i = 0; i < fields.length; i++) 
-            fields[i].close();
+        closeFields();
     }
-    
+
+    private void closeFields() throws SQLException {
+        if (closeableFields != null)
+          for (Iterator i = closeableFields.iterator(); i.hasNext();) {
+              final FBField field = (FBField) i.next();
+              field.close();
+          }
+    }
+
     /* (non-Javadoc)
-     * @see org.firebirdsql.jdbc.Synchronizable#getSynchronizationObject()
-     */
+    * @see org.firebirdsql.jdbc.Synchronizable#getSynchronizationObject()
+    */
     public Object getSynchronizationObject() throws SQLException {
         return fbStatement.getSynchronizationObject();
     }
@@ -281,12 +296,8 @@ public abstract class AbstractResultSet implements ResultSet, Synchronizable, FB
         closed = true;
         
         try {
-            
-            for(int i = 0; i < fields.length; i++)
-                fields[i].close();
-            
+            closeFields();
         } finally {
-
             if (fbFetcher != null) {
                 fbFetcher.close();
 

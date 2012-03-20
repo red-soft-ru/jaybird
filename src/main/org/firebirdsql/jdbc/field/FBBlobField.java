@@ -47,7 +47,11 @@ public class FBBlobField extends FBField implements FBFlushableField {
     {
         super(field, dataProvider, requiredType);
     }
-    
+
+
+    public boolean isNeedClose() {
+        return true;
+    }
     public void close() throws SQLException {
         try {
             if (blob != null) 
