@@ -14,57 +14,57 @@
                 <equals arg1="${ant.java.version}" arg2="1.3"/>
             </or> 
         </condition>
-	
-	<!-- We set jdbc.30 property if JDK version is 1.4 -->
-	<condition property="jdbc.30" value="true">
-	  <or>
-		<equals arg1="${ant.java.version}" arg2="1.4"/>
-		<equals arg1="${ant.java.version}" arg2="1.5"/>
-	  </or>		
-	</condition>
+    
+    <!-- We set jdbc.30 property if JDK version is 1.4 -->
+    <condition property="jdbc.30" value="true">
+      <or>
+        <equals arg1="${ant.java.version}" arg2="1.4"/>
+        <equals arg1="${ant.java.version}" arg2="1.5"/>
+      </or>     
+    </condition>
 
-	<condition property="jdbc.40" value="true">
-		<equals arg1="${ant.java.version}" arg2="1.6"/>
-	</condition>
-	
-	<!-- We set jdk1.3 property if JDK version is 1.3 -->
-	<condition property="jdk1.3" value="true">
-		<equals arg1="${ant.java.version}" arg2="1.3"/>
-	</condition>
+    <condition property="jdbc.40" value="true">
+        <equals arg1="${ant.java.version}" arg2="1.6"/>
+    </condition>
+    
+    <!-- We set jdk1.3 property if JDK version is 1.3 -->
+    <condition property="jdk1.3" value="true">
+        <equals arg1="${ant.java.version}" arg2="1.3"/>
+    </condition>
 
-	<!-- We set jdk1.4 property if JDK version is 1.4 -->
-	<condition property="jdk1.4" value="true">
-		<equals arg1="${ant.java.version}" arg2="1.4"/>
-	</condition>
+    <!-- We set jdk1.4 property if JDK version is 1.4 -->
+    <condition property="jdk1.4" value="true">
+        <equals arg1="${ant.java.version}" arg2="1.4"/>
+    </condition>
 
-	<!-- We set jdk1.5 property if JDK version is 1.5 -->
-	<condition property="jdk1.5" value="true">
-		<equals arg1="${ant.java.version}" arg2="1.5"/>
-	</condition>
+    <!-- We set jdk1.5 property if JDK version is 1.5 -->
+    <condition property="jdk1.5" value="true">
+        <equals arg1="${ant.java.version}" arg2="1.5"/>
+    </condition>
 
-	<!-- We set jdk1.6 property if JDK version is 1.6 -->
-	<condition property="jdk1.6" value="true">
-		<equals arg1="${ant.java.version}" arg2="1.6"/>
-	</condition>
+    <!-- We set jdk1.6 property if JDK version is 1.6 -->
+    <condition property="jdk1.6" value="true">
+        <equals arg1="${ant.java.version}" arg2="1.6"/>
+    </condition>
     
     <condition property="mini-j2ee" value="mini-j2ee.jar">
-		<or>
-			<istrue value="${jdbc.20}"/>
-			<istrue value="${jdbc.30}"/>
-		</or>
-	</condition>
+        <or>
+            <istrue value="${jdbc.20}"/>
+            <istrue value="${jdbc.30}"/>
+        </or>
+    </condition>
 
-	<condition property="mini-j2ee" value="mini-j2ee_16.jar">
-		<istrue value="${jdbc.40}"/>
-	</condition>
+    <condition property="mini-j2ee" value="mini-j2ee_16.jar">
+        <istrue value="${jdbc.40}"/>
+    </condition>
 
-	
-	<property name="Name" value="Jaybird"/>
+    
+    <property name="Name" value="Jaybird"/>
     <property name="name" value="jaybird"/>
 
     <property name="version.major" value="2"/>
     <property name="version.minor" value="2"/>
-    <property name="version.revision" value="0"/>
+    <property name="version.revision" value="1"/>
     <property name="version.tag" value="beta1"/>
     <property name="version.name" value="JDK_${ant.java.version}"/>
 
@@ -116,9 +116,9 @@
     <property name="source.pool1.3" value="${module.source}/pool_jdk1_3"/>
     <property name="source.pool1.4" value="${module.source}/pool_jdk1_4"/>
     <property name="source.pool1.5" value="${module.source}/pool_jdk1_5"/>
-	<property name="source.pool1.6" value="${module.source}/pool_jdk1_6"/>
-	<property name="source.jca1.4" value="${module.source}/jca_jdk1_4"/>
-	<property name="source.jca1.6" value="${module.source}/jca_jdk1_6"/>
+    <property name="source.pool1.6" value="${module.source}/pool_jdk1_6"/>
+    <property name="source.jca1.4" value="${module.source}/jca_jdk1_4"/>
+    <property name="source.jca1.6" value="${module.source}/jca_jdk1_6"/>
     <property name="source.etc" value="${module.source}/etc"/>
     <property name="source.examples" value="${module.examples}"/>
     <property name="source.examples" value="${module.root}/examples"/>
@@ -133,7 +133,7 @@
 
     <property name="thirdparty" value="${module.root}/thirdparty"/>
     <property name="jboss.source.root"
-	    location="${thirdparty}/jboss/"/>
+        location="${thirdparty}/jboss/"/>
 
 
     <!-- Where build generated files will go -->
@@ -160,16 +160,16 @@
     <property name="build.native" value="${module.output}/native"/>
     <property name="build.native.output" value="${build.native}"/>
 
-	<property name="archive.name.main" value="jaybird"/>
-	<property name="archive.name.version" value="${version.major}.${version.minor}.${version.revision}"/>
-	
-	<property name="archive.name.rar" value="${archive.name.main}-${archive.name.version}.rar"/>
-	<property name="archive.name.pool" value="${archive.name.main}-pool-${archive.name.version}.jar"/>
-	<property name="archive.name.esp" value="${archive.name.main}-esp-${archive.name.version}.jar"/>
-	<property name="archive.name.esp.examples" value="${archive.name.main}-esp-example-${archive.name.version}.jar"/>
-	<property name="archive.name.full" value="${archive.name.main}-full-${archive.name.version}.jar"/>
-	<property name="archive.name.simple" value="${archive.name.main}-${archive.name.version}.jar"/>
-	<property name="archive.name.test" value="${archive.name.main}-test-${archive.name.version}.jar"/>
+    <property name="archive.name.main" value="jaybird"/>
+    <property name="archive.name.version" value="${version.major}.${version.minor}.${version.revision}"/>
+    
+    <property name="archive.name.rar" value="${archive.name.main}-${archive.name.version}.rar"/>
+    <property name="archive.name.pool" value="${archive.name.main}-pool-${archive.name.version}.jar"/>
+    <property name="archive.name.esp" value="${archive.name.main}-esp-${archive.name.version}.jar"/>
+    <property name="archive.name.esp.examples" value="${archive.name.main}-esp-example-${archive.name.version}.jar"/>
+    <property name="archive.name.full" value="${archive.name.main}-full-${archive.name.version}.jar"/>
+    <property name="archive.name.simple" value="${archive.name.main}-${archive.name.version}.jar"/>
+    <property name="archive.name.test" value="${archive.name.main}-test-${archive.name.version}.jar"/>
 
     <property name="junit.timeout" value="600000"/> <!-- 10 minutes -->
     <property name="junit.batchtest.todir" value="${build.reports}"/>
@@ -242,8 +242,8 @@
     </path>
     
     <path id="source.java.esp">
-		<pathelement path="${source.esp}"/>
-	</path>
+        <pathelement path="${source.esp}"/>
+    </path>
 
     <!--
     Determine if native code has been built and if so set 'native_library_present' property
