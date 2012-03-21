@@ -261,7 +261,8 @@ public abstract class AbstractResultSetMetaData implements FirebirdResultSetMeta
      * @exception SQLException if a database access error occurs
      */
     public  String getColumnName(int column) throws  SQLException {
-        if (getXsqlvar(column).sqlname == null)
+      final String sqlname = getXsqlvar(column).sqlname;
+      if (sqlname == null || sqlname.length() == 0)
             return getColumnLabel(column);
         else
             return getXsqlvar(column).sqlname;
