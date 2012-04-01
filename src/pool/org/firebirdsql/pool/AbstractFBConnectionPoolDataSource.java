@@ -276,7 +276,13 @@ abstract public class AbstractFBConnectionPoolDataSource extends BasicAbstractCo
                 defaultCri.setUserName(userName);
             
             if (password != null)
-                defaultCri.setPassword(password);
+            {
+                GDSType type = getManagedConnectionFactory().getGDSType();
+                boolean need_enc = !(type == GDSType.getType("EMBEDDED") ||
+                                     type == GDSType.getType("LOCAL") ||
+                                     type == GDSType.getType("NATIVE"));
+                defaultCri.setPassword(password, need_enc);
+            }
 
             FBManagedConnection managedConnection = (FBManagedConnection)
                 getManagedConnectionFactory().createManagedConnection(null, defaultCri);

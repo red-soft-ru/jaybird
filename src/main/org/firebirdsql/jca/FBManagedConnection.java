@@ -158,7 +158,12 @@ public class FBManagedConnection implements ManagedConnection, XAResource, GDSHe
                         PasswordCredential pcred = (PasswordCredential) cred;
                         String user = pcred.getUserName();
                         String password = new String(pcred.getPassword());
-                        fbcri.setPassword(password);
+
+                        boolean need_enc = !(mcf.getGDSType() == GDSType.getType("EMBEDDED") ||
+                                             mcf.getGDSType() == GDSType.getType("LOCAL") ||
+                                             mcf.getGDSType() == GDSType.getType("NATIVE"));
+
+                        fbcri.setPassword(password, need_enc);
                         fbcri.setUserName(user);
                         break;
                     } 

@@ -33,6 +33,7 @@ import javax.resource.spi.ConnectionManager;
 import javax.resource.spi.ManagedConnectionFactory;
 import javax.sql.DataSource;
 
+import org.firebirdsql.gds.impl.GDSType;
 import org.firebirdsql.jca.FBConnectionRequestInfo;
 import org.firebirdsql.jca.FBManagedConnectionFactory;
 
@@ -140,7 +141,12 @@ public class FBDataSource implements DataSource, Serializable, Referenceable {
            //mcf makes a copy for us.
             FBConnectionRequestInfo subjectCri = mcf.getDefaultConnectionRequestInfo();
             subjectCri.setUserName(username);
-            subjectCri.setPassword(password);
+
+            boolean need_enc = !(mcf.getGDSType() == GDSType.getType("EMBEDDED") ||
+                                 mcf.getGDSType() == GDSType.getType("LOCAL") ||
+                                 mcf.getGDSType() == GDSType.getType("NATIVE"));
+
+            subjectCri.setPassword(password, need_enc);
             return (Connection)cm.allocateConnection(mcf, subjectCri);
         }
         catch (ResourceException re) {

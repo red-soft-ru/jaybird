@@ -120,12 +120,25 @@ public class FBConnectionRequestInfo implements DatabaseParameterBufferExtension
             addArgument(DatabaseParameterBufferExtension.USER_NAME, userName);
     }
 
-    public void setPassword(String password) {
+    public void setPassword(String password, boolean need_enc) {
         removeArgument(DatabaseParameterBufferExtension.PASSWORD);
         removeArgument(DatabaseParameterBufferExtension.PASSWORD_ENC);
+        boolean multi_factor = false;
+        String value = System.getenv("RDB_AUTH_MODE");
+        if (value != null) {
+            value.toUpperCase();
+            if (value.indexOf("MULTI_FACTOR") != -1)
+                multi_factor = true;
+        }
+
         if (password != null) {
-            String passwordEnc = FBDes.crypt(password, "9z");
-            addArgument(DatabaseParameterBufferExtension.PASSWORD_ENC, passwordEnc.substring(2));
+            if (multi_factor && !need_enc) {
+                addArgument(DatabaseParameterBufferExtension.PASSWORD, password);
+            }
+            else {
+                String passwordEnc = FBDes.crypt(password, "9z");
+                addArgument(DatabaseParameterBufferExtension.PASSWORD_ENC, passwordEnc.substring(2));					
+            }
         }
     }
 
