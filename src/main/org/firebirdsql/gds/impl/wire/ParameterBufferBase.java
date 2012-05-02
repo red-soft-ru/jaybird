@@ -20,6 +20,7 @@
 package org.firebirdsql.gds.impl.wire;
 
 
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -210,7 +211,7 @@ public class ParameterBufferBase  implements java.io.Serializable, Xdrable
             {
             outputStream.write(type);
 
-            final byte[] valueBytes = this.value.getBytes();
+            final byte[] valueBytes = this.value.getBytes("UTF8");
             final int valueLength = valueBytes.length;
 
             writeLength(valueLength, outputStream);
@@ -220,7 +221,11 @@ public class ParameterBufferBase  implements java.io.Serializable, Xdrable
 
         int getLength()
             {
-            return value.getBytes().length + 2;
+              try {
+                return value.getBytes("UTF8").length + 2;
+              } catch (UnsupportedEncodingException e) {
+                throw new RuntimeException(e);
+              }
             }
 
        String getValueAsString()

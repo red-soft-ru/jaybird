@@ -427,6 +427,8 @@ public abstract class AbstractJavaGDSImpl extends AbstractGDS implements GDS {
                         DatabaseParameterBuffer.PROCESS_NAME, 
                         processName);
 
+        databaseParameterBuffer.addArgument(ISCConstants.isc_dpb_utf8_filename, 1);
+
 				db.out.writeTyped(ISCConstants.isc_dpb_version1, (Xdrable) databaseParameterBuffer);
 				db.out.flush();
 				if (debug)

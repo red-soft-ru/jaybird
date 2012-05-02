@@ -19,6 +19,7 @@
 
 package org.firebirdsql.gds.impl.jni;
 
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -160,8 +161,13 @@ abstract class ParameterBufferBase implements java.io.Serializable {
         void writeTo(ByteArrayOutputStream outputStream) {
             outputStream.write(type);
 
-            final byte[] valueBytes = this.value.getBytes();
-            final int valueLength = valueBytes.length;
+          final byte[] valueBytes;
+          try {
+            valueBytes = this.value.getBytes("UTF8");
+          } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+          }
+          final int valueLength = valueBytes.length;
 
             writeLength(valueLength, outputStream);
             for (int i = 0; i < valueLength; i++)
