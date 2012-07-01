@@ -39,7 +39,7 @@ import org.firebirdsql.logging.LoggerFactory;
 /**
  * Helper class for all GDS-related operations.
  */
-public class GDSHelper {
+public class GDSHelper implements Operation {
     
     public static final int DEFAULT_BLOB_BUFFER_SIZE = 16 * 1024;
     
@@ -222,9 +222,14 @@ public class GDSHelper {
                 log.debug("Executing " + stmt.statement);
             
             // System.out.println("Executing " + stmt.statement);
-            
-            gds.iscDsqlExecute2(currentTr, stmt, ISCConstants.SQLDA_VERSION1,
-                stmt.getInSqlda(), (sendOutSqlda) ? stmt.getOutSqlda() : null);
+
+            StatementOperationAware.startStatementOperation(this);
+            try {
+                gds.iscDsqlExecute2(currentTr, stmt, ISCConstants.SQLDA_VERSION1,
+                    stmt.getInSqlda(), (sendOutSqlda) ? stmt.getOutSqlda() : null);
+            } finally {
+                StatementOperationAware.finishStatementOperation(this);
+            }
         } catch(GDSException ex) {
             notifyListeners(ex);
             throw ex;
@@ -260,8 +265,9 @@ public class GDSHelper {
      *             if a Firebird-specific error occurs
      */
     public void fetch(AbstractIscStmtHandle stmt, int fetchSize) throws GDSException {
+        StatementOperationAware.startStatementOperation(this);
         try {
-            gds.iscDsqlFetch(stmt, ISCConstants.SQLDA_VERSION1, 
+            gds.iscDsqlFetch(stmt, ISCConstants.SQLDA_VERSION1,
                 stmt.getOutSqlda(), fetchSize);
             
             if (registerResultSets)
@@ -269,6 +275,8 @@ public class GDSHelper {
         } catch(GDSException ex) {
             notifyListeners(ex);
             throw ex;
+        } finally {
+            StatementOperationAware.finishStatementOperation(this);
         }
     }
 
