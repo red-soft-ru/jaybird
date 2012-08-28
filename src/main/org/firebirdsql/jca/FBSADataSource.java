@@ -503,7 +503,11 @@ public class FBSADataSource implements DataSource, Serializable, Referenceable, 
     	List<FBManagedConnection> connections = new ArrayList<FBManagedConnection>(this.connections);
     	for(FBManagedConnection mc1:connections)
     	{
-    		mc1.cleanup();
+        try {
+    		  mc1.cleanup();
+        } catch (Exception ignored) {
+          // ignored
+        }
     	}
     	this.connections.clear();
         if (mc != null)
