@@ -31,31 +31,18 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
-
 import java.security.AccessController;
 import java.security.PrivilegedAction;
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.firebirdsql.encodings.EncodingFactory;
-import org.firebirdsql.gds.BlobParameterBuffer;
-import org.firebirdsql.gds.DatabaseParameterBuffer;
-import org.firebirdsql.gds.GDS;
-import org.firebirdsql.gds.GDSException;
-import org.firebirdsql.gds.ISCConstants;
-import org.firebirdsql.gds.IscBlobHandle;
-import org.firebirdsql.gds.IscDbHandle;
-import org.firebirdsql.gds.IscStmtHandle;
-import org.firebirdsql.gds.IscSvcHandle;
-import org.firebirdsql.gds.IscTrHandle;
-import org.firebirdsql.gds.ServiceParameterBuffer;
-import org.firebirdsql.gds.ServiceRequestBuffer;
-import org.firebirdsql.gds.TransactionParameterBuffer;
-import org.firebirdsql.gds.XSQLDA;
-import org.firebirdsql.gds.XSQLVAR;
-import org.firebirdsql.gds.EventHandle;
-import org.firebirdsql.gds.EventHandler;
-import org.firebirdsql.gds.impl.*;
+import org.firebirdsql.gds.*;
+import org.firebirdsql.gds.impl.AbstractGDS;
+import org.firebirdsql.gds.impl.AbstractIscTrHandle;
+import org.firebirdsql.gds.impl.DatabaseParameterBufferExtension;
+import org.firebirdsql.gds.impl.GDSType;
+import org.firebirdsql.gds.impl.wire.auth.AuthSspi;
 import org.firebirdsql.logging.Logger;
 import org.firebirdsql.logging.LoggerFactory;
 
@@ -276,6 +263,8 @@ public abstract class AbstractJavaGDSImpl extends AbstractGDS implements GDS {
 
 	static final int op_rollback_retaining = 86;
 	
+	static final int op_trusted_auth = 90;
+
 	static final int op_cancel = 91;
 
 	static final int MAX_BUFFER_SIZE = 1024;
@@ -393,49 +382,79 @@ public abstract class AbstractJavaGDSImpl extends AbstractGDS implements GDS {
 
 		synchronized (db) {
 			connect(db, dbai, databaseParameterBuffer);
-            
+
             String filenameCharset = databaseParameterBuffer.getArgumentAsString(
                 DatabaseParameterBufferExtension.FILENAME_CHARSET);
-            
+
 			try {
 				if (debug)
 					log.debug("op_attach ");
-				db.out.writeInt(op_attach);
-				db.out.writeInt(0); // packet->p_atch->p_atch_database
-				db.out.writeString(dbai.getFileName(), filenameCharset);
+        final boolean trustedAuth = databaseParameterBuffer.hasArgument(ISCConstants.isc_dpb_trusted_auth);
+        final boolean multifactor = databaseParameterBuffer.hasArgument(ISCConstants.isc_dpb_multi_factor_auth);
 
-			    databaseParameterBuffer = ((DatabaseParameterBufferExtension)
-			            databaseParameterBuffer).removeExtensionParams();
-				
-                String pidStr = getSystemPropertyPrivileged("org.firebirdsql.jdbc.pid");
-                if (pidStr != null) {
-                    
-                    try {
-                        int pid = Integer.parseInt(pidStr);
-                        
-                        databaseParameterBuffer.addArgument(
-                            DatabaseParameterBuffer.PROCESS_ID, 
-                            pid);
-                    } catch(NumberFormatException ex) {
-                        // ignore
-                    }
-                }
-                
-                String processName = getSystemPropertyPrivileged("org.firebirdsql.jdbc.processName");
-                if (processName != null)
-                    databaseParameterBuffer.addArgument(
-                        DatabaseParameterBuffer.PROCESS_NAME, 
-                        processName);
+        if (trustedAuth && !multifactor)
+          throw new GDSException("Trusted authorization is not supported. Use multi factor authorization instead of this one.");
+
+        String pidStr = getSystemPropertyPrivileged("org.firebirdsql.jdbc.pid");
+        if (pidStr != null) {
+
+          try {
+            int pid = Integer.parseInt(pidStr);
+
+            databaseParameterBuffer.addArgument(
+                DatabaseParameterBuffer.PROCESS_ID,
+                pid);
+          } catch (NumberFormatException ex) {
+            // ignore
+          }
+        }
+
+        String processName = getSystemPropertyPrivileged("org.firebirdsql.jdbc.processName");
+        if (processName != null)
+          databaseParameterBuffer.addArgument(
+              DatabaseParameterBuffer.PROCESS_NAME,
+              processName);
 
         databaseParameterBuffer.addArgument(ISCConstants.isc_dpb_utf8_filename, 1);
 
+        final AuthSspi sspi;
+        if (multifactor) {
+          sspi = new AuthSspi(databaseParameterBuffer);
+          sspi.fillFactors(databaseParameterBuffer);
+        }
+        else sspi = null;
+
+        databaseParameterBuffer = ((DatabaseParameterBufferExtension)
+            databaseParameterBuffer).removeExtensionParams();
+
+        db.out.writeInt(op_attach);
+        db.out.writeInt(0); // packet->p_atch->p_atch_database
+        db.out.writeString(dbai.getFileName(), filenameCharset);
 				db.out.writeTyped(ISCConstants.isc_dpb_version1, (Xdrable) databaseParameterBuffer);
 				db.out.flush();
 				if (debug)
 					log.debug("sent");
 
+        int checkResponse = -1;
+        if (sspi != null) try {
+          checkResponse = op_response;
+          int op = nextOperation(db.in);
+          final ByteBuffer authData = new ByteBuffer(256);
+          while (op == op_trusted_auth) {
+            receiveAuthResponse(db, authData);
+            if (!sspi.request(authData)) {
+              disconnect(db);
+              throw new GDSException(ISCConstants.isc_unavailable);
+            }
+            writeAuthData(db, authData);
+            op = nextOperation(db.in);
+          }
+        } finally {
+          sspi.free();
+        }
+
 				try {
-					receiveResponse(db, -1);
+					receiveResponse(db, checkResponse);
 					db.setRdb_id(db.getResp_object());
 				} catch (GDSException ge) {
 					disconnect(db);
@@ -450,7 +469,17 @@ public abstract class AbstractJavaGDSImpl extends AbstractGDS implements GDS {
 		}
 	}
 
-	private String getSystemPropertyPrivileged(final String propertyName) {
+  protected void writeAuthData(final isc_db_handle_impl db, final ByteBuffer authData) throws IOException {
+    boolean debug = log != null && log.isDebugEnabled();
+    db.out.writeInt(op_trusted_auth);
+//    db.out.writeInt(0); // packet->p_atch->p_atch_database
+    authData.write(db.out);
+    db.out.flush();
+    if (debug)
+      log.debug("auth data");
+  }
+
+  private String getSystemPropertyPrivileged(final String propertyName) {
 	    return (String)AccessController.doPrivileged(new PrivilegedAction() {
 	       public Object run() {
 	           return System.getProperty(propertyName);
@@ -2039,7 +2068,7 @@ public abstract class AbstractJavaGDSImpl extends AbstractGDS implements GDS {
 		out.writeInt(1); // p_cnct_count
 		out.writeBuffer(user_id); // p_cnct_user_id
 
-		out.writeInt(10); // PROTOCOL_VERSION10
+		out.writeInt(0x8000 | 12); // PROTOCOL_VERSION12
 		out.writeInt(1); // arch_generic
 		out.writeInt(2); // ptype_rpc
 		out.writeInt(3); // ptype_batch_send
@@ -2110,6 +2139,26 @@ public abstract class AbstractJavaGDSImpl extends AbstractGDS implements GDS {
 		if (log != null)
 			log.debug("successfully invalidated db handle");
 	}
+
+  private void receiveAuthResponse(isc_db_handle_impl db, ByteBuffer data) throws GDSException {
+    final boolean debug = log != null && log.isDebugEnabled();
+    try {
+      if (debug)
+        log.debug("op_auth_response ");
+      final int size = db.in.readInt();
+      if (debug)
+        log.debug("received");
+      data.clear();
+      data.read(db.in, size);
+    } catch (IOException ex) {
+      if (debug)
+        log.warn("IOException in receiveAuthResponse", ex);
+      // ex.getMessage() makes little sense here, it will not be displayed
+      // because error message for isc_net_read_err does not accept params
+      throw new GDSException(ISCConstants.isc_arg_gds,
+          ISCConstants.isc_net_read_err, ex.getMessage());
+    }
+  }
 
 	private void receiveSqlResponse(isc_db_handle_impl db, XSQLDA xsqlda,
 			isc_stmt_handle_impl stmt) throws GDSException {
