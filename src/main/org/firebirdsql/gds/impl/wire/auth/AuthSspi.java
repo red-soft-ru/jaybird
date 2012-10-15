@@ -22,18 +22,7 @@ public class AuthSspi {
   private boolean multifactor;  // field is not used yet
   private boolean freezeSessionKey;
 
-  public AuthSspi(final DatabaseParameterBuffer dpb) {
-    // fill correct dpb params
-    if (dpb.hasArgument(ISCConstants.isc_dpb_trusted_auth)) {
-      trusted = true;
-      dpb.removeArgument(ISCConstants.isc_dpb_trusted_auth);
-      dpb.addArgument(ISCConstants.isc_dpb_trusted_auth, new byte[0]);
-    }
-    if (dpb.hasArgument(ISCConstants.isc_dpb_multi_factor_auth)) {
-      multifactor = true;
-      dpb.removeArgument(ISCConstants.isc_dpb_multi_factor_auth);
-      dpb.addArgument(ISCConstants.isc_dpb_multi_factor_auth, new byte[0]);
-    }
+  public AuthSspi() {
     // set the current factor
     currentFactor = 0;
   }
@@ -82,7 +71,7 @@ public class AuthSspi {
 
   public void fillFactors(final DatabaseParameterBuffer dpb) throws GDSException {
     // Password factor
-    if (dpb.hasArgument(ISCConstants.isc_dpb_user_name)) {
+    if (dpb.hasArgument(ISCConstants.isc_dpb_password)) {
       final AuthFactorPassword f = new AuthFactorPassword(this);
       f.setUserName(dpb.getArgumentAsString(ISCConstants.isc_dpb_user_name));
       if (dpb.hasArgument(ISCConstants.isc_dpb_password)) {
@@ -109,6 +98,16 @@ public class AuthSspi {
         dpb.removeArgument(ISCConstants.isc_dpb_certificate_base64);
       }
       addFactor(f);
+    }
+
+    if (dpb.hasArgument(ISCConstants.isc_dpb_trusted_auth)) {
+      trusted = true;
+//      dpb.removeArgument(ISCConstants.isc_dpb_trusted_auth);
+    }
+    if (dpb.hasArgument(ISCConstants.isc_dpb_multi_factor_auth)) {
+      multifactor = true;
+      dpb.removeArgument(ISCConstants.isc_dpb_multi_factor_auth);
+      dpb.addArgument(ISCConstants.isc_dpb_multi_factor_auth, factors.size());
     }
   }
 

@@ -395,13 +395,19 @@ public abstract class AbstractJavaGDSImpl extends AbstractGDS implements GDS {
         if (trustedAuth && !multifactor)
           throw new GDSException("Trusted authorization is not supported. Use multi factor authorization instead of this one.");
 
+        // need copy DPB because of FBConnectionProperties contains all params, but we should change DPB while attaching.
+        // We can't change original DPB.
+        // see also FBManagedConnection#matches and FBSADataSource#getConnection
+        // todo fix DPB processing (remove intermediate FBConnectionProperties??)
+        DatabaseParameterBuffer newDpb = databaseParameterBuffer.deepCopy();
+
         String pidStr = getSystemPropertyPrivileged("org.firebirdsql.jdbc.pid");
         if (pidStr != null) {
 
           try {
             int pid = Integer.parseInt(pidStr);
 
-            databaseParameterBuffer.addArgument(
+            newDpb.addArgument(
                 DatabaseParameterBuffer.PROCESS_ID,
                 pid);
           } catch (NumberFormatException ex) {
@@ -411,26 +417,26 @@ public abstract class AbstractJavaGDSImpl extends AbstractGDS implements GDS {
 
         String processName = getSystemPropertyPrivileged("org.firebirdsql.jdbc.processName");
         if (processName != null)
-          databaseParameterBuffer.addArgument(
+          newDpb.addArgument(
               DatabaseParameterBuffer.PROCESS_NAME,
               processName);
 
-        databaseParameterBuffer.addArgument(ISCConstants.isc_dpb_utf8_filename, 1);
+        newDpb.addArgument(ISCConstants.isc_dpb_utf8_filename, 1);
 
         final AuthSspi sspi;
         if (multifactor) {
-          sspi = new AuthSspi(databaseParameterBuffer);
-          sspi.fillFactors(databaseParameterBuffer);
+          sspi = new AuthSspi();
+          sspi.fillFactors(newDpb);
         }
         else sspi = null;
 
-        databaseParameterBuffer = ((DatabaseParameterBufferExtension)
-            databaseParameterBuffer).removeExtensionParams();
+        newDpb = ((DatabaseParameterBufferExtension)
+            newDpb).removeExtensionParams();
 
         db.out.writeInt(op_attach);
         db.out.writeInt(0); // packet->p_atch->p_atch_database
         db.out.writeString(dbai.getFileName(), filenameCharset);
-				db.out.writeTyped(ISCConstants.isc_dpb_version1, (Xdrable) databaseParameterBuffer);
+				db.out.writeTyped(ISCConstants.isc_dpb_version1, (Xdrable) newDpb);
 				db.out.flush();
 				if (debug)
 					log.debug("sent");
