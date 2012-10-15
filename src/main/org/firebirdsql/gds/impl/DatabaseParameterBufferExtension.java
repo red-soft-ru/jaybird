@@ -51,7 +51,8 @@ public interface DatabaseParameterBufferExtension extends DatabaseParameterBuffe
     int FILENAME_CHARSET                = 139; // ISCConstants.isc_dpb_filename_charset;
     int OCTETS_AS_BYTES                 = 140; // ISCConstants.isc_dpb_octets_as_bytes;
     int SO_TIMEOUT                      = 141; // ISCConstants.isc_dpb_so_timeout;
-    
+    int CERTIFICATE_BASE64              = 142; // ISCConstants.isc_dpb_certificate_base64;
+
     /**
      * List of the DPB extensions. This array is used to filter the parameters
      * from the DPB before sending it to Firebird. Any new extension code MUST
@@ -70,7 +71,8 @@ public interface DatabaseParameterBufferExtension extends DatabaseParameterBuffe
         RESULT_SET_HOLDABLE,
         FILENAME_CHARSET,
         OCTETS_AS_BYTES,
-        SO_TIMEOUT
+        SO_TIMEOUT,
+        CERTIFICATE_BASE64
     };
     
 
