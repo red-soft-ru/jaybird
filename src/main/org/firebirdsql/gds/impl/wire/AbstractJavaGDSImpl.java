@@ -421,7 +421,7 @@ public abstract class AbstractJavaGDSImpl extends AbstractGDS implements GDS {
               DatabaseParameterBuffer.PROCESS_NAME,
               processName);
 
-        newDpb.addArgument(ISCConstants.isc_dpb_utf8_filename);
+        newDpb.addArgument(ISCConstants.isc_dpb_utf8_filename, new byte[0]);
 
         final AuthSspi sspi;
         if (multifactor) {
