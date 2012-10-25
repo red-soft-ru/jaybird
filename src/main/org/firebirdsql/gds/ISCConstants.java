@@ -170,6 +170,8 @@ public final class ISCConstants {
     public final static int isc_dpb_session_key_iv          = 155;
     public static final int isc_dpb_verify_server           = 156;
     public static final int isc_dpb_hw_address              = 157;
+    public static final int isc_dpb_certificate_body        = 158;
+    public static final int isc_dpb_repository_pin          = 159;
 
     /*************************************/
     /* Transaction parameter block stuff */

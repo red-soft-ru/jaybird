@@ -1741,6 +1741,10 @@ int  ISC_EXPORT isc_get_client_minor_version ();
 #define isc_dpb_eye                                               153
 #define isc_dpb_session_key                               154
 #define isc_dpb_session_key_iv                    155
+#define isc_dpb_verify_server             156
+#define isc_dpb_hw_address                157
+#define isc_dpb_certificate_body          158
+#define isc_dpb_repository_pin            159
 
 #define isc_dpb_address 1
 
@@ -1834,6 +1838,9 @@ int  ISC_EXPORT isc_get_client_minor_version ();
 #define isc_spb_session_key                               154
 #define isc_spb_session_key_iv                    155
 #define isc_spb_svc_name                                  156
+#define isc_spb_verify_server             157
+#define isc_spb_hw_address                158
+#define isc_spb_repository_pin            159
 
 #define isc_spb_connect_timeout           isc_dpb_connect_timeout
 #define isc_spb_dummy_packet_interval     isc_dpb_dummy_packet_interval
