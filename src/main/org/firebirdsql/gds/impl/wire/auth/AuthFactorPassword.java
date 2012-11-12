@@ -66,7 +66,7 @@ public class AuthFactorPassword extends AuthFactor {
     @Override
     public boolean stage(final ByteBuffer data) throws GDSAuthException {
       if (passwordEnc == null && password != null)
-        passwordEnc = FBDes.crypt(password, "9z");
+        passwordEnc = FBDes.crypt(password, "9z").substring(2);
 
       if (data.getLength() == 0) {
         // We need to send encrypted password for legacy password verify
