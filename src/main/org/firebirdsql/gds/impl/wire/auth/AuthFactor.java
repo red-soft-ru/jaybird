@@ -30,22 +30,6 @@ public abstract class AuthFactor {
     }
   };
 
-  public Stage RESULT = new Stage() {
-    @Override
-    public boolean stage(final ByteBuffer data) throws GDSAuthException {
-      if (data.getLength() != 1)
-        throw new GDSAuthException("Error processing " + getFactorName() + " factor");
-      if (data.get(0) == 0)
-        throw new GDSAuthException(ISCConstants.isc_login, "Bad " + getFactorName() + " factor");
-      return true;
-    }
-
-    @Override
-    public Stage nextStage() {
-      return null;
-    }
-  };
-
   private int type;
   private Stage stage;
   protected AuthSspi sspi;

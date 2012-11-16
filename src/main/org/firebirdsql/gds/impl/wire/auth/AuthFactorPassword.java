@@ -1,5 +1,6 @@
 package org.firebirdsql.gds.impl.wire.auth;
 
+import org.firebirdsql.gds.ISCConstants;
 import org.firebirdsql.gds.impl.wire.ByteBuffer;
 import org.firebirdsql.gds.impl.wire.Bytes;
 import org.firebirdsql.gds.impl.wire.TaggedClumpletReader;
@@ -49,8 +50,6 @@ public class AuthFactorPassword extends AuthFactor {
     public boolean stage(final ByteBuffer data) throws GDSAuthException {
       if (userName == null || userName.length() == 0)
         throw new GDSAuthException("User name not specified");
-      if ((password == null || password.length() == 0) && (passwordEnc == null || passwordEnc.length() == 0))
-        throw new GDSAuthException("User password not specified");
       data.clear();
       data.add(userName.getBytes());
       return true;
@@ -85,7 +84,11 @@ public class AuthFactorPassword extends AuthFactor {
         data.add(rdPasswordEnc);
         data.add((byte)passwordEnc.length());
         data.add(passwordEnc.getBytes());
-//        data.add((byte)0);
+        return true;
+      }
+
+      if (passwordEnc == null) {
+        data.clear();
         return true;
       }
 
@@ -180,6 +183,20 @@ public class AuthFactorPassword extends AuthFactor {
     @Override
     public Stage nextStage() {
       return RESULT;
+    }
+  };
+
+  public Stage RESULT = new Stage() {
+    @Override
+    public boolean stage(final ByteBuffer data) throws GDSAuthException {
+      if (data.getLength() != 1)
+        throw new GDSAuthException("Error processing " + getFactorName() + " factor");
+      return true;
+    }
+
+    @Override
+    public Stage nextStage() {
+      return null;
     }
   };
 

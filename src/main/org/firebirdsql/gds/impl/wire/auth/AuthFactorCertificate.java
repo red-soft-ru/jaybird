@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.firebirdsql.gds.GDSException;
+import org.firebirdsql.gds.ISCConstants;
 import org.firebirdsql.gds.impl.wire.ByteBuffer;
 import org.firebirdsql.gds.impl.wire.Bytes;
 import org.firebirdsql.gds.impl.wire.TaggedClumpletReader;
@@ -34,6 +35,22 @@ public class AuthFactorCertificate extends AuthFactor {
     @Override
     public Stage nextStage() {
       return TRANSFER;
+    }
+  };
+
+  public Stage RESULT = new Stage() {
+    @Override
+    public boolean stage(final ByteBuffer data) throws GDSAuthException {
+      if (data.getLength() != 1)
+        throw new GDSAuthException("Error processing " + getFactorName() + " factor");
+      if (data.get(0) == 0)
+        throw new GDSAuthException(ISCConstants.isc_login, "Bad " + getFactorName() + " factor");
+      return true;
+    }
+
+    @Override
+    public Stage nextStage() {
+      return null;
     }
   };
 

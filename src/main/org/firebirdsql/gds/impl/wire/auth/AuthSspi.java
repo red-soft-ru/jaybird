@@ -71,7 +71,7 @@ public class AuthSspi {
 
   public void fillFactors(final DatabaseParameterBuffer dpb) throws GDSException {
     // Password factor
-    if (dpb.hasArgument(ISCConstants.isc_dpb_password)) {
+    if (dpb.hasArgument(ISCConstants.isc_dpb_password) || dpb.hasArgument(ISCConstants.isc_dpb_user_name)) {
       final AuthFactorPassword f = new AuthFactorPassword(this);
       f.setUserName(dpb.getArgumentAsString(ISCConstants.isc_dpb_user_name));
       if (dpb.hasArgument(ISCConstants.isc_dpb_password)) {
