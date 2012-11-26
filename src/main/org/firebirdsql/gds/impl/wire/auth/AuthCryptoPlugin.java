@@ -13,7 +13,7 @@ public abstract class AuthCryptoPlugin {
 
   public static AuthCryptoPlugin getPlugin() throws GDSAuthException {
     if (_plugin == null)
-      throw new GDSAuthException("Not crypto plugin installed. Please, register with AuthCryptoPlugin#register(AuthCryptoPlugin).");
+      throw new GDSAuthException("Crypto plugin is not installed. Please, register with AuthCryptoPlugin#register(AuthCryptoPlugin).");
     return _plugin;
   }
 
