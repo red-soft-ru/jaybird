@@ -243,37 +243,47 @@ public class FBServiceManager implements ServiceManager {
         byte[] buffer = new byte[bufferSize];
         
         boolean processing = true;
+        GDSException error = null;
         while (processing) {
+          try {
             gds.iscServiceQuery(handle, gds.createServiceParameterBuffer() , infoSRB, buffer);
-    
-            switch(buffer[0]) {
-            
-                case ISCConstants.isc_info_svc_to_eof :
-                
-                    int dataLength = (buffer[1] & 0xff) | ((buffer[2] & 0xff) << 8);
-                    if (dataLength == 0) {
-                        if (buffer[3] != ISCConstants.isc_info_end)
-                            throw new FBSQLException("Unexpected end of stream reached.");
-                        else {
-                            processing = false;
-                            break;
-                        }
-                    }
+          } catch (GDSException e) {
+            error = e;
+          }
 
-                    if (currentLogger != null)
-                        currentLogger.write(buffer, 3, dataLength);
-                    
-                    break;
-                    
-                case ISCConstants.isc_info_truncated :
-                    bufferSize = bufferSize * 2;
-                    buffer = new byte[bufferSize];
-                    break;
-                    
-                case ISCConstants.isc_info_end : 
-                    processing = false;
-                    break;
-            }
+          try {
+              switch(buffer[0]) {
+
+                    case ISCConstants.isc_info_svc_to_eof :
+
+                        int dataLength = (buffer[1] & 0xff) | ((buffer[2] & 0xff) << 8);
+                        if (dataLength == 0) {
+                            if (buffer[3] != ISCConstants.isc_info_end)
+                                throw new FBSQLException("Unexpected end of stream reached.");
+                            else {
+                                processing = false;
+                                break;
+                            }
+                        }
+
+                        if (currentLogger != null)
+                            currentLogger.write(buffer, 3, dataLength);
+
+                        break;
+
+                    case ISCConstants.isc_info_truncated :
+                        bufferSize = bufferSize * 2;
+                        buffer = new byte[bufferSize];
+                        break;
+
+                    case ISCConstants.isc_info_end :
+                        processing = false;
+                        break;
+               }
+          } finally {
+              if (error != null)
+                throw error;
+          }
         }
     }
 

@@ -3067,11 +3067,17 @@ public abstract class AbstractJavaGDSImpl extends AbstractGDS implements GDS {
 			svc.out.writeInt(resultBuffer.length);
 			svc.out.flush();
 
-			receiveResponse(svc, -1);
+            try {
+			    receiveResponse(svc, -1);
+            } finally {
+                final byte[] respData = svc.getResp_data();
+                if (respData != null) {
+                    final int toCopy = Math.min(resultBuffer.length,
+                          respData.length);
+                    System.arraycopy(respData, 0, resultBuffer, 0, toCopy);
+                }
+            }
 
-			int toCopy = Math.min(resultBuffer.length,
-					svc.getResp_data().length);
-			System.arraycopy(svc.getResp_data(), 0, resultBuffer, 0, toCopy);
 		} catch (IOException ex) {
 			if (log != null && log.isDebugEnabled())
 				log.warn("IOException in isc_service_query", ex);
