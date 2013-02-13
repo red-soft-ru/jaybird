@@ -24,8 +24,8 @@
 #include "ibase.h"
 #include <jni.h>
 
-#include <cstring>
-#include <vector>
+//#include <cstring>
+//#include <vector>
 
 typedef ISC_STATUS ISC_EXPORT prototype_isc_attach_database(ISC_STATUS *,
 										  short,
