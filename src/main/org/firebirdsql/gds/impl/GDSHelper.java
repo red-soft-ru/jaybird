@@ -475,17 +475,21 @@ public class GDSHelper {
      * @throws GDSException
      *             if a Firebird-specific database error occurs
      */
-    public IscBlobHandle createBlob(boolean segmented) throws GDSException {
+    public IscBlobHandle createBlob(boolean segmented, boolean temporary) throws GDSException {
         
         try {
             IscBlobHandle blob = gds.createIscBlobHandle();
     
             BlobParameterBuffer blobParameterBuffer = gds.createBlobParameterBuffer();
-    
-            blobParameterBuffer.addArgument(BlobParameterBuffer.TYPE,
-                segmented ? BlobParameterBuffer.TYPE_SEGMENTED
-                        : BlobParameterBuffer.TYPE_STREAM);
-    
+
+            int blobType = segmented ? BlobParameterBuffer.TYPE_SEGMENTED
+                : BlobParameterBuffer.TYPE_STREAM;
+
+            if (temporary)
+                blobType |= BlobParameterBuffer.TYPE_TEMPORARY;
+
+            blobParameterBuffer.addArgument(BlobParameterBuffer.TYPE, blobType);
+
             gds.iscCreateBlob2(currentDbHandle, currentTr, blob,
                 blobParameterBuffer);
     

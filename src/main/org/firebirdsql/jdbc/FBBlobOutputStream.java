@@ -27,7 +27,7 @@ public class FBBlobOutputStream extends OutputStream
                 boolean useStreamBlobs = 
                     dpb.hasArgument(DatabaseParameterBufferExtension.USE_STREAM_BLOBS);
                 
-                blobHandle = owner.gdsHelper.createBlob(!useStreamBlobs);
+                blobHandle = owner.gdsHelper.createBlob(!useStreamBlobs, owner.isTemporary());
                 
             } catch (GDSException ge) {
                 throw new FBSQLException(ge);

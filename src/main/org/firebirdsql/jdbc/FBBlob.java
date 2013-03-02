@@ -74,6 +74,11 @@ public class FBBlob implements FirebirdBlob, Synchronizable {
     Collection inputStreams = new HashSet();
     private FBBlobOutputStream blobOut = null;
 
+    /**
+     * if {@code true} blob will be allocated in temporary space instead of database pages
+     */
+    private boolean temporary = false;
+
     private FBBlob(GDSHelper c, boolean isNew, FBObjectListener.BlobListener blobListener) {
         this.gdsHelper = c;
         this.isNew = isNew;
@@ -654,4 +659,12 @@ public class FBBlob implements FirebirdBlob, Synchronizable {
             );
         }
     }
+
+    public boolean isTemporary() {
+        return temporary;
+    }
+
+    public void setTemporary(final boolean temporary) {
+        this.temporary = temporary;
+    }    
 }

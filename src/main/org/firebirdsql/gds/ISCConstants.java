@@ -724,6 +724,8 @@ public final class ISCConstants {
 
     public final static int isc_bpb_type_segmented          =  0;
     public final static int isc_bpb_type_stream             =  1;
+    public final static int isc_bpb_storage_main            =  0;
+    public final static int isc_bpb_storage_temp            =  2;
 
     public final static int RBL_eof              = 1;
     public final static int RBL_segment          = 2;
