@@ -1492,6 +1492,11 @@ public final class ISCConstants {
     public final static int isc_gstat_sysmemex                   = 336920607;
     public final static int isc_err_max                          = 689;
 
+    /****************************/
+    /* Red Database error codes */
+    /****************************/
+    public static final int isc_blob_io_error                    = 335545041;
+
     /*******************/
     /* SQL definitions */
     /*******************/
