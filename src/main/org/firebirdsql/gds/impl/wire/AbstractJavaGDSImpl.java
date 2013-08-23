@@ -526,6 +526,7 @@ public abstract class AbstractJavaGDSImpl extends AbstractGDS implements GDS {
 		isc_blob_handle_impl blob = (isc_blob_handle_impl) handle;
 		isc_db_handle_impl db = blob.getDb();
 		synchronized (blob) {
+          synchronized (db) {
 			try {
 				if (debug)
 					log.debug("op_info_blob ");
@@ -546,6 +547,7 @@ public abstract class AbstractJavaGDSImpl extends AbstractGDS implements GDS {
 				throw new GDSException(ISCConstants.isc_network_error);
 			}
 		}
+        }
 	}
 
 	public void iscSeekBlob(IscBlobHandle handle, int position, int seekMode)
@@ -554,6 +556,7 @@ public abstract class AbstractJavaGDSImpl extends AbstractGDS implements GDS {
 		isc_blob_handle_impl blob = (isc_blob_handle_impl) handle;
 		isc_db_handle_impl db = blob.getDb();
 		synchronized (blob) {
+          synchronized (db) {
 			try {
 				if (debug)
 					log.debug("op_info_blob ");
@@ -570,6 +573,7 @@ public abstract class AbstractJavaGDSImpl extends AbstractGDS implements GDS {
 				throw new GDSException(ISCConstants.isc_network_error);
 			}
 		}
+        }
 	}
 
 	/**
