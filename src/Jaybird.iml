@@ -10,15 +10,46 @@
       <sourceFolder url="file://$MODULE_DIR$/compatibility" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/pool_jdk1_6" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/messages" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/test" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/test" isTestSource="true" packagePrefix="test" />
       <sourceFolder url="file://$MODULE_DIR$/esp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/resources" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/wire_jdk1_4" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/redsoft" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/jdbccts" />
+      <excludeFolder url="file://$MODULE_DIR$/test" />
     </content>
-    <orderEntry type="inheritedJdk" />
+    <orderEntry type="jdk" jdkName="1.6u21(x32)" jdkType="JavaSDK" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="lib1" level="project" />
     <orderEntry type="library" name="lib" level="project" />
     <orderEntry type="library" name="lib2" level="project" />
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://D:/fssp.cvs-head/ncore/ncore/lib/jna-3.3.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://D:/fssp.cvs-head/ncore/ncore/lib/platform.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://D:/fssp.cvs-head/ncore/ncore/lib/log4j-1.2.15.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
   </component>
 </module>
 
