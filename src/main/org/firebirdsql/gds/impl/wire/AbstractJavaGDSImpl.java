@@ -485,6 +485,16 @@ public abstract class AbstractJavaGDSImpl extends AbstractGDS implements GDS {
       log.debug("auth data");
   }
 
+  protected void writeAuthData(final isc_svc_handle_impl db, final ByteBuffer authData) throws IOException {
+    boolean debug = log != null && log.isDebugEnabled();
+    db.out.writeInt(op_trusted_auth);
+//    db.out.writeInt(0); // packet->p_atch->p_atch_database
+    authData.write(db.out);
+    db.out.flush();
+    if (debug)
+      log.debug("auth data");
+  }
+
   private String getSystemPropertyPrivileged(final String propertyName) {
 	    return (String)AccessController.doPrivileged(new PrivilegedAction() {
 	       public Object run() {
@@ -2170,6 +2180,26 @@ public abstract class AbstractJavaGDSImpl extends AbstractGDS implements GDS {
     }
   }
 
+  private void receiveAuthResponse(isc_svc_handle_impl db, ByteBuffer data) throws GDSException {
+    final boolean debug = log != null && log.isDebugEnabled();
+    try {
+      if (debug)
+        log.debug("op_auth_response ");
+      final int size = db.in.readInt();
+      if (debug)
+        log.debug("received");
+      data.clear();
+      data.read(db.in, size);
+    } catch (IOException ex) {
+      if (debug)
+        log.warn("IOException in receiveAuthResponse", ex);
+      // ex.getMessage() makes little sense here, it will not be displayed
+      // because error message for isc_net_read_err does not accept params
+      throw new GDSException(ISCConstants.isc_arg_gds,
+          ISCConstants.isc_net_read_err, ex.getMessage());
+    }
+  }
+
 	private void receiveSqlResponse(isc_db_handle_impl db, XSQLDA xsqlda,
 			isc_stmt_handle_impl stmt) throws GDSException {
 		boolean debug = log != null && log.isDebugEnabled();
@@ -2798,6 +2828,26 @@ public abstract class AbstractJavaGDSImpl extends AbstractGDS implements GDS {
     		}
         }
 
+      final boolean trustedAuth = ((ParameterBufferBase)serviceParameterBuffer).hasArgument(ISCConstants.isc_spb_trusted_auth);
+      final boolean multifactor = ((ParameterBufferBase)serviceParameterBuffer).hasArgument(ISCConstants.isc_spb_multi_factor_auth);
+
+      if (trustedAuth && !multifactor)
+        throw new GDSException("Trusted authorization is not supported. Use multi factor authorization instead of this one.");
+
+      final AuthSspi sspi;
+      ServiceParameterBufferImp newSpb = null;
+      if (multifactor) {
+        DatabaseParameterBufferImp newDpb = new DatabaseParameterBufferImp();
+        newDpb.getArgumentsList().addAll(((ParameterBufferBase)serviceParameterBuffer).getArgumentsList());
+
+        sspi = new AuthSspi();
+        sspi.fillFactors(newDpb);
+
+        newSpb = new ServiceParameterBufferImp();
+        newSpb.getArgumentsList().addAll(newDpb.getArgumentsList());
+      }
+      else sspi = null;
+
 		synchronized (svc) {
 			try {
 				try {
@@ -2844,21 +2894,35 @@ public abstract class AbstractJavaGDSImpl extends AbstractGDS implements GDS {
                 svc.out.writeString(serviceMgrStr);
 
 				svc.out.writeTyped(ISCConstants.isc_spb_version,
-						(Xdrable) serviceParameterBuffer);
+						multifactor ? (Xdrable) newSpb : (Xdrable) serviceParameterBuffer);
 				svc.out.flush();
 
 				if (debug)
 					log.debug("sent");
 
+              int checkResponse = -1;
+              if (sspi != null) try {
+                checkResponse = op_response;
+                int op = nextOperation(svc.in);
+                final ByteBuffer authData = new ByteBuffer(256);
+                while (op == op_trusted_auth) {
+                  receiveAuthResponse(svc, authData);
+                  if (!sspi.request(authData)) {
+                    disconnect(svc);
+                    throw new GDSException(ISCConstants.isc_unavailable);
+                  }
+                  writeAuthData(svc, authData);
+                  op = nextOperation(svc.in);
+                }
+              } finally {
+                sspi.free();
+              }
+
 				try {
-					receiveResponse(svc, -1);
+					receiveResponse(svc, checkResponse);
 					svc.setHandle(svc.getResp_object());
 				} catch (GDSException ge) {
-					if (log != null)
-						log.debug("About to invalidate db handle");
-					svc.invalidate();
-					if (log != null)
-						log.debug("successfully invalidated db handle");
+                    disconnect(svc);
 					throw ge;
 				}
 			} catch (IOException ex) {
@@ -2867,6 +2931,14 @@ public abstract class AbstractJavaGDSImpl extends AbstractGDS implements GDS {
 		}
 
 	}
+
+  public void disconnect(isc_svc_handle_impl svc) throws IOException {
+    if (log != null)
+      log.debug("About to invalidate db handle");
+    svc.invalidate();
+    if (log != null)
+      log.debug("successfully invalidated db handle");
+  }
 
 	public void receiveResponse(isc_svc_handle_impl svc, int op)
 			throws GDSException {

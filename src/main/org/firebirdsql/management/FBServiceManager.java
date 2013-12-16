@@ -31,6 +31,7 @@ import org.firebirdsql.gds.ServiceRequestBuffer;
 import org.firebirdsql.gds.IscSvcHandle;
 import org.firebirdsql.gds.impl.GDSFactory;
 import org.firebirdsql.gds.impl.GDSType;
+import org.firebirdsql.gds.impl.wire.auth.AuthSspi;
 import org.firebirdsql.jdbc.FBSQLException;
 
 /**
@@ -207,7 +208,7 @@ public class FBServiceManager implements ServiceManager {
     public IscSvcHandle attachServiceManager(GDS gds) throws GDSException {
         ServiceParameterBuffer serviceParameterBuffer = 
             gds.createServiceParameterBuffer();
-    
+
         if (getUser() != null)
             serviceParameterBuffer.addArgument(
                 ISCConstants.isc_spb_user_name, getUser());
@@ -224,9 +225,16 @@ public class FBServiceManager implements ServiceManager {
             ISCConstants.isc_spb_dummy_packet_interval, new byte[]{120, 10, 0, 0});
 
         final IscSvcHandle handle = gds.createIscSvcHandle();
+      try {
         gds.iscServiceAttach(getServiceName(), handle, serviceParameterBuffer);
-        
-        return handle;
+      } catch (GDSException ex) {
+        serviceParameterBuffer.addArgument(
+            ISCConstants.isc_spb_trusted_auth, new byte[]{1});
+        serviceParameterBuffer.addArgument(
+            ISCConstants.isc_spb_multi_factor_auth);
+        gds.iscServiceAttach(getServiceName(), handle, serviceParameterBuffer);
+      }
+      return handle;
     }
     
     public void detachServiceManager(GDS gds, IscSvcHandle handle) throws GDSException {

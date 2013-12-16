@@ -217,6 +217,26 @@ public final class ISCConstants {
     public final static int isc_spb_verbose                 = 107;
     public final static int isc_spb_options                 = 108;
 
+    public final static int isc_spb_address_path            = 109;
+    public final static int isc_spb_process_id              = 110;
+    public final static int isc_spb_trusted_auth            = 111;
+    public final static int isc_spb_process_name            = 112;
+    public final static int isc_spb_trusted_role            = 113;
+    public final static int isc_spb_skip_data               = 114;
+
+    /* Red Database security parameters */
+
+    public final static int isc_spb_multi_factor_auth       = isc_dpb_multi_factor_auth;
+    public final static int isc_spb_certificate             = isc_dpb_certificate;
+    public final static int isc_spb_repository_name         = isc_dpb_repository_name;
+    public final static int isc_spb_eye                     = isc_dpb_eye;
+    public final static int isc_spb_session_key             = isc_dpb_session_key;
+    public final static int isc_spb_session_key_iv          = isc_dpb_session_key_iv;
+    public final static int isc_spb_svc_name                = 156;
+    public final static int isc_spb_verify_server           = 157;
+    public final static int isc_spb_hw_address              = 158;
+    public final static int isc_spb_repository_pin          = 159;
+
     public final static int isc_spb_connect_timeout         = isc_dpb_connect_timeout;
     public final static int isc_spb_dummy_packet_interval   = isc_dpb_dummy_packet_interval;
     public final static int isc_spb_sql_role_name           = isc_dpb_sql_role_name;
