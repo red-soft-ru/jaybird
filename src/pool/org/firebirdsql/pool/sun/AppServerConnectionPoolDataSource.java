@@ -184,16 +184,8 @@ public class AppServerConnectionPoolDataSource implements Serializable,
         return dataSource.getPassword();
     }
 
-    public String getPasswordSha() {
-        return dataSource.getPasswordSha();
-    }
-
     public void setPassword(String value) {
         dataSource.setPassword(value);
-    }
-
-    public void setPasswordSha(String value) {
-        dataSource.setPasswordSha(value);
     }
 
     public int getPingInterval() {

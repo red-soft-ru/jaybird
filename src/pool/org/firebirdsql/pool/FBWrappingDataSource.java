@@ -524,10 +524,6 @@ public class FBWrappingDataSource implements DataSource,
         return getPool().getPassword();
     }
 
-    public String getPasswordSha() {
-        return getPool().getPasswordSha();
-    }
-
     public String getRoleName() {
         return getPool().getRoleName();
     }
@@ -610,10 +606,6 @@ public class FBWrappingDataSource implements DataSource,
 
     public void setPassword(String password) {
         getPool().setPassword(password);
-    }
-
-    public void setPasswordSha(String password) {
-        getPool().setPasswordSha(password);
     }
 
     public void setRoleName(String roleName) {

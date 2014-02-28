@@ -18,9 +18,6 @@ import org.firebirdsql.gds.TransactionParameterBuffer;
 import org.firebirdsql.gds.impl.AbstractGDS;
 import org.firebirdsql.gds.impl.GDSFactory;
 import org.firebirdsql.gds.impl.GDSType;
-import org.firebirdsql.jca.FBConnectionRequestInfo;
-import org.firebirdsql.jca.FBManagedConnection;
-import org.firebirdsql.jca.FBManagedConnectionFactory;
 import org.firebirdsql.jdbc.FBDriverNotCapableException;
 import org.firebirdsql.jdbc.FBSQLException;
 import org.firebirdsql.jdbc.FirebirdConnectionProperties;
@@ -173,16 +170,6 @@ public class FBSADataSource implements DataSource, Serializable, Referenceable, 
     public String getPassword() {
         return mcf.getPassword();
     }
-
-    /**
-     * Get password used in {@link #getConnection()} method.
-     *
-     * @return password corresponding to the user name returned by
-     * {@link #getUserName()}.
-     */
-    public String getPasswordSha() {
-        return mcf.getPasswordSha();
-    }
     
     /**
      * Set password that will be used in the {@link #getConnection()} method.
@@ -192,16 +179,6 @@ public class FBSADataSource implements DataSource, Serializable, Referenceable, 
      */
     public void setPassword(String password) {
         mcf.setPassword(password);
-    }
-
-    /**
-     * Set password that will be used in the {@link #getConnection()} method.
-     *
-     * @param password password corresponding to the user name set in
-     * {@link #setUserName(String)}.
-     */
-    public void setPasswordSha(String password) {
-        mcf.setPasswordSha(password);
     }
     
     /**
@@ -401,9 +378,6 @@ public class FBSADataSource implements DataSource, Serializable, Referenceable, 
     public Connection getConnection() throws SQLException {
       try {
         FBConnectionRequestInfo subjectCri = mcf.getDefaultConnectionRequestInfo();
-        String shaPassword = mcf.getPasswordSha();
-        if (shaPassword != null)
-          subjectCri.setPasswordSha(shaPassword);
         FBManagedConnection mc = getManagedConnection(subjectCri).forkManagedConnection();
         mc.setManagedEnvironment(false);
         mc.setConnectionSharing(false);

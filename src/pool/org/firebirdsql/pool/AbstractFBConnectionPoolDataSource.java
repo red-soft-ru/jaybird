@@ -661,18 +661,9 @@ abstract public class AbstractFBConnectionPoolDataSource extends BasicAbstractCo
         return connectionProperties.getPassword();
     }
 
-    public String getPasswordSha() {
-        return connectionProperties.getPasswordSha();
-    }
-
     public void setPassword(String password) {
         checkNotStarted();
         connectionProperties.setPassword(password);
-    }
-
-    public void setPasswordSha(String password) {
-        checkNotStarted();
-        connectionProperties.setPasswordSha(password);
     }
 
     public int getSocketBufferSize() {

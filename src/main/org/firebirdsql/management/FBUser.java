@@ -32,8 +32,6 @@ public class FBUser implements User {
 
     private String password = null;
 
-    private String passwordSha = null;
-
     private String firstName = null;
 
     private String middleName = null;
@@ -81,28 +79,10 @@ public class FBUser implements User {
     /*
      * (non-Javadoc)
      *
-     * @see org.firebirdsql.management.User#getPassword()
-     */
-    public String getPasswordSha() {
-        return passwordSha;
-    }
-
-    /*
-     * (non-Javadoc)
-     *
      * @see org.firebirdsql.management.User#setPassword(java.lang.String)
      */
     public void setPassword(String password) {
         this.password = password;
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.firebirdsql.management.User#setPassword(java.lang.String)
-     */
-    public void setPasswordSha(String password) {
-        this.passwordSha = password;
     }
 
     /*

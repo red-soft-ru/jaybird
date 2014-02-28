@@ -128,11 +128,7 @@ public class FBDriver implements FirebirdDriver {
 
             FBDataSource dataSource = createDataSource(mcf);
 
-            String passwordSha = mcf.getPasswordSha();
-            if (passwordSha != null)
-                return dataSource.getConnectionSha(mcf.getUserName(), passwordSha);
-            else
-                return dataSource.getConnection(mcf.getUserName(), mcf.getPassword());
+            return dataSource.getConnection(mcf.getUserName(), mcf.getPassword());
             
         } catch(ResourceException resex) {
             throw new FBSQLException(resex);

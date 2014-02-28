@@ -69,22 +69,10 @@ public interface ServiceManager {
     public void setPassword(String password);
 
     /**
-     * Sets the password for the connection to the service manager.
-     * @param password for the connection to the service manager.
-     */
-    public void setPasswordSha(String password);
-
-    /**
      * Returns the password for the connection to the service manager.
      * @return the password for the connection to the service manager.
      */
     public String getPassword();
-
-    /**
-     * Returns the password for the connection to the service manager.
-     * @return the password for the connection to the service manager.
-     */
-    public String getPasswordSha();
 
     /**
      * Sets the database path for the connection to the service manager.

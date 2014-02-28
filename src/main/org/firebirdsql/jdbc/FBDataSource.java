@@ -103,29 +103,6 @@ public class FBDataSource implements DataSource, Serializable, Referenceable {
         }
     }
 
-    /**
-   * <p>Attempt to establish a database connection using password hashed by SHA-1.
-   *
-   * @param username the database user on whose behalf the Connection is
-   *  being made
-   * @param password the user's password
-   * @return  a Connection to the database
-   * @exception SQLException if a database-access error occurs.
-   */
-    public Connection getConnectionSha(String username, String password) throws  SQLException {
-        try
-        {
-            //mcf makes a copy for us.
-            FBConnectionRequestInfo subjectCri = mcf.getDefaultConnectionRequestInfo();
-            subjectCri.setUserName(username);
-            subjectCri.setPasswordSha(password);
-            return (Connection)cm.allocateConnection(mcf, subjectCri);
-        }
-        catch (ResourceException re) {
-            throw new FBSQLException(re);
-        }
-    }
-
   /**
    * <p>Attempt to establish a database connection.
    *

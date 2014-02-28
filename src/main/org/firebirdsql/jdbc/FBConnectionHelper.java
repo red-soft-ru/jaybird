@@ -54,6 +54,7 @@ public class FBConnectionHelper {
 
     public static final String DPB_PREFIX = "isc_dpb_";
     public static final String TPB_PREFIX = "isc_tpb_";
+    public static final String SPB_PREFIX = "isc_spb_";
 
     public static final String TPB_MAPPING_PROPERTY = "tpb_mapping";
     
@@ -64,6 +65,7 @@ public class FBConnectionHelper {
     private static final HashMap dpbParameterTypes = new HashMap();
     
     private static final HashMap tpbTypes = new HashMap();
+    private static final HashMap spbTypes = new HashMap();
 
     /*
      * Initialize mappings between various GDS constant names and
@@ -91,14 +93,17 @@ public class FBConnectionHelper {
                 dpbTypes.put(name.substring(DPB_PREFIX.length()), value);
                 // put the full name to tolerate people's mistakes
                 dpbTypes.put(name, value);
-            } else
-            if (name.startsWith(TPB_PREFIX)) {
+            } else if (name.startsWith(TPB_PREFIX)) {
                 // put the correct parameter name
                 tpbTypes.put(name.substring(TPB_PREFIX.length()), value);
                 // put the full name to tolerate people's mistakes
                 tpbTypes.put(name, value);
-            } else
-                continue;
+            } else if (name.startsWith(SPB_PREFIX)) {
+                // put the correct parameter name
+                spbTypes.put(name.substring(SPB_PREFIX.length()), value);
+                // put the full name to tolerate people's mistakes
+                spbTypes.put(name, value);
+            }
         }
         
         loadDpbParameterTypes();
@@ -115,6 +120,18 @@ public class FBConnectionHelper {
      */
     public static Integer getDpbKey(String name) {
         return (Integer)dpbTypes.get(name);
+    }
+
+    /**
+     * Get integer value of the SPB key corresponding to the specified name.
+     *
+     * @param name name of the key.
+     *
+     * @return instance of {@link Integer} corresponding to the specified name
+     * or <code>null</code> if value is not known.
+     */
+    public static Integer getSpbKey(String name) {
+        return (Integer)spbTypes.get(name);
     }
     
     /**
@@ -266,7 +283,7 @@ public class FBConnectionHelper {
     private static Properties loadProperties(String resource) throws IOException {
         ClassLoader cl = FBConnectionHelper.class.getClassLoader();
 
-        InputStream in = null;
+        InputStream in;
 
         // get the stream from the classloader or system classloader
         if (cl == null)
@@ -306,22 +323,21 @@ public class FBConnectionHelper {
             String value = (String)entry.getValue();
             
             if ("boolean".equals(value)) {
-                dpbParameterTypes.put(key, new Integer(TYPE_BOOLEAN));
-                dpbParameterTypes.put(shortKey, new Integer(TYPE_BOOLEAN));
+                dpbParameterTypes.put(key, TYPE_BOOLEAN);
+                dpbParameterTypes.put(shortKey, TYPE_BOOLEAN);
             } else
             if ("byte".equals(value)) {
-                dpbParameterTypes.put(key, new Integer(TYPE_BYTE));
-                dpbParameterTypes.put(shortKey, new Integer(TYPE_BYTE));
+                dpbParameterTypes.put(key, TYPE_BYTE);
+                dpbParameterTypes.put(shortKey, TYPE_BYTE);
             } else
             if ("int".equals(value)) {
-                dpbParameterTypes.put(key, new Integer(TYPE_INT));
-                dpbParameterTypes.put(shortKey, new Integer(TYPE_INT));
+                dpbParameterTypes.put(key, TYPE_INT);
+                dpbParameterTypes.put(shortKey, TYPE_INT);
             } else
             if ("string".equals(value)) {
-                dpbParameterTypes.put(key, new Integer(TYPE_STRING));
-                dpbParameterTypes.put(shortKey, new Integer(TYPE_STRING));
-            } else
-                continue;
+                dpbParameterTypes.put(key, TYPE_STRING);
+                dpbParameterTypes.put(shortKey, TYPE_STRING);
+            }
         }
     }
 }

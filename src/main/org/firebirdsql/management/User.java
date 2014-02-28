@@ -69,28 +69,12 @@ public interface User {
     public void setPassword(String password);
 
     /**
-     * Password for the specified user. Maximum length is 31 characters. Only
-     * first 8 characters are significant.
-     *
-     * @param password
-     */
-    public void setPasswordSha(String password);
-
-    /**
      * Returns the password as set by setPassword. This will return null in most
      * cases and is only provided for add and update user functionality.
      * 
      * @return the password for the specified user.
      */
     public String getPassword();
-
-    /**
-     * Returns the password as set by setPassword. This will return null in most
-     * cases and is only provided for add and update user functionality.
-     *
-     * @return the password for the specified user.
-     */
-    public String getPasswordSha();
 
     /**
      * Optional first name of the person using this user name.

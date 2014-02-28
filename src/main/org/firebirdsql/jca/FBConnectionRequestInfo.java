@@ -22,10 +22,6 @@ import java.io.Serializable;
 import javax.resource.cci.ConnectionSpec;
 import javax.resource.spi.ConnectionRequestInfo;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import sun.misc.BASE64Encoder;
-
 import org.firebirdsql.gds.DatabaseParameterBuffer;
 import org.firebirdsql.gds.impl.DatabaseParameterBufferExtension;
 
@@ -123,14 +119,9 @@ public class FBConnectionRequestInfo implements DatabaseParameterBufferExtension
     public void setPassword(String password, boolean need_enc) {
         removeArgument(DatabaseParameterBufferExtension.PASSWORD);
         removeArgument(DatabaseParameterBufferExtension.PASSWORD_ENC);
-        boolean multi_factor = false;
-        String value = System.getenv("RDB_AUTH_MODE");
-        if (value != null) {
-            value.toUpperCase();
-            if (value.indexOf("MULTI_FACTOR") != -1)
-                multi_factor = true;
-        }
 
+        String value = System.getenv("RDB_AUTH_MODE");
+        boolean multi_factor = value != null && value.toUpperCase().contains("MULTI_FACTOR");
         if (password != null) {
             if (multi_factor && !need_enc) {
                 addArgument(DatabaseParameterBufferExtension.PASSWORD, password);
@@ -139,23 +130,6 @@ public class FBConnectionRequestInfo implements DatabaseParameterBufferExtension
                 String passwordEnc = FBDes.crypt(password, "9z");
                 addArgument(DatabaseParameterBufferExtension.PASSWORD_ENC, passwordEnc.substring(2));					
             }
-        }
-    }
-
-    public void setPasswordSha(String password) {
-        removeArgument(DatabaseParameterBufferExtension.PASSWORD);
-        removeArgument(DatabaseParameterBufferExtension.PASSWORD_ENC);
-        if (password != null) {
-            try {
-                MessageDigest md;
-                md = MessageDigest.getInstance("SHA-1");
-                byte[] shaHash = new byte[40];
-                md.update(password.getBytes(), 0, password.length());
-                shaHash = md.digest();
-                String passwordSha = new sun.misc.BASE64Encoder().encode(shaHash);
-				passwordSha = "{SHA}" + passwordSha;
-                addArgument(DatabaseParameterBufferExtension.PASSWORD_ENC, passwordSha.toString());
-            } catch (NoSuchAlgorithmException e) {  }
         }
     }
 

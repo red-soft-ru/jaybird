@@ -206,21 +206,10 @@ public interface FirebirdConnectionProperties {
     String getPassword();
 
     /**
-     * @return password corresponding to the specified user name.
-     */
-    String getPasswordSha();
-
-    /**
      * @param password
      *            password corresponding to the specified user name.
      */
     void setPassword(String password);
-
-    /**
-     * @param password
-     *            password corresponding to the specified user name.
-     */
-    void setPasswordSha(String password);
 
     /**
      * @return number of cache buffers that should be allocated for this
