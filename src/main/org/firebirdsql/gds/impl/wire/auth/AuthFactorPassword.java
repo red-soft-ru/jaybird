@@ -34,7 +34,7 @@ public class AuthFactorPassword extends AuthFactor {
   }
 
   public void setUserName(final String userName) {
-    this.userName = userName == null ? null : userName.toUpperCase();//сервер всегда приводит к верхнему регистру при рассчете хеша
+    this.userName = userName == null ? null : userName.toUpperCase();//Server always uppers login when calculating hash
   }
 
   public void setPassword(final String password) {

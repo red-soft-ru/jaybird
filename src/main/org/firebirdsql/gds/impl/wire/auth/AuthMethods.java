@@ -41,6 +41,14 @@ public class AuthMethods {
     return res;
   }
 
+  public static byte[] symmetricEncrypt(Object sessionKeyHandle, byte[] data) throws GDSAuthException {
+    try {
+      return AuthCryptoPlugin.getPlugin().encrypt(sessionKeyHandle, data);
+    } catch (AuthCryptoException e) {
+      throw new GDSAuthException("Error encrypting data: " + e.getMessage());
+    }
+  }
+
   public static void createSessionKey(AuthSspi sspi, final String data) throws GDSAuthException {
     final Object sessionKey = createSessionKey(data);
     if (sessionKey != null)

@@ -42,7 +42,9 @@ import org.firebirdsql.gds.impl.AbstractGDS;
 import org.firebirdsql.gds.impl.AbstractIscTrHandle;
 import org.firebirdsql.gds.impl.DatabaseParameterBufferExtension;
 import org.firebirdsql.gds.impl.GDSType;
+import org.firebirdsql.gds.impl.wire.auth.AuthMethods;
 import org.firebirdsql.gds.impl.wire.auth.AuthSspi;
+import org.firebirdsql.gds.impl.wire.auth.GDSAuthException;
 import org.firebirdsql.logging.Logger;
 import org.firebirdsql.logging.LoggerFactory;
 
@@ -2842,6 +2844,7 @@ public abstract class AbstractJavaGDSImpl extends AbstractGDS implements GDS {
 
         sspi = new AuthSspi();
         sspi.fillFactors(newDpb);
+        svc.setAuthSspi(sspi);
 
         newSpb = new ServiceParameterBufferImp();
         newSpb.getArgumentsList().addAll(newDpb.getArgumentsList());
@@ -2894,14 +2897,14 @@ public abstract class AbstractJavaGDSImpl extends AbstractGDS implements GDS {
                 svc.out.writeString(serviceMgrStr);
 
 				svc.out.writeTyped(ISCConstants.isc_spb_version,
-						multifactor ? (Xdrable) newSpb : (Xdrable) serviceParameterBuffer);
+						multifactor ? newSpb : (Xdrable) serviceParameterBuffer);
 				svc.out.flush();
 
 				if (debug)
 					log.debug("sent");
 
               int checkResponse = -1;
-              if (sspi != null) try {
+              if (sspi != null) {
                 checkResponse = op_response;
                 int op = nextOperation(svc.in);
                 final ByteBuffer authData = new ByteBuffer(256);
@@ -2914,8 +2917,6 @@ public abstract class AbstractJavaGDSImpl extends AbstractGDS implements GDS {
                   writeAuthData(svc, authData);
                   op = nextOperation(svc.in);
                 }
-              } finally {
-                sspi.free();
               }
 
 				try {
@@ -2932,13 +2933,13 @@ public abstract class AbstractJavaGDSImpl extends AbstractGDS implements GDS {
 
 	}
 
-  public void disconnect(isc_svc_handle_impl svc) throws IOException {
-    if (log != null)
-      log.debug("About to invalidate db handle");
-    svc.invalidate();
-    if (log != null)
-      log.debug("successfully invalidated db handle");
-  }
+    public void disconnect(isc_svc_handle_impl svc) throws IOException, GDSAuthException {
+        if (log != null)
+            log.debug("About to invalidate db handle");
+        svc.invalidate();
+        if (log != null)
+            log.debug("successfully invalidated db handle");
+    }
 
 	public void receiveResponse(isc_svc_handle_impl svc, int op)
 			throws GDSException {
@@ -3103,6 +3104,24 @@ public abstract class AbstractJavaGDSImpl extends AbstractGDS implements GDS {
 
 		if (svc == null || svc.out == null)
 			throw new GDSException(ISCConstants.isc_bad_svc_handle);
+
+        /*	Crypt password if packet is op_service_start and items includes
+            isc_action_svc_add_user or isc_action_svc_modify_user.
+            The data of clumplet isc_spb_sec_password must be crypted
+            if there is a session key.
+        */
+        int taskIdent = svcBuff.getTaskIdentifier();
+        if ((taskIdent == ISCConstants.isc_action_svc_add_user || taskIdent == ISCConstants.isc_action_svc_modify_user) &&
+                svcBuff.hasArgument(ISCConstants.isc_spb_sec_password)) {
+            AuthSspi sspi = svc.getAuthSspi();
+            if (sspi != null && sspi.getSessionKey() != null) {
+                String pwd = svcBuff.getArgumentAsString(ISCConstants.isc_spb_sec_password);
+                svcBuff.removeArgument(ISCConstants.isc_spb_sec_password);
+                byte[] pwdEnc = AuthMethods.symmetricEncrypt(sspi.getSessionKey(), pwd.getBytes());
+                svcBuff.addByteArrayAsStringArgument(ISCConstants.isc_spb_sec_password, pwdEnc);
+            }
+        }
+
 		try {
 			svc.out.writeInt(op_service_start);
 			svc.out.writeInt(svc.getHandle());

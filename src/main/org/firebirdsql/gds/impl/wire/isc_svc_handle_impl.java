@@ -35,6 +35,8 @@ import java.util.List;
 
 import org.firebirdsql.gds.GDSException;
 import org.firebirdsql.gds.IscSvcHandle;
+import org.firebirdsql.gds.impl.wire.auth.AuthSspi;
+import org.firebirdsql.gds.impl.wire.auth.GDSAuthException;
 
 /**
  * Describe class <code>isc_svc_handle_impl</code> here.
@@ -52,6 +54,7 @@ public final class isc_svc_handle_impl implements IscSvcHandle {
     private int resp_object;
     private long resp_blob_id;
     private byte[] resp_data;
+    private AuthSspi authSspi;
 
     public isc_svc_handle_impl() {
         this.invalid = true;
@@ -62,7 +65,7 @@ public final class isc_svc_handle_impl implements IscSvcHandle {
         return !invalid;
     }
 
-    void invalidate() throws IOException {
+    void invalidate() throws IOException, GDSAuthException {
         in.close();
         out.close();
         socket.close();
@@ -70,7 +73,8 @@ public final class isc_svc_handle_impl implements IscSvcHandle {
         in = null;
         out = null;
         socket = null;
-
+        if (authSspi != null)
+          authSspi.free();
         invalid = true;
     }
     
@@ -149,11 +153,18 @@ public final class isc_svc_handle_impl implements IscSvcHandle {
     public boolean isNotValid() {
         return invalid;
     }
+
     private void checkValidity() {
         if (invalid)
             throw new IllegalStateException(
-                "This database handle is invalid and cannot be used anymore.");
+                    "This database handle is invalid and cannot be used anymore.");
     }
-    
 
+    public AuthSspi getAuthSspi() {
+        return authSspi;
+    }
+
+    public void setAuthSspi(AuthSspi authSspi) {
+        this.authSspi = authSspi;
+    }
 }

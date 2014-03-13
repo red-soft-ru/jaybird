@@ -64,6 +64,20 @@ class ServiceRequestBufferImp extends ParameterBufferBase implements
         });
     }
 
+    public void addByteArrayAsStringArgument(int argumentType, byte[] value) {
+        getArgumentsList().add(new ByteArrayArgument(argumentType, value) {
+
+            int getLength() {
+                return super.getLength() + 1;
+            }
+
+            protected void writeLength(int length, XdrOutputStream outputStream) throws IOException {
+                outputStream.write(length);
+                outputStream.write(length >> 8);
+            }
+        });
+    }
+
     
     /* (non-Javadoc)
      * @see org.firebirdsql.gds.ServiceRequestBuffer#addArgument(int, int)
