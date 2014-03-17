@@ -25,6 +25,7 @@
 
 package org.firebirdsql.gds.impl.wire;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
@@ -38,10 +39,7 @@ import java.util.Map;
 
 import org.firebirdsql.encodings.EncodingFactory;
 import org.firebirdsql.gds.*;
-import org.firebirdsql.gds.impl.AbstractGDS;
-import org.firebirdsql.gds.impl.AbstractIscTrHandle;
-import org.firebirdsql.gds.impl.DatabaseParameterBufferExtension;
-import org.firebirdsql.gds.impl.GDSType;
+import org.firebirdsql.gds.impl.*;
 import org.firebirdsql.gds.impl.wire.auth.AuthMethods;
 import org.firebirdsql.gds.impl.wire.auth.AuthSspi;
 import org.firebirdsql.gds.impl.wire.auth.GDSAuthException;
@@ -3106,7 +3104,7 @@ public abstract class AbstractJavaGDSImpl extends AbstractGDS implements GDS {
 			throw new GDSException(ISCConstants.isc_bad_svc_handle);
 
         /*	Crypt password if packet is op_service_start and items includes
-            isc_action_svc_add_user or isc_action_svc_modify_user.
+            isc_action_svc_add_user or isc_action_svc_modify_user and RDB version is 2.5.0.10366 or higher.
             The data of clumplet isc_spb_sec_password must be crypted
             if there is a session key.
         */
@@ -3115,10 +3113,14 @@ public abstract class AbstractJavaGDSImpl extends AbstractGDS implements GDS {
                 svcBuff.hasArgument(ISCConstants.isc_spb_sec_password)) {
             AuthSspi sspi = svc.getAuthSspi();
             if (sspi != null && sspi.getSessionKey() != null) {
-                String pwd = svcBuff.getArgumentAsString(ISCConstants.isc_spb_sec_password);
-                svcBuff.removeArgument(ISCConstants.isc_spb_sec_password);
-                byte[] pwdEnc = AuthMethods.symmetricEncrypt(sspi.getSessionKey(), pwd.getBytes());
-                svcBuff.addByteArrayAsStringArgument(ISCConstants.isc_spb_sec_password, pwdEnc);
+                //Get server version
+                GDSServerVersion serverVersion = getServerVersion(serviceHandle);
+                if (serverVersion != null && isNeedEncryptUserPassword(serverVersion)) {
+                    String pwd = svcBuff.getArgumentAsString(ISCConstants.isc_spb_sec_password);
+                    svcBuff.removeArgument(ISCConstants.isc_spb_sec_password);
+                    byte[] pwdEnc = AuthMethods.symmetricEncrypt(sspi.getSessionKey(), pwd.getBytes());
+                    svcBuff.addByteArrayAsStringArgument(ISCConstants.isc_spb_sec_password, pwdEnc);
+                }
             }
         }
 
@@ -3140,6 +3142,28 @@ public abstract class AbstractJavaGDSImpl extends AbstractGDS implements GDS {
 					ISCConstants.isc_net_read_err, ex.getMessage());
 		}
 	}
+
+    private GDSServerVersion getServerVersion(IscSvcHandle serviceHandle) throws GDSException {
+        byte[] buffer = new byte[1024];
+        ServiceRequestBuffer srb = createServiceRequestBuffer(ISCConstants.isc_info_svc_server_version);
+        iscServiceQuery(serviceHandle, null, srb, buffer);
+        //translate result buffer
+        final ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(buffer);
+        //noinspection ResultOfMethodCallIgnored
+        byteArrayInputStream.read(); //skip first byte
+        int numberOfBytes = (short) ((byteArrayInputStream.read()) + (byteArrayInputStream.read() << 8));
+        if (numberOfBytes == 0) return null;
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i <= numberOfBytes - 1; i++) {
+          byte byteToWrite = (byte) byteArrayInputStream.read();
+          sb.append((char) byteToWrite);
+        }
+        return GDSServerVersion.parseRawVersion(sb.toString());
+    }
+
+    private boolean isNeedEncryptUserPassword(GDSServerVersion serverVersion) {
+        return serverVersion.getServerName().contains("Red Database") && serverVersion.getBuildNumber() >= 10366;
+    }
 
 	public void iscServiceQuery(IscSvcHandle serviceHandle,
 			ServiceParameterBuffer serviceParameterBuffer,
