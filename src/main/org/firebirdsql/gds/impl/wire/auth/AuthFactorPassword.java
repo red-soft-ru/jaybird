@@ -1,6 +1,5 @@
 package org.firebirdsql.gds.impl.wire.auth;
 
-import org.firebirdsql.gds.ISCConstants;
 import org.firebirdsql.gds.impl.wire.ByteBuffer;
 import org.firebirdsql.gds.impl.wire.Bytes;
 import org.firebirdsql.gds.impl.wire.TaggedClumpletReader;
@@ -154,7 +153,7 @@ public class AuthFactorPassword extends AuthFactor {
       }
 
       if (sessionIV != null) {
-        AuthMethods.createSessionKey(sspi, new String(randomData));
+        AuthMethods.createSessionKey(sspi, randomData);
         AuthMethods.setIV(sspi.getSessionKey(), sessionIV);
       }
 

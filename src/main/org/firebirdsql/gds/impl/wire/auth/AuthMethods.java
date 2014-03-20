@@ -50,15 +50,23 @@ public class AuthMethods {
   }
 
   public static void createSessionKey(AuthSspi sspi, final String data) throws GDSAuthException {
+    createSessionKey(sspi, data.getBytes());
+  }
+
+  public static void createSessionKey(AuthSspi sspi, byte[] data) throws GDSAuthException {
     final Object sessionKey = createSessionKey(data);
     if (sessionKey != null)
       sspi.setSessionKey(sessionKey);
   }
 
-  public static Object createSessionKey(final String data) throws GDSAuthException {
+  public static Object createSessionKey(String data) throws GDSAuthException {
+    return createSessionKey(data.getBytes());
+  }
+
+  public static Object createSessionKey(byte[] data) throws GDSAuthException {
     final AuthCryptoPlugin p = AuthCryptoPlugin.getPlugin();
     try {
-      final Object hash = p.createHash(data.getBytes());
+      final Object hash = p.createHash(data);
       try {
         return p.deriveKey(hash, true);
       } finally {
