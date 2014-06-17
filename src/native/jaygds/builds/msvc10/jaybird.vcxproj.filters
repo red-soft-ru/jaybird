@@ -67,9 +67,6 @@
     <ClInclude Include="..\..\source\jni_helpers.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\source\StdAfx.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\source\xsqlda_wrapper.h">
       <Filter>Header Files</Filter>
     </ClInclude>

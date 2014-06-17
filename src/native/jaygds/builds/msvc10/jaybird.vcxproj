@@ -291,7 +291,6 @@
     <ClInclude Include="..\..\source\fb_helpers.h" />
     <ClInclude Include="..\..\source\handle_wrappers.h" />
     <ClInclude Include="..\..\source\jni_helpers.h" />
-    <ClInclude Include="..\..\source\StdAfx.h" />
     <ClInclude Include="..\..\source\xsqlda_wrapper.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
