@@ -40,15 +40,15 @@ if test "$ANT_HOME" = ""; then
 	echo "Ant binary was found in $ANT"
     fi
 else
-    if [ -e $ANT_HOME/bin/ant ]
-    then
-	ANT=$ANT_HOME/bin/ant
-    elif [ -e $ANT_HOME/ant ]
-    then
-	ANT=$ANT_HOME/ant
+    if [ -e $ANT_HOME/bin/ant ]; then
+		ANT=$ANT_HOME/bin/ant
+    elif [ -e $ANT_HOME/ant ]; then
+		ANT=$ANT_HOME/ant
+    elif [ -e `which ant 2>/dev/null` ]; then
+        ANT=`which ant 2>/dev/null`
     else
-	echo "Error: ant binary was not found in ANT_HOME"
-	exit 1
+		echo "Error: ant binary was not found in ANT_HOME"
+		exit 1
     fi
 fi
 
