@@ -124,7 +124,8 @@ public class FBUserManager extends FBServiceManager implements UserManager {
                 break;
             }
         }
-        users.put(user.getUserName(), user);
+        if (user != null)
+          users.put(user.getUserName(), user);
         return users;
         
     }
