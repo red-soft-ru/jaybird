@@ -27,6 +27,18 @@
 #include "ibase.h"
 #include "jni.h"
 
+#ifdef WIN32
+  #ifndef __LITTLE_ENDIAN
+    #define __LITTLE_ENDIAN 1234
+    #define __BIG_ENDIAN    4321
+  #endif
+  #ifndef __BYTE_ORDER
+    #define __BYTE_ORDER __LITTLE_ENDIAN
+  #endif
+#else
+  #include <endian.h>
+#endif
+
 // JXSqlda Class ------------------------------------------------------------------------------
 
 // static members
@@ -54,9 +66,9 @@ void JXSqlda::Initilize( JNIEnv* javaEnvironment )
 		throw InternalException("Initilize has been called twice without an unitilize.");
 
 	sXSQLDAClassBinding = JClassBinding( javaEnvironment,  "org/firebirdsql/gds/impl/jni/XSQLDAImpl" );
-#ifdef ARCH_IS_BIG_ENDIAN
+#if __BYTE_ORDER == __BIG_ENDIAN
 	sXSQLVARClassBinding = JClassBinding( javaEnvironment, "org/firebirdsql/gds/impl/jni/XSQLVARBigEndianImpl" );
-#else
+#elif __BYTE_ORDER == __LITTLE_ENDIAN
 	sXSQLVARClassBinding = JClassBinding( javaEnvironment, "org/firebirdsql/gds/impl/jni/XSQLVARLittleEndianImpl" );
 #endif
 
