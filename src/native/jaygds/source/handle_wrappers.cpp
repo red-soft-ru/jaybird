@@ -422,13 +422,14 @@ jlong  JIscBlobHandle::GetJLongFromIscQuad(ISC_QUAD value)
 	{
 	jlong returnValue = *((jlong*)&value);
 
-	if( IsLittleEndianByteOrdering() == false )
-		{
-		char* pointerToReturnValue = (char*)&returnValue;
-
-		std::reverse(pointerToReturnValue, pointerToReturnValue + sizeof(jlong));
-		}
-	
+// TODO: Do endianness converting really needed? JNI bridge works with host bytes order.
+//
+//	if( IsLittleEndianByteOrdering() == false )
+//		{
+//		char* pointerToReturnValue = (char*)&returnValue;
+//
+//		std::reverse(pointerToReturnValue, pointerToReturnValue + sizeof(jlong));
+//		}
 	return returnValue;
 	}
 
@@ -439,14 +440,16 @@ jlong  JIscBlobHandle::GetJLongFromIscQuad(ISC_QUAD value)
 ISC_QUAD JIscBlobHandle::GetIscQuadFromJavaLong(jlong value)
 	{
 	ISC_QUAD* returnValue = (ISC_QUAD*)&value;
-	
-	if( IsLittleEndianByteOrdering() == false )
-		{
-		char* pointerToReturnValue = (char*)returnValue;
 
-		std::reverse(pointerToReturnValue, pointerToReturnValue + sizeof(ISC_QUAD));
-		}
-	
+// TODO: Do endianness converting really needed? JNI bridge works with host bytes order.
+//
+//	if( IsLittleEndianByteOrdering() == false )
+//		{
+//		char* pointerToReturnValue = (char*)returnValue;
+//
+//		std::reverse(pointerToReturnValue, pointerToReturnValue + sizeof(ISC_QUAD));
+//		}
+//
 	return *returnValue;
 
 	/***
