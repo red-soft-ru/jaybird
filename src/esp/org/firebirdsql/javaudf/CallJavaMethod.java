@@ -182,8 +182,10 @@ public class CallJavaMethod {
    * @param i long
    * @return Object
    */
-  public static Object getDts(long i)
-  {return (new datetime(i)).toTimestamp();}
+  public static Object getDts(int date, int time)
+  {
+    return (new datetime(date, time)).toTimestamp();
+  }
   /**
    * Convert firebird representation in primitive type to timestamp object
    * @param i int
@@ -280,15 +282,6 @@ public class CallJavaMethod {
    */
   public static int getDT(Time d) {
     return (new datetime(d)).toTimeBytes();
-  }
-
-  /**
-   * Convert timestamp object to firebird representation in primitive type
-   * @param d Timestamp
-   * @return long
-   */
-  public static long getDT(Timestamp d) {
-    return (new datetime(d)).toTimestampBytes();
   }
 
   /**
@@ -606,9 +599,6 @@ private static class datetime{
         second = c.get(Calendar.SECOND);
         millisecond = c.get(Calendar.MILLISECOND);
     }
-    datetime(long t){
-      this((int)(t&0xffffffff),(int)(t>>32));
-    }
 
     datetime(int date, int time){
 
@@ -702,10 +692,6 @@ private static class datetime{
              (153 * cpMonth + 2) / 5 +
              day + 1721119 - 2400001);
         return (value);
-    }
-    long toTimestampBytes()
-    {
-     return ((long)toDateBytes())+(((long)toTimeBytes())<<32);
     }
 }
 }
