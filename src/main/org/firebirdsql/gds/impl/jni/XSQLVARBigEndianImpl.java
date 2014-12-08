@@ -54,6 +54,16 @@ public class XSQLVARBigEndianImpl extends XSQLVARImpl {
                 ownname, aliasname, relaliasname);
     }
 
+    /**
+     * Create instance of this class for the specified XSQLVAR parameters.
+     */
+    public XSQLVARBigEndianImpl(int sqltype, int sqlscale, int sqlsubtype,
+                                int sqllen, byte[] sqldata, String sqlname, String relname,
+                                String ownname, String aliasname) {
+        super(sqltype, sqlscale, sqlsubtype, sqllen, sqldata, sqlname, relname,
+                ownname, aliasname, null);
+    }
+
     public byte[] encodeShort(short value) {
         byte ret[] = new byte[2];
         ret[1] = (byte) ((value >>> 0) & 0xff);
