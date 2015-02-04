@@ -31,8 +31,7 @@ package org.firebirdsql.gds.impl.wire;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
-
-
+import java.nio.charset.Charset;
 
 /**
  * <code>XdrInputStream</code> is an input stream for reading in data that
@@ -52,19 +51,25 @@ public class XdrInputStream {
     protected byte buf[];
     protected int count;
     protected int pos;
+    protected String encoding;
 
     protected XdrInputStream() {
         // empty, for subclasses only
     }
-    
+
+    public XdrInputStream(InputStream in) {
+        buf = new byte[defaultBufferSize];
+        this.in = in;
+    }
     /**
      * Create a new instance of <code>XdrInputStream</code>.
      *
      * @param in The underlying <code>InputStream</code> to read from
+     * @param encoding The encoding of reading string data
      */
-    public XdrInputStream(InputStream in) {
-        buf = new byte[defaultBufferSize];
-        this.in = in;
+    public XdrInputStream(InputStream in, String encoding) {
+        this(in);
+        this.encoding = encoding;
     }
 
     /**
@@ -108,7 +113,7 @@ public class XdrInputStream {
         byte[] buffer = new byte[len];
         readFully(buffer,0,len);
         readFully(pad,0,(4 - len) & 3);
-        return new String(buffer);
+        return encoding != null && Charset.isSupported(encoding) ? new String(buffer, encoding) : new String(buffer);
     }
 
 

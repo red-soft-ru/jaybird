@@ -2001,7 +2001,7 @@ public abstract class AbstractJavaGDSImpl extends AbstractGDS implements GDS {
             soTimeout = databaseParameterBuffer.getArgumentAsInt(DatabaseParameterBufferExtension.SO_TIMEOUT);
 
 		try {
-			openSocket(db, dbai, debug, socketBufferSize, soTimeout);
+			openSocket(db, dbai, databaseParameterBuffer, debug, socketBufferSize, soTimeout);
 			
 			XdrOutputStream out = db.out;
 			XdrInputStream in = db.in;
@@ -2123,7 +2123,7 @@ public abstract class AbstractJavaGDSImpl extends AbstractGDS implements GDS {
 	public abstract Socket getSocket(String server, int port)
 			throws IOException, UnknownHostException;
 
-	protected void openSocket(isc_db_handle_impl db, DbAttachInfo dbai,
+	protected void openSocket(isc_db_handle_impl db, DbAttachInfo dbai, DatabaseParameterBuffer dbParameterBuffer,
 			boolean debug, int socketBufferSize, int soTimeout) throws IOException,
 			SocketException, GDSException {
 		try {
@@ -2149,7 +2149,8 @@ public abstract class AbstractJavaGDSImpl extends AbstractGDS implements GDS {
 		}
 
 		db.out = new XdrOutputStream(db.socket.getOutputStream());
-		db.in = new WireXdrInputStream(db.socket.getInputStream());
+		db.in = new WireXdrInputStream(db.socket.getInputStream(),
+				dbParameterBuffer.getArgumentAsString(ISCConstants.isc_dpb_local_encoding));
 	}
 
 	public void disconnect(isc_db_handle_impl db) throws IOException {
@@ -2870,7 +2871,8 @@ public abstract class AbstractJavaGDSImpl extends AbstractGDS implements GDS {
 				}
 
 				svc.out = new XdrOutputStream(svc.socket.getOutputStream());
-				svc.in = new XdrInputStream(svc.socket.getInputStream());
+				svc.in = new XdrInputStream(svc.socket.getInputStream(),
+						((ParameterBufferBase)serviceParameterBuffer).getArgumentAsString(ISCConstants.isc_dpb_local_encoding));
 
 				int nextOperation = sendConnectPacket(svc.out, svc.in, serviceMgrStr);
 				

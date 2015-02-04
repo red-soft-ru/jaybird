@@ -32,9 +32,13 @@ public class WireXdrInputStream extends XdrInputStream {
     public WireXdrInputStream() {
         super();
     }
-    
+
     public WireXdrInputStream(InputStream in) {
         super(in);
+    }
+
+    public WireXdrInputStream(InputStream in, final String encoding) {
+        super(in, encoding);
     }
 
     public int readBuffer(isc_db_handle_impl dbHandle) throws IOException {
