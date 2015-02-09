@@ -124,6 +124,9 @@
       </DataExecutionPrevention>
       <ImportLibrary>..\..\..\..\..\..\firebird\temp\$(Platform)\$(Configuration)\$(ProjectName)/$(ProjectName).lib</ImportLibrary>
       <TargetMachine>MachineX86</TargetMachine>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
     </Link>
     <Bscmake>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -219,6 +222,9 @@
       <ProgramDatabaseFile>..\..\..\..\..\..\firebird\temp\$(Platform)\$(Configuration)\$(ProjectName)/$(ProjectName).pdb</ProgramDatabaseFile>
       <ImportLibrary>..\..\..\..\..\..\firebird\temp\$(Platform)\$(Configuration)\$(ProjectName)/$(ProjectName).lib</ImportLibrary>
       <TargetMachine>MachineX64</TargetMachine>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
     </Link>
     <Bscmake>
       <SuppressStartupBanner>true</SuppressStartupBanner>
