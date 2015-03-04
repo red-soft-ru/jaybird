@@ -162,6 +162,8 @@ public final class ISCConstants {
     public final static int isc_dpb_certificate_base64      = 142;
 
     /* Red Database security parameters */
+    public final static int isc_dpb_mac_plugin				= 148;
+    public final static int isc_dpb_krb5					= 149;
     public final static int isc_dpb_multi_factor_auth       = 150;
     public final static int isc_dpb_certificate             = 151;
     public final static int isc_dpb_repository_name         = 152;

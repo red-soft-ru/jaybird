@@ -143,5 +143,10 @@ public interface FBManagerMBean {
     
     public boolean isDatabaseExists(String fileName, String user, String password) throws Exception;
 
-
+    /**
+     * Set mandatory access plugin name to create database with
+     * @since RDB 2.6
+     * @param mac_plugin plugin name
+     */
+    public void setMACPlugin(String mac_plugin);
 }

@@ -114,6 +114,7 @@ public interface DatabaseParameterBuffer {
     int PROCESS_NAME            = ISCConstants.isc_dpb_process_name;
 
     int MULTI_FACTOR_AUTH       = ISCConstants.isc_dpb_multi_factor_auth;
+    int MAC_PLUGIN              = ISCConstants.isc_dpb_mac_plugin;
 
     /**
      * Add argument with no parameters.

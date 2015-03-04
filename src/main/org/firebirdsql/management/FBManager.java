@@ -72,6 +72,7 @@ public class FBManager implements FBManagerMBean
 
     private GDSType type;
 
+    private String mac_plugin;
 
     public FBManager()
         {
@@ -357,6 +358,8 @@ public class FBManager implements FBManagerMBean
             DatabaseParameterBuffer dpb = c.deepCopy();
                 dpb.addArgument(DatabaseParameterBuffer.USER_NAME, user);
                 dpb.addArgument(DatabaseParameterBuffer.PASSWORD, password);
+            if (!mac_plugin.isEmpty())
+                dpb.addArgument(DatabaseParameterBuffer.MAC_PLUGIN, mac_plugin);
             gds.iscAttachDatabase(getConnectString(fileName), db, dpb);
             
             // if forceCreate is set, drop the database correctly
@@ -376,6 +379,8 @@ public class FBManager implements FBManagerMBean
             DatabaseParameterBuffer dpb = c.deepCopy();
             dpb.addArgument(DatabaseParameterBuffer.USER_NAME, user);
             dpb.addArgument(DatabaseParameterBuffer.PASSWORD, password);
+            if (!mac_plugin.isEmpty())
+                dpb.addArgument(DatabaseParameterBuffer.MAC_PLUGIN, mac_plugin);
             gds.iscCreateDatabase(getConnectString(fileName), db, dpb);
             gds.iscDetachDatabase(db);
         }
@@ -432,8 +437,12 @@ public class FBManager implements FBManagerMBean
             return false;
         }
     }
-    
-    //private methods
+
+    public void setMACPlugin(String mac_plugin) {
+        this.mac_plugin = mac_plugin;
+    }
+
+        //private methods
     private String getConnectString(String filename) throws GDSException {
         return GDSFactory.getDatabasePath(type, host, port, filename);
     }
