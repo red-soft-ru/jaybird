@@ -669,8 +669,13 @@ public abstract class AbstractPingablePooledConnection implements PooledConnecti
             cleanCache();
         
         try {
-            if (!jdbcConnection.getAutoCommit() && !connection.isClosed())
-                jdbcConnection.rollback();
+            if (!connection.isClosed()) {
+                if (!jdbcConnection.getAutoCommit()) {
+                    jdbcConnection.rollback();
+                } else {
+                    jdbcConnection.commit();
+                }
+            }
         } catch(SQLException ex) {
             if (log != null && log.isWarnEnabled())
                 log.warn("Exception while trying to rollback transaction " +
