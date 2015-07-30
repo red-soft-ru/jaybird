@@ -31,6 +31,7 @@ import org.firebirdsql.gds.ng.wire.*;
 import java.io.IOException;
 import java.sql.SQLException;
 
+import static org.firebirdsql.gds.JaybirdErrorCodes.jb_blobPutSegmentEmpty;
 import static org.firebirdsql.gds.impl.wire.WireProtocolConstants.*;
 
 /**
@@ -56,7 +57,6 @@ public class V10OutputBlob extends AbstractFbWireOutputBlob implements FbWireBlo
             checkBlobClosed();
 
             if (getBlobId() != FbBlob.NO_BLOB_ID) {
-                // TODO Custom error instead? (eg "Attempting to reopen output blob")
                 throw new FbExceptionBuilder().nonTransientException(ISCConstants.isc_segstr_no_op).toSQLException();
             }
 
@@ -94,8 +94,8 @@ public class V10OutputBlob extends AbstractFbWireOutputBlob implements FbWireBlo
     public void putSegment(byte[] segment) throws SQLException {
         // TODO Handle exceeding max segment size?
         if (segment.length == 0) {
-            // TODO Add SQL State, make non transient?
-            throw new SQLException("putSegment called with zero-length segment, should be > 0");
+            // TODO make non transient?
+            throw new FbExceptionBuilder().exception(jb_blobPutSegmentEmpty).toSQLException();
         }
         synchronized (getSynchronizationObject()) {
             checkDatabaseAttached();
