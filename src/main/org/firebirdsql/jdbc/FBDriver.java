@@ -20,8 +20,12 @@
 package org.firebirdsql.jdbc;
 
 
+import java.lang.ref.Reference;
+import java.lang.ref.ReferenceQueue;
+import java.lang.ref.SoftReference;
 import java.sql.*;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.resource.ResourceException;
 
@@ -57,7 +61,10 @@ public class FBDriver implements FirebirdDriver {
      * standard connection.
      */
 
-    private Map mcfToDataSourceMap = new HashMap();
+    private final Map<FBConnectionProperties, SoftReference<FBDataSource>> mcfToDataSourceMap =
+            new ConcurrentHashMap<FBConnectionProperties, SoftReference<FBDataSource>>();
+    private final ReferenceQueue<FBDataSource> dataSourceReferenceQueue = new ReferenceQueue<FBDataSource>();
+    private final Object createDataSourceLock = new Object();
 
     static{
        log = LoggerFactory.getLogger(FBDriver.class,false);
@@ -138,21 +145,39 @@ public class FBDriver implements FirebirdDriver {
     }
 
 
-    private FBDataSource createDataSource(FBManagedConnectionFactory mcf) throws ResourceException {
-        FBDataSource dataSource = null;
-        synchronized (mcfToDataSourceMap)
-        {
-            dataSource = (FBDataSource)mcfToDataSourceMap.get(mcf);
-            
+    private FBDataSource createDataSource(final FBManagedConnectionFactory mcf) throws ResourceException {
+        final FBConnectionProperties cacheKey = mcf.getCacheKey();
+        FBDataSource dataSource = dataSourceFromCache(cacheKey);
+        if (dataSource != null) return dataSource;
+        synchronized (createDataSourceLock) {
+            // Obtain again
+            dataSource = dataSourceFromCache(cacheKey);
             if (dataSource == null) {
-                dataSource = (FBDataSource)mcf.createConnectionFactory();
-                mcfToDataSourceMap.put(mcf, dataSource);
+                dataSource = (FBDataSource) mcf.createConnectionFactory();
+                mcfToDataSourceMap.put(cacheKey,
+                        new SoftReference<FBDataSource>(dataSource, dataSourceReferenceQueue));
             }
         }
+        cleanDataSourceCache();
         return dataSource;
     }
-    
-    
+
+    /**
+     * Removes cleared references from the {@link #mcfToDataSourceMap} cache.
+     */
+    private void cleanDataSourceCache() {
+        Reference<? extends FBDataSource> reference;
+        while ((reference = dataSourceReferenceQueue.poll()) != null) {
+            mcfToDataSourceMap.values().remove(reference);
+        }
+    }
+
+    private FBDataSource dataSourceFromCache(final FBConnectionProperties cacheKey) {
+        final SoftReference<FBDataSource> dataSourceReference = mcfToDataSourceMap.get(cacheKey);
+        return dataSourceReference != null ? dataSourceReference.get() : null;
+    }
+
+
     public FirebirdConnection connect(FirebirdConnectionProperties properties) throws SQLException {
         GDSType type = GDSType.getType(properties.getType());
         

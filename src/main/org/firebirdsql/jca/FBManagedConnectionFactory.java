@@ -22,10 +22,14 @@
 package org.firebirdsql.jca;
 
 import java.io.*;
+import java.lang.ref.Reference;
+import java.lang.ref.ReferenceQueue;
+import java.lang.ref.SoftReference;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.resource.NotSupportedException;
 import javax.resource.ResourceException;
@@ -69,7 +73,10 @@ public class FBManagedConnectionFactory implements ManagedConnectionFactory,
      * The <code>mcfInstances</code> weak hash map is used in deserialization
      * to find the correct instance of a mcf after deserializing.
      */
-    private final static Map mcfInstances = new WeakHashMap();
+    private static final Map<FBConnectionProperties, SoftReference<FBManagedConnectionFactory>> mcfInstances =
+            new ConcurrentHashMap<FBConnectionProperties, SoftReference<FBManagedConnectionFactory>>();
+    private static final ReferenceQueue<FBManagedConnectionFactory> mcfReferenceQueue =
+            new ReferenceQueue<FBManagedConnectionFactory>();
 
     // /**
     // * @todo Claudio suggests this should be 1024*64 -1, we should find out I
@@ -583,14 +590,10 @@ public class FBManagedConnectionFactory implements ManagedConnectionFactory,
 
     // Serialization support
     private Object readResolve() throws ObjectStreamException {
-        FBManagedConnectionFactory mcf = 
-            (FBManagedConnectionFactory) mcfInstances.get(this);
-        
-        if (mcf != null)  return mcf; 
-        
-        mcf = new FBManagedConnectionFactory(getGDSType(), 
-                (FBConnectionProperties)this.connectionProperties.clone());
-        
+        FBManagedConnectionFactory mcf = internalCanonicalize();
+        if (mcf != null)  return mcf;
+
+        mcf = new FBManagedConnectionFactory(getGDSType(), (FBConnectionProperties)this.connectionProperties.clone());
         return mcf;
     }
 
@@ -598,26 +601,37 @@ public class FBManagedConnectionFactory implements ManagedConnectionFactory,
      * The <code>canonicalize</code> method is used in FBDriver to reuse
      * previous fbmcf instances if they have been create. It should really be
      * package access level
-     * 
+     *
      * @return a <code>FBManagedConnectionFactory</code> value
      */
     public FBManagedConnectionFactory canonicalize() {
-        FBManagedConnectionFactory mcf = (FBManagedConnectionFactory) mcfInstances.get(this);
-        
-        if (mcf != null) 
-            return mcf;
-        
+        final FBManagedConnectionFactory mcf = internalCanonicalize();
+        if (mcf != null) return mcf;
+        start();
         return this;
+    }
+
+    private FBManagedConnectionFactory internalCanonicalize() {
+        final SoftReference<FBManagedConnectionFactory> factoryReference = mcfInstances.get(getCacheKey());
+        return factoryReference != null ? factoryReference.get() : null;
     }
 
     private void start() {
         synchronized (startLock) {
-            if (!started) {
-                synchronized (mcfInstances) {
-                    mcfInstances.put(this, this);
-                }
-                started = true;
-            } // end of if ()
+            if (started) return;
+            mcfInstances.put(getCacheKey(), new SoftReference<FBManagedConnectionFactory>(this, mcfReferenceQueue));
+            started = true;
+        }
+        cleanMcfInstances();
+    }
+
+    /**
+     * Removes cleared references from the {@link #mcfInstances} cache.
+     */
+    private void cleanMcfInstances() {
+        Reference<? extends FBManagedConnectionFactory> reference;
+        while ((reference = mcfReferenceQueue.poll()) != null) {
+            mcfInstances.values().remove(reference);
         }
     }
 
@@ -826,5 +840,9 @@ public class FBManagedConnectionFactory implements ManagedConnectionFactory,
             throw new FBResourceException("Cannot instantiate class"
                     + connectionClass.getName());
         }
+    }
+
+    public final FBConnectionProperties getCacheKey() {
+        return (FBConnectionProperties) connectionProperties.clone();
     }
 }
