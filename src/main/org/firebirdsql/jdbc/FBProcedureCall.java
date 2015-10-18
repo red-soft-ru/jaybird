@@ -28,6 +28,7 @@ import java.util.Vector;
  */
 public class FBProcedureCall implements Cloneable {
 
+    // TODO Replace with a copy constructor
     public Object clone() {
         try {
             FBProcedureCall newProcedureCall = (FBProcedureCall) super.clone();
@@ -180,16 +181,15 @@ public class FBProcedureCall implements Cloneable {
         // an index that was asked if we run in compatibility mode
         // 
         // we should switch it off as soon as people convert applications
-        if (compatibilityMode)
+        if (compatibilityMode) {
             return index;
-        else
-            throw new FBSQLException("Specified parameter does not exist.",
-                    FBSQLException.SQL_STATE_INVALID_COLUMN);
+        } else {
+            throw new FBSQLException("Specified parameter does not exist.", FBSQLException.SQL_STATE_INVALID_COLUMN);
+        }
     }
 
-
     /**
-     * Get the list of input parameters for this procecedure call.
+     * Get the list of input parameters for this procedure call.
      *
      * @return A list of all input parameters
      */
@@ -249,30 +249,27 @@ public class FBProcedureCall implements Cloneable {
 
         boolean isInputParam = true;
 
-        if (param.length() > 3) {
+        if (param.length() > 4) {
             String possibleOutIndicator = param.substring(0, 3);
             if ("OUT".equalsIgnoreCase(possibleOutIndicator) && Character.isSpaceChar(param.charAt(3))) {
                 isInputParam = false;
+                param = param.substring(4).trim();
+            }
+        }
+
+        if (isInputParam && param.length() > 4) {
+            String possibleInIndicator = param.substring(0, 2);
+            if ("IN".equalsIgnoreCase(possibleInIndicator) && Character.isSpaceChar(param.charAt(2))) {
                 param = param.substring(3).trim();
             }
         }
 
-        if (param.length() > 2) {
-            String possibleInIndicator = param.substring(0, 2);
-            if ("IN".equalsIgnoreCase(possibleInIndicator) && Character.isSpaceChar(param.charAt(2))) {
-                param = param.substring(2).trim();
-            }
-        }
-
         FBProcedureParam callParam = new FBProcedureParam(position, param);
-
-        final Vector<FBProcedureParam> params = isInputParam ? inputParams : outputParams;
-
-        if (params.size() < position + 1) {
-            params.setSize(position + 1);
+        if (isInputParam) {
+            addInputParam(callParam);
+        } else {
+            addOutputParam(callParam);
         }
-
-        params.set(position, callParam);
 
         return callParam;
     }
@@ -293,11 +290,7 @@ public class FBProcedureCall implements Cloneable {
         if (param == null || param == NullParam.NULL_PARAM) {
             param = getOutputParam(index);
         } else {
-            if (outputParams.size() < param.getPosition() + 1) {
-                outputParams.setSize(param.getPosition() + 1);
-            }
-
-            outputParams.set(param.getPosition(), param);
+            addOutputParam(param);
 
             if (!param.isValueSet()) {
                 inputParams.set(param.getPosition(), null);
@@ -318,46 +311,58 @@ public class FBProcedureCall implements Cloneable {
      * @return native SQL that can be executed by the database server.
      */
     public String getSQL(boolean select) throws SQLException {
-        StringBuilder sb = new StringBuilder();
-        sb.append(select
+        StringBuilder sb = new StringBuilder(select
                 ? AbstractCallableStatement.NATIVE_SELECT_COMMAND
                 : AbstractCallableStatement.NATIVE_CALL_COMMAND);
-
-        sb.append(" ");
         sb.append(name);
 
-        StringBuilder paramsBuffer = new StringBuilder();
-
         boolean firstParam = true;
+        sb.append('(');
         for (FBProcedureParam param : inputParams) {
-            if (param == null)
+            if (param == null) {
                 continue;
+            }
+
+            if (!firstParam) {
+                sb.append(',');
+            } else {
+                firstParam = false;
+            }
+
+            sb.append(param.getParamValue());
+        }
+
+        if (firstParam) {
+            sb.setLength(sb.length() - 1);
+        } else {
+            sb.append(')');
+        }
+
+        return sb.toString();
+    }
+
+    /**
+     * Checks if all parameters have been set.
+     *
+     * @throws SQLException When some parameters don't have values, and are not registered as an out parameter.
+     */
+    public void checkParameters() throws SQLException {
+        for (FBProcedureParam param : inputParams) {
+            if (param == null) {
+                continue;
+            }
 
             // if parameter does not have set value, and is not registered
             // as output parameter, throw an exception, otherwise, continue
             // to the next one.
             if (!param.isValueSet()) {
-                if (param.isParam() &&
-                        outputParams.size() > 0 &&
-                        outputParams.get(param.getPosition()) == null) {
-                    throw new FBSQLException("Value of parameter " + param.getIndex() + " not set and " +
-                            "it was not registered as output parameter.", FBSQLException.SQL_STATE_WRONG_PARAM_NUM);
-                }
+                if (param.isParam()
+                        && outputParams.size() > 0
+                        && outputParams.get(param.getPosition()) == null)
+                    throw new FBSQLException("Value of parameter " + param.getIndex() + " not set and "
+                            + "it was not registered as output parameter.", FBSQLException.SQL_STATE_WRONG_PARAM_NUM);
             }
-
-            if (!firstParam) {
-                paramsBuffer.append(", ");
-            } else {
-                firstParam = false;
-            }
-
-            paramsBuffer.append(param.getParamValue());
         }
-
-        if (paramsBuffer.length() > 0)
-            sb.append('(').append(paramsBuffer).append(')');
-
-        return sb.toString();
     }
 
     /**
@@ -372,8 +377,7 @@ public class FBProcedureCall implements Cloneable {
 
         FBProcedureCall that = (FBProcedureCall) obj;
 
-        boolean result = this.name != null ?
-                this.name.equals(that.name) : that.name == null;
+        boolean result = this.name != null ? this.name.equals(that.name) : that.name == null;
 
         result &= this.inputParams.equals(that.inputParams);
         result &= this.outputParams.equals(that.outputParams);
@@ -390,7 +394,7 @@ public class FBProcedureCall implements Cloneable {
     }
 
     /**
-     * This class defines procedure parameter that does not have any value
+     * This class defines a procedure parameter that does not have any value
      * and value of which cannot be set. It is created in order to avoid NPE
      * when {@link FBProcedureCall#getInputParam(int)} does not find correct
      * parameter.
