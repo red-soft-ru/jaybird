@@ -11,7 +11,7 @@ import org.firebirdsql.gds.impl.GDSType;
  */
 public class TestFBEventManager extends FBTestBase {
 
-    private EventManager eventManager;
+    private FBEventManager eventManager;
     private boolean eventManagerDisconnected;
 
     public static final String TABLE_DEF = ""

@@ -65,66 +65,6 @@ public interface EventManager {
     public void disconnect() throws SQLException;
 
     /**
-     * Sets the username for the connection to the database .
-     * @param username for the connection to the database.
-     */
-    public void setUser(String user);
-
-    /**
-     * Returns the username for the connection to the databaes.
-     * @return the username for the connection to the database.
-     */
-    public String getUser();
-
-    /**
-     * Sets the password for the connection to the database.
-     * @param password for the connection to the database.
-     */
-    public void setPassword(String password);
-
-    /**
-     * Returns the password for the connection to the database.
-     * @return the password for the connection to the database.
-     */
-    public String getPassword();
-
-    /**
-     * Sets the database path for the connection to the database.
-     * @param database path for the connection to the database.
-     */
-    public void setDatabase(String database);
-
-    /**
-     * Returns the database path for the connection to the database.
-     * @return the database path for the connection to the database.
-     */
-    public String getDatabase();
-
-    /**
-     * Returns the host for the connection to the database.
-     * @return the host for the connection to the database.
-     */
-    public String getHost();
-
-    /**
-     * Sets the host for the connection to the database.
-     * @param host for the connection to the database.
-     */
-    public void setHost(String host);
-
-    /**
-     * Returns the port for the connection to the database.
-     * @return the port for the connection to the database.
-     */
-    public int getPort();
-
-    /**
-     * Sets the port for the connection to the database.
-     * @param port for the connection to the database.
-     */
-    public void setPort(int port);
-
-    /**
      * Register an EventListener that will be called when an event occurs.
      *
      * @param eventName The name of the event for which the listener will
@@ -172,7 +112,7 @@ public interface EventManager {
      * The return value is the number of occurences of the event in question,
      * or <code>-1</code> if the call timed out.
      *
-     * @param exenvtName The name of the event to wait for
+     * @param eventName The name of the event to wait for
      * @param timeout The maximum number of milliseconds to wait
      * @return The number of occurrences of the requested event, or 
      *         <code>-1</code> if the call timed out

@@ -19,9 +19,15 @@
 
 package org.firebirdsql.jca;
 
-import java.io.PrintWriter;
-import java.sql.SQLException;
-import java.util.*;
+import org.firebirdsql.gds.*;
+import org.firebirdsql.gds.impl.AbstractIscDbHandle;
+import org.firebirdsql.gds.impl.AbstractIscTrHandle;
+import org.firebirdsql.gds.impl.GDSHelper;
+import org.firebirdsql.gds.impl.GDSHelper.GDSHelperErrorListener;
+import org.firebirdsql.gds.impl.GDSType;
+import org.firebirdsql.jdbc.AbstractConnection;
+import org.firebirdsql.logging.Logger;
+import org.firebirdsql.logging.LoggerFactory;
 
 import javax.resource.NotSupportedException;
 import javax.resource.ResourceException;
@@ -30,14 +36,15 @@ import javax.resource.spi.IllegalStateException;
 import javax.resource.spi.SecurityException;
 import javax.resource.spi.security.PasswordCredential;
 import javax.security.auth.Subject;
-import javax.transaction.xa.*;
-
-import org.firebirdsql.gds.*;
-import org.firebirdsql.gds.impl.*;
-import org.firebirdsql.gds.impl.GDSHelper.GDSHelperErrorListener;
-import org.firebirdsql.jdbc.AbstractConnection;
-import org.firebirdsql.logging.Logger;
-import org.firebirdsql.logging.LoggerFactory;
+import javax.transaction.xa.XAException;
+import javax.transaction.xa.XAResource;
+import javax.transaction.xa.Xid;
+import java.io.PrintWriter;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * The class <code>FBManagedConnection</code> implements both the
