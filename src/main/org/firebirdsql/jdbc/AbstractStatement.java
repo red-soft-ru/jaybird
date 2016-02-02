@@ -1187,7 +1187,7 @@ public abstract class AbstractStatement implements FirebirdStatement, Synchroniz
     private void populateStatementInfo() throws FBSQLException {
         if (fixedStmt.getExecutionPlan() == null){
             try {
-                gdsHelper.populateStatementInfo(fixedStmt);
+                gdsHelper.populateStatementInfo((AbstractIscStmtHandle)fixedStmt);
             } catch(GDSException ex) {
                 throw new FBSQLException(ex);
             }
