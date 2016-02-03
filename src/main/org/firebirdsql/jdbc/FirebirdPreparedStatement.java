@@ -37,7 +37,7 @@ import org.firebirdsql.gds.IscStmtHandle;
 public interface FirebirdPreparedStatement extends FirebirdStatement, PreparedStatement {
  
     /** A <code>SELECT</code> statement */
-    public static final int TYPE_SELECT =  IscStmtHandle.TYPE_SELECT;
+    public static final int TYPE_SELECT = IscStmtHandle.TYPE_SELECT;
 
     /** An <code>INSERT</code> statement */
     public static final int TYPE_INSERT = IscStmtHandle.TYPE_INSERT;

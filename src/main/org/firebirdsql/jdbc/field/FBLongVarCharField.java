@@ -24,10 +24,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 import java.sql.Blob;
+import java.sql.Clob;
 import java.sql.SQLException;
 
 import org.firebirdsql.gds.XSQLVAR;
 import org.firebirdsql.jdbc.*;
+import org.firebirdsql.jdbc.field.FBFlushableField.CachedObject;
 
 
 /**
@@ -87,6 +89,16 @@ public class FBLongVarCharField extends FBStringField implements FBFlushableFiel
         return blob;
     }
     
+    public Clob getClob() throws SQLException {
+    	FBBlob blob = (FBBlob) getBlob();
+    	
+    	if (blob == BLOB_NULL_VALUE){
+    		return CLOB_NULL_VALUE;
+    	}
+    	
+    	return new FBClob(blob);
+    }
+    
     public InputStream getBinaryStream() throws SQLException {
         Blob blob = getBlob();
 
@@ -137,22 +149,30 @@ public class FBLongVarCharField extends FBStringField implements FBFlushableFiel
         return bout.toByteArray();
     }
 
-    public byte[] getCachedObject() throws SQLException {
+    public byte[] getCachedData() throws SQLException {
         if (getFieldData() == null) {
             
             if (bytes != null)
                 return bytes;
             else
-            if (binaryStream != null)
-                throw new FBDriverNotCapableException();
-            else
-            if (characterStream != null)
-                throw new FBDriverNotCapableException();
-            else
                 return BYTES_NULL_VALUE;
         }
 
           return getBytes();
+    }
+    
+    public FBFlushableField.CachedObject getCachedObject() throws SQLException {
+        if (getFieldData() == null) 
+            return new FBFlushableField.CachedObject(bytes, binaryStream, characterStream, length);
+        
+        return new CachedObject(getBytes(), null, null, 0);
+    }
+    
+    public void setCachedObject(FBFlushableField.CachedObject cachedObject) throws SQLException {
+        this.bytes = cachedObject.bytes;
+        this.binaryStream = cachedObject.binaryStream;
+        this.characterStream = cachedObject.characterStream;
+        this.length = cachedObject.length;
     }
 
     public String getString() throws SQLException {
@@ -167,6 +187,11 @@ public class FBLongVarCharField extends FBStringField implements FBFlushableFiel
     public void setBlob(FBBlob blob) throws SQLException {
         setFieldData(field.encodeLong(blob.getBlobId()));
         this.blob = blob;
+    }
+    
+    public void setClob(FBClob clob) throws SQLException {
+    	FBBlob blob = clob.getWrappedBlob();
+    	setBlob(blob);
     }
 
     public void setCharacterStream(Reader in, int length) throws SQLException {

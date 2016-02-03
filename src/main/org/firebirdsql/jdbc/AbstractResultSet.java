@@ -290,11 +290,10 @@ public abstract class AbstractResultSet implements ResultSet, Synchronizable, FB
             if (fbFetcher != null) {
                 fbFetcher.close();
 
+                if (rowUpdater != null)
+                    rowUpdater.close();
+
                 if (notifyListener) {
-                
-                    if (rowUpdater != null)
-                        rowUpdater.close();
-                    
                     if (listener != null)
                         listener.resultSetClosed(this);
                 }
@@ -1511,6 +1510,20 @@ public abstract class AbstractResultSet implements ResultSet, Synchronizable, FB
         return rsConcurrency;
     }
 
+    /**
+     * Retrieves the holdability of this <code>ResultSet</code> object
+     * 
+     * @return  either <code>ResultSet.HOLD_CURSORS_OVER_COMMIT</code> or 
+     * <code>ResultSet.CLOSE_CURSORS_AT_COMMIT</code>
+     * 
+     * @throws SQLException if a database access error occurs 
+     * or this method is called on a closed result set
+     * 
+     * @since 1.6
+     */
+    public int getHoldability() throws SQLException {
+        return rsHoldability;
+    }
 
     //---------------------------------------------------------------------
     // Updates

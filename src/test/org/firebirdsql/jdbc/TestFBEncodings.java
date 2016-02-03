@@ -27,8 +27,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Properties;
-import java.util.Vector;
+import java.util.*;
 
 
 /**
@@ -54,7 +53,11 @@ public class TestFBEncodings extends FBTestBase {
         "  ascii_field VARCHAR(50) CHARACTER SET ASCII, " +
         "  none_field VARCHAR(50) CHARACTER SET NONE, " +
         "  char_field CHAR(50) CHARACTER SET UNICODE_FSS, " +
-        "  utf8_field VARCHAR(50) CHARACTER SET UTF8 " +
+        "  octets_field CHAR(10) CHARACTER SET OCTETS, " +
+        "  var_octets_field VARCHAR(10) CHARACTER SET OCTETS, " +
+        "  none_octets_field CHAR(10) CHARACTER SET NONE, " +
+        "  uuid_char CHAR(36) CHARACTER SET UTF8, " + 
+        "  uuid_varchar CHAR(36) CHARACTER SET UTF8 " +
         ")"
         ;
 
@@ -789,6 +792,149 @@ for (int i=0; i< win1251UpperBytes.length	; i++){
         }
     }
     
+    private final static byte[] OCTETS_DATA = new byte[] {
+        1, 2, 3, 4, 5, 6, 0, 0, 7
+    };
+    
+    public void testOctets() throws Exception {
+        Properties props = new Properties();
+        props.putAll(getDefaultPropertiesForConnection());
+//        props.put("type", "NATIVE");
+//        props.put("lc_ctype", "OCTETS");
+        props.put("charSet", "Cp1252");
+        
+        Connection connection = 
+            DriverManager.getConnection(getUrl(), props);
+
+        try {
+            PreparedStatement stmt = connection.prepareStatement(
+                "INSERT INTO test_encodings(" + 
+                "  id, octets_field, var_octets_field, none_octets_field) " +
+                "VALUES(?, ?, ?, ?)");
+            
+            stmt.setInt(1, UNIVERSAL_TEST_ID);
+            stmt.setBytes(2, OCTETS_DATA);
+            stmt.setBytes(3, OCTETS_DATA);
+            stmt.setBytes(4, OCTETS_DATA);
+            
+            int updated = stmt.executeUpdate();
+            stmt.close();
+            
+            assertTrue("Should insert one row", updated == 1);
+            
+            // 
+            // Test each column
+            //
+            stmt = connection.prepareStatement("SELECT octets_field, " +
+                    "var_octets_field, none_octets_field " + 
+                    "FROM test_encodings WHERE id = ?");
+            
+            stmt.setInt(1, UNIVERSAL_TEST_ID);
+            
+            ResultSet rs = stmt.executeQuery();
+            assertTrue("Should have at least one row", rs.next());
+            
+            byte[] charBytes = rs.getBytes(1);
+            byte[] varcharBytes = rs.getBytes(2);
+            byte[] noneBytes = rs.getBytes(3);
+
+            //assertTrue("Value should be correct.", Arrays.equals(OCTETS_DATA, charBytes));
+            assertTrue("Value should be correct.", Arrays.equals(OCTETS_DATA, varcharBytes));
+            
+            stmt.close();
+
+            
+        } finally {
+            connection.close();
+        }
+    }
+    
+    public void testExecuteBlock() throws Exception {
+        Properties props = new Properties();
+        props.putAll(getDefaultPropertiesForConnection());
+//        props.put("type", "NATIVE");
+//        props.put("lc_ctype", "OCTETS");
+//        props.put("charSet", "UTF-8");
+        
+        Connection connection = 
+            DriverManager.getConnection(getUrl(), props);
+
+        try {
+                
+            Statement stmt = connection.createStatement();
+            try {
+                stmt.execute("INSERT INTO test_encodings(unicode_field) VALUES('" + 
+                    "0123456789" +
+                    "abcdefghij" +
+                    "klmnopqrst" +
+                    "uvwxyz____" +
+                    "0123456789" +
+                    
+                    "0123456789" +
+                    "abcdefghij" +
+                    "klmnopqrst" +
+                    "uvwxyz____" +
+                    "0123456789" +
+
+                    "0123456789" +
+                    "abcdefghij" +
+                    "klmnopqrst" +
+                    "uvwxyz____" +
+                    "0123456789" +
+                    
+                    "')"); 
+                
+                ResultSet rs = stmt.executeQuery("EXECUTE BLOCK RETURNS ( " +
+                        "STR VARCHAR(3) CHARACTER SET UNICODE_FSS) " +
+                        "AS BEGIN   STR = 'abcde';   SUSPEND; " +
+                        "END ");
+                
+                rs.next();
+                System.out.println(rs.getString(1));
+                
+            } finally {
+                stmt.close();
+            }
+
+            
+        } finally {
+            connection.close();
+        }
+    }
+    
+	public void testCharFieldWithUTF8Encoding() throws Exception {
+		Properties props = new Properties();
+        props.putAll(getDefaultPropertiesForConnection());
+        props.put("lc_ctype", "UTF8");
+        
+        Connection connection = DriverManager.getConnection(getUrl(), props);
+		try {
+			String randomUUID = UUID.randomUUID().toString();
+			Statement statement = connection.createStatement();
+			try {
+				String updateSql = "INSERT INTO test_encodings (uuid_char, uuid_varchar) VALUES ('" + randomUUID + "', '" + randomUUID + "')";
+				statement.executeUpdate(updateSql);
+			
+				String sql = "SELECT uuid_char, CHAR_LENGTH(uuid_char), uuid_varchar, CHAR_LENGTH(uuid_varchar) FROM test_encodings";
+			
+				ResultSet rs = statement.executeQuery(sql);
+				if (rs.next()) {
+					String uuidChar = rs.getString("uuid_char");
+					assertEquals("compare CHAR_LENGTH", rs.getInt(2), rs.getInt(4));
+					assertEquals(randomUUID.length(), rs.getInt(2));
+					assertEquals(randomUUID, rs.getString("uuid_varchar"));
+					// now it fails:
+					assertEquals(randomUUID.length(), uuidChar.length());
+					assertEquals(randomUUID, uuidChar);
+				}
+			} finally {
+				statement.close();
+			}
+		} finally {
+			connection.close();
+		}
+	}
+    
     public void _testWrongTranslation() throws Exception {
         Properties props = new Properties();
         props.putAll(getDefaultPropertiesForConnection());
@@ -844,6 +990,5 @@ for (int i=0; i< win1251UpperBytes.length	; i++){
         } finally {
             connection.close();
         }
-
     }
 }

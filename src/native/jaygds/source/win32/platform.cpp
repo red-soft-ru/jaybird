@@ -27,6 +27,23 @@
 #include <string>
 using namespace std;
 
+static HINSTANCE hInstance = NULL;
+
+
+BOOL WINAPI DllMain(HINSTANCE h, DWORD reason, LPVOID reserved)
+{
+	switch (reason)
+	{
+		case DLL_PROCESS_ATTACH:
+			hInstance = h;
+			break;
+
+		default:
+			break;
+	}
+
+	return TRUE;
+}
 
 void processFailedEntryPoint(const char* const message)
     {
@@ -39,7 +56,7 @@ SHARED_LIBRARY_HANDLE PlatformLoadLibrary(const char* const name)
     if (pos != NULL)
         {
         int size = pos - name;
-		std::string dllpath = name;
+        std::string dllpath = name;
         dllpath.resize(size);
         DWORD pathlen = 0;
         pathlen = GetEnvironmentVariable("PATH", NULL, 0);
@@ -57,13 +74,38 @@ SHARED_LIBRARY_HANDLE PlatformLoadLibrary(const char* const name)
             }
         else
             SetEnvironmentVariable("PATH", dllpath.c_str());
-		}
-	
-    SHARED_LIBRARY_HANDLE handle = LoadLibrary(name);
-    
+        }
+
+    SHARED_LIBRARY_HANDLE handle = LoadLibraryEx(name, NULL, LOAD_WITH_ALTERED_SEARCH_PATH);
     if (handle == NULL) 
             { 
-            throw InternalException("FirebirdApiBinding::Initialize - Could not find or load the GDS32.DLL"); 
+			DWORD dwReturn = GetLastError();
+
+			char buffer[MAX_PATH];
+			DWORD dw;
+
+			if ((dw = GetModuleFileName(hInstance, buffer, sizeof(buffer))) != 0)
+			{
+				for (char* p = buffer + dw -1; p >= buffer; --p)
+				{
+					if (*p == '\\')
+					{
+						*p = '\0';
+						break;
+					}
+				}
+
+				strcat(buffer, "\\");
+				strcat(buffer, name);
+
+				handle = LoadLibraryEx(buffer, NULL, LOAD_WITH_ALTERED_SEARCH_PATH);
+			}
+			char message[200];
+			int n;
+			n = sprintf(message, "FirebirdApiBinding::Initialize - Could not find or load the client library / embeded server. Error [%d].", dwReturn);
+
+			if (handle == NULL)
+				throw InternalException(message); 
             }
     return handle; 
     }

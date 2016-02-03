@@ -23,6 +23,8 @@ import java.sql.SQLException;
 
 import org.firebirdsql.gds.impl.GDSHelper;
 import org.firebirdsql.jdbc.FBObjectListener;
+import org.firebirdsql.jdbc.FBObjectListener.BlobListener;
+import org.firebirdsql.jdbc.FBObjectListener.StatementListener;
 
 /**
  * JDBC 2.0 compliant implementation of {@link PreparedStatement} interface.
@@ -43,10 +45,19 @@ public class FBPreparedStatement extends AbstractPreparedStatement {
                                int rsType, int rsConcurrency, int rsHoldability,
                                FBObjectListener.StatementListener statementListener,
                                FBObjectListener.BlobListener blobListener,
-                               boolean metaData, boolean standaloneStatement)
+                               boolean metaData, boolean standaloneStatement,
+                               boolean generatedKeys)
     throws SQLException {
         super(gdsHelper, sql, rsType, rsConcurrency, rsHoldability,
-                statementListener, blobListener, metaData, standaloneStatement);
+                statementListener, blobListener, metaData, standaloneStatement,
+                generatedKeys);
     }
 
+    public FBPreparedStatement(GDSHelper c, int rsType, int rsConcurrency,
+            int rsHoldability, StatementListener statementListener,
+            BlobListener blobListener) throws SQLException {
+        super(c, rsType, rsConcurrency, rsHoldability, statementListener, blobListener);
+    }
+
+    
 }

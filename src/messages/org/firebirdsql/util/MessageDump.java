@@ -1,9 +1,7 @@
 package org.firebirdsql.util;
 
 import java.io.*;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.*;
 
 import org.firebirdsql.jdbc.FBDriver;
@@ -51,6 +49,16 @@ public class MessageDump {
                 } else
                     sb.append('%').append(chars[i]);
             } else
+            if (chars[i] == '@') {
+            	i++;
+            	
+            	try {
+            		int msgNum = Integer.parseInt("" + chars[i]);
+            		sb.append('{').append(Integer.toString(msgNum - 1)).append('}');
+            	} catch(NumberFormatException ex) {
+            		sb.append(chars[i]);
+            	}
+            } else
                 sb.append(chars[i]);
         }
 
@@ -82,11 +90,36 @@ public class MessageDump {
 
         return result;
     }
+    
+    private static Properties extractSQLStates(FirebirdConnection connection) throws SQLException {
+        Properties result = new Properties();
+
+        Statement stmt = connection.createStatement();
+        try {
+            ResultSet rs = stmt
+                    .executeQuery("SELECT fac_code, number, sql_state FROM system_errors");
+
+            while (rs.next()) {
+                int code = rs.getInt(1);
+                int number = rs.getInt(2);
+                String sqlState = rs.getString(3);
+
+                result.setProperty(
+                    Integer.toString(getErrorCode(code, number)),
+                    extractMessage(sqlState));
+            }
+
+        } finally {
+            stmt.close();
+        }
+
+        return result;
+    }
 
     public static void main(String[] args) throws Exception {
 
         if (args.length == 0)
-            args = new String[] { "localhost:c:/database/messages.fdb"};
+            args = new String[] { "localhost:d:/database/fb_messages.fdb"};
 
         FirebirdConnection connection = getConnection(args[0]);
         try {
@@ -94,6 +127,11 @@ public class MessageDump {
             TreeMap sortedMap = new TreeMap(props);
 
             store(sortedMap, new FileOutputStream("./error.properties"), "");
+            
+            props = extractSQLStates(connection);
+            TreeMap sqlStates = new TreeMap(props);
+            
+            store(sqlStates, new FileOutputStream("./sqlstates.properties"), "");
         } finally {
             connection.close();
         }

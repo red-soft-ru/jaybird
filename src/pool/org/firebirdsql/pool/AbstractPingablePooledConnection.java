@@ -24,7 +24,7 @@ import java.sql.*;
 
 import javax.sql.*;
 
-import org.firebirdsql.jdbc.FBSQLException;
+import org.firebirdsql.jdbc.*;
 import org.firebirdsql.logging.Logger;
 import org.firebirdsql.logging.LoggerFactory;
 
@@ -48,7 +48,7 @@ public abstract class AbstractPingablePooledConnection implements PooledConnecti
         LoggerFactory.getLogger(PingablePooledConnection.class, false);
 
     protected Connection jdbcConnection;
-    private HashSet connectionEventListeners = new HashSet();
+    private HashSet eventListeners = new HashSet();
 
     private boolean invalid;
     private boolean inPool;
@@ -108,7 +108,7 @@ public abstract class AbstractPingablePooledConnection implements PooledConnecti
 
     protected AbstractPingablePooledConnection(Connection connection,
         String pingStatement, int pingInterval, boolean statementPooling, 
-        /*int transactionIsolation,*/ int maxStatements, boolean keepStatements) 
+        int maxStatements, boolean keepStatements) 
         throws SQLException 
     {
         this(connection, statementPooling, /*transactionIsolation,*/ maxStatements, keepStatements);
@@ -234,7 +234,7 @@ public abstract class AbstractPingablePooledConnection implements PooledConnecti
      */
     public synchronized
         void addConnectionEventListener(ConnectionEventListener listener) {
-        connectionEventListeners.add(listener);
+        eventListeners.add(listener);
     }
 
     /**
@@ -244,7 +244,7 @@ public abstract class AbstractPingablePooledConnection implements PooledConnecti
      */
     public synchronized
         void removeConnectionEventListener(ConnectionEventListener listener) {
-        connectionEventListeners.remove(listener);
+        eventListeners.remove(listener);
     }
 
     /**
@@ -259,7 +259,7 @@ public abstract class AbstractPingablePooledConnection implements PooledConnecti
         
         ConnectionEvent event = new ConnectionEvent(this);
         
-        List tempListeners = new ArrayList(connectionEventListeners);
+        List tempListeners = new ArrayList(eventListeners);
         
         Iterator iter = tempListeners.iterator();
         while (iter.hasNext()) {
@@ -308,7 +308,7 @@ public abstract class AbstractPingablePooledConnection implements PooledConnecti
             // and finally notify about the event
             ConnectionEvent event = new ConnectionEvent(this);
             
-            List tempListeners = new ArrayList(connectionEventListeners);
+            List tempListeners = new ArrayList(eventListeners);
             
             Iterator iter = tempListeners.iterator();
             while (iter.hasNext()) {
@@ -378,6 +378,9 @@ public abstract class AbstractPingablePooledConnection implements PooledConnecti
      * Otherwise, it prepares statement and caches it.
      *
      * @param statement statement to prepare.
+     * @param resultSetType result set type.
+     * @param resultSetConcurrency result set concurrency.
+     * @param resultSetHoldability result set holdability.
      *
      * @return instance of {@link PreparedStatement} corresponding to the
      * <code>statement</code>.
@@ -385,57 +388,175 @@ public abstract class AbstractPingablePooledConnection implements PooledConnecti
      * @throws SQLException if there was problem preparing statement.
      */
     public PreparedStatement getPreparedStatement(String statement,
-        int resultSetType, int resultSetConcurrency) throws SQLException {
+        int resultSetType, int resultSetConcurrency, int resultSetHoldability) throws SQLException {
         
         if (!isStatementPooling())
             return jdbcConnection.prepareStatement(
-                statement, resultSetType, resultSetConcurrency);
+                statement, resultSetType, resultSetConcurrency, resultSetHoldability);
         
-        PreparedStatement stmt;
-
         synchronized (statements) {
+            XPreparedStatementModel key = new XPreparedStatementModel(statement,
+                    resultSetType, resultSetConcurrency, resultSetHoldability);
+            
             XPreparedStatementCache stmtCache =
-                (XPreparedStatementCache)statements.get(statement);
+                (XPreparedStatementCache)statements.get(key);
 
             if (stmtCache == null) {
-                stmtCache = new XPreparedStatementCache(
-                    this, statement, resultSetType, resultSetConcurrency, 
-                    maxStatements);
+                stmtCache = new XPreparedStatementCache(this, key, maxStatements);
 
-                statements.put(statement, stmtCache);
+                statements.put(key, stmtCache);
             }
 
-            stmt = stmtCache.take(currentConnection.getProxy());
+            PreparedStatement stmt = stmtCache.take(currentConnection.getProxy());
+            
+            return stmt;
         }
-
-        return stmt;
     }
+
+    public PreparedStatement getPreparedStatement(String sql,
+            int resultSetType, int resultSetConcurrency) throws SQLException {
+        return getPreparedStatement(sql, resultSetType, resultSetConcurrency,
+            FirebirdResultSet.CLOSE_CURSORS_AT_COMMIT);
+    }
+
+    public PreparedStatement getPreparedStatement(String statement, int[] keyIndexes,
+            String[] keyColumns) throws SQLException {
+        
+        if (!isStatementPooling()) {
+            if (keyIndexes == null && keyColumns == null)
+                return jdbcConnection.prepareStatement(
+                    statement, FirebirdStatement.RETURN_GENERATED_KEYS);
+            else
+            if (keyIndexes != null)
+                return jdbcConnection.prepareStatement(statement, keyIndexes);
+            else
+            if (keyColumns != null)
+                return jdbcConnection.prepareStatement(statement, keyColumns);
+            else
+                throw new IllegalStateException();
+        }
+        
+        synchronized (statements) {
+            XPreparedStatementModel key;
+            
+            if (keyIndexes == null && keyColumns == null)
+                key = new XPreparedStatementModel(statement, FirebirdStatement.RETURN_GENERATED_KEYS);
+            else
+            if (keyIndexes != null)
+                key = new XPreparedStatementModel(statement, keyIndexes);
+            else
+            if (keyColumns != null)
+                key = new XPreparedStatementModel(statement, keyColumns);
+            else
+                throw new IllegalStateException();
+            
+            XPreparedStatementCache stmtCache =
+                (XPreparedStatementCache)statements.get(key);
+
+            if (stmtCache == null) {
+                stmtCache = new XPreparedStatementCache(this, key, maxStatements);
+
+                statements.put(key, stmtCache);
+            }
+
+            PreparedStatement stmt = stmtCache.take(currentConnection.getProxy());
+            
+            return stmt;
+        }    }
 
     /**
      * Prepare the specified statement and wrap it with cache notification
      * wrapper.
      *
-     * @param statement sattement to prepare.
+     * @param statement statement to prepare.
      *
      * @return prepared and wrapped statement.
      *
      * @throws SQLException if underlying connection threw this exception.
      */
-    public XCachablePreparedStatement prepareStatement(String statement,
-        int resultSetType, int resultSetConcurrency, boolean cached) throws SQLException {
+    public XCachablePreparedStatement prepareStatement(
+            XPreparedStatementModel key, boolean cached) throws SQLException {
         if (LOG_PREPARE_STATEMENT && getLogChannel() != null) {
-            getLogChannel().info("Prepared statement for SQL '" + statement +
+            getLogChannel().info("Prepared statement for SQL '" + key.getSql() +
                 "'");
 
         }
-        PreparedStatement stmt = jdbcConnection.prepareStatement(
-            statement, resultSetType, resultSetConcurrency);
+        
+        if (!key.isGeneratedKeys())
+            return prepareStatementNoGeneratedKeys(key, cached);
+        else
+            return prepareStatementGeneratedKeys(key, cached);
+    }
+
+    /**
+     * Prepare specified SQL statement. This method should call 
+     * {@link java.sql.Connection#prepareStatement(String)} method on physical JDBC
+     * connection.
+     * 
+     * @param sql SQL statement to prepare.
+     * 
+     * @param resultSetType type of result set
+     * 
+     * @param resultSetConcurrency result set concurrency
+     * 
+     * @param cached <code>true</code> if prepared statement will be cached.
+     * 
+     * @return instance of {@link java.sql.PreparedStatement} corresponding to the 
+     * specified SQL statement.
+     * 
+     * @throws SQLException if something went wrong.
+     * 
+     * @see java.sql.Connection#prepareStatement(java.lang.String, int, int)
+     * 
+     * @deprecated use {@link #prepareStatement(String, int, int, int, boolean)}
+     * intead.
+     */
+    public XCachablePreparedStatement prepareStatement(String sql,
+            int resultSetType, int resultSetConcurrency,
+            boolean cached) throws SQLException {
+        
+        return prepareStatement(
+            new XPreparedStatementModel(sql, resultSetType, resultSetConcurrency,
+                    FirebirdResultSet.CLOSE_CURSORS_AT_COMMIT), cached);
+    }
+
+    private XCachablePreparedStatement prepareStatementNoGeneratedKeys(
+            XPreparedStatementModel key, boolean cached) throws SQLException {
+        PreparedStatement stmt = jdbcConnection.prepareStatement(key.getSql(),
+            key.getResultSetType(), key.getResultSetConcurrency(), key
+                    .getResultSetHoldability());
             
+        return wrapPreparedStatement(key, cached, stmt);
+    }
+    
+    private XCachablePreparedStatement prepareStatementGeneratedKeys(
+            XPreparedStatementModel key, boolean cached)
+            throws SQLException {
+        
+        PreparedStatement stmt;
+        if (key.getKeyIndexes() == null && key.getKeyColumns() == null)
+            stmt = jdbcConnection.prepareStatement(
+                key.getSql(), FirebirdStatement.RETURN_GENERATED_KEYS);
+        else
+        if (key.getKeyIndexes() != null)
+            stmt = jdbcConnection.prepareStatement(key.getSql(), key.getKeyIndexes());
+        else
+        if (key.getKeyColumns() != null)
+            stmt = jdbcConnection.prepareStatement(key.getSql(), key.getKeyColumns());
+        else
+            throw new IllegalArgumentException();
+            
+        return wrapPreparedStatement(key, cached, stmt);
+    }
+
+    private XCachablePreparedStatement wrapPreparedStatement(
+            XPreparedStatementModel key, boolean cached, PreparedStatement stmt) {
+        
         Class[] implementedInterfaces = 
             PooledConnectionHandler.getAllInterfaces(stmt.getClass());
 
         PooledPreparedStatementHandler handler =
-            new PooledPreparedStatementHandler(statement, stmt, this, cached);
+            new PooledPreparedStatementHandler(key, stmt, this, cached);
 
         // copy all implemented interfaces from the original prepared statement
         // and add XCachablePreparedStatement interface
@@ -457,6 +578,13 @@ public abstract class AbstractPingablePooledConnection implements PooledConnecti
             handler);
     }
 
+
+    public void statementClosed(String sql, Object proxy)
+            throws SQLException {
+        throw new UnsupportedOperationException();
+    }
+
+
     /**
      * Clean the cache.
      *
@@ -469,6 +597,9 @@ public abstract class AbstractPingablePooledConnection implements PooledConnecti
             getLogChannel().info("Prepared statement cache cleaned.");
 
         }
+        
+        SQLException error = null;
+        
         synchronized (statements) {
             Iterator iter = statements.entrySet().iterator();
             while (iter.hasNext()) {
@@ -479,9 +610,19 @@ public abstract class AbstractPingablePooledConnection implements PooledConnecti
 
                 iter.remove();
                 
-                stmtCache.invalidate();
+                try {
+                    stmtCache.invalidate();
+                } catch(SQLException ex) {
+                    if (error == null)
+                        error = ex;
+                    else
+                        error.setNextException(ex);
+                }
             }
         }
+        
+        if (error != null)
+                throw error;
     }
 
     /**
@@ -493,17 +634,17 @@ public abstract class AbstractPingablePooledConnection implements PooledConnecti
      *
      * @throws SQLException if prepared statement cannot be added to the pool.
      */
-    public void statementClosed(String statement, Object proxy) 
+    public void statementClosed(XPreparedStatementModel key, Object proxy) 
         throws SQLException 
     {
         synchronized (statements) {
             XPreparedStatementCache stmtCache =
-                (XPreparedStatementCache)statements.get(statement);
+                (XPreparedStatementCache)statements.get(key);
 
             if (stmtCache == null) {
                 if (getLogChannel() != null) {
                     getLogChannel().error(
-                        "Cannot find statement cache for SQL \"" + statement +
+                        "Cannot find statement cache for SQL \"" + key.getSql() +
                         "\". Trying to close statement to release resources."
                         );
 
@@ -526,12 +667,25 @@ public abstract class AbstractPingablePooledConnection implements PooledConnecti
 
         if (!keepStatements)
             cleanCache();
+        
+        try {
+            if (!jdbcConnection.getAutoCommit() && !connection.isClosed())
+                jdbcConnection.rollback();
+        } catch(SQLException ex) {
+            if (log != null && log.isWarnEnabled())
+                log.warn("Exception while trying to rollback transaction " +
+                        "before returning connection to pool.", ex);
+            
+            close();
+            
+            throw ex;
+        }
 
         currentConnection = null;
 
         ConnectionEvent event = new ConnectionEvent(this);
         
-        List tempListeners = new ArrayList(connectionEventListeners);
+        List tempListeners = new ArrayList(eventListeners);
         
         Iterator iter = tempListeners.iterator();
         while (iter.hasNext()) {
@@ -542,7 +696,7 @@ public abstract class AbstractPingablePooledConnection implements PooledConnecti
     public void connectionErrorOccured(PooledConnectionHandler connection, SQLException ex) {
         ConnectionEvent event = new ConnectionEvent(this, ex);
 
-        List tempListeners = new ArrayList(connectionEventListeners);
+        List tempListeners = new ArrayList(eventListeners);
         
         Iterator iter = tempListeners.iterator();
         while (iter.hasNext()) {

@@ -1,5 +1,7 @@
 /*
- * Firebird Open Source J2ee connector - jdbc driver
+ * $Id: FBDataSource.java,v 1.15 2011/07/30 19:12:32 mrotteveel Exp $
+ *  
+ * Firebird Open Source J2EE connector - JDBC driver
  *
  * Distributable under LGPL license.
  * You may obtain a copy of the License at http://www.gnu.org/copyleft/lgpl.html
@@ -18,7 +20,6 @@
  */
 
 package org.firebirdsql.jdbc;
-
 
 import java.io.PrintWriter;
 import java.io.Serializable;
@@ -43,6 +44,8 @@ import org.firebirdsql.jca.FBManagedConnectionFactory;
  * @version 1.0
  */
 public class FBDataSource implements DataSource, Serializable, Referenceable {
+
+    private static final long serialVersionUID = 1178461472062969634L;
 
     private ConnectionManager cm;
 
@@ -218,16 +221,14 @@ public class FBDataSource implements DataSource, Serializable, Referenceable {
         return loginTimeout;
     }
 
-
-    public boolean isWrapperFor(Class arg0) throws SQLException {
-        return arg0 != null && arg0.isAssignableFrom(FBDataSource.class);
+    // JDBC 4.0
+    
+    public boolean isWrapperFor(Class iface) throws SQLException {
+    	return false;
     }
-
-    public Object unwrap(Class arg0) throws SQLException {
-        if (!isWrapperFor(arg0))
-            throw new FBSQLException("No compatible class found.");
-        
-        return this;
+    
+    public Object unwrap(Class iface) throws SQLException {
+    	throw new FBDriverNotCapableException();
     }
 
 }

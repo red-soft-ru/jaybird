@@ -22,7 +22,7 @@
 
 
 #include "ibase.h"
-#include "jni.h"
+#include <jni.h>
 
 #include <cstring>
 #include <vector>
@@ -357,6 +357,14 @@ typedef ISC_STATUS ISC_EXPORT prototype_isc_cancel_events(
 
 typedef ISC_LONG ISC_EXPORT prototype_isc_free(char *);
 
+typedef void ISC_EXPORT prototype_fb_cancel_operation(
+        ISC_STATUS*,
+        isc_db_handle*,
+        short);
+
+
+
+
 class FirebirdApiBinding
         {
         public:
@@ -421,6 +429,7 @@ class FirebirdApiBinding
         prototype_isc_event_counts*                      isc_event_counts;
         prototype_isc_cancel_events*                     isc_cancel_events;
         prototype_isc_free*         isc_free;
+		prototype_fb_cancel_operation*	fb_cancel_operation;
         
         public:
         bool operator==(const FirebirdApiBinding &v); 
@@ -487,7 +496,8 @@ class FirebirdApiBinding
             enum_isc_wait_for_events,
             enum_isc_event_counts,
             enum_isc_cancel_events,
-            enum_isc_free
+            enum_isc_free,
+			enum_fb_cancel_operation
             };     
         };
 

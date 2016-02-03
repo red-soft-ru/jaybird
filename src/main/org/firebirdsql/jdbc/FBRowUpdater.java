@@ -23,8 +23,7 @@ import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import org.firebirdsql.gds.GDSException;
-import org.firebirdsql.gds.XSQLVAR;
+import org.firebirdsql.gds.*;
 import org.firebirdsql.gds.impl.AbstractIscStmtHandle;
 import org.firebirdsql.gds.impl.GDSHelper;
 import org.firebirdsql.jdbc.field.FBField;
@@ -165,8 +164,35 @@ public class FBRowUpdater implements FirebirdRowUpdater  {
         rsListener.executionCompleted(this, success);
         this.processing = false;
     }
+
+    private SQLException deallocateStatement(AbstractIscStmtHandle handle, SQLException previousException) {
+    	try {
+    		if (handle != null)
+    			gdsHelper.closeStatement(handle, true);
+    		
+    		return null;
+    		
+    	} catch(GDSException ex) {
+    		if (previousException == null)
+    			previousException = new FBSQLException(ex);
+    		else
+    			previousException.setNextException(new FBSQLException(ex));
+    		
+    		return previousException;
+    	}
+    }
     
     public void close() throws SQLException {
+    	
+    	SQLException possibleError = null;
+    	possibleError = deallocateStatement(selectStatement, possibleError);
+    	possibleError = deallocateStatement(insertStatement, possibleError);
+    	possibleError = deallocateStatement(updateStatement, possibleError);
+    	possibleError = deallocateStatement(deleteStatement, possibleError);
+    	
+    	if (possibleError != null)
+    		throw possibleError;
+    	
         this.closed = true;
         if (processing)
             notifyExecutionCompleted(true);
@@ -295,7 +321,7 @@ public class FBRowUpdater implements FirebirdRowUpdater  {
                 sb.append("AND");
             
             sb.append("\n\t");
-            sb.append(xsqlvars[i].sqlname).append(" = ").append("?");
+            sb.append("\"").append(xsqlvars[i].sqlname).append("\" = ").append("?");
             
             first = false;
         }
@@ -316,7 +342,7 @@ public class FBRowUpdater implements FirebirdRowUpdater  {
                 sb.append(",");
             
             sb.append("\n\t");
-            sb.append(xsqlvars[i].sqlname).append(" = ").append("?");
+            sb.append("\"").append(xsqlvars[i].sqlname).append("\" = ").append("?");
             
             first = false;
         }
@@ -380,7 +406,14 @@ public class FBRowUpdater implements FirebirdRowUpdater  {
             if (!first) 
                 columns.append(", ");
             
-            columns.append(xsqlvars[i].sqlname);
+            // do special handling of RDB$DB_KEY, since Firebird returns
+            // DB_KEY column name instead of the correct one
+            if ("DB_KEY".equals(xsqlvars[i].sqlname)
+                    && ((xsqlvars[i].sqltype & ~1) == ISCConstants.SQL_TEXT)
+                    && xsqlvars[i].sqllen == 8)
+                columns.append("RDB$DB_KEY");
+            else
+                columns.append("\"").append(xsqlvars[i].sqlname).append("\"");
             
             first = false;
         }
@@ -497,8 +530,9 @@ public class FBRowUpdater implements FirebirdRowUpdater  {
                 if (selectStatement == null)
                     selectStatement = gdsHelper.allocateStatement();
                 
-                executeStatement(SELECT_STATEMENT_TYPE, selectStatement);
                 try {
+                    executeStatement(SELECT_STATEMENT_TYPE, selectStatement);
+                    
                     // should fetch one row anyway
                     gdsHelper.fetch(selectStatement, 10);
                     
@@ -512,6 +546,7 @@ public class FBRowUpdater implements FirebirdRowUpdater  {
                     setRow((byte[][])rows[0]);
                 } finally {
                     gdsHelper.closeStatement(selectStatement, false);
+                    selectStatement = null;
                 }
                 
                 success = true;

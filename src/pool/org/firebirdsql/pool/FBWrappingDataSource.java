@@ -32,7 +32,8 @@ import javax.sql.DataSource;
 
 import org.firebirdsql.gds.DatabaseParameterBuffer;
 import org.firebirdsql.gds.TransactionParameterBuffer;
-import org.firebirdsql.jdbc.*;
+import org.firebirdsql.jdbc.FBConnectionProperties;
+import org.firebirdsql.jdbc.FBDriverNotCapableException;
 
 /**
  * Implementation of {@link javax.sql.DataSource} including connection pooling.
@@ -666,10 +667,20 @@ public class FBWrappingDataSource implements DataSource,
     public void setDefaultResultSetHoldable(boolean isHoldable) {
         getPool().setDefaultResultSetHoldable(isHoldable);
     }
+    
+    public int getSoTimeout() {
+        return getPool().getSoTimeout();
+    }
+
+    public void setSoTimeout(int soTimeout) {
+        getPool().setSoTimeout(soTimeout);
+    }
+    
 
     /*
      * JNDI-related code. 
      */
+
 
     private static final String REF_BLOCKING_TIMEOUT = "blockingTimeout";
 //    private static final String REF_DATABASE = "database";
@@ -861,16 +872,15 @@ public class FBWrappingDataSource implements DataSource,
         
         return ref;
     }
-
-    public boolean isWrapperFor(Class arg0) throws SQLException {
-        return arg0 != null && arg0.isAssignableFrom(FBWrappingDataSource.class);
+    
+    // JBBC 4.0
+    
+    public boolean isWrapperFor(Class iface) throws SQLException {
+    	return false;
     }
-
-    public Object unwrap(Class arg0) throws SQLException {
-        if (!isWrapperFor(arg0))
-            throw new FBSQLException("No compatible class found.");
-        
-        return this;
+    
+    public Object unwrap(Class iface) throws SQLException {
+    	throw new FBDriverNotCapableException();
     }
 
 }

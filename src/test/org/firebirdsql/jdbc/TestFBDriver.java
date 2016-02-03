@@ -21,14 +21,6 @@ package org.firebirdsql.jdbc;
 
 
 import java.sql.*;
-import java.sql.Connection;
-import java.sql.Driver;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLWarning;
-import java.sql.Statement;
-import java.sql.Timestamp;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -170,8 +162,9 @@ public class TestFBDriver extends FBTestBase {
                 stmt.executeQuery("select * from");
             } catch(SQLException ex) {
                 
+                String sqlState = ex.getSQLState();
                 assertTrue("getSQLState() method does not returns String Value",
-                        ex.getSQLState() instanceof java.lang.String);
+                        sqlState instanceof java.lang.String);
                 
             } finally {
                 stmt.close();
@@ -340,6 +333,15 @@ public class TestFBDriver extends FBTestBase {
         } finally {
             connection.close();
         }
+    }
+
+    public void testDummyPacketIntervalConnect() throws Exception {
+        if (log != null) log.info(getUrl());
+        Properties props = getDefaultPropertiesForConnection();
+        props.setProperty("soTimeout", "2000");
+        connection = driver.connect(getUrl(), props);
+        assertTrue("Connection is null", connection != null);
+        connection.close();
     }
 
 }

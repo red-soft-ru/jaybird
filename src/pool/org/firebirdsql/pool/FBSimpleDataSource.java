@@ -384,11 +384,21 @@ public class FBSimpleDataSource implements DataSource, Serializable, Referenceab
     public void setDefaultResultSetHoldable(boolean isHoldable) {
         mcf.setDefaultResultSetHoldable(isHoldable);
     }    
+    
+    public int getSoTimeout() {
+        return mcf.getSoTimeout();
+    }
+
+    public void setSoTimeout(int soTimeout) {
+        mcf.setSoTimeout(soTimeout);
+    }
+    
 
     
     /*
      * INTERFACES IMPLEMENTATION
      */
+
 
     /**
      * Get previously set JNDI reference.
@@ -524,15 +534,13 @@ public class FBSimpleDataSource implements DataSource, Serializable, Referenceab
         }
     }
     
-    public boolean isWrapperFor(Class arg0) throws SQLException {
-        return arg0 != null && arg0.isAssignableFrom(FBSimpleDataSource.class);
+    // JDBC 4.0
+    
+    public boolean isWrapperFor(Class iface) throws SQLException {
+    	return false;
     }
-
-    public Object unwrap(Class arg0) throws SQLException {
-        if (!isWrapperFor(arg0))
-            throw new FBSQLException("No compatible class found.");
-        
-        return this;
+    
+    public Object unwrap(Class iface) throws SQLException {
+    	throw new FBDriverNotCapableException();
     }
-
 }

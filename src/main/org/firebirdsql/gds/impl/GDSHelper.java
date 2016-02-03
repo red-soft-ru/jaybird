@@ -372,16 +372,17 @@ public class GDSHelper {
             byte[] buffer;
             while (true){
                 buffer = gds.iscDsqlSqlInfo(fixedStmt, REQUEST, bufferSize);
-
+                
                 if (parseStatementInfo(fixedStmt, buffer)) {
                     break;
                 } 
                 bufferSize *= 2;
-            }
+            }            
         } catch(GDSException ex) {
             notifyListeners(ex);
             throw ex;
         }
+
     }
 
     private boolean parseStatementInfo(AbstractIscStmtHandle fixedStmt, byte[] buffer) throws GDSException {
@@ -419,8 +420,8 @@ public class GDSHelper {
         fixedStmt.setStatementType(statementType);
         return true;
     }
-
-  /**
+    
+    /**
      * Open a handle to a new blob within the current transaction with the given
      * id.
      * 
@@ -566,7 +567,7 @@ public class GDSHelper {
         try {
             byte[] info = gds.iscBlobInfo(blob, BLOB_LENGTH_REQUEST, 20);
             
-            if (info[0] != ISCConstants.isc_info_blob_total_length)
+            if (info.length == 0 || info[0] != ISCConstants.isc_info_blob_total_length)
                 throw new GDSException(ISCConstants.isc_req_sync);
                 
             int dataLength = gds.iscVaxInteger(info, 1, 2);
@@ -627,7 +628,19 @@ public class GDSHelper {
             throw ex;
         }
     }
-    
+
+    /**
+     * Cancel the currently running operation.
+     */
+    public void cancelOperation() throws GDSException {
+        try {
+            gds.fbCancelOperation(currentDbHandle, ISCConstants.fb_cancel_raise);
+        } catch(GDSException ex) {
+            notifyListeners(ex);
+            throw ex;
+        }
+    }
+
     public int iscVaxInteger(byte[] buffer, int pos, int length) {
         return gds.iscVaxInteger(buffer, pos, length);
     }
@@ -694,7 +707,7 @@ public class GDSHelper {
         else
             return DEFAULT_BLOB_BUFFER_SIZE;
     }
-
+    
     /**
      * Get the encoding used for this connection.
      * 

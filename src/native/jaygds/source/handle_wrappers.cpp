@@ -31,7 +31,6 @@
 
 
 
-
 // JIscDatabaseHandle Class -------------------------------------------------------------------------------------
 
 // Static Members
@@ -439,6 +438,20 @@ jlong  JIscBlobHandle::GetJLongFromIscQuad(ISC_QUAD value)
  */
 ISC_QUAD JIscBlobHandle::GetIscQuadFromJavaLong(jlong value)
 	{
+	ISC_QUAD* returnValue = (ISC_QUAD*)&value;
+	
+	if( IsLittleEndianByteOrdering() == false )
+		{
+		char* pointerToReturnValue = (char*)returnValue;
+
+		std::reverse(pointerToReturnValue, pointerToReturnValue + sizeof(ISC_QUAD));
+		}
+	
+	return *returnValue;
+
+	/***
+	 * ASF: This code is equivalent with the above one, but it was returning incorrect
+	 * result using GCC 4.2.3 with optimizations turned on in AMD64.
 	ISC_QUAD returnValue = *((ISC_QUAD*)&value);
 	
 	if( IsLittleEndianByteOrdering() == false )
@@ -449,6 +462,7 @@ ISC_QUAD JIscBlobHandle::GetIscQuadFromJavaLong(jlong value)
 		}
 	
 	return returnValue;
+	***/
 	}
 
 
@@ -581,7 +595,6 @@ void		JIscServiceHandle::AddWarning( jthrowable warning )
 
 
 JClassBinding  JEventHandle::sClassBinding;
-	
 JMethodBinding JEventHandle::sMethodBinding_GetInputHandle;
 JMethodBinding JEventHandle::sMethodBinding_GetOutputHandle;
 JMethodBinding JEventHandle::sMethodBinding_SetInputHandle;
@@ -647,7 +660,6 @@ void JEventHandle::SetInputHandleValue( char* handle )
 	sMethodBinding_SetInputHandle.CallVoid( mJavaEnvironment, mJavaObjectHandle, handle );
 	}
 
-
 /*
  *
  */
@@ -656,19 +668,17 @@ void JEventHandle::SetOutputHandleValue( char* handle)
 	sMethodBinding_SetOutputHandle.CallVoid( mJavaEnvironment, mJavaObjectHandle, handle );
 	}
 
-
 /*
  *
- */	
+ */
 char* JEventHandle::GetInputHandleValue()
 	{
 	return (char*)sMethodBinding_GetInputHandle.CallInteger( mJavaEnvironment, mJavaObjectHandle );
 	}
 
-
 /*
  *
- */	
+ */
 char* JEventHandle::GetOutputHandleValue()
 	{
 	return (char*)sMethodBinding_GetOutputHandle.CallInteger( mJavaEnvironment, mJavaObjectHandle );
@@ -763,4 +773,3 @@ void JEventHandler::EventOccurred()
 	{
 	sMethodBinding_EventOccurred.CallVoid( mJavaEnvironment, mJavaObjectHandle);
 	}
-

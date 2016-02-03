@@ -36,7 +36,7 @@ import org.firebirdsql.gds.impl.GDSHelper;
  * @author <a href="mailto:d_jencks@users.sourceforge.net">David Jencks</a>
  * @version 1.0
  */
-public class FBResultSetMetaData implements ResultSetMetaData {
+public abstract class AbstractResultSetMetaData implements FirebirdResultSetMetaData {
 
     private final XSQLVAR[] xsqlvars;
     private Map extendedInfo;
@@ -52,7 +52,7 @@ public class FBResultSetMetaData implements ResultSetMetaData {
      * TODO Need another constructor for metadata from constructed
      * result set, where we supply the ext field info.
      */
-    protected FBResultSetMetaData(XSQLVAR[] xsqlvars, GDSHelper connection) throws SQLException {
+    protected AbstractResultSetMetaData(XSQLVAR[] xsqlvars, GDSHelper connection) throws SQLException {
         this.xsqlvars = xsqlvars;
         this.connection = connection;
     }
@@ -248,7 +248,8 @@ public class FBResultSetMetaData implements ResultSetMetaData {
      */
     public  String getColumnLabel(int column) throws  SQLException {
         return (getXsqlvar(column).aliasname == null) ?
-            getXsqlvar(column).sqlname: getXsqlvar(column).aliasname;
+            (getXsqlvar(column).sqlname != null ? getXsqlvar(column).sqlname : "") : 
+                getXsqlvar(column).aliasname;
     }
 
 
@@ -260,8 +261,10 @@ public class FBResultSetMetaData implements ResultSetMetaData {
      * @exception SQLException if a database access error occurs
      */
     public  String getColumnName(int column) throws  SQLException {
-        //return getXsqlvar(column).sqlname;
-        return getColumnLabel(column);
+        if (getXsqlvar(column).sqlname == null)
+            return getColumnLabel(column);
+        else
+            return getXsqlvar(column).sqlname;
     }
 
     public String getSourceColumnName(int column) throws SQLException {
@@ -364,7 +367,20 @@ public class FBResultSetMetaData implements ResultSetMetaData {
         return result;
     }
 
+    /**
+     * Gets the designated column's table alias.
+     *
+     * @param column the first column is 1, the second is 2, ...
+     * @return table alias or "" if not applicable
+     * @exception SQLException if a database access error occurs
+     */
+    public String getTableAlias(int column) throws SQLException {
+        String result = getXsqlvar(column).relaliasname;
+        if (result == null) result = getTableName(column);
+        return result;
+    }
 
+    
     /**
      * Gets the designated column's table's catalog name.
      *

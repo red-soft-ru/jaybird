@@ -19,15 +19,50 @@
 
 package org.firebirdsql.jdbc;
 
-import java.sql.*;
-import java.util.*;
+import java.sql.Blob;
+import java.sql.CallableStatement;
+import java.sql.Clob;
+import java.sql.DatabaseMetaData;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLClientInfoException;
+import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
+import java.sql.SQLWarning;
+import java.sql.Savepoint;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
 
-import javax.resource.*;
+import javax.resource.ResourceException;
 
-import org.firebirdsql.gds.*;
+import org.antlr.runtime.CharStream;
+import org.antlr.runtime.CommonTokenStream;
+import org.antlr.runtime.RecognitionException;
+import org.antlr.runtime.tree.CommonTree;
+import org.firebirdsql.gds.DatabaseParameterBuffer;
+import org.firebirdsql.gds.GDS;
+import org.firebirdsql.gds.GDSException;
+import org.firebirdsql.gds.ISCConstants;
+import org.firebirdsql.gds.IscDbHandle;
+import org.firebirdsql.gds.TransactionParameterBuffer;
 import org.firebirdsql.gds.impl.DatabaseParameterBufferExtension;
 import org.firebirdsql.gds.impl.GDSHelper;
-import org.firebirdsql.jca.*;
+import org.firebirdsql.jca.FBConnectionRequestInfo;
+import org.firebirdsql.jca.FBLocalTransaction;
+import org.firebirdsql.jca.FBManagedConnection;
+import org.firebirdsql.jca.FirebirdLocalTransaction;
+import org.firebirdsql.jdbc.parser.CaseInsensitiveStream;
+import org.firebirdsql.jdbc.parser.JaybirdSqlLexer;
+import org.firebirdsql.jdbc.parser.JaybirdSqlParser;
+import org.firebirdsql.jdbc.parser.JaybirdStatementModel;
 
 /**
  * The class <code>AbstractConnection</code> is a handle to a 
@@ -55,11 +90,13 @@ public abstract class AbstractConnection implements FirebirdConnection {
      
     // This set contains all allocated but not closed statements
     // It is used to close them before the connection is closed
-    private HashSet activeStatements = new HashSet();
+    protected HashSet activeStatements = new HashSet();
     
     private int resultSetHoldability = FirebirdResultSet.CLOSE_CURSORS_AT_COMMIT;
     
     private boolean autoCommit;
+    
+    private StoredProcedureMetaData storedProcedureMetaData;
 	 
     /**
      * Create a new AbstractConnection instance based on a
@@ -161,6 +198,10 @@ public abstract class AbstractConnection implements FirebirdConnection {
             metaData = null;
         }
         this.mc = mc;
+    }
+    
+    public FBManagedConnection getManagedConnection() {
+        return mc;
     }
 
     /**
@@ -325,6 +366,12 @@ public abstract class AbstractConnection implements FirebirdConnection {
         return prepareCall(sql, 
                 ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
     }
+    
+    
+    public Clob createClob() throws SQLException {
+        FBBlob blob = (FBBlob)createBlob();
+        return new FBClob(blob);
+    }
 
     /**
      * Converts the given SQL statement into the system's native SQL grammar.
@@ -438,7 +485,7 @@ public abstract class AbstractConnection implements FirebirdConnection {
                 FBSQLException.SQL_STATE_CONNECTION_CLOSED);
 
         txCoordinator.commit();
-        invalidateSavepoints();
+        invalidateTransactionLifetimeObjects();
     }
 
 
@@ -459,7 +506,15 @@ public abstract class AbstractConnection implements FirebirdConnection {
                 FBSQLException.SQL_STATE_CONNECTION_CLOSED);
 
         txCoordinator.rollback();
-        invalidateSavepoints();
+        invalidateTransactionLifetimeObjects();
+    }
+    
+    /**
+     * Invalidate everything that should only last for the lifetime of the current transaction.
+     */
+    protected void invalidateTransactionLifetimeObjects(){
+    	invalidateSavepoints();
+    	storedProcedureMetaData = null;
     }
 
     /**
@@ -689,7 +744,143 @@ public abstract class AbstractConnection implements FirebirdConnection {
          clearIscWarnings();
     }
 
+    private static final String GET_CLIENT_INFO_SQL = 
+          "SELECT "
+        + "    rdb$get_context('USER_SESSION', ?) session_context "
+        + "  , rdb$get_context('USER_TRANSACTION', ?) tx_context "
+        + "FROM rdb$database"
+        ;
+    
+    private static final String SET_CLIENT_INFO_SQL = 
+        "SELECT "
+      + "  rdb$set_context('USER_SESSION', ?, ?) session_context "
+      + "FROM rdb$database"
+      ;
 
+    
+    private HashSet clientInfoPropNames = new HashSet();
+    
+    public Properties getClientInfo() throws SQLException {
+        Properties result = new Properties();
+        
+        PreparedStatement stmt = prepareStatement(GET_CLIENT_INFO_SQL);
+        try {
+            for (Iterator iterator = clientInfoPropNames.iterator(); iterator.hasNext();) {
+                String propName = (String) iterator.next();
+                result.put(propName, getClientInfo(stmt, propName));
+            }
+        } finally {
+            stmt.close();
+        }
+        
+        return result;
+    }
+
+    public String getClientInfo(String name) throws SQLException {
+        PreparedStatement stmt = prepareStatement(GET_CLIENT_INFO_SQL);
+        try {
+            return getClientInfo(stmt, name);
+        } finally {
+            stmt.close();
+        }
+    }
+    
+    protected String getClientInfo(PreparedStatement stmt, String name) throws SQLException {
+        stmt.clearParameters();
+        
+        stmt.setString(1, name);
+        stmt.setString(2, name);
+        
+        ResultSet rs = stmt.executeQuery();
+        try {
+            if (!rs.next())
+                return null;
+            
+            String sessionContext = rs.getString(1);
+            String transactionContext = rs.getString(2);
+            
+            if (transactionContext != null)
+                return transactionContext;
+            else
+            if (sessionContext != null)
+                return sessionContext;
+            else
+                return null;
+            
+        } finally {
+            rs.close();
+        }
+        
+    }
+
+    public void setClientInfo(Properties properties) throws SQLClientInfoException {
+
+        SQLClientInfoException firstCause = null;
+        
+        try {
+            PreparedStatement stmt = prepareStatement(SET_CLIENT_INFO_SQL);
+            try {
+    
+                for (Iterator iterator = properties.entrySet().iterator(); iterator.hasNext();) {
+                    Map.Entry entry = (Map.Entry) iterator.next();
+                    
+                    try {
+                        setClientInfo(stmt, (String)entry.getKey(), (String)entry.getValue());
+                    } catch(SQLClientInfoException ex) {
+                        if (firstCause != null)
+                            firstCause.setNextException(ex);
+                        else
+                            firstCause = ex;
+                    }
+                    
+                }
+            } finally {
+                stmt.close();
+            }
+            
+        } catch(SQLException ex) {
+            throw new SQLClientInfoException(
+                ex.getMessage(), ex.getSQLState(), null, ex);
+        }
+        
+        if (firstCause != null)
+            throw firstCause;
+    }
+
+    public void setClientInfo(String name, String value) throws SQLClientInfoException {
+        try {
+            PreparedStatement stmt = prepareStatement(SET_CLIENT_INFO_SQL);
+            try {
+                setClientInfo(stmt, name, value);
+            } finally {
+                stmt.close();
+            }
+            
+        } catch(SQLException ex) {
+            throw new SQLClientInfoException(
+                ex.getMessage(), ex.getSQLState(), null, ex);
+        }
+    }
+    
+    public void setClientInfo(PreparedStatement stmt, String name, String value) throws SQLException {
+        try {
+            stmt.clearParameters();
+            stmt.setString(1, name);
+            stmt.setString(2, value);
+            
+            ResultSet rs = stmt.executeQuery();
+            if (!rs.next())
+                throw new FBDriverConsistencyCheckException(
+                    "Expected result from RDB$SET_CONTEXT call");
+
+            // needed, since the value is set on fetch!!!
+            int returnValue = rs.getInt(1);
+            
+        } catch(SQLException ex) {
+            throw new SQLClientInfoException(null, ex);
+        }
+    }
+    
 
     //--------------------------JDBC 2.0-----------------------------
 
@@ -817,23 +1008,337 @@ public abstract class AbstractConnection implements FirebirdConnection {
         return prepareStatement(sql, resultSetType, resultSetConcurrency, this.resultSetHoldability);
     }
 
+    /**
+     * Creates a <code>PreparedStatement</code> object that will generate
+     * <code>ResultSet</code> objects with the given type, concurrency,
+     * and holdability.
+     * <P>
+     * This method is the same as the <code>prepareStatement</code> method
+     * above, but it allows the default result set
+     * type, concurrency, and holdability to be overridden.
+     *
+     * @param sql a <code>String</code> object that is the SQL statement to
+     *            be sent to the database; may contain one or more '?' IN
+     *            parameters
+     * @param resultSetType one of the following <code>ResultSet</code> 
+     *        constants:
+     *         <code>ResultSet.TYPE_FORWARD_ONLY</code>, 
+     *         <code>ResultSet.TYPE_SCROLL_INSENSITIVE</code>, or
+     *         <code>ResultSet.TYPE_SCROLL_SENSITIVE</code>
+     * @param resultSetConcurrency one of the following <code>ResultSet</code> 
+     *        constants:
+     *         <code>ResultSet.CONCUR_READ_ONLY</code> or
+     *         <code>ResultSet.CONCUR_UPDATABLE</code>
+     * @param resultSetHoldability one of the following <code>ResultSet</code> 
+     *        constants:
+     *         <code>ResultSet.HOLD_CURSORS_OVER_COMMIT</code> or
+     *         <code>ResultSet.CLOSE_CURSORS_AT_COMMIT</code>
+     * @return a new <code>PreparedStatement</code> object, containing the
+     *         pre-compiled SQL statement, that will generate
+     *         <code>ResultSet</code> objects with the given type,
+     *         concurrency, and holdability
+     * @exception SQLException if a database access error occurs, this 
+     * method is called on a closed connection 
+     *            or the given parameters are not <code>ResultSet</code> 
+     *            constants indicating type, concurrency, and holdability
+      * @exception SQLFeatureNotSupportedException if the JDBC driver does not support
+     * this method or this method is not supported for the specified result 
+     * set type, result set holdability and result set concurrency.
+     * @see ResultSet
+     * @since 1.4
+     */
     public synchronized PreparedStatement prepareStatement(String sql,
             int resultSetType, int resultSetConcurrency,
             int resultSetHoldability) throws SQLException {
         
         return prepareStatement(sql, resultSetType, resultSetConcurrency,
-            resultSetHoldability, false);
+            resultSetHoldability, false, false);
     }
     
-    synchronized PreparedStatement prepareMetaDataStatement(String sql,
+    protected synchronized PreparedStatement prepareMetaDataStatement(String sql,
             int resultSetType, int resultSetConcurrency) throws SQLException {
         
         return prepareStatement(sql, resultSetType, resultSetConcurrency,
-            resultSetHoldability, true);
+            resultSetHoldability, true, false);
     }
     
-    public synchronized PreparedStatement prepareStatement(String sql, 
-        int resultSetType, int resultSetConcurrency, int resultSetHoldability, boolean metaData) throws SQLException 
+    /**
+     * Parse the INSERT statement and extract the corresponding model.
+     * 
+     * @param sql SQL statement to parse.
+     * 
+     * @return instance of {@link JaybirdStatementModel}
+     * 
+     * @throws RecognitionException if statement cannot be parsed.
+     */
+    protected JaybirdStatementModel parseInsertStatement(String sql)
+            throws RecognitionException {
+        CharStream stream = new CaseInsensitiveStream(sql);
+        JaybirdSqlLexer lexer = new JaybirdSqlLexer(stream);
+        CommonTokenStream tokenStream = new CommonTokenStream(lexer);
+        
+        JaybirdSqlParser parser = new JaybirdSqlParser(tokenStream);
+        CommonTree tree = (CommonTree)parser.statement().getTree();
+        
+        JaybirdStatementModel statementModel = parser.getStatementModel();
+        return statementModel;
+    }
+    
+    /**
+     * Creates a default <code>PreparedStatement</code> object that has
+     * the capability to retrieve auto-generated keys. The given constant
+     * tells the driver whether it should make auto-generated keys
+     * available for retrieval.  This parameter is ignored if the SQL statement
+     * is not an <code>INSERT</code> statement, or an SQL statement able to return
+     * auto-generated keys (the list of such statements is vendor-specific).
+     * <P>
+     * <B>Note:</B> This method is optimized for handling
+     * parametric SQL statements that benefit from precompilation. If
+     * the driver supports precompilation,
+     * the method <code>prepareStatement</code> will send
+     * the statement to the database for precompilation. Some drivers
+     * may not support precompilation. In this case, the statement may
+     * not be sent to the database until the <code>PreparedStatement</code> 
+     * object is executed.  This has no direct effect on users; however, it does
+     * affect which methods throw certain SQLExceptions.
+     * <P>
+     * Result sets created using the returned <code>PreparedStatement</code>
+     * object will by default be type <code>TYPE_FORWARD_ONLY</code>
+     * and have a concurrency level of <code>CONCUR_READ_ONLY</code>. 
+     * The holdability of the created result sets can be determined by 
+     * calling {@link #getHoldability}.
+     *
+     * @param sql an SQL statement that may contain one or more '?' IN
+     *        parameter placeholders
+     * @param autoGeneratedKeys a flag indicating whether auto-generated keys 
+     *        should be returned; one of
+     *        <code>Statement.RETURN_GENERATED_KEYS</code> or
+     *        <code>Statement.NO_GENERATED_KEYS</code>  
+     * @return a new <code>PreparedStatement</code> object, containing the
+     *         pre-compiled SQL statement, that will have the capability of
+     *         returning auto-generated keys
+     * @exception SQLException if a database access error occurs, this
+     *  method is called on a closed connection 
+     *         or the given parameter is not a <code>Statement</code>
+     *         constant indicating whether auto-generated keys should be
+     *         returned
+     * @exception SQLFeatureNotSupportedException if the JDBC driver does not support
+     * this method with a constant of Statement.RETURN_GENERATED_KEYS
+     * @since 1.4
+     */
+    public PreparedStatement prepareStatement(String sql, int autoGeneratedKeys)
+            throws SQLException {
+        
+        if (autoGeneratedKeys == FirebirdStatement.NO_GENERATED_KEYS)
+            return prepareStatement(sql);
+        
+        JaybirdStatementModel statementModel;
+        try {
+            statementModel = parseInsertStatement(sql);
+            
+            ArrayList columns = new ArrayList();
+            if (statementModel.getReturningColumns().size() > 0) {
+                columns.addAll(statementModel.getReturningColumns());
+            } else {
+                DatabaseMetaData metaData = getMetaData();
+                ResultSet rs = metaData.getColumns(null, null, statementModel.getTableName(), null);
+                try {
+                    while(rs.next()) {
+                        columns.add(rs.getString(4));
+                    }
+                } finally {
+                    rs.close();
+                }
+            }
+            
+            String[] columnNames = (String[])columns.toArray(new String[columns.size()]);
+            
+            String modifiedSql = addReturningClause(sql, columnNames);
+            
+            return prepareStatement(modifiedSql, 
+                ResultSet.HOLD_CURSORS_OVER_COMMIT, 
+                ResultSet.CONCUR_READ_ONLY, 
+                FirebirdResultSet.CLOSE_CURSORS_AT_COMMIT, 
+                false, true);
+
+        } catch (RecognitionException e) {
+            throw new FBSQLException(e);
+        }
+    }
+
+    /**
+     * Creates a default <code>PreparedStatement</code> object capable
+     * of returning the auto-generated keys designated by the given array.
+     * This array contains the indexes of the columns in the target
+     * table that contain the auto-generated keys that should be made
+     * available.  The driver will ignore the array if the SQL statement
+     * is not an <code>INSERT</code> statement, or an SQL statement able to return
+     * auto-generated keys (the list of such statements is vendor-specific).
+     *<p>
+     * An SQL statement with or without IN parameters can be
+     * pre-compiled and stored in a <code>PreparedStatement</code> object. This
+     * object can then be used to efficiently execute this statement
+     * multiple times.
+     * <P>
+     * <B>Note:</B> This method is optimized for handling
+     * parametric SQL statements that benefit from precompilation. If
+     * the driver supports precompilation,
+     * the method <code>prepareStatement</code> will send
+     * the statement to the database for precompilation. Some drivers
+     * may not support precompilation. In this case, the statement may
+     * not be sent to the database until the <code>PreparedStatement</code> 
+     * object is executed.  This has no direct effect on users; however, it does
+     * affect which methods throw certain SQLExceptions.
+     * <P>
+     * Result sets created using the returned <code>PreparedStatement</code>
+     * object will by default be type <code>TYPE_FORWARD_ONLY</code>
+     * and have a concurrency level of <code>CONCUR_READ_ONLY</code>. 
+     * The holdability of the created result sets can be determined by 
+     * calling {@link #getHoldability}.
+     *
+     * @param sql an SQL statement that may contain one or more '?' IN
+     *        parameter placeholders
+     * @param columnIndexes an array of column indexes indicating the columns
+     *        that should be returned from the inserted row or rows 
+     * @return a new <code>PreparedStatement</code> object, containing the
+     *         pre-compiled statement, that is capable of returning the
+     *         auto-generated keys designated by the given array of column
+     *         indexes
+     * @exception SQLException if a database access error occurs 
+     * or this method is called on a closed connection
+     * @exception SQLFeatureNotSupportedException if the JDBC driver does not support
+     * this method
+     *
+     * @since 1.4
+     */
+    public PreparedStatement prepareStatement(String sql, int[] columnIndexes)
+            throws SQLException {
+        try {
+            JaybirdStatementModel statementModel = parseInsertStatement(sql);
+            
+            ArrayList columns = new ArrayList();
+            if (statementModel.getReturningColumns().size() > 0)
+                throw new FBSQLException("Specified SQL statement already contains the RETURNING clause.");
+                
+            
+            int[] sortedIndexes = new int[columnIndexes.length];
+            for (int i = 0; i < columnIndexes.length; i++) {
+                sortedIndexes[i]= columnIndexes[i];
+            }
+            Arrays.sort(sortedIndexes);
+            
+            DatabaseMetaData metaData = getMetaData();
+            ResultSet rs = metaData.getColumns(null, null, statementModel.getTableName(), null);
+            try {
+                int counter = 0;
+                while(rs.next()) {
+                    
+                    if (Arrays.binarySearch(sortedIndexes, counter) >=0)
+                        columns.add(rs.getString(4));
+                }
+            } finally {
+                rs.close();
+            }
+            
+            String[] columnNames = (String[])columns.toArray(new String[columns.size()]);
+            
+            String modifiedSql = addReturningClause(sql, columnNames);
+            
+            return prepareStatement(modifiedSql, 
+                ResultSet.HOLD_CURSORS_OVER_COMMIT, 
+                ResultSet.CONCUR_READ_ONLY, 
+                FirebirdResultSet.CLOSE_CURSORS_AT_COMMIT, 
+                false, true);
+
+        } catch (RecognitionException e) {
+            throw new FBSQLException(e);
+        }
+    }
+
+    /**
+     * Creates a default <code>PreparedStatement</code> object capable
+     * of returning the auto-generated keys designated by the given array.
+     * This array contains the names of the columns in the target
+     * table that contain the auto-generated keys that should be returned.
+     * The driver will ignore the array if the SQL statement
+     * is not an <code>INSERT</code> statement, or an SQL statement able to return
+     * auto-generated keys (the list of such statements is vendor-specific).
+     * <P>
+     * An SQL statement with or without IN parameters can be
+     * pre-compiled and stored in a <code>PreparedStatement</code> object. This
+     * object can then be used to efficiently execute this statement
+     * multiple times.
+     * <P>
+     * <B>Note:</B> This method is optimized for handling
+     * parametric SQL statements that benefit from precompilation. If
+     * the driver supports precompilation,
+     * the method <code>prepareStatement</code> will send
+     * the statement to the database for precompilation. Some drivers
+     * may not support precompilation. In this case, the statement may
+     * not be sent to the database until the <code>PreparedStatement</code> 
+     * object is executed.  This has no direct effect on users; however, it does
+     * affect which methods throw certain SQLExceptions.
+     * <P>
+     * Result sets created using the returned <code>PreparedStatement</code>
+     * object will by default be type <code>TYPE_FORWARD_ONLY</code>
+     * and have a concurrency level of <code>CONCUR_READ_ONLY</code>. 
+     * The holdability of the created result sets can be determined by 
+     * calling {@link #getHoldability}.
+     *
+     * @param sql an SQL statement that may contain one or more '?' IN
+     *        parameter placeholders
+     * @param columnNames an array of column names indicating the columns
+     *        that should be returned from the inserted row or rows 
+     * @return a new <code>PreparedStatement</code> object, containing the
+     *         pre-compiled statement, that is capable of returning the
+     *         auto-generated keys designated by the given array of column
+     *         names
+     * @exception SQLException if a database access error occurs 
+     * or this method is called on a closed connection
+     * @exception SQLFeatureNotSupportedException if the JDBC driver does not support
+     * this method
+     *
+     * @since 1.4
+     */
+    public PreparedStatement prepareStatement(String sql, String[] columnNames)
+            throws SQLException {
+        
+        String modifiedSql = addReturningClause(sql, columnNames);
+        
+        return prepareStatement(modifiedSql, 
+            ResultSet.HOLD_CURSORS_OVER_COMMIT, 
+            ResultSet.CONCUR_READ_ONLY, 
+            FirebirdResultSet.CLOSE_CURSORS_AT_COMMIT, 
+            false, true);
+    }
+    
+    /**
+     * Modify the SQL statement by adding the RETURNING clause at the end of it.
+     * 
+     * @param sql SQL statement to modify (INSERT or UPDATE)
+     * @param columnNames array of column names that should be added into the 
+     * RETURNING clause
+     * 
+     * @return the modified SQL statement.
+     */
+    protected String addReturningClause(String sql, String[] columnNames) {
+        StringBuffer modifiedSql = new StringBuffer();
+        modifiedSql.append(sql);
+        modifiedSql.append("\n");
+        modifiedSql.append("RETURNING").append(" ");
+        for (int i = 0; i < columnNames.length; i++) {
+            modifiedSql.append(columnNames[i]);
+            
+            if (i < columnNames.length - 1)
+                modifiedSql.append(", ");
+        }
+
+        return modifiedSql.toString();
+    }
+
+    protected synchronized PreparedStatement prepareStatement(String sql, 
+        int resultSetType, int resultSetConcurrency, int resultSetHoldability, 
+        boolean metaData, boolean generatedKeys) throws SQLException 
     {
           PreparedStatement stmt;
           
@@ -868,7 +1373,8 @@ public abstract class AbstractConnection implements FirebirdConnection {
               
               stmt = FBStatementFactory.createPreparedStatement(
                       getGDSHelper(), sql, resultSetType, resultSetConcurrency, 
-                      resultSetHoldability, coordinator, blobCoordinator, metaData, false);
+                      resultSetHoldability, coordinator, blobCoordinator, 
+                      metaData, false, generatedKeys);
               
               activeStatements.add(stmt);
               return stmt;
@@ -902,7 +1408,7 @@ public abstract class AbstractConnection implements FirebirdConnection {
     public synchronized CallableStatement prepareCall(String sql, 
         int resultSetType, int resultSetConcurrency, int resultSetHoldability) throws SQLException 
     {
-        CallableStatement stmt;
+        AbstractCallableStatement stmt;
         
         if (resultSetHoldability == FirebirdResultSet.HOLD_CURSORS_OVER_COMMIT && 
                 resultSetType == ResultSet.TYPE_FORWARD_ONLY) {
@@ -924,11 +1430,16 @@ public abstract class AbstractConnection implements FirebirdConnection {
         }	
 
         checkHoldability(resultSetType, resultSetHoldability);
+
+        if (storedProcedureMetaData == null){
+        	storedProcedureMetaData = StoredProcedureMetaDataFactory.getInstance(this);
+        }
         
         try {
             stmt = FBStatementFactory.createCallableStatement(getGDSHelper(), sql, resultSetType,
-                    resultSetConcurrency, resultSetHoldability, txCoordinator, txCoordinator);
+                    resultSetConcurrency, resultSetHoldability, storedProcedureMetaData, txCoordinator, txCoordinator);
             activeStatements.add(stmt);
+            
             return stmt;
         } catch(GDSException ex) {
             throw new FBSQLException(ex);

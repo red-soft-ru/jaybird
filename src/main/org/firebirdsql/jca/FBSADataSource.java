@@ -604,4 +604,12 @@ public class FBSADataSource implements DataSource, Serializable, Referenceable, 
      * Ignored event callback
      */
     public void localTransactionRolledback(ConnectionEvent event) {}
+
+    public void setSoTimeout(int soTimeout) {
+        mcf.setSoTimeout(soTimeout);
+    }
+    
+    public int getSoTimeout() {
+        return mcf.getSoTimeout();
+    }
 }

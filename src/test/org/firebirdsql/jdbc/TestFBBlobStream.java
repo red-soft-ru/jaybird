@@ -202,8 +202,8 @@ public class TestFBBlobStream extends FBTestBase {
     
             assertTrue("Should select at least one row", rs.next());
     
-            FBBlob.FBBlobInputStream in = 
-                (FBBlob.FBBlobInputStream)rs.getBinaryStream(1);
+            FBBlobInputStream in = 
+                (FBBlobInputStream)rs.getBinaryStream(1);
             
             int blobSize = (int)in.length();
             byte[] fullBlob = new byte[blobSize];
@@ -212,7 +212,7 @@ public class TestFBBlobStream extends FBTestBase {
             
             in.close();
             
-            in = (FBBlob.FBBlobInputStream)rs.getBinaryStream(1);
+            in = (FBBlobInputStream)rs.getBinaryStream(1);
             in.seek(10);
            
             byte[] truncatedBlob = new byte[blobSize - 10];
@@ -394,7 +394,7 @@ public class TestFBBlobStream extends FBTestBase {
         fbConnection.setAutoCommit(false);
         
         FirebirdBlob blob = (FirebirdBlob)fbConnection.createBlob();
-        OutputStream out = blob.setBinaryStream(0);
+        OutputStream out = blob.setBinaryStream(1);
         out.write(data);
         out.flush();
         out.close();

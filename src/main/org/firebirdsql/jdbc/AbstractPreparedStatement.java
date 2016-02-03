@@ -28,6 +28,7 @@ import java.util.*;
 import org.firebirdsql.gds.*;
 import org.firebirdsql.gds.impl.GDSHelper;
 import org.firebirdsql.jdbc.field.*;
+import org.firebirdsql.jdbc.field.FBFlushableField.CachedObject;
 
 /**
  * Implementation of {@link java.sql.PreparedStatement}interface. This class
@@ -49,6 +50,13 @@ public abstract class AbstractPreparedStatement extends AbstractStatement implem
      * queries we have only GDSHelper instance)
      */
     private boolean standaloneStatement;
+    
+    /**
+     * This flag is needed to prevent throwing an exception for the case when
+     * result set is returned for INSERT statement and the statement should
+     * return the generated keys.
+     */
+    private boolean generatedKeys;
 
     // this array contains either true or false indicating if parameter
     // was initialized, executeQuery, executeUpdate and execute methods
@@ -110,13 +118,14 @@ public abstract class AbstractPreparedStatement extends AbstractStatement implem
             int rsConcurrency, int rsHoldability,
             FBObjectListener.StatementListener statementListener,
             FBObjectListener.BlobListener blobListener,
-            boolean metaDataQuery, boolean someOtherFlag)
+            boolean metaDataQuery, boolean standaloneStatement, boolean generatedKeys)
             throws SQLException {
         super(c, rsType, rsConcurrency, rsHoldability, statementListener);
 
         this.blobListener = blobListener;
         this.metaDataQuery = metaDataQuery;
-        this.standaloneStatement = someOtherFlag;
+        this.standaloneStatement = standaloneStatement;
+        this.generatedKeys = generatedKeys;
         
         notifyStatementStarted();
 
@@ -187,8 +196,10 @@ public abstract class AbstractPreparedStatement extends AbstractStatement implem
         synchronized (syncObject) {
             notifyStatementStarted();
             try {
-                if (internalExecute(isExecuteProcedureStatement)) { throw new FBSQLException(
-                        "Update statement returned results."); }
+                if (internalExecute(isExecuteProcedureStatement) && !generatedKeys) {
+                    throw new FBSQLException(
+                            "Update statement returned results.");
+                }
 
                 return getUpdateCount();
             } finally {
@@ -196,6 +207,16 @@ public abstract class AbstractPreparedStatement extends AbstractStatement implem
             }
         }
     }
+    
+
+    public ResultSet getGeneratedKeys() throws SQLException {
+        return getResultSet();
+    }
+
+    public FirebirdParameterMetaData getFirebirdParameterMetaData() throws SQLException {
+        return new FBParameterMetaData(fixedStmt.getInSqlda().sqlvar, gdsHelper);
+    }
+
 
     /**
      * Sets the designated parameter to SQL <code>NULL</code>.
@@ -782,7 +803,7 @@ public abstract class AbstractPreparedStatement extends AbstractStatement implem
 
             FBField field = getField(i + 1);
             if (field instanceof FBFlushableField)
-                newXsqlvar[i].sqldata = ((FBFlushableField)field).getCachedObject();
+                newXsqlvar[i].cachedobject = ((FBFlushableField)field).getCachedObject();
         }
 
         batchList.add(newXsqlvar);
@@ -874,7 +895,7 @@ public abstract class AbstractPreparedStatement extends AbstractStatement implem
                             FBField field = getField(i + 1);
                             if (field instanceof FBFlushableField) {
                                 vars[i].copyFrom(data[i], false);
-                                field.setBytes(data[i].sqldata);
+                                ((FBFlushableField)field).setCachedObject((CachedObject)data[i].cachedobject);
                             } else {
                                 vars[i].copyFrom(data[i], true);
                             }
@@ -1001,8 +1022,17 @@ public abstract class AbstractPreparedStatement extends AbstractStatement implem
      * @see <a href="package-summary.html#2.0 API">What Is in the JDBC 2.0 API
      *      </a>
      */
-    public void setClob(int i, Clob x) throws SQLException {
-        throw new FBDriverNotCapableException();
+    public void setClob(int parameterIndex, Clob clob) throws SQLException {
+        // if the passed BLOB is not instance of our class, copy its content
+        // into the our BLOB
+        if (!(clob instanceof FBClob)) {
+            FBClob fbc = new FBClob(new FBBlob(gdsHelper, blobListener));
+            fbc.copyCharacterStream(clob.getCharacterStream());
+            clob = fbc;
+        } 
+        
+        getField(parameterIndex).setClob((FBClob) clob);
+        isParamSet[parameterIndex - 1] = true;
     }
 
     /**
@@ -1172,7 +1202,6 @@ public abstract class AbstractPreparedStatement extends AbstractStatement implem
      */
     protected void prepareFixedStatement(String sql, boolean describeBind)
             throws GDSException, SQLException {
-        
         super.prepareFixedStatement(sql, describeBind);
 
         XSQLDA inSqlda = fixedStmt.getInSqlda();
@@ -1213,7 +1242,7 @@ public abstract class AbstractPreparedStatement extends AbstractStatement implem
                         .setTrimString(trimStrings);
         }
 
-        this.isExecuteProcedureStatement = isExecuteProcedureStatement(fixedStmt);
+        this.isExecuteProcedureStatement = fixedStmt.getStatementType() == FirebirdPreparedStatement.TYPE_EXEC_PROCEDURE;
     }
 
     /**

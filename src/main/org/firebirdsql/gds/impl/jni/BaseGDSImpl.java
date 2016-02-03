@@ -1032,6 +1032,10 @@ public abstract class BaseGDSImpl extends AbstractGDS {
 
     public abstract void native_isc_cancel_events(IscDbHandle db_handle,
             EventHandleImp eventHandle) throws GDSException;
+    
+    public abstract void native_fb_cancel_operation(IscDbHandle dbHanle, 
+            int kind) throws GDSException;
+
 
     public TransactionParameterBuffer newTransactionParameterBuffer() {
         return new TransactionParameterBufferImpl();
@@ -1166,8 +1170,13 @@ public abstract class BaseGDSImpl extends AbstractGDS {
 
     public void getSqlCounts(IscStmtHandle stmt_handle) throws GDSException {
         isc_stmt_handle_impl stmt = (isc_stmt_handle_impl) stmt_handle;
-        byte[] buffer = iscDsqlSqlInfo(stmt, /* stmtInfo.length, */stmtInfo,
-                INFO_SIZE);
+        byte[] buffer = iscDsqlSqlInfo(stmt, /* stmtInfo.length, */stmtInfo, INFO_SIZE);
+
+        stmt.setInsertCount(0);
+		stmt.setUpdateCount(0);
+		stmt.setDeleteCount(0);
+		stmt.setSelectCount(0);
+
         int pos = 0;
         int length;
         int type;
@@ -1274,5 +1283,16 @@ public abstract class BaseGDSImpl extends AbstractGDS {
 
     public EventHandle createEventHandle(String eventName){
         return new EventHandleImp(eventName);
+    }
+    
+    public void fbCancelOperation(IscDbHandle dbHandle, int kind)
+            throws GDSException {
+        isc_db_handle_impl db = (isc_db_handle_impl) dbHandle;
+        if (db == null) { throw new GDSException(ISCConstants.isc_bad_db_handle); }
+
+        synchronized (this) {
+            native_fb_cancel_operation(dbHandle, kind);
+            ((isc_db_handle_impl) dbHandle).invalidate();
+        }
     }
 }

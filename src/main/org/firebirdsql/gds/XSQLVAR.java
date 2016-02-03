@@ -60,9 +60,11 @@ public class XSQLVAR {
     public int sqlsubtype;
     public int sqllen;
     public byte[] sqldata;
+    public Object cachedobject;
 //    public int sqlind;
     public String sqlname;
     public String relname;
+    public String relaliasname;
     public String ownname;
     public String aliasname;
     //
@@ -114,6 +116,7 @@ public class XSQLVAR {
         
         this.sqlname = original.sqlname;
         this.relname = original.relname;
+        this.relaliasname = original.relaliasname;
         this.ownname = original.ownname;
         this.aliasname = original.aliasname;
     }
@@ -386,6 +389,10 @@ public class XSQLVAR {
      *         <code>Timestamp</code> value
      */
     public byte[] encodeTimestamp(Timestamp value){
+    	return encodeTimestampCalendar(value, new GregorianCalendar());
+    }
+    	
+	public byte[] encodeTimestampCalendar(Timestamp value, Calendar c){
 
         // note, we cannot simply pass millis to the database, because
         // Firebird stores timestamp in format (citing Ann W. Harrison):
@@ -393,7 +400,7 @@ public class XSQLVAR {
         // "[timestamp is] stored a two long words, one representing 
         // the number of days since 17 Nov 1858 and one representing number 
         // of 100 nano-seconds since midnight"
-        datetime d = new datetime(value);
+        datetime d = new datetime(value, c);
 
         byte[] date = d.toDateBytes();
         byte[] time = d.toTimeBytes();
@@ -453,6 +460,9 @@ public class XSQLVAR {
      *         <code>byte</code>s
      */
     public Timestamp decodeTimestamp(byte[] byte_int){
+    	return decodeTimestampCalendar(byte_int, new GregorianCalendar());
+    }
+	public Timestamp decodeTimestampCalendar(byte[] byte_int, Calendar c){
 
         
         if (byte_int.length != 8)
@@ -468,7 +478,7 @@ public class XSQLVAR {
         System.arraycopy(byte_int, 4, time, 0, 4);
 
         datetime d = new datetime(date,time);
-        return d.toTimestamp();
+        return d.toTimestamp(c);
     }
 
     /**
@@ -502,8 +512,12 @@ public class XSQLVAR {
      *         <code>Time</code>
      */
     public byte[] encodeTime(Time d) {
+    	return encodeTimeCalendar(d, new GregorianCalendar());
+    }
+    	
+	public byte[] encodeTimeCalendar(Time d, Calendar c) {
 
-        datetime dt = new datetime(d);
+        datetime dt = new datetime(d, c);
         return dt.toTimeBytes();
     }
 
@@ -537,8 +551,11 @@ public class XSQLVAR {
      * @return The decoded <code>Time</code>
      */
     public Time decodeTime(byte[] int_byte) {
+    	return decodeTimeCalendar(int_byte, new GregorianCalendar());
+    }
+	public Time decodeTimeCalendar(byte[] int_byte, Calendar c) {
         datetime dt = new datetime(null,int_byte);
-        return dt.toTime();
+        return dt.toTime(c);
     }
 
 
@@ -569,7 +586,10 @@ public class XSQLVAR {
      *         <code>Date</code>
      */
     public byte[] encodeDate(Date d) {
-        datetime dt = new datetime(d);
+    	return encodeDateCalendar(d, new GregorianCalendar());
+    }
+	public byte[] encodeDateCalendar(Date d, Calendar c) {
+        datetime dt = new datetime(d, c);
         return dt.toDateBytes();
     }
 
@@ -600,8 +620,11 @@ public class XSQLVAR {
      * @return The decoded <code>Date</code>
      */
     public Date decodeDate(byte[] byte_int) {
+    	return decodeDateCalendar(byte_int, new GregorianCalendar());
+    }
+	public Date decodeDateCalendar(byte[] byte_int, Calendar c) {
        datetime dt = new datetime(byte_int, null);
-        return dt.toDate();
+        return dt.toDate(c);
     }
 
     //
@@ -616,8 +639,9 @@ public class XSQLVAR {
         int second;
         int millisecond;
 
-        datetime(Timestamp value){
-            Calendar c = new GregorianCalendar();
+        datetime(Timestamp value, Calendar cOrig){
+//            Calendar c = new GregorianCalendar();
+        	Calendar c = (Calendar)cOrig.clone();
             c.setTime(value);
             year = c.get(Calendar.YEAR);
             month = c.get(Calendar.MONTH)+1;
@@ -628,8 +652,9 @@ public class XSQLVAR {
             millisecond = value.getNanos()/1000000;
         }
 
-        datetime(Date value){
-            Calendar c = new GregorianCalendar();
+        datetime(Date value, Calendar cOrig){
+//            Calendar c = new GregorianCalendar();
+        	Calendar c = (Calendar)cOrig.clone();
             c.setTime(value);
             year = c.get(Calendar.YEAR);
             month = c.get(Calendar.MONTH)+1;
@@ -640,8 +665,9 @@ public class XSQLVAR {
             millisecond = 0;
         }
 
-        datetime(Time value){
-            Calendar c = new GregorianCalendar();
+        datetime(Time value, Calendar cOrig){
+//            Calendar c = new GregorianCalendar();
+        	Calendar c = (Calendar)cOrig.clone();
             c.setTime(value);
             year = 0;
             month = 0;
@@ -715,8 +741,9 @@ public class XSQLVAR {
             return encodeInt(value);
         }
 
-        Time toTime(){
-            Calendar c = new GregorianCalendar();
+        Time toTime(Calendar cOrig){
+//            Calendar c = new GregorianCalendar();
+        	Calendar c = (Calendar)cOrig.clone();
             c.set(Calendar.YEAR, 1970);
             c.set(Calendar.MONTH, Calendar.JANUARY);
             c.set(Calendar.DAY_OF_MONTH, 1);
@@ -727,8 +754,9 @@ public class XSQLVAR {
             return new Time(c.getTime().getTime());
         }
 
-        Timestamp toTimestamp(){
-            Calendar c = new GregorianCalendar();
+        Timestamp toTimestamp(Calendar cOrig){
+//            Calendar c = new GregorianCalendar();
+        	Calendar c = (Calendar)cOrig.clone();
             c.set(Calendar.YEAR,year);
             c.set(Calendar.MONTH,month-1);
             c.set(Calendar.DAY_OF_MONTH,day);
@@ -739,8 +767,9 @@ public class XSQLVAR {
             return new Timestamp(c.getTime().getTime());
         }
 
-        Date toDate(){
-            Calendar c = new GregorianCalendar();
+        Date toDate(Calendar cOrig){
+//            Calendar c = new GregorianCalendar();
+        	Calendar c = (Calendar)cOrig.clone();
             c.set(Calendar.YEAR,year);
             c.set(Calendar.MONTH,month-1);
             c.set(Calendar.DAY_OF_MONTH,day);

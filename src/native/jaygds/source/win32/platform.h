@@ -58,15 +58,27 @@ void processFailedEntryPoint(const char* const message);
             if ((FirebirdApiBinding::X = (prototype_##X*)GetProcAddress(sHandle, #X)) == NULL) \
                 processFailedEntryPoint("FirebirdApiBinding:Initialize() - Entry-point "#X" not found")
 
+#define FB_ENTRYPOINT_OPTIONAL(X) \
+			FirebirdApiBinding::X = (prototype_##X*)GetProcAddress(sHandle, #X)
+
 SHARED_LIBRARY_HANDLE PlatformLoadLibrary(const char* const name);
 
 void PlatformUnLoadLibrary(SHARED_LIBRARY_HANDLE);
+
+template <typename T> T PlatformFindSymbol(SHARED_LIBRARY_HANDLE library,
+	const char* symbolName, T& pointer)
+{
+	pointer = reinterpret_cast<T>(GetProcAddress(library, symbolName));
+	return pointer;
+}
 
 #define OFFSETA(struct, fld)     ((size_t) ((struct) NULL)->fld)
 
 #define DEF_CALL_API(X) \
     jint pointer_##X=isc_api_handle.GetInt(javaEnvironment,jThis);\
-    prototype_##X *X=interfaceManager.GetInterface(pointer_##X)->X; 
+    prototype_##X *X=interfaceManager.GetInterface(pointer_##X)->X;\
+	if (X == NULL) \
+		processFailedEntryPoint("FirebirdApiBinding:Initialize() - Entry-point "#X" not found");
 
 #define CALL_API(X) DEF_CALL_API(X)\
     X

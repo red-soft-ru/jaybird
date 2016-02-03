@@ -96,6 +96,9 @@ public abstract class FBField {
         
     static String BLOB_CONVERSION_ERROR = 
         "Error converting to Firebird BLOB object";
+    
+    static String CLOB_CONVERSION_ERROR =
+    	"Error converting to Firebird CLOB object";
 
     static String SQL_TYPE_NOT_SUPPORTED =
         "SQL type for this field is not yet supported.";
@@ -125,6 +128,7 @@ public abstract class FBField {
     static final Reader READER_NULL_VALUE = null;
     static final byte[] BYTES_NULL_VALUE = null;
     static final FBBlob BLOB_NULL_VALUE = null;
+    static final FBClob CLOB_NULL_VALUE = null;
     
     static final byte MAX_BYTE_VALUE = Byte.MAX_VALUE;
     static final byte MIN_BYTE_VALUE = (byte)(-1 * MAX_BYTE_VALUE - 1);
@@ -275,6 +279,9 @@ public abstract class FBField {
 
             case ISCConstants.SQL_VARYING:
                 return (type == Types.VARCHAR);
+                
+            case ISCConstants.SQL_NULL:
+                return false;
 
             default:
                 return false;
@@ -346,10 +353,20 @@ public abstract class FBField {
             case ISCConstants.SQL_TYPE_TIME:
                 return  (type == Types.TIME) ||
                         (type == Types.TIMESTAMP);
+                
+            case ISCConstants.SQL_NULL:
+                return true;
 
             default:
                 return false;
         }
+    }
+    
+    public final static boolean isNullType(XSQLVAR field) {
+        int tempType = field.sqltype & ~1;
+
+        return tempType == ISCConstants.SQL_NULL
+                || field.sqltype == ISCConstants.SQL_NULL;
     }
     
     /**
@@ -444,6 +461,9 @@ public abstract class FBField {
         else
         if (isType(field, Types.ARRAY))
             throw (SQLException)createException(SQL_ARRAY_NOT_SUPPORTED);
+        else
+        if (isNullType(field))
+            return new FBNullField(field, dataProvider, Types.VARCHAR);
         else
             throw (SQLException)createException(SQL_TYPE_NOT_SUPPORTED);
     }
@@ -658,7 +678,8 @@ public abstract class FBField {
                 throw new FBDriverNotCapableException();
     }
     public Clob getClob() throws  SQLException {
-                throw new FBDriverNotCapableException();
+        throw (SQLException)createException(
+                BLOB_CONVERSION_ERROR).fillInStackTrace();
     }
     public Array getArray() throws  SQLException {
                 throw new FBDriverNotCapableException();
@@ -809,7 +830,12 @@ public abstract class FBField {
         throw (SQLException)createException(
             BLOB_CONVERSION_ERROR).fillInStackTrace();
     }
-    //
+    
+    public void setClob(FBClob clob) throws SQLException {
+    	throw (SQLException)createException(
+    			CLOB_CONVERSION_ERROR).fillInStackTrace();
+    }
+    
     // This method is only for the tests
     //
     void copyOI(){
@@ -822,4 +848,6 @@ public abstract class FBField {
         DatabaseParameterBuffer dpb = gdsHelper.getDatabaseParameterBuffer();
         return dpb.hasArgument(DatabaseParameterBufferExtension.TIMESTAMP_USES_LOCAL_TIMEZONE);
     }
+
+	
 }

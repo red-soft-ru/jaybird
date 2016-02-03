@@ -54,9 +54,19 @@ public class XSQLVARLittleEndianImpl extends XSQLVARImpl {
      */
     public XSQLVARLittleEndianImpl(int sqltype, int sqlscale, int sqlsubtype,
             int sqllen, byte[] sqldata, String sqlname, String relname,
+            String ownname, String aliasname, String relaliasname ) {
+        super(sqltype, sqlscale, sqlsubtype, sqllen, sqldata, sqlname, relname,
+                ownname, aliasname, relaliasname);
+    }
+
+    /**
+     * Create instance of this class for the specified XSQLVAR parameters.
+     */
+    public XSQLVARLittleEndianImpl(int sqltype, int sqlscale, int sqlsubtype,
+            int sqllen, byte[] sqldata, String sqlname, String relname,
             String ownname, String aliasname) {
         super(sqltype, sqlscale, sqlsubtype, sqllen, sqldata, sqlname, relname,
-                ownname, aliasname);
+                ownname, aliasname, null);
     }
 
     public byte[] encodeShort(short value) {

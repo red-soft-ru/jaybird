@@ -419,6 +419,7 @@ class JEventHandle
 	 */
 	virtual ~JEventHandle();
 
+
         void SetInputHandleValue(char* handle);
 
 	/*
@@ -429,7 +430,7 @@ class JEventHandle
         /*
 	 *	
 	 */
-        char* GetInputHandleValue();
+    char* GetInputHandleValue();
 	char* GetOutputHandleValue();
 
         void SetSize(int size);

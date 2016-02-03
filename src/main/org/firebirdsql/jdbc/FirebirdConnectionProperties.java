@@ -380,4 +380,8 @@ public interface FirebirdConnectionProperties {
     boolean isDefaultResultSetHoldable();
     
     void setDefaultResultSetHoldable(boolean isHoldable);
+    
+    int getSoTimeout();
+    
+    void setSoTimeout(int soTimeout);
 }

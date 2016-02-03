@@ -7,7 +7,7 @@ import org.firebirdsql.logging.LoggerFactory;
 
 
 public abstract class JniGDSImpl extends BaseGDSImpl {
-    
+
     private static final boolean DEVELOPMENT_DEBUG_OUTPUT = true;
 
     /**
@@ -15,6 +15,7 @@ public abstract class JniGDSImpl extends BaseGDSImpl {
      * server library.
      */
     public static final String JAYBIRD_JNI_LIBRARY = "jaybird22";
+    public static final String JAYBIRD_JNI_LIBRARY_X64 = "jaybird22_x64";
     public static final String JAYBIRD_FBCLIENT_PROPERTY_NAME = "jaybird.fbclient";
     
     private static Logger log = LoggerFactory.getLogger(JniGDSImpl.class,
@@ -40,7 +41,7 @@ public abstract class JniGDSImpl extends BaseGDSImpl {
      * it must ensure that correct type is returned from 
      * {@link org.firebirdsql.gds.impl.AbstractGDS#getType()} method.
      */
-    protected JniGDSImpl() {
+    public JniGDSImpl() {
         super();
     }
 
@@ -51,12 +52,16 @@ public abstract class JniGDSImpl extends BaseGDSImpl {
      */
     protected static void initJNIBridge() throws UnsatisfiedLinkError {
         final boolean logging = log != null;
+        
+        boolean amd64Architecture = "amd64".equals(System.getProperty("os.arch"));
 
-        if (logging)
-            log.info("Attempting to load JNI library : [" + JAYBIRD_JNI_LIBRARY + "]");
+        String jaybirdJniLibrary = amd64Architecture ? JAYBIRD_JNI_LIBRARY_X64 : JAYBIRD_JNI_LIBRARY;
+        
+		if (logging)
+            log.info("Attempting to load JNI library : [" + jaybirdJniLibrary + "]");
 
         try {
-            System.loadLibrary(JAYBIRD_JNI_LIBRARY);
+            System.loadLibrary(jaybirdJniLibrary);
         } catch (SecurityException ex) {
             if (logging)
                 log.error("No permission to load JNI libraries.", ex);
@@ -88,9 +93,9 @@ public abstract class JniGDSImpl extends BaseGDSImpl {
                 nativeInitilize(currentClientLibraryToTry);
             } catch (Throwable th) {
                 if (DEVELOPMENT_DEBUG_OUTPUT)
-                    th.printStackTrace(); // Dont hide it completly
+                	th.printStackTrace(); // Dont hide it completly
 
-                    System.out.println("Failed to load client library # " + i
+                System.out.println("Failed to load client library # " + i
                         + " - \"" + currentClientLibraryToTry + "\"."
                         + th.toString());
                 if (logging && DEVELOPMENT_DEBUG_OUTPUT)
@@ -272,6 +277,9 @@ public abstract class JniGDSImpl extends BaseGDSImpl {
     protected native void native_isc_finalize(int isc_api_handle)
         throws GDSException;
 
+    public native void native_fb_cancel_operation(IscDbHandle dbHanle, int kind) 
+        throws GDSException;
+    
     protected void finalize() throws Throwable {
         native_isc_finalize(isc_api_handle);
     }
