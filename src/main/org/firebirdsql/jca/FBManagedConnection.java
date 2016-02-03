@@ -540,15 +540,9 @@ public class FBManagedConnection implements ManagedConnection, XAResource, GDSHe
         if (gdsHelper == null)
             return;
         
-
-        if (gdsHelper.inTransaction() && this.isAutoCommit()) {
-            this.getLocalTransaction().commit();
-        }
-
-        if (gdsHelper.inTransaction()) {
-             throw new java.lang.IllegalStateException(
-                "Can't destroy managed connection with active transaction");
-        }
+        if (gdsHelper.inTransaction()) 
+            throw new java.lang.IllegalStateException(
+                "Can't destroy managed connection  with active transaction");
         
         if (parent != null)
             return;
@@ -1380,27 +1374,6 @@ public class FBManagedConnection implements ManagedConnection, XAResource, GDSHe
      */
     public boolean isReadOnly() {
         return tpb.isReadOnly();
-    }
-
-    /**
-     * Set whether this connection is to be auto-commit
-     *
-     * @param autoCommit
-     *            If <code>true</code>, the connection will be set auto-commit,
-     *            otherwise it will be manageable
-     */
-    public void setAutoCommit(boolean autoCommit) {
-        tpb.setAutoCommit(autoCommit);
-    }
-
-    /**
-     * Retrieve whether this connection is auto-commit.
-     *
-     * @return <code>true</code> if this connection is auto-commit,
-     *         <code>false</code> otherwise
-     */
-    public boolean isAutoCommit() {
-        return tpb.isAutoCommit();
     }
 
 }

@@ -42,8 +42,6 @@ import java.util.Properties;
 import java.util.Set;
 
 import javax.resource.ResourceException;
-import javax.transaction.xa.XAException;
-import javax.transaction.xa.XAResource;
 /*
 import org.antlr.runtime.CharStream;
 import org.antlr.runtime.CommonTokenStream;
@@ -427,37 +425,32 @@ public abstract class AbstractConnection implements FirebirdConnection {
     {
         checkValidity();
 
-        if (this.autoCommit == autoCommit) {
+        if (this.autoCommit == autoCommit) 
             return;
-        }
-
+        
         InternalTransactionCoordinator.AbstractTransactionCoordinator coordinator;
-        this.commit();
-        mc.setAutoCommit(autoCommit);
-        this.autoCommit = autoCommit;
-        coordinator = new InternalTransactionCoordinator.LocalTransactionCoordinator(this, getLocalTransaction(), autoCommit);
+        if (autoCommit)
+            coordinator = new InternalTransactionCoordinator.AutoCommitCoordinator(this, getLocalTransaction());
+        else
+            coordinator = new InternalTransactionCoordinator.LocalTransactionCoordinator(this, getLocalTransaction());
+        
         txCoordinator.setCoordinator(coordinator);
+        this.autoCommit = autoCommit;
     }
 
     public void setManagedEnvironment(boolean managedConnection) throws SQLException {
         checkValidity();
         
         InternalTransactionCoordinator.AbstractTransactionCoordinator coordinator;
-
+        
         if (managedConnection && mc.inTransaction()) {
-            mc.setAutoCommit(false);
-            this.autoCommit = false;
             coordinator = new InternalTransactionCoordinator.ManagedTransactionCoordinator(this);
+            this.autoCommit = false;
         } else {
-            if (!this.autoCommit && mc.inTransaction()) {
-                this.commit();
-            }
-            mc.setAutoCommit(true);
+            coordinator = new InternalTransactionCoordinator.AutoCommitCoordinator(this, getLocalTransaction());
             this.autoCommit = true;
-            coordinator = new InternalTransactionCoordinator.LocalTransactionCoordinator(this, getLocalTransaction(), true);
-            txCoordinator.setCoordinator(coordinator);
         }
-
+         
         txCoordinator.setCoordinator(coordinator);
     }
 
@@ -543,7 +536,14 @@ public abstract class AbstractConnection implements FirebirdConnection {
             } finally {
 
                 if (mc != null) {
-                    if (getLocalTransaction().inTransaction()) {
+                    // if we are in a transaction started
+                    // automatically because autocommit = false, roll it back.
+
+                    // leave managed transactions alone, they are normally
+                    // committed after the Connection handle is closed.
+
+                    if (!getAutoCommit() && getLocalTransaction().inTransaction()) {
+                        // autocommit is always true for managed tx.
                         try {
                             txCoordinator.rollback();
                         } finally {
@@ -681,7 +681,7 @@ public abstract class AbstractConnection implements FirebirdConnection {
         
         try {
 
-            if (!mc.isManagedEnvironment())
+            if (!getAutoCommit() && !mc.isManagedEnvironment())
                 txCoordinator.commit();
 
             mc.setTransactionIsolation(level);
