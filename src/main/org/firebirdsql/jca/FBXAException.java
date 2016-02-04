@@ -82,7 +82,21 @@ public class FBXAException extends XAException {
         
         this.reason = reason;
     }
-    
+
+    /**
+     * Create a new instance of <code>FBXAException</code> based around
+     * a message and with an underlying exception.
+     *
+     * @param msg The string message for this exception
+     * @param errorCode The error code for this exception
+     * @param reason The underlying exception
+     */
+    public FBXAException(String msg, int errorCode, Exception reason) {
+        this(msg, errorCode);
+
+        this.reason = reason;
+    }
+
     /**
      * Get message of this exception.
      * 

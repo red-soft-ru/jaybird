@@ -42,10 +42,12 @@ import java.io.InputStream;
  */
 public class GDSExceptionHelper {
 
-   private static final Logger log = LoggerFactory.getLogger(GDSExceptionHelper.class,false);
+    private static final Logger log = LoggerFactory.getLogger(GDSExceptionHelper.class,false);
 
     private static final String MESSAGES = "isc_error_msg";
+    private static final String SQLSTATES = "isc_error_sqlstates";
     private static Properties messages = new Properties();
+    private static Properties sqlstates = new Properties();
 
     private static boolean initialized = false;
 
@@ -54,18 +56,23 @@ public class GDSExceptionHelper {
      * @todo think about better exception handling.
      */
     private static void init() {
+        loadResource(MESSAGES, messages);
+        loadResource(SQLSTATES, sqlstates);
+    }
+
+    private static void loadResource(String resource, Properties propeties) {
         try {
-            String res = "/" + MESSAGES.replace('.','/') + ".properties";
-			InputStream in = GDSException.class.getResourceAsStream(res);
-            
+            String res = "/" + resource.replace('.','/') + ".properties";
+            InputStream in = GDSException.class.getResourceAsStream(res);
+
             if (in == null) {
                 ClassLoader cl = Thread.currentThread().getContextClassLoader();
                 in = cl.getResourceAsStream(res);
             }
-            
+
             if (in != null)
-                messages.load(in);
-                
+                propeties.load(in);
+
         } catch (Exception ex) {
             if (log!=null) log.info("Exception in init of GDSExceptionHelper", ex);
         } finally {
@@ -82,7 +89,24 @@ public class GDSExceptionHelper {
     public static GDSMessage getMessage(int code) {
         if (!initialized) init();
         return new GDSMessage(messages.getProperty(
-            "" + code, "No message for code " + code + " found."));
+                "" + code, "No message for code " + code + " found."));
+    }
+
+    /**
+     * Get the SQL state for the specified error code.
+     *
+     * @param code Firebird error code
+     *
+     * @return string with SQL state, "HY000" if nothing found.
+     */
+    public static String getSQLState(int code) {
+        if (!initialized) init();
+        String result = sqlstates.getProperty(Integer.toString(code));
+
+        if (result == null)
+            result = "HY000";
+
+        return result;
     }
 
     /**
@@ -108,7 +132,7 @@ public class GDSExceptionHelper {
         public int getParamCount() {
             int count = 0;
             for(int i = 0; i < template.length(); i++)
-                if (template.charAt(i) == '@') count++;
+                if (template.charAt(i) == '{') count++;
             return count;
         }
 
@@ -129,14 +153,14 @@ public class GDSExceptionHelper {
         public String toString() {
             String message = template;
             for(int i = 0; i < params.length; i++) {
-                String param = "@" + (i + 1);
+                String param = "{" + i + "}";
                 int pos = message.indexOf(param);
-                if (pos > -1) 
+                if (pos > -1)
                 {
-                   String temp = message.substring(0, pos);
-                   temp += (params[i] == null) ? "" : params[i];
-                   temp += message.substring(pos + param.length());
-                   message = temp;
+                    String temp = message.substring(0, pos);
+                    temp += (params[i] == null) ? "" : params[i];
+                    temp += message.substring(pos + param.length());
+                    message = temp;
                 } // end of if ()
             }
             return message;

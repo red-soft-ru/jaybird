@@ -208,6 +208,7 @@
       <path refid="javac.j2ee.classpath"/>
       <pathelement location="${build.j2ee}"/>
       <pathelement location="${module.thirdparty}/log4j-core.jar"/>
+      <pathelement location="${lib.dir}/antlr-runtime-3.0.1.jar"/>
     </path>
 
     <path id="javac.pool.classpath">

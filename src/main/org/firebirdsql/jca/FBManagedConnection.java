@@ -20,12 +20,11 @@
 package org.firebirdsql.jca;
 
 import org.firebirdsql.gds.*;
-import org.firebirdsql.gds.impl.AbstractIscDbHandle;
-import org.firebirdsql.gds.impl.AbstractIscTrHandle;
-import org.firebirdsql.gds.impl.GDSHelper;
+import org.firebirdsql.gds.impl.*;
 import org.firebirdsql.gds.impl.GDSHelper.GDSHelperErrorListener;
-import org.firebirdsql.gds.impl.GDSType;
 import org.firebirdsql.jdbc.AbstractConnection;
+import org.firebirdsql.jdbc.field.FBField;
+import org.firebirdsql.jdbc.field.FieldDataProvider;
 import org.firebirdsql.logging.Logger;
 import org.firebirdsql.logging.LoggerFactory;
 
@@ -39,12 +38,10 @@ import javax.security.auth.Subject;
 import javax.transaction.xa.XAException;
 import javax.transaction.xa.XAResource;
 import javax.transaction.xa.Xid;
+import java.io.ByteArrayInputStream;
 import java.io.PrintWriter;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 
 /**
  * The class <code>FBManagedConnection</code> implements both the

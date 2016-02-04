@@ -30,18 +30,4 @@ public class FBResultSetMetaData extends AbstractResultSetMetaData {
             throws SQLException {
         super(xsqlvars, connection);
     }
-    
-    // java.sql.Wrapper interface
-    
-    public boolean isWrapperFor(Class<?> iface) throws SQLException {
-        return iface != null && iface.isAssignableFrom(FBResultSetMetaData.class);
-    }
-
-    public <T> T unwrap(Class<T> iface) throws SQLException {
-        if (!isWrapperFor(iface))
-            throw new FBDriverNotCapableException();
-        
-        return (T)this;
-    }
-
 }
