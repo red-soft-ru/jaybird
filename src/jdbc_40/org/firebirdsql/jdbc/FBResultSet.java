@@ -90,7 +90,7 @@ public class FBResultSet extends AbstractResultSet {
     }
 
     public boolean isClosed() throws SQLException {
-        return super.isClosed();
+        throw new FBDriverNotCapableException();
     }
 
     public void updateAsciiStream(int columnIndex, InputStream x, long length)

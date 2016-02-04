@@ -65,7 +65,6 @@ public abstract class AbstractResultSet implements ResultSet, Synchronizable, FB
     private SQLWarning firstWarning = null;
      
     private FBField[] fields = null;
-    private List closeableFields = null;
     private java.util.HashMap colNames = new java.util.HashMap();
     
     private String cursorName;
@@ -105,7 +104,7 @@ public abstract class AbstractResultSet implements ResultSet, Synchronizable, FB
                           AbstractStatement fbStatement, 
                           AbstractIscStmtHandle stmt, 
                           FBObjectListener.ResultSetListener listener,
-                          boolean trimStrings, 
+                          boolean metaDataQuery, 
                           int rsType, 
                           int rsConcurrency,
                           int rsHoldability,
@@ -121,7 +120,7 @@ public abstract class AbstractResultSet implements ResultSet, Synchronizable, FB
         this.rsConcurrency = rsConcurrency;
         this.rsHoldability = rsHoldability;
         
-        this.trimStrings = trimStrings;
+        this.trimStrings = metaDataQuery;
         
         this.xsqlvars = stmt.getOutSqlda().sqlvar;
         this.maxRows = fbStatement.getMaxRows();
@@ -130,7 +129,7 @@ public abstract class AbstractResultSet implements ResultSet, Synchronizable, FB
         
         boolean updatableCursor = fbStatement.isUpdatableCursor();
 
-        if (rsType == ResultSet.TYPE_SCROLL_INSENSITIVE)
+        if (rsType != ResultSet.TYPE_FORWARD_ONLY || metaDataQuery)
             cached = true;
         
         if (cached) {
@@ -180,7 +179,6 @@ public abstract class AbstractResultSet implements ResultSet, Synchronizable, FB
     
     private void prepareVars(boolean cached) throws SQLException {
         fields = new FBField[xsqlvars.length];
-        closeableFields = null;
         colNames = new HashMap(xsqlvars.length,1);
         for (int i=0; i<xsqlvars.length; i++){
             final int fieldPosition = i;
@@ -195,14 +193,8 @@ public abstract class AbstractResultSet implements ResultSet, Synchronizable, FB
                       row[fieldPosition] = data;
                   }
               };
-
-            final FBField field = FBField.createField(xsqlvars[i], dataProvider, gdsHelper, cached);
-            if (field.isNeedClose()) {
-               if (closeableFields == null)
-                 closeableFields = new LinkedList();
-               closeableFields.add(field);
-            }
-            fields[i] = field;
+              
+            fields[i] = FBField.createField(xsqlvars[i], dataProvider, gdsHelper, cached);
         }
     }
     
@@ -236,20 +228,13 @@ public abstract class AbstractResultSet implements ResultSet, Synchronizable, FB
         wasNullValid = false;
 
         // close current fields, so that resources are freed.
-        closeFields();
+        for(int i = 0; i < fields.length; i++) 
+            fields[i].close();
     }
-
-    private void closeFields() throws SQLException {
-        if (closeableFields != null)
-          for (Iterator i = closeableFields.iterator(); i.hasNext();) {
-              final FBField field = (FBField) i.next();
-              field.close();
-          }
-    }
-
+    
     /* (non-Javadoc)
-    * @see org.firebirdsql.jdbc.Synchronizable#getSynchronizationObject()
-    */
+     * @see org.firebirdsql.jdbc.Synchronizable#getSynchronizationObject()
+     */
     public Object getSynchronizationObject() throws SQLException {
         return fbStatement.getSynchronizationObject();
     }
@@ -305,8 +290,12 @@ public abstract class AbstractResultSet implements ResultSet, Synchronizable, FB
         closed = true;
         
         try {
-            closeFields();
+            
+            for(int i = 0; i < fields.length; i++)
+                fields[i].close();
+            
         } finally {
+
             if (fbFetcher != null) {
                 fbFetcher.close();
 
@@ -1528,6 +1517,21 @@ public abstract class AbstractResultSet implements ResultSet, Synchronizable, FB
      */
     public int getConcurrency() throws  SQLException {
         return rsConcurrency;
+    }
+
+    /**
+     * Retrieves the holdability of this <code>ResultSet</code> object
+     * 
+     * @return  either <code>ResultSet.HOLD_CURSORS_OVER_COMMIT</code> or 
+     * <code>ResultSet.CLOSE_CURSORS_AT_COMMIT</code>
+     * 
+     * @throws SQLException if a database access error occurs 
+     * or this method is called on a closed result set
+     * 
+     * @since 1.6
+     */
+    public int getHoldability() throws SQLException {
+        return rsHoldability;
     }
 
     //---------------------------------------------------------------------
@@ -3106,15 +3110,7 @@ public abstract class AbstractResultSet implements ResultSet, Synchronizable, FB
         return fbStatement.getExecutionPlan();
     }
 
-    public int getHoldability() throws SQLException {
-        return rsHoldability;
-    }
-    
-    public boolean isClosed() throws SQLException {
-        return closed;
-    }
-
-    //-------------------------------------------------------------------------
+    //--------------------------------------------------------------------
 
      protected void addWarning(SQLWarning warning){
          if (firstWarning == null)
