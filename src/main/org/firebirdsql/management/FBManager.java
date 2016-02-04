@@ -358,7 +358,7 @@ public class FBManager implements FBManagerMBean
             DatabaseParameterBuffer dpb = c.deepCopy();
                 dpb.addArgument(DatabaseParameterBuffer.USER_NAME, user);
                 dpb.addArgument(DatabaseParameterBuffer.PASSWORD, password);
-            if (!mac_plugin.isEmpty())
+            if (mac_plugin != null && !mac_plugin.isEmpty())
                 dpb.addArgument(DatabaseParameterBuffer.MAC_PLUGIN, mac_plugin);
             gds.iscAttachDatabase(getConnectString(fileName), db, dpb);
             
@@ -379,7 +379,7 @@ public class FBManager implements FBManagerMBean
             DatabaseParameterBuffer dpb = c.deepCopy();
             dpb.addArgument(DatabaseParameterBuffer.USER_NAME, user);
             dpb.addArgument(DatabaseParameterBuffer.PASSWORD, password);
-            if (!mac_plugin.isEmpty())
+            if (mac_plugin != null && !mac_plugin.isEmpty())
                 dpb.addArgument(DatabaseParameterBuffer.MAC_PLUGIN, mac_plugin);
             gds.iscCreateDatabase(getConnectString(fileName), db, dpb);
             gds.iscDetachDatabase(db);
