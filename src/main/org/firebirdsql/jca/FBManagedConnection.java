@@ -54,27 +54,28 @@ public class FBManagedConnection implements ManagedConnection, XAResource, GDSHe
 
     private static final Logger log = LoggerFactory.getLogger(FBManagedConnection.class, false);
 
-    private FBManagedConnectionFactory mcf;
+    private final FBManagedConnectionFactory mcf;
 
-    private ArrayList connectionEventListeners = new ArrayList();
-    private ArrayList connectionHandles = new ArrayList();
+    private final ArrayList connectionEventListeners = new ArrayList();
+    private final ArrayList connectionHandles = new ArrayList();
 
     private int timeout = 0;
 
-    private Map xidMap = new HashMap();
+    private final Map xidMap = Collections.synchronizedMap(new HashMap());
     
-    private GDS gds;
-    private IscDbHandle dbHandle;
+    private final GDS gds;
+    private final IscDbHandle dbHandle;
     private GDSHelper gdsHelper;
     private FBManagedConnection parent;
 
-    private FBConnectionRequestInfo cri;
+    private final FBConnectionRequestInfo cri;
     private FBTpb tpb;
     private int transactionIsolation;
 
-    private boolean managedEnvironment = true;
-    private boolean connectionSharing = true;
-    private boolean prepared = false;
+    private volatile boolean managedEnvironment = true;
+    private volatile boolean connectionSharing = true;
+    private final Set preparedXid = Collections.synchronizedSet(new HashSet());
+    private volatile boolean inDistributedTransaction = false;
 
     FBManagedConnection(Subject subject, ConnectionRequestInfo cri,
             FBManagedConnectionFactory mcf) throws ResourceException {
@@ -617,11 +618,11 @@ public class FBManagedConnection implements ManagedConnection, XAResource, GDSHe
         AbstractIscTrHandle committingTr = (AbstractIscTrHandle)xidMap.get(xid);
         
         // check that prepare has NOT been called when onePhase = true
-        if (onePhase && prepared)
+        if (onePhase && isPrepared(xid))
             throw new FBXAException("Cannot commit one-phase when transaction has been prepared", XAException.XAER_PROTO);
             
         // check that prepare has been called when onePhase = false
-        if (!onePhase && !prepared)
+        if (!onePhase && !isPrepared(xid))
             throw new FBXAException("Cannot commit two-phase when transaction has not been prepared", XAException.XAER_PROTO);
         
         if (committingTr == null)
@@ -646,13 +647,17 @@ public class FBManagedConnection implements ManagedConnection, XAResource, GDSHe
                 throw ge;
             } finally {
                 xidMap.remove(xid);
-                prepared = false;
+                preparedXid.remove(xid);
             }
             
         } catch (GDSException ge) {
             ge.setXAErrorCode(XAException.XAER_RMERR);
             throw ge;
         }
+    }
+
+    private boolean isPrepared(Xid xid) {
+        return preparedXid.contains(xid);
     }
 
     /**
@@ -667,8 +672,8 @@ public class FBManagedConnection implements ManagedConnection, XAResource, GDSHe
             throw new FBXAException("flag not allowed in this context: " + flags + ", valid flags are TMSUCCESS, TMFAIL, TMSUSPEND", XAException.XAER_PROTO);
 
         internalEnd(id, flags);
-        
         mcf.notifyEnd(this, id);
+        inDistributedTransaction = false;
     }
 
     /**
@@ -911,7 +916,7 @@ public class FBManagedConnection implements ManagedConnection, XAResource, GDSHe
             throw ge;
         }
 
-        prepared = true;
+        preparedXid.add(xid);
         return XA_OK;
     }
 
@@ -1068,7 +1073,7 @@ public class FBManagedConnection implements ManagedConnection, XAResource, GDSHe
                 gdsHelper.rollbackTransaction(committingTr);
             } finally {
                 xidMap.remove(xid);
-                prepared = false;
+                preparedXid.remove(xid);
             }
         } catch (GDSException ge) {
             if (log != null) log.debug("Exception in rollback", ge);
@@ -1088,6 +1093,10 @@ public class FBManagedConnection implements ManagedConnection, XAResource, GDSHe
             throws javax.transaction.xa.XAException {
         this.timeout = timeout;
         return true;
+    }
+    
+    public boolean inDistributedTransaction() {
+        return inDistributedTransaction;
     }
 
     /**
@@ -1123,6 +1132,8 @@ public class FBManagedConnection implements ManagedConnection, XAResource, GDSHe
             internalStart(id, flags);
             
             mcf.notifyStart(this, id);
+            
+            inDistributedTransaction = true;
             
         } catch (GDSException ge) {
             throw new FBXAException(ge.getXAErrorCode());
