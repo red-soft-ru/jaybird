@@ -90,7 +90,10 @@ public class FBXADataSource implements XADataSource {
 
         FBConnectionRequestInfo subjectCri = mcf.getDefaultConnectionRequestInfo();
         subjectCri.setUserName(user);
-        subjectCri.setPassword(password);
+        boolean need_enc = !(mcf.getGDSType() == GDSType.getType("EMBEDDED") ||
+                mcf.getGDSType() == GDSType.getType("LOCAL") ||
+                mcf.getGDSType() == GDSType.getType("NATIVE"));
+        subjectCri.setPassword(password, need_enc);
 
         FBManagedConnection mc = (FBManagedConnection)((FBManagedConnectionFactory)mcf).createManagedConnection(null, subjectCri);
         mc.setManagedEnvironment(false);
@@ -115,7 +118,10 @@ public class FBXADataSource implements XADataSource {
 
         FBConnectionRequestInfo subjectCri = mcf.getDefaultConnectionRequestInfo();
         subjectCri.setUserName(user);
-        subjectCri.setPassword(password);
+        boolean need_enc = !(mcf.getGDSType() == GDSType.getType("EMBEDDED") ||
+                mcf.getGDSType() == GDSType.getType("LOCAL") ||
+                mcf.getGDSType() == GDSType.getType("NATIVE"));
+        subjectCri.setPassword(password, need_enc);
         
         String databaseURL = GDSFactory.getDatabasePath(type, url);
 
