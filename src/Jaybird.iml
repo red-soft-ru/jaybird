@@ -10,13 +10,14 @@
       <sourceFolder url="file://$MODULE_DIR$/compatibility" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/pool_jdk1_6" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/messages" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/test" isTestSource="true" packagePrefix="test" />
       <sourceFolder url="file://$MODULE_DIR$/esp" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/resources" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/wire_jdk1_4" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/redsoft" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/test" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/test_30" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/test_40" isTestSource="true" />
       <excludeFolder url="file://$MODULE_DIR$/jdbccts" />
-      <excludeFolder url="file://$MODULE_DIR$/test" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
