@@ -224,7 +224,7 @@ public class CallJavaMethod {
   {return java.math.BigDecimal.valueOf(i,-s);}
 
   /**
-   *   На следующие 2 метода добавить поддержку локали
+   *   ?? сле??щие 2 ??тод? ??????? ?????ржк???????
    */
   /**
    * Convert byte array to String
@@ -327,7 +327,6 @@ public class CallJavaMethod {
 
   public CallJavaMethod() {}
 
-//Метод который вызывает требуемый метод
   /**
    *
    * @param c String

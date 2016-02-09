@@ -16,7 +16,6 @@
  *
  * All rights reserved.
  */
-
 package org.firebirdsql.jdbc;
 
 
@@ -41,7 +40,7 @@ import org.firebirdsql.logging.LoggerFactory;
  * @author <a href="mailto:d_jencks@users.sourceforge.net">David Jencks</a>
  * @version 1.0
  */
-public class FBDriver implements FirebirdDriver {
+public abstract class AbstractDriver implements FirebirdDriver {
 
     private final static Logger log;
 

@@ -95,7 +95,7 @@ public class TestXABase extends FBTestBase {
      *  This implementation is immutable and always serializable at runtime.
      *
      *  @see TransactionImpl
-     *  @author Rickard Öberg (rickard.oberg@telkel.com)
+     *  @author Rickard Oberg (rickard.oberg@telkel.com)
      *  @author <a href="mailto:osh@sparre.dk">Ole Husgaard</a>
      *  @version $Revision$
      */
