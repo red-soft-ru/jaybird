@@ -53,13 +53,20 @@ public abstract class AbstractIscDbHandle implements IscDbHandle {
     private List rdb_warnings = new ArrayList();
     private int dialect;
     private int protocol;
-    protected GDSServerVersion serverVersion;
+    private GDSServerVersion serverVersion;
     private int ODSMajorVersion;
     private int ODSMinorVersion;
     private int resp_object;
-    protected byte[] resp_data;
+    private byte[] resp_data;
     protected Collection rdb_transactions = new ArrayList();
     private long resp_blob_id;
+    
+    protected AbstractIscDbHandle() {
+    }
+    
+    protected AbstractIscDbHandle(byte[] defaultResp_data) {
+        resp_data = defaultResp_data;
+    }
     
     public int getDatabaseProductMajorVersion() {
         return serverVersion.getMajorVersion();

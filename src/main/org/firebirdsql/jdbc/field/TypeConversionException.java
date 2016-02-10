@@ -18,18 +18,21 @@
  *
  * All rights reserved.
  */
-package org.firebirdsql.jdbc;
+package org.firebirdsql.jdbc.field;
 
-import java.sql.SQLException;
+import org.firebirdsql.jdbc.FBSQLException;
 
-import org.firebirdsql.gds.XSQLVAR;
-import org.firebirdsql.gds.impl.GDSHelper;
+/**
+ * This exception is thrown when the requested type conversion cannot be
+ * performed.
+ * @author <a href="mailto:rrokytskyy@users.sourceforge.net">Roman Rokytskyy</a>
+ * @version 1.0
+ */
+public class TypeConversionException extends FBSQLException {
 
+    private static final long serialVersionUID = 9145386635318036933L;
 
-public class FBResultSetMetaData extends AbstractResultSetMetaData {
-
-    public FBResultSetMetaData(XSQLVAR[] xsqlvars, GDSHelper connection)
-            throws SQLException {
-        super(xsqlvars, connection);
+    public TypeConversionException(String msg) { 
+        super(msg, SQL_STATE_INVALID_CONVERSION);
     }
 }

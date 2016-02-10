@@ -26,7 +26,7 @@ import org.firebirdsql.jdbc.FBObjectListener.BlobListener;
 import org.firebirdsql.jdbc.FBObjectListener.StatementListener;
 
 /**
- * Creates statement/savepoint objects.
+ * Creates statement objects.
  * 
  * @author <a href="mailto:sjardine@users.sourceforge.net">Steven Jardine </a>
  */
@@ -91,71 +91,6 @@ public class FBStatementFactory {
                     new Integer(resultSetHoldability), statementListener, blobListener,
                     new Boolean(metadata), new Boolean(standaloneStatement), 
                     new Boolean(generatedKeys)});
-
-        } catch(InvocationTargetException ex) {
-            
-            Throwable t = ex.getTargetException();
-            if (t instanceof FBSQLException)
-                throw (FBSQLException)t;
-            else
-                throw new UndeclaredThrowableException(t);
-            
-        } catch (IllegalArgumentException e) {
-            throw new UndeclaredThrowableException(e);
-        } catch (InstantiationException e) {
-            throw new UndeclaredThrowableException(e);
-        } catch (IllegalAccessException e) {
-            throw new UndeclaredThrowableException(e);
-        } catch (NoSuchMethodException e) {
-            throw new UndeclaredThrowableException(e);
-        }
-
-    }
-
-    /**
-     * @return a new FBSavepoint object using the integer constructor.
-     */
-    public static AbstractSavepoint createSavepoint(int counter) throws FBSQLException {
-
-        try {
-
-            Constructor constructor = ClassFactory.get(ClassFactory.FBSavepoint).getConstructor(
-                    new Class[] { int.class });
-
-            return (AbstractSavepoint) constructor
-                    .newInstance(new Object[] { new Integer(counter) });
-
-        } catch(InvocationTargetException ex) {
-            
-            Throwable t = ex.getTargetException();
-            if (t instanceof FBSQLException)
-                throw (FBSQLException)t;
-            else
-                throw new UndeclaredThrowableException(t);
-            
-        } catch (IllegalArgumentException e) {
-            throw new UndeclaredThrowableException(e);
-        } catch (InstantiationException e) {
-            throw new UndeclaredThrowableException(e);
-        } catch (IllegalAccessException e) {
-            throw new UndeclaredThrowableException(e);
-        } catch (NoSuchMethodException e) {
-            throw new UndeclaredThrowableException(e);
-        }
-
-    }
-
-    /**
-     * @return a new FBSavepoint object using the String constructor.
-     */
-    public static AbstractSavepoint createSavepoint(String name) throws FBSQLException {
-
-        try {
-
-            Constructor constructor = ClassFactory.get(ClassFactory.FBSavepoint).getConstructor(
-                    new Class[] { String.class });
-
-            return (AbstractSavepoint) constructor.newInstance(new Object[] { name });
 
         } catch(InvocationTargetException ex) {
             
