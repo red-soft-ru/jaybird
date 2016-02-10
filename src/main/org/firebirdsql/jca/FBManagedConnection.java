@@ -21,6 +21,9 @@ package org.firebirdsql.jca;
 
 import org.firebirdsql.gds.*;
 import org.firebirdsql.gds.impl.*;
+import org.firebirdsql.gds.impl.AbstractIscStmtHandle;
+import org.firebirdsql.gds.impl.AbstractIscTrHandle;
+import org.firebirdsql.gds.impl.GDSHelper;
 import org.firebirdsql.gds.impl.GDSHelper.GDSHelperErrorListener;
 import org.firebirdsql.jdbc.AbstractConnection;
 import org.firebirdsql.jdbc.field.FBField;
@@ -89,12 +92,12 @@ public class FBManagedConnection implements ManagedConnection, XAResource, GDSHe
         //TODO: XIDs in limbo should be loaded so that XAER_DUPID can be thrown appropriately
         
         try {
-            this.dbHandle = gds.createIscDbHandle();
+            dbHandle = gds.createIscDbHandle();
 
             DatabaseParameterBuffer dpb = this.cri.getDpb();
             gds.iscAttachDatabase(mcf.getDatabase(), dbHandle, dpb);
             
-            this.gdsHelper = new GDSHelper(this.gds, dpb, (AbstractIscDbHandle)this.dbHandle, this);
+            gdsHelper = new GDSHelper(gds, dpb, dbHandle, this);
         } catch(GDSException ex) {
             throw new FBResourceException(ex);
         }
@@ -576,7 +579,7 @@ public class FBManagedConnection implements ManagedConnection, XAResource, GDSHe
 
         if (trHandle == null) return false;
 
-        AbstractIscDbHandle dbHandle = (AbstractIscDbHandle)trHandle.getDbHandle();
+        IscDbHandle dbHandle = trHandle.getDbHandle();
 
         if (dbHandle == null) return false;
 
@@ -746,7 +749,7 @@ public class FBManagedConnection implements ManagedConnection, XAResource, GDSHe
             AbstractIscStmtHandle stmtHandle2 = (AbstractIscStmtHandle)gds.createIscStmtHandle();
             gds.iscDsqlAllocateStatement(gdsHelper.getCurrentDbHandle(), stmtHandle2);
             
-            GDSHelper gdsHelper2 = new GDSHelper(gds, gdsHelper.getDatabaseParameterBuffer(), (AbstractIscDbHandle) gdsHelper.getCurrentDbHandle(), null);
+            GDSHelper gdsHelper2 = new GDSHelper(gds, gdsHelper.getDatabaseParameterBuffer(), gdsHelper.getCurrentDbHandle(), null);
             gdsHelper2.setCurrentTrHandle(trHandle2);
             
             gdsHelper2.prepareStatement(stmtHandle2, FORGET_FIND_QUERY, false);
@@ -827,7 +830,7 @@ public class FBManagedConnection implements ManagedConnection, XAResource, GDSHe
             stmtHandle2 = (AbstractIscStmtHandle)gds.createIscStmtHandle();
             gds.iscDsqlAllocateStatement(gdsHelper.getCurrentDbHandle(), stmtHandle2);
             
-            GDSHelper gdsHelper2 = new GDSHelper(gds, gdsHelper.getDatabaseParameterBuffer(), (AbstractIscDbHandle) gdsHelper.getCurrentDbHandle(), null);
+            GDSHelper gdsHelper2 = new GDSHelper(gds, gdsHelper.getDatabaseParameterBuffer(), gdsHelper.getCurrentDbHandle(), null);
             gdsHelper2.setCurrentTrHandle(trHandle2);
 
             gdsHelper2.prepareStatement(stmtHandle2, FORGET_DELETE_QUERY + inLimboId, false);
@@ -961,7 +964,7 @@ public class FBManagedConnection implements ManagedConnection, XAResource, GDSHe
             
             GDSHelper gdsHelper2 = new GDSHelper(gds, 
                     gdsHelper.getDatabaseParameterBuffer(), 
-                    (AbstractIscDbHandle) gdsHelper.getCurrentDbHandle(), null);
+                    gdsHelper.getCurrentDbHandle(), null);
             gdsHelper2.setCurrentTrHandle(trHandle2);
             
             gdsHelper2.prepareStatement(stmtHandle2, RECOVERY_QUERY, false);
