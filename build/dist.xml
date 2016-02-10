@@ -1,7 +1,7 @@
   <!-- =================================================================== -->
   <!-- Creates the API documentation                                       -->
   <!-- =================================================================== -->
-  <target name="javadocs" depends="init,set-jdbc-20-src,set-jdbc-30-src,set-jdbc-40-src,set-wire1.3-src,set-wire1.4-src,set-openoffice-src-13,set-openoffice-src-14,set-jca-src-14,set-jca-src-16,set-pool1.4-src,set-pool1.5-src,set-pool1.6-src">
+  <target name="javadocs" depends="init,set-driver-sources,set-pool-sources">
     <mkdir dir="${build.docs}"/>
     <javadoc packagenames="${packages}"
              destdir="${build.docs}"
@@ -42,6 +42,7 @@
         <include name="${archive.name.full}"/>
         <include name="${archive.name.pool}"/>
         <include name="${archive.name.simple}"/>
+        <include name="${archive.name.sources}"/>
       </fileset>
       <fileset dir="${module.etc}">
         <include name="release_notes.pdf"/>
@@ -74,6 +75,7 @@
 
   <!-- =================================================================== -->
   <!-- Packages the source files with ZIP                                  -->
+  <!-- Also see task jar-sources in archive.xml                            -->
   <!-- =================================================================== -->
   <target name="src-zip" depends="init">
     <zip zipfile="${Name}-src-${version.full}.zip" basedir="../.." includes="clients/java/**" excludes="clients/java/**.zip"/>
