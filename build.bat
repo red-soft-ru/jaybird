@@ -41,7 +41,7 @@ REM set PATH=%PATH%;..
 set PATH=%PATH%;"%ANT_HOME%\bin"
 set PATH=%PATH%;"%JAVA_HOME%\lib\tools.jar"
 REM for %%i in ("..\lib\*.jar") do call ".\lcp.bat" %%i
-set CLASSPATH=%~dp0lib\junit.jar
+set CLASSPATH=%~dp0lib\junit.jar:%~dp0lib\cpptasks.jar
 
 REM set common ANT options
 set JAXP_DOM_FACTORY="org.apache.xerces.jaxp.DocumentBuilderFactoryImpl"
