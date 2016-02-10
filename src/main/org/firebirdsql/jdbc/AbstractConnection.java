@@ -1133,7 +1133,7 @@ public abstract class AbstractConnection implements FirebirdConnection {
               stmt = FBStatementFactory.createPreparedStatement(
                       getGDSHelper(), sql, resultSetType, resultSetConcurrency, 
                       resultSetHoldability, coordinator, blobCoordinator, 
-                      metaData, false);
+                      metaData, false, generatedKeys);
               
               activeStatements.add(stmt);
               return stmt;

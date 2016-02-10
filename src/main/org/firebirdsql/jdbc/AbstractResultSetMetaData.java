@@ -1,4 +1,6 @@
 /*
+ * $Id$
+ * 
  * Firebird Open Source J2ee connector - jdbc driver
  *
  * Distributable under LGPL license.
@@ -18,7 +20,6 @@
  */
 
 package org.firebirdsql.jdbc;
-
 
 import java.math.BigDecimal;
 import java.sql.*;
@@ -261,8 +262,7 @@ public abstract class AbstractResultSetMetaData implements FirebirdResultSetMeta
      * @exception SQLException if a database access error occurs
      */
     public  String getColumnName(int column) throws  SQLException {
-      final String sqlname = getXsqlvar(column).sqlname;
-      if (sqlname == null || sqlname.length() == 0)
+        if (getXsqlvar(column).sqlname == null)
             return getColumnLabel(column);
         else
             return getXsqlvar(column).sqlname;
@@ -657,21 +657,7 @@ public abstract class AbstractResultSetMetaData implements FirebirdResultSetMeta
         }
     }
 
-    //----------------------------- JDBC 4.0 ----------------------------------
-    
-    public boolean isWrapperFor(Class arg0) throws SQLException {
-        return arg0 != null && arg0.isAssignableFrom(FBDatabaseMetaData.class);
-    }
 
-    public Object unwrap(Class arg0) throws SQLException {
-        if (!isWrapperFor(arg0))
-            throw new FBSQLException("No compatible class found.");
-        
-        return this;
-    }
-
-    //-------------------------------------------------------------------------
-    
     //private methods
 
     private XSQLVAR getXsqlvar(int columnIndex) {
@@ -796,6 +782,8 @@ public abstract class AbstractResultSetMetaData implements FirebirdResultSetMeta
             result = 23 * result + (fieldName != null ? fieldName.hashCode() : 0);
             return result;
         }
+
+
     }
 
     /**
@@ -872,5 +860,16 @@ public abstract class AbstractResultSetMetaData implements FirebirdResultSetMeta
             pending -= maxLength;
         }
         return result;
+    }
+    
+    public boolean isWrapperFor(Class<?> iface) throws SQLException {
+        return iface != null && iface.isAssignableFrom(getClass());
+    }
+
+    public <T> T unwrap(Class<T> iface) throws SQLException {
+        if (!isWrapperFor(iface))
+            throw new FBDriverNotCapableException();
+        
+        return iface.cast(this);
     }
 }

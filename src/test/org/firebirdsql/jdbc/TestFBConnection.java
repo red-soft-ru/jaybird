@@ -265,8 +265,8 @@ public class TestFBConnection extends FBTestBase {
                     connection.getTransactionParameters(Connection.TRANSACTION_READ_COMMITTED);
                 
                 if (tpb.hasArgument(TransactionParameterBuffer.WAIT)) {
-                    tpb.removeArgument(TransactionParameterBuffer.WAIT);
-                    tpb.addArgument(TransactionParameterBuffer.NOWAIT);
+                tpb.removeArgument(TransactionParameterBuffer.WAIT);
+                tpb.addArgument(TransactionParameterBuffer.NOWAIT);
                 }
                 
                 connection.setTransactionParameters(Connection.TRANSACTION_READ_COMMITTED, tpb);

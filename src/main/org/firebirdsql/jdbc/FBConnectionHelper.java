@@ -283,7 +283,7 @@ public class FBConnectionHelper {
     private static Properties loadProperties(String resource) throws IOException {
         ClassLoader cl = FBConnectionHelper.class.getClassLoader();
 
-        InputStream in;
+        InputStream in = null;
 
         // get the stream from the classloader or system classloader
         if (cl == null)
