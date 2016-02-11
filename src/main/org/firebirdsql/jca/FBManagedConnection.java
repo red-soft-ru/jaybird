@@ -29,6 +29,7 @@ import org.firebirdsql.jdbc.field.FBField;
 import org.firebirdsql.jdbc.field.FieldDataProvider;
 import org.firebirdsql.logging.Logger;
 import org.firebirdsql.logging.LoggerFactory;
+import org.firebirdsql.util.SQLExceptionChainBuilder;
 
 import javax.resource.NotSupportedException;
 import javax.resource.ResourceException;
@@ -449,25 +450,24 @@ public class FBManagedConnection implements ManagedConnection, XAResource, GDSHe
      *
      */
     private void disassociateConnections() throws ResourceException {
-        ResourceException ex = null;
-        ArrayList connectionHandles = new ArrayList (this.connectionHandles); 
-        for (Iterator i = connectionHandles.iterator(); i.hasNext();) {
+        SQLExceptionChainBuilder chain = new SQLExceptionChainBuilder();
+        
+        // Iterate over copy of list as connection.close() will remove connection
+        List connectionHandleCopy = new ArrayList(connectionHandles);
+        for (Iterator i = connectionHandleCopy.iterator(); i.hasNext();) {
             AbstractConnection connection = (AbstractConnection) i.next();
             
             try {
                 connection.close();
             } catch(SQLException sqlex) {
-                if (ex == null)
-                    ex = new FBResourceException(sqlex);
-                else
-                    ((SQLException)ex.getLinkedException()).setNextException(sqlex);
+                chain.append(sqlex);
             }
         }
         
         this.connectionHandles.clear();
         
-        if (ex != null)
-            throw ex;
+        if (chain.hasException())
+            throw new FBResourceException(chain.getException());
     }
 
     /**
