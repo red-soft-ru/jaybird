@@ -155,7 +155,6 @@ JXSqlda::JXSqlda( JNIEnv* javaEnvironment, jobject handle, bool isFetching ) : m
 				}
 			else
 				{
-				*((short*)currentXsqlvar.sqldata) = (short)byteArray.Size();
 				memcpy( currentXsqlvar.sqldata, byteArray.Read(), byteArray.Size());
 				}
 			}
@@ -318,9 +317,10 @@ jobject JXSqlda::AllocateJavaXsqlvar( JNIEnv* javaEnvironment, XSQLVAR& xsqlvar 
 			}
 
 		if(dataPtr == NULL)
+			{
 			dataPtr = mAllocator.AllocateMemory(1);
-
-		dataPtr[0] = 0;
+			dataPtr[0] = 0;
+			}
 
 		sqlData = JByteArray(javaEnvironment, dataPtr, dataLength );
 		}

@@ -2123,7 +2123,7 @@ public abstract class AbstractJavaGDSImpl extends AbstractGDS implements GDS {
 	 * @throws IOException
 	 * @throws UnknownHostException
 	 */
-	public abstract Socket getSocket(String server, int port)
+	protected abstract Socket getSocket(String server, int port)
 			throws IOException, UnknownHostException;
 
 	protected void openSocket(isc_db_handle_impl db, DbAttachInfo dbai, DatabaseParameterBuffer dbParameterBuffer,
