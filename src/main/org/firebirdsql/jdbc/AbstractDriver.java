@@ -44,8 +44,6 @@ public abstract class AbstractDriver implements FirebirdDriver {
 
     private final static Logger log;
 
-//    public static final String FIREBIRD_PROTOCOL = "jdbc:firebirdsql:";
-
     public static final String CHARSET = "charSet";
     public static final String USE_TRANSLATION = "useTranslation";
     public static final String USER = "user";
@@ -55,7 +53,7 @@ public abstract class AbstractDriver implements FirebirdDriver {
     public static final String BLOB_BUFFER_LENGTH = "blob_buffer_length";
     public static final String TPB_MAPPING = "tpb_mapping";
     
-    /**
+    /*
      * @todo implement the default subject for the
      * standard connection.
      */
@@ -65,15 +63,15 @@ public abstract class AbstractDriver implements FirebirdDriver {
     private final ReferenceQueue<FBDataSource> dataSourceReferenceQueue = new ReferenceQueue<FBDataSource>();
     private final Object createDataSourceLock = new Object();
 
-    static{
-       log = LoggerFactory.getLogger(FBDriver.class,false);
-        try{
+    static {
+        log = LoggerFactory.getLogger(AbstractDriver.class, false);
+        try {
             DriverManager.registerDriver(new FBDriver());
-        } catch(Exception ex) {
-           if (log!=null) log.error("Could not register with driver manager", ex);
+        } catch (Exception ex) {
+            if (log != null)
+                log.error("Could not register with driver manager", ex);
         }
     }
-
 
     /**
      * Attempts to make a database connection to the given URL.
@@ -99,9 +97,7 @@ public abstract class AbstractDriver implements FirebirdDriver {
      *         connection to the URL
      * @exception SQLException if a database access error occurs
      */
-    public Connection connect(String url, Properties originalInfo)
-        throws SQLException
-    {
+    public Connection connect(String url, Properties originalInfo) throws SQLException {
         final GDSType type = GDSFactory.getTypeForProtocol(url);
         
         if (type == null)
@@ -195,7 +191,6 @@ public abstract class AbstractDriver implements FirebirdDriver {
         }
     }
 
-
     public FirebirdConnectionProperties newConnectionProperties() {
         return new  FBConnectionProperties();
     }
@@ -222,8 +217,6 @@ public abstract class AbstractDriver implements FirebirdDriver {
         return false;
     }
 
-
-
     /**
      * Gets information about the possible properties for this driver.
      * <p>The getPropertyInfo method is intended to allow a generic GUI tool to
@@ -249,8 +242,6 @@ public abstract class AbstractDriver implements FirebirdDriver {
         return FBDriverPropertyManager.getDriverPropertyInfo(info);
     }
 
-
-
     /**
      * Gets the driver's major version number. Initially this should be 1.
          * @return this driver's major version number
@@ -266,7 +257,6 @@ public abstract class AbstractDriver implements FirebirdDriver {
     public int getMinorVersion() {
         return 0;
     }
-
 
     /**
      * Reports whether this driver is a genuine JDBC
