@@ -861,8 +861,6 @@ public abstract class AbstractConnection implements FirebirdConnection {
      * @param resultSetType desired result set type.
      * @param resultSetHoldability desired result set holdability.
      * 
-     * @return new holdability, compatible with result set type.
-     * 
      * @throws SQLException if specified result set type and holdability are
      * not compatibe.
      */
@@ -933,7 +931,7 @@ public abstract class AbstractConnection implements FirebirdConnection {
      * method is called on a closed connection 
      *            or the given parameters are not <code>ResultSet</code> 
      *            constants indicating type, concurrency, and holdability
-      * @exception SQLFeatureNotSupportedException if the JDBC driver does not support
+      * @exception java.sql.SQLFeatureNotSupportedException if the JDBC driver does not support
      * this method or this method is not supported for the specified result 
      * set type, result set holdability and result set concurrency.
      * @see ResultSet
@@ -992,7 +990,7 @@ public abstract class AbstractConnection implements FirebirdConnection {
      *         or the given parameter is not a <code>Statement</code>
      *         constant indicating whether auto-generated keys should be
      *         returned
-     * @exception SQLFeatureNotSupportedException if the JDBC driver does not support
+     * @exception java.sql.SQLFeatureNotSupportedException if the JDBC driver does not support
      * this method with a constant of Statement.RETURN_GENERATED_KEYS
      * @since 1.4
      */
@@ -1048,7 +1046,7 @@ public abstract class AbstractConnection implements FirebirdConnection {
      *         indexes
      * @exception SQLException if a database access error occurs 
      * or this method is called on a closed connection
-     * @exception SQLFeatureNotSupportedException if the JDBC driver does not support
+     * @exception java.sql.SQLFeatureNotSupportedException if the JDBC driver does not support
      * this method
      *
      * @since 1.4
@@ -1102,7 +1100,7 @@ public abstract class AbstractConnection implements FirebirdConnection {
      *         names
      * @exception SQLException if a database access error occurs 
      * or this method is called on a closed connection
-     * @exception SQLFeatureNotSupportedException if the JDBC driver does not support
+     * @exception java.sql.SQLFeatureNotSupportedException if the JDBC driver does not support
      * this method
      *
      * @since 1.4
@@ -1308,10 +1306,12 @@ public abstract class AbstractConnection implements FirebirdConnection {
         return (Savepoint)setFirebirdSavepoint(name);
     }
 
+    @SuppressWarnings("deprecation")
     public void rollback(Savepoint savepoint) throws SQLException {
         rollback((FirebirdSavepoint)savepoint);
     }
 
+    @SuppressWarnings("deprecation")
     public void releaseSavepoint(Savepoint savepoint) throws SQLException {
         releaseSavepoint((FirebirdSavepoint)savepoint);
     }
@@ -1332,7 +1332,9 @@ public abstract class AbstractConnection implements FirebirdConnection {
      *            or this <code>Connection</code> object is currently in
      *            auto-commit mode
      * @see Savepoint
+     * @deprecated This method will be removed in Jaybird 2.3, use {@link java.sql.Connection#setSavepoint()}
      */
+    @Deprecated
     public synchronized FirebirdSavepoint setFirebirdSavepoint() throws SQLException {
         FBSavepoint savepoint = new FBSavepoint(getNextSavepointCounter());
         setSavepoint(savepoint);
@@ -1377,7 +1379,9 @@ public abstract class AbstractConnection implements FirebirdConnection {
      *            or this <code>Connection</code> object is currently in
      *            auto-commit mode
      * @see Savepoint
+     * @deprecated This method will be removed in Jaybird 2.3, use {@link java.sql.Connection#setSavepoint()}
      */
+    @Deprecated
     public synchronized FirebirdSavepoint setFirebirdSavepoint(String name) throws SQLException {
         FBSavepoint savepoint = new FBSavepoint(name);
         setSavepoint(savepoint);
@@ -1398,7 +1402,9 @@ public abstract class AbstractConnection implements FirebirdConnection {
      *            auto-commit mode
      * @see Savepoint
      * @see #rollback
+     * @deprecated This method will be removed in Jaybird 2.3, use {@link java.sql.Connection#rollback(Savepoint)}
      */
+    @Deprecated
     public synchronized void rollback(FirebirdSavepoint savepoint) throws SQLException {
         
         if (getAutoCommit())
@@ -1435,7 +1441,9 @@ public abstract class AbstractConnection implements FirebirdConnection {
      * @exception SQLException if a database access error occurs or
      *            the given <code>Savepoint</code> object is not a valid 
      *            savepoint in the current transaction
+     * @deprecated This method will be removed in Jaybird 2.3, use {@link java.sql.Connection#releaseSavepoint(Savepoint)}
      */
+    @Deprecated
     public synchronized void releaseSavepoint(FirebirdSavepoint savepoint) throws SQLException {
         
         if (getAutoCommit())
