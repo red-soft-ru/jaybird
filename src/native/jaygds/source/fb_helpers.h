@@ -22,7 +22,6 @@
 
 #include "exceptions.h"
 
-
 #include "jni_helpers.h"
 #include "handle_wrappers.h"
 
@@ -36,30 +35,29 @@ class JNIEXPORT FirebirdStatusVector
 	
 	ISC_STATUS* RawAccess();
 			
-	void		IssueExceptionsAndOrAddWarnings(JNIEnv* javaEnvironment, JIscDatabaseHandle& databaseHandle);
-	void		IssueExceptionsAndOrAddWarnings(JNIEnv* javaEnvironment, JIscStatementHandle& databaseHandle);
-	void		IssueExceptionsAndOrAddWarnings(JNIEnv* javaEnvironment, JIscTransactionHandle& databaseHandle);
-	void		IssueExceptionsAndOrAddWarnings(JNIEnv* javaEnvironment, JIscBlobHandle& databaseHandle);
-	void		IssueExceptionsAndOrAddWarnings(JNIEnv* javaEnvironment, JIscServiceHandle& databaseHandle);
+	void IssueExceptionsAndOrAddWarnings(JNIEnv* javaEnvironment, JIscDatabaseHandle& databaseHandle);
+	
+	void IssueExceptionsAndOrAddWarnings(JNIEnv* javaEnvironment, JIscStatementHandle& databaseHandle);
+	
+	void IssueExceptionsAndOrAddWarnings(JNIEnv* javaEnvironment, JIscTransactionHandle& databaseHandle);
+	
+	void IssueExceptionsAndOrAddWarnings(JNIEnv* javaEnvironment, JIscBlobHandle& databaseHandle);
+	
+	void IssueExceptionsAndOrAddWarnings(JNIEnv* javaEnvironment, JIscServiceHandle& databaseHandle);
 
-	static void		Initilize( JNIEnv* jEnv );
+	static void	Initilize( JNIEnv* jEnv );
 			
 	private:
 	FirebirdStatusVector( FirebirdStatusVector& sv );					
 	const FirebirdStatusVector& operator=( FirebirdStatusVector& sv ) ;
 
+	jthrowable IssueExceptionsAndOrAddWarnings(JNIEnv* javaEnvironment);
 
-	jthrowable		IssueExceptionsAndOrAddWarnings(JNIEnv* javaEnvironment);
-
-	static JClassBinding	sClassBinding;
-	static JMethodBinding	sSetNextMethod;
-
-	static JMethodBinding	sGetIsWarningMethod;
-
-
+	static JClassBinding sClassBinding;
+	static JMethodBinding sSetNextMethod;
+	static JMethodBinding sGetIsWarningMethod;
 	ISC_STATUS mVector[20];
 	};
-
 
 #endif
 

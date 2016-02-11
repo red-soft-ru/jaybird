@@ -21,32 +21,16 @@
 #define _JNGDS__InternalException
 #include <jni.h>
 
-/*
- *
- *
- */
 class JNIEXPORT InternalException
 	{
 	public:
 
-	/*
-	 *
-	 *
-	 */
 	InternalException(const char* const message, ... );
 
-	/*
-	 *
-	 *
-	 */
 	const char* getMessage();
 
 	private:
-
 	char mBuffer[2048];
-
 	};
-
-
 
 #endif 

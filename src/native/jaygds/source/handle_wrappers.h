@@ -45,382 +45,191 @@ typedef uintptr_t U_IPTR;
 #define EVENT_ACTIVE 1
 #define EVENT_CANCELLED 2
 
-/*
- *	
- */
 class JNIEXPORT JIscDatabaseHandle
 	{
 	public:
-	
 
-	/*
-	 *	
-	 */
 	JIscDatabaseHandle( JNIEnv* jEnv, jobject handle );
 
-
-	/*
-	 *	
-	 */
 	JIscDatabaseHandle( JNIEnv* jEnv );
 	
-
-	/*
-	 *	
-	 */
 	virtual ~JIscDatabaseHandle();
 
-
-	/*
-	 *	
-	 */
 	void SetHandleValue( isc_db_handle handle );
 	
+	isc_db_handle GetHandleValue();
 
-	/*
-	 *	
-	 */
-	isc_db_handle		GetHandleValue();
-
-
-	/*
-	 *	
-	 */
 	void AddWarning( jthrowable warning );
 
-	
-
-	/*
-	 *	
-	 */
-	static void		Initilize( JNIEnv* jEnv );
+	static void	Initilize( JNIEnv* jEnv );
 		
-
 	private:
-	
 	JNIEnv* mJavaEnvironment;
 	jobject mJavaObjectHandle;
 
-
+	// static
 	static JClassBinding  sClassBinding;
-	
 	static JMethodBinding sMethodBinding_GetHandle;
 	static JMethodBinding sMethodBinding_SetHandle;
-
 	static JMethodBinding sMethodBinding_AddWarning;
-
-	// static
-	static bool		sIsInitilized;
-	
+	static bool	sIsInitilized;
 	};
 
 
-/*
- *	
- */
 class JNIEXPORT JIscTransactionHandle
 	{
 	public:
 
-	/*
-	 *	
-	 */
 	JIscTransactionHandle( JNIEnv* jEnv, jobject handle );
 
-	/*
-	 *	
-	 */
 	JIscTransactionHandle( JNIEnv* jEnv );
 	
-	/*
-	 *	
-	 */
 	virtual ~JIscTransactionHandle();
 
-	/*
-	 *	
-	 */
 	void SetHandleValue( isc_tr_handle handle );
 	
-	/*
-	 *	
-	 */
-	isc_tr_handle		GetHandleValue();
+	isc_tr_handle GetHandleValue();
 
-	/*
-	 *	
-	 */
 	void AddWarning( jthrowable warning );
 	
-	/*
-	 *	
-	 */
-	static void		Initilize( JNIEnv* jEnv );
-		
+	static void	Initilize( JNIEnv* jEnv );
 
-	
 	private:
-	
 	JNIEnv* mJavaEnvironment;
 	jobject mJavaObjectHandle;
 
-
-	static JClassBinding  sClassBinding;
-	
+	// static
+	static JClassBinding sClassBinding;
 	static JMethodBinding sMethodBinding_GetHandle;
 	static JMethodBinding sMethodBinding_SetHandle;
-
 	static JMethodBinding sMethodBinding_AddWarning;
-
-	// static
-	static bool		sIsInitilized;
-	
+	static bool sIsInitilized;
 	};
 
-
-/*
- *	
- */
 class JIscStatementHandle
 	{
 	public:
 	
-	/*
-	 *	
-	 */
 	JIscStatementHandle( JNIEnv* jEnv, jobject handle );
 
-	/*
-	 *	
-	 */
 	JIscStatementHandle( JNIEnv* jEnv );
 	
-	/*
-	 *	
-	 */
 	virtual ~JIscStatementHandle();
 
-	/*
-	 *	
-	 */
 	void SetHandleValue( isc_stmt_handle handle );
 	
-	/*
-	 *	
-	 */
-	isc_stmt_handle		GetHandleValue();
+	isc_stmt_handle GetHandleValue();
 
-	
-	/*
-	 *	
-	 */
-	static void		Initilize( JNIEnv* jEnv );
+	static void Initilize( JNIEnv* jEnv );
 
-	/*
-	 *	
-	 */
 	void AddWarning( jthrowable warning );
-		
 
-	
 	private:
 	
 	JNIEnv* mJavaEnvironment;
 	jobject mJavaObjectHandle;
 
-
+	// static
 	static JClassBinding  sClassBinding;
-	
 	static JMethodBinding sMethodBinding_GetHandle;
 	static JMethodBinding sMethodBinding_SetHandle;
-
 	static JMethodBinding sMethodBinding_AddWarning;
-
-	// static
 	static bool		sIsInitilized;
-	
 	};
 
-/*
- *	
- */
 class JIscBlobHandle
 	{
 	public:
 	
-	/*
-	 *	
-	 */
 	JIscBlobHandle( JNIEnv* jEnv, jobject handle );
 
-	/*
-	 *	
-	 */
 	JIscBlobHandle( JNIEnv* jEnv );
 	
-	/*
-	 *	
-	 */
 	virtual ~JIscBlobHandle();
 
-	/*
-	 *	
-	 */
 	void SetHandleValue( isc_blob_handle handle );
 	
-	/*
-	 *	
-	 */
-	isc_blob_handle		GetHandleValue();
+	isc_blob_handle GetHandleValue();
 
-	/*
-	 *	
-	 */
 	void SetId( ISC_QUAD handle );
 	
-	/*
-	 *	
-	 */
-	ISC_QUAD		GetId();
+	ISC_QUAD GetId();
 
-	/*
-	 *	
-	 */
 	void SetIsEndOfFile( bool isEnd);
 
-	/*
-	 *	
-	 */
 	void AddWarning( jthrowable warning );
 
-	
-	/*
-	 *	
-	 */
-	static void		Initilize( JNIEnv* jEnv );
+	static void Initilize( JNIEnv* jEnv );
 		
-
-	
 	private:
 
-	/* The primary purpose of this method is to ensure that the byte ordering in the jlong
+	/* 
+	 * The primary purpose of this method is to ensure that the byte ordering in the jlong
 	 * is the same across all platforms - the java code may set this into the sqldata field
 	 * on an XSQLDAVar structure so it must always be LSB first.
 	 */
-	jlong  GetJLongFromIscQuad(ISC_QUAD value);
+	jlong GetJLongFromIscQuad(ISC_QUAD value);
 
-	/* The inverse of the above method.
+	/* 
+	 * The inverse of the above method.
 	 */
 	ISC_QUAD GetIscQuadFromJavaLong(jlong value);
 
 	bool IsLittleEndianByteOrdering();
 
-
-	
 	JNIEnv* mJavaEnvironment;
 	jobject mJavaObjectHandle;
 
-
-	static JClassBinding  sClassBinding;
-	
+	// static
+	static JClassBinding sClassBinding;
 	static JMethodBinding sMethodBinding_GetHandle;
 	static JMethodBinding sMethodBinding_SetHandle;
-
 	static JMethodBinding sMethodBinding_GetId;
 	static JMethodBinding sMethodBinding_SetId;
-
 	static JFieldBinding sFieldBinding_IsEof;
-
 	static JMethodBinding sMethodBinding_AddWarning;
-
-	// static
-	static bool		sIsInitilized;
-	
+	static bool sIsInitilized;
 	};
 
-/*
- *	
- */
 class JIscServiceHandle
 	{
 	public:
 	
-	/*
-	 *	
-	 */
 	JIscServiceHandle( JNIEnv* jEnv, jobject handle );
 
-	/*
-	 *	
-	 */
 	JIscServiceHandle( JNIEnv* jEnv );
 	
-	/*
-	 *	
-	 */
 	virtual ~JIscServiceHandle();
 
-	/*
-	 *	
-	 */
 	void SetHandleValue( isc_svc_handle handle );
 
-	/*
-	 *	
-	 */
 	void AddWarning( jthrowable warning );
 	
-	/*
-	 *	
-	 */
-	isc_svc_handle	GetHandleValue();
+	isc_svc_handle GetHandleValue();
 
-	/*
-	 *	
-	 */
-	static void		Initilize( JNIEnv* jEnv );
-		
+	static void Initilize( JNIEnv* jEnv );
 
-	
 	private:
-
 	JNIEnv* mJavaEnvironment;
 	jobject mJavaObjectHandle;
 
-
+	// static
 	static JClassBinding  sClassBinding;
-	
 	static JMethodBinding sMethodBinding_GetHandle;
 	static JMethodBinding sMethodBinding_SetHandle;
-
 	static JMethodBinding sMethodBinding_AddWarning;
-
-	// static
-	static bool		sIsInitilized;
-	
+	static bool sIsInitilized;
 	};
 
-
-/*
- *	
- */
 class JEventHandle
 	{
 	public:
 	
-	/*
-	 *	
-	 */
 	JEventHandle( JNIEnv* jEnv, jobject handle );
 
-
-	/*
-	 *	
-	 */
 	virtual ~JEventHandle();
 
-
-        void SetInputHandleValue(char* handle);
+	void SetInputHandleValue(char* handle);
 
 	/*
 	 *	
@@ -433,96 +242,98 @@ class JEventHandle
     char* GetInputHandleValue();
 	char* GetOutputHandleValue();
 
-        void SetSize(int size);
-        int GetSize();
+    void SetSize(int size);
 
-        void SetEventCount(int count);
+    int GetSize();
 
-        void SetEventId(int eventId);
-        int GetEventId();
+    void SetEventCount(int count);
 
-        int GetEventStructHandle();
-        void SetEventStructHandle(IPTR handle);
-        
+    void SetEventId(int eventId);
 
-	/*
-	 *	
-	 */
-	static void		Initialize( JNIEnv* jEnv );
+    int GetEventId();
+
 		
+    int GetEventStructHandle();
 
+    void SetEventStructHandle(IPTR handle);
+        
+	static void	Initialize( JNIEnv* jEnv );
 	
 	private:
-
 	JNIEnv* mJavaEnvironment;
 	jobject mJavaObjectHandle;
 
 
 	static JClassBinding  sClassBinding;
-	
 	static JMethodBinding sMethodBinding_GetOutputHandle;
 	static JMethodBinding sMethodBinding_GetInputHandle;
 	static JMethodBinding sMethodBinding_SetOutputHandle;
 	static JMethodBinding sMethodBinding_SetInputHandle;
-        static JMethodBinding sMethodBinding_SetSize;
-        static JMethodBinding sMethodBinding_GetSize;
-        static JMethodBinding sMethodBinding_SetEventCount;
-        static JMethodBinding sMethodBinding_SetEventId;
-        static JMethodBinding sMethodBinding_GetEventId;
-        static JMethodBinding sMethodBinding_GetEventStructHandle;
-        static JMethodBinding sMethodBinding_SetEventStructHandle;
+
+    static JMethodBinding sMethodBinding_SetSize;
+    static JMethodBinding sMethodBinding_GetSize;
+    static JMethodBinding sMethodBinding_SetEventCount;
+    static JMethodBinding sMethodBinding_SetEventId;
+    static JMethodBinding sMethodBinding_GetEventId;
+    static JMethodBinding sMethodBinding_GetEventStructHandle;
+    static JMethodBinding sMethodBinding_SetEventStructHandle;
 
 	// static
-	static bool		sIsInitialized;
-	
+	static bool sIsInitialized;
 	};
 
 class JEventHandler
 	{
 	public:
 	
-	/*
-	 *	
-	 */
 	JEventHandler( JNIEnv* jEnv, jobject handler );
 
-
-	/*
-	 *	
-	 */
 	virtual ~JEventHandler();
 
-        void EventOccurred();
+    void EventOccurred();
 
-	/*
-	 *	
-	 */
-	static void		Initialize( JNIEnv* jEnv );
-		
+	static void Initialize( JNIEnv* jEnv );
 
-	
 	private:
-
 	JNIEnv* mJavaEnvironment;
 	jobject mJavaObjectHandle;
 
-
+	// static
 	static JClassBinding  sClassBinding;
-	
 	static JMethodBinding sMethodBinding_EventOccurred;
-
-        // static
 	static bool		sIsInitialized;
-	
 	};
-
 
 struct event_struct {
     jobject handler;
     jobject eventHandle;
     int state;
+	char* eventBuffer;
+	char* resultBuffer;
 };
 
+class EventStructManager
+	{
+	public:
 
+	EventStructManager();
+
+	~EventStructManager();
+
+	long addEventStruct();
+
+	event_struct* getEventStruct(long position);
+
+	void releaseEventStruct(long position);
+
+	private:
+
+	void grow();
+
+	event_struct** eventStructPtr;
+	long size;
+	long lastPosition;
+	long increment;
+	};
 
 #endif
