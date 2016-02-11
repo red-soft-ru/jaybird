@@ -308,6 +308,12 @@ public class FBConnectionHelper {
             String shortKey = key.substring(DPB_PREFIX.length());
             String value = (String)entry.getValue();
             
+            // Remove text intended as comment (which due to the properties format is part of the value)
+            int hashIndex = value.indexOf('#');
+            if (hashIndex != -1) {
+                value = value.substring(0, hashIndex).trim();
+            }
+            
             if ("boolean".equals(value)) {
                 dpbParameterTypes.put(key, TYPE_BOOLEAN);
                 dpbParameterTypes.put(shortKey, TYPE_BOOLEAN);
