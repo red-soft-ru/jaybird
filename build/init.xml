@@ -170,6 +170,7 @@
 	<property name="archive.name.simple" value="${archive.name.main}-${archive.name.version}.jar"/>
 	<property name="archive.name.test" value="${archive.name.main}-test-${archive.name.version}.jar"/>
 	<property name="archive.name.sources" value="${archive.name.main}-${archive.name.version}-sources.jar"/>
+	<property name="archive.name.javadoc" value="${archive.name.main}-${archive.name.version}-javadoc.jar"/>
 
     <property name="junit.timeout" value="600000"/> <!-- 10 minutes -->
     <property name="junit.batchtest.todir" value="${build.reports}"/>
@@ -201,7 +202,6 @@
 
     <path id="javac.j2ee.classpath">
       <pathelement location="${module.thirdparty}/mini-j2ee.jar"/>
-      <pathelement location="${module.thirdparty}/jaas.jar"/>
     </path>
 
     <path id="javac.driver.classpath">
@@ -249,8 +249,13 @@
 
     <!--
     Determine if native code has been built and if so set 'native_library_present' property
+    For amd64 it is set to jaybird22_x64 (note: detection depends on the bitness of the JVM used to run ANT!)
     -->
-    <property name="native.library.name" value="jaybird22"/>
+    <condition property="native.library.name" value="jaybird22" else="jaybird22_x64">
+    	<not>
+    		<os arch="amd64"/>
+    	</not>
+    </condition>
     <property name="native.library.location" value="${module.output}/native"/>
     <condition property="native_library_present">
         <available file="${native.library.location}/${native.library.name}.dll"/>
