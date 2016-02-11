@@ -159,7 +159,8 @@ public interface ISCConstants {
     public final static int isc_dpb_filename_charset        = 139;
     public final static int isc_dpb_octets_as_bytes         = 140;
     public final static int isc_dpb_so_timeout              = 141;
-    public final static int isc_dpb_certificate_base64      = 142;
+    public final static int isc_dpb_column_label_for_name   = 142;
+    public final static int isc_dpb_certificate_base64      = 143;
 
     /* Red Database security parameters */
     public final static int isc_dpb_mac_plugin				= 148;
