@@ -63,13 +63,13 @@
     <property name="version.major" value="2"/>
     <property name="version.minor" value="2"/>
     <property name="version.revision" value="0"/>
-    <property name="version.tag" value="beta-1"/>
+    <property name="version.tag" value=""/>
     <property name="version.name" value="JDK_${ant.java.version}"/>
 
     <property name="version.full" value="${version.major}.${version.minor}.${version.revision}${version.tag}${version.name}"/>
 
     <!-- This must be set to the CVS tag for any release -->
-    <property name="version.cvstag" value="HEAD"/>
+    <property name="version.cvstag" value="Branch_2_2"/>
 
     <!-- Manifest version info -->
     <property name="specification.title" value="Firebird Jaybird"/>
@@ -257,10 +257,10 @@
     </condition>
     <property name="native.library.location" value="${module.output}/native"/>
     <condition property="native_library_present">
-        <available file="${native.library.location}/${native.library.name}.dll"/>
-    </condition>
-    <condition property="native_library_present">
-        <available file="${native.library.location}/lib${native.library.name}.so"/>
+    	<or>
+        	<available file="${native.library.location}/${native.library.name}.dll"/>
+        	<available file="${native.library.location}/lib${native.library.name}.so"/>
+        </or>
     </condition>
     <condition property="no_type2_tests">
         <not><isset property="native_library_present"/></not>

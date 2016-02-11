@@ -55,6 +55,8 @@ import java.util.*;
  */
 public class FBManagedConnection implements ManagedConnection, XAResource, GDSHelperErrorListener {
 
+    public static final String WARNING_NO_CHARSET = "WARNING: No connection characterset specified (property lc_ctype, encoding, charSet or localEncoding), defaulting to characterset NONE";
+
     private static final Logger log = LoggerFactory.getLogger(FBManagedConnection.class, false);
 
     private final FBManagedConnectionFactory mcf;
@@ -95,6 +97,13 @@ public class FBManagedConnection implements ManagedConnection, XAResource, GDSHe
             dbHandle = gds.createIscDbHandle();
 
             DatabaseParameterBuffer dpb = this.cri.getDpb();
+            if (dpb.getArgumentAsString(DatabaseParameterBuffer.LC_CTYPE) == null) {
+                if (log != null) {
+                    log.warn(WARNING_NO_CHARSET);
+                }
+                dbHandle.addWarning(new GDSWarning(WARNING_NO_CHARSET));
+            }
+            
             gds.iscAttachDatabase(mcf.getDatabase(), dbHandle, dpb);
             
             gdsHelper = new GDSHelper(gds, dpb, dbHandle, this);
