@@ -77,7 +77,7 @@
 		<equals arg1="${ant.java.version}" arg2="1.7"/>
 	</condition>
 
-    <!-- We set jdk1.7 property if JDK version is 1.7 -->
+    <!-- We set jdk1.8 property if JDK version is 1.8 -->
     <condition property="jdk1.8" value="true">
         <equals arg1="${ant.java.version}" arg2="1.8"/>
     </condition>
@@ -88,7 +88,7 @@
     <property name="version.major" value="2"/>
     <property name="version.minor" value="2"/>
     <property name="version.revision" value="4"/>
-    <property name="version.tag" value="snapshot"/>
+    <property name="version.tag" value="-snapshot-"/>
     <property name="version.name" value="JDK_${ant.java.version}"/>
 
     <property name="version.full" value="${version.major}.${version.minor}.${version.revision}${version.tag}${version.name}"/>
