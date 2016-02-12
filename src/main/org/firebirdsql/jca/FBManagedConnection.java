@@ -221,7 +221,7 @@ public class FBManagedConnection implements ManagedConnection, XAResource, GDSHe
     }
     
     public boolean inTransaction() {
-        return gdsHelper.inTransaction();
+        return gdsHelper != null && gdsHelper.inTransaction();
     }
     
     public void setManagedEnvironment(boolean managedEnvironment) throws ResourceException{
@@ -238,7 +238,7 @@ public class FBManagedConnection implements ManagedConnection, XAResource, GDSHe
             // there will be at most one connection.
             for (Iterator iter = connectionHandles.iterator(); iter.hasNext();) {
                 AbstractConnection connection = (AbstractConnection) iter.next();
-                
+
                 try {
                     connection.setManagedEnvironment(managedEnvironment);
                 } catch(SQLException ex) {
@@ -451,12 +451,13 @@ public class FBManagedConnection implements ManagedConnection, XAResource, GDSHe
      */
     public void cleanup() throws ResourceException {
         disassociateConnections();
-        
-        this.gdsHelper.setCurrentTrHandle(null);
+
+        if (gdsHelper != null)
+            gdsHelper.setCurrentTrHandle(null);
 
         // reset the TPB from the previous transaction.
-        this.tpb = mcf.getDefaultTpb();
-        this.transactionIsolation = mcf.getDefaultTransactionIsolation();
+        tpb = mcf.getDefaultTpb();
+        transactionIsolation = mcf.getDefaultTransactionIsolation();
     }
 
     /**
@@ -556,7 +557,7 @@ public class FBManagedConnection implements ManagedConnection, XAResource, GDSHe
         if (gdsHelper == null)
             return;
         
-        if (gdsHelper.inTransaction()) 
+        if (gdsHelper.inTransaction())
             throw new javax.resource.spi.IllegalStateException(
                 "Can't destroy managed connection  with active transaction");
         
@@ -623,7 +624,7 @@ public class FBManagedConnection implements ManagedConnection, XAResource, GDSHe
      * The <code>internalCommit</code> method performs the requested commit
      * and may throw a GDSException to be interpreted by the caller.
      * 
-     * @param id
+     * @param xid
      *            a <code>Xid</code> value
      * @param onePhase
      *            a <code>boolean</code> value
@@ -647,20 +648,24 @@ public class FBManagedConnection implements ManagedConnection, XAResource, GDSHe
             throw new FBXAException("Commit called with unknown transaction",
                     XAException.XAER_NOTA);
 
-        if (committingTr == gdsHelper.getCurrentTrHandle())
+        if (committingTr == getGDSHelper().getCurrentTrHandle())
             throw new FBXAException("Commit called with non-ended xid",
                     XAException.XAER_PROTO);
 
         try {
             committingTr.forgetResultSets();
             try {
-                gdsHelper.commitTransaction(committingTr);
+                getGDSHelper().commitTransaction(committingTr);
             } catch (GDSException ge) {
-                try {
-                    gdsHelper.rollbackTransaction(committingTr);
-                } catch (GDSException ge2) {
-                    if (log != null)
-                        log.debug("Exception rolling back failed tx: ", ge2);
+                if (gdsHelper != null) {
+                    try {
+                        gdsHelper.rollbackTransaction(committingTr);
+                    } catch (GDSException ge2) {
+                        if (log != null)
+                            log.debug("Exception rolling back failed tx: ", ge2);
+                    }
+                } else if (log != null) {
+                    log.warn("Unable to rollback failed tx, connection closed or lost");
                 }
                 throw ge;
             } finally {
@@ -692,15 +697,23 @@ public class FBManagedConnection implements ManagedConnection, XAResource, GDSHe
         internalEnd(id, flags);
         mcf.notifyEnd(this, id);
         inDistributedTransaction = false;
+
+        try {
+            // This will reset the managed environment of the associated connections and set the transaction coordinator to local
+            // TODO This is a bit of a hack; need to find a better way; this doesn't work with connectionSharing = true
+            setManagedEnvironment(isManagedEnvironment());
+        } catch (ResourceException ex) {
+            throw new FBXAException("Reset of managed state failed", XAException.XAER_RMERR);
+        }
     }
 
     /**
      * The <code>internalEnd</code> method ends the xid as requested if
-     * approprriate and throws a GDSException including the appropriate XA error
+     * appropriate and throws a GDSException including the appropriate XA error
      * code and a message if not. The caller can decode the exception as
      * necessary.
      * 
-     * @param id
+     * @param xid
      *            a <code>Xid</code> value
      * @param flags
      *            an <code>int</code> value
@@ -717,7 +730,7 @@ public class FBManagedConnection implements ManagedConnection, XAResource, GDSHe
         if (flags == XAResource.TMFAIL) {
             try {
                 gds.iscRollbackTransaction(endingTr);
-                gdsHelper.setCurrentTrHandle(null);
+                getGDSHelper().setCurrentTrHandle(null);
             } catch (GDSException ex) {
                 throw new FBXAException("can't rollback transaction", XAException.XAER_RMFAIL, ex);
             }
@@ -759,12 +772,12 @@ public class FBManagedConnection implements ManagedConnection, XAResource, GDSHe
             // find XID
             
             AbstractIscTrHandle trHandle2 = (AbstractIscTrHandle)gds.createIscTrHandle();
-            gds.iscStartTransaction(trHandle2, gdsHelper.getCurrentDbHandle(), tpb.getTransactionParameterBuffer());
+            gds.iscStartTransaction(trHandle2, getGDSHelper().getCurrentDbHandle(), tpb.getTransactionParameterBuffer());
             
             AbstractIscStmtHandle stmtHandle2 = (AbstractIscStmtHandle)gds.createIscStmtHandle();
-            gds.iscDsqlAllocateStatement(gdsHelper.getCurrentDbHandle(), stmtHandle2);
+            gds.iscDsqlAllocateStatement(getGDSHelper().getCurrentDbHandle(), stmtHandle2);
             
-            GDSHelper gdsHelper2 = new GDSHelper(gds, gdsHelper.getDatabaseParameterBuffer(), gdsHelper.getCurrentDbHandle(), null);
+            GDSHelper gdsHelper2 = new GDSHelper(gds, getGDSHelper().getDatabaseParameterBuffer(), getGDSHelper().getCurrentDbHandle(), null);
             gdsHelper2.setCurrentTrHandle(trHandle2);
             
             gdsHelper2.prepareStatement(stmtHandle2, FORGET_FIND_QUERY, false);
@@ -837,15 +850,15 @@ public class FBManagedConnection implements ManagedConnection, XAResource, GDSHe
             // delete XID
 
             AbstractIscTrHandle trHandle2 = (AbstractIscTrHandle)gds.createIscTrHandle();
-            gds.iscStartTransaction(trHandle2, gdsHelper.getCurrentDbHandle(), tpb.getTransactionParameterBuffer());
+            gds.iscStartTransaction(trHandle2, getGDSHelper().getCurrentDbHandle(), tpb.getTransactionParameterBuffer());
             
             AbstractIscStmtHandle stmtHandle2 = (AbstractIscStmtHandle)gds.createIscStmtHandle();
-            gds.iscDsqlAllocateStatement(gdsHelper.getCurrentDbHandle(), stmtHandle2);
+            gds.iscDsqlAllocateStatement(getGDSHelper().getCurrentDbHandle(), stmtHandle2);
 
             stmtHandle2 = (AbstractIscStmtHandle)gds.createIscStmtHandle();
-            gds.iscDsqlAllocateStatement(gdsHelper.getCurrentDbHandle(), stmtHandle2);
+            gds.iscDsqlAllocateStatement(getGDSHelper().getCurrentDbHandle(), stmtHandle2);
             
-            GDSHelper gdsHelper2 = new GDSHelper(gds, gdsHelper.getDatabaseParameterBuffer(), gdsHelper.getCurrentDbHandle(), null);
+            GDSHelper gdsHelper2 = new GDSHelper(gds, getGDSHelper().getDatabaseParameterBuffer(), getGDSHelper().getCurrentDbHandle(), null);
             gdsHelper2.setCurrentTrHandle(trHandle2);
 
             gdsHelper2.prepareStatement(stmtHandle2, FORGET_DELETE_QUERY + inLimboId, false);
@@ -906,7 +919,7 @@ public class FBManagedConnection implements ManagedConnection, XAResource, GDSHe
         if (committingTr == null)
             throw new FBXAException("Prepare called with unknown transaction",
                     XAException.XAER_NOTA);
-        if (committingTr == gdsHelper.getCurrentTrHandle())
+        if (committingTr == getGDSHelper().getCurrentTrHandle())
             throw new FBXAException("Prepare called with non-ended xid",
                     XAException.XAER_PROTO);
         
@@ -919,10 +932,14 @@ public class FBManagedConnection implements ManagedConnection, XAResource, GDSHe
             }
             byte[] message = fbxid.toBytes();
             
-            gdsHelper.prepareTransaction(committingTr, message);
+            getGDSHelper().prepareTransaction(committingTr, message);
         } catch (GDSException ge) {
             try {
-                gdsHelper.rollbackTransaction(committingTr);
+                if (gdsHelper != null) {
+                    gdsHelper.rollbackTransaction(committingTr);
+                } else if (log != null) {
+                    log.warn("Unable to rollback failed tx, connection closed or lost");
+                }
             } catch (GDSException ge2) {
                 if (log != null)
                     log.debug("Exception rolling back failed tx: ", ge2);
@@ -972,14 +989,12 @@ public class FBManagedConnection implements ManagedConnection, XAResource, GDSHe
             ArrayList xids = new ArrayList();
             
             AbstractIscTrHandle trHandle2 = (AbstractIscTrHandle)gds.createIscTrHandle();
-            gds.iscStartTransaction(trHandle2, gdsHelper.getCurrentDbHandle(), tpb.getTransactionParameterBuffer());
+            gds.iscStartTransaction(trHandle2, getGDSHelper().getCurrentDbHandle(), tpb.getTransactionParameterBuffer());
             
             AbstractIscStmtHandle stmtHandle2 = (AbstractIscStmtHandle)gds.createIscStmtHandle();
-            gds.iscDsqlAllocateStatement(gdsHelper.getCurrentDbHandle(), stmtHandle2);
+            gds.iscDsqlAllocateStatement(getGDSHelper().getCurrentDbHandle(), stmtHandle2);
             
-            GDSHelper gdsHelper2 = new GDSHelper(gds, 
-                    gdsHelper.getDatabaseParameterBuffer(), 
-                    gdsHelper.getCurrentDbHandle(), null);
+            GDSHelper gdsHelper2 = new GDSHelper(gds, getGDSHelper().getDatabaseParameterBuffer(), getGDSHelper().getCurrentDbHandle(), null);
             gdsHelper2.setCurrentTrHandle(trHandle2);
             
             gdsHelper2.prepareStatement(stmtHandle2, RECOVERY_QUERY, false);
@@ -1081,14 +1096,14 @@ public class FBManagedConnection implements ManagedConnection, XAResource, GDSHe
             throw new FBXAException ("Rollback called with unknown transaction: " + xid);
         }
 
-        if (committingTr == gdsHelper.getCurrentTrHandle())
+        if (committingTr == getGDSHelper().getCurrentTrHandle())
             throw new FBXAException("Rollback called with non-ended xid",
                     XAException.XAER_PROTO);
 
         try {
             committingTr.forgetResultSets();
             try {
-                gdsHelper.rollbackTransaction(committingTr);
+                getGDSHelper().rollbackTransaction(committingTr);
             } finally {
                 xidMap.remove(xid);
                 preparedXid.remove(xid);
@@ -1152,6 +1167,10 @@ public class FBManagedConnection implements ManagedConnection, XAResource, GDSHe
             mcf.notifyStart(this, id);
             
             inDistributedTransaction = true;
+
+            // This will reset the managed environment of the associated connections and set the transaction coordinator to managed
+            // TODO This is a bit of a hack; need to find a better way; this doesn't work with connectionSharing = true
+            setManagedEnvironment(isManagedEnvironment());
             
         } catch (GDSException ge) {
             throw new FBXAException(ge.getXAErrorCode());
@@ -1176,7 +1195,7 @@ public class FBManagedConnection implements ManagedConnection, XAResource, GDSHe
     public void internalStart(Xid id, int flags) throws XAException, GDSException {
         if (log != null) log.trace("start called: " + id);
 
-        if (gdsHelper.getCurrentTrHandle() != null)
+        if (getGDSHelper().getCurrentTrHandle() != null)
             throw new FBXAException("Transaction already started", XAException.XAER_PROTO);
 
         findIscTrHandle(id, flags);
@@ -1231,7 +1250,7 @@ public class FBManagedConnection implements ManagedConnection, XAResource, GDSHe
 
     private void findIscTrHandle(Xid xid, int flags) throws GDSException, XAException {
         // FIXME return old tr handle if it is still valid before proceeding
-        gdsHelper.setCurrentTrHandle(null);
+        getGDSHelper().setCurrentTrHandle(null);
         
         if (flags == XAResource.TMRESUME) {
             AbstractIscTrHandle trHandle = (AbstractIscTrHandle) xidMap.get(xid);
@@ -1241,7 +1260,7 @@ public class FBManagedConnection implements ManagedConnection, XAResource, GDSHe
                         XAException.XAER_INVAL);
             }
             
-            gdsHelper.setCurrentTrHandle(trHandle);
+            getGDSHelper().setCurrentTrHandle(trHandle);
             return;
         }
         
@@ -1258,7 +1277,7 @@ public class FBManagedConnection implements ManagedConnection, XAResource, GDSHe
         }
         
         // new xid for us
-        AbstractIscTrHandle trHandle = gdsHelper.startTransaction(tpb.getTransactionParameterBuffer());
+        AbstractIscTrHandle trHandle = getGDSHelper().startTransaction(tpb.getTransactionParameterBuffer());
 
         xidMap.put(xid, trHandle);
     }
