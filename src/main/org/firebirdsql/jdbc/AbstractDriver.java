@@ -1,5 +1,7 @@
 /*
- * Firebird Open Source J2ee connector - jdbc driver
+ * $Id$
+ *
+ * Firebird Open Source JavaEE Connector - JDBC Driver
  *
  * Distributable under LGPL license.
  * You may obtain a copy of the License at http://www.gnu.org/copyleft/lgpl.html
@@ -12,12 +14,11 @@
  * This file was created by members of the firebird development team.
  * All individual contributions remain the Copyright (C) of those
  * individuals.  Contributors to this file are either listed here or
- * can be obtained from a CVS history command.
+ * can be obtained from a source control history command.
  *
  * All rights reserved.
  */
 package org.firebirdsql.jdbc;
-
 
 import java.lang.ref.Reference;
 import java.lang.ref.ReferenceQueue;
@@ -143,22 +144,23 @@ public abstract class AbstractDriver implements FirebirdDriver {
         }
     }
 
-
-    private FBDataSource createDataSource(final FBManagedConnectionFactory mcf) throws ResourceException {
-        final FBConnectionProperties cacheKey = mcf.getCacheKey();
-        FBDataSource dataSource = dataSourceFromCache(cacheKey);
-        if (dataSource != null) return dataSource;
-        synchronized (createDataSourceLock) {
-            // Obtain again
-            dataSource = dataSourceFromCache(cacheKey);
-            if (dataSource == null) {
-                dataSource = (FBDataSource) mcf.createConnectionFactory();
-                mcfToDataSourceMap.put(cacheKey,
-                        new SoftReference<FBDataSource>(dataSource, dataSourceReferenceQueue));
+    private FBDataSource createDataSource(FBManagedConnectionFactory mcf) throws ResourceException {
+        try {
+            FBDataSource dataSource = dataSourceFromCache(mcf);
+            if (dataSource != null) return dataSource;
+            synchronized (createDataSourceLock) {
+                // Obtain again
+                dataSource = dataSourceFromCache(mcf);
+                if (dataSource == null) {
+                    dataSource = (FBDataSource) mcf.createConnectionFactory();
+                    mcfToDataSourceMap.put(mcf.getCacheKey(),
+                            new SoftReference<FBDataSource>(dataSource, dataSourceReferenceQueue));
+                }
             }
+            return dataSource;
+        } finally {
+            cleanDataSourceCache();
         }
-        cleanDataSourceCache();
-        return dataSource;
     }
 
     /**
@@ -171,12 +173,11 @@ public abstract class AbstractDriver implements FirebirdDriver {
         }
     }
 
-    private FBDataSource dataSourceFromCache(final FBConnectionProperties cacheKey) {
-        final SoftReference<FBDataSource> dataSourceReference = mcfToDataSourceMap.get(cacheKey);
+    private FBDataSource dataSourceFromCache(FBManagedConnectionFactory mcf) {
+        final SoftReference<FBDataSource> dataSourceReference = mcfToDataSourceMap.get(mcf.getCacheKey());
         return dataSourceReference != null ? dataSourceReference.get() : null;
     }
-
-
+    
     public FirebirdConnection connect(FirebirdConnectionProperties properties) throws SQLException {
         GDSType type = GDSType.getType(properties.getType());
         

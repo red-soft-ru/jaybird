@@ -1,7 +1,7 @@
 /*
  * $Id$
- * 
- * Firebird Open Source J2ee connector - jdbc driver
+ *
+ * Firebird Open Source JavaEE Connector - JDBC Driver
  *
  * Distributable under LGPL license.
  * You may obtain a copy of the License at http://www.gnu.org/copyleft/lgpl.html
@@ -14,11 +14,10 @@
  * This file was created by members of the firebird development team.
  * All individual contributions remain the Copyright (C) of those
  * individuals.  Contributors to this file are either listed here or
- * can be obtained from a CVS history command.
+ * can be obtained from a source control history command.
  *
  * All rights reserved.
  */
-
 package org.firebirdsql.jca;
 
 import java.io.*;
@@ -72,6 +71,9 @@ public class FBManagedConnectionFactory implements ManagedConnectionFactory,
     /**
      * The <code>mcfInstances</code> weak hash map is used in deserialization
      * to find the correct instance of a mcf after deserializing.
+     * <p>
+     * It is also used to return a canonical instance to {@link org.firebirdsql.jdbc.FBDriver}.
+     * </p>
      */
     private static final Map<FBConnectionProperties, SoftReference<FBManagedConnectionFactory>> mcfInstances =
             new ConcurrentHashMap<FBConnectionProperties, SoftReference<FBManagedConnectionFactory>>();
@@ -624,6 +626,13 @@ public class FBManagedConnectionFactory implements ManagedConnectionFactory,
         return factoryReference != null ? factoryReference.get() : null;
     }
 
+    /**
+     * Starts this MCF and adds this instance to {@code #mcfInstances} cache.
+     * <p>
+     * This implementation (together with {@link #canonicalize()} has a race condition with regard to the
+     * instance cache. As this is a relatively harmless one, we leave it as is.
+     * </p>
+     */
     private void start() {
         synchronized (startLock) {
             if (started) return;
@@ -701,8 +710,8 @@ public class FBManagedConnectionFactory implements ManagedConnectionFactory,
      * rollback. If no "in limbo" transaction can be found, or error happens
      * during completion, an exception is thrown.
      * 
-     * @param gdsHelper
-     *            instance of {@link GDSHelper} that will be used to reconnect
+     * @param gds
+     *            instance of {@link GDS} that will be used to reconnect
      *            transaction.
      * @param xid
      *            Xid of the transaction to reconnect.
@@ -856,7 +865,7 @@ public class FBManagedConnectionFactory implements ManagedConnectionFactory,
         }
     }
 
-    public final FBConnectionProperties getCacheKey() {
+    public FBConnectionProperties getCacheKey() {
         return (FBConnectionProperties) connectionProperties.clone();
     }
 }
