@@ -586,7 +586,17 @@ public class FBSADataSource implements DataSource, Serializable, Referenceable, 
     public void setSoTimeout(int soTimeout) {
         mcf.setSoTimeout(soTimeout);
     }
-    
+
+    @Override
+    public int getConnectTimeout() {
+        return mcf.getConnectTimeout();
+    }
+
+    @Override
+    public void setConnectTimeout(int connectTimeout) {
+        mcf.setConnectTimeout(connectTimeout);
+    }
+
     public int getSoTimeout() {
         return mcf.getSoTimeout();
     }
