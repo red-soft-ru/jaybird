@@ -779,6 +779,7 @@ public class FBManagedConnectionFactory implements ManagedConnectionFactory,
 
                         AbstractIscTrHandle trHandle2 = (AbstractIscTrHandle) gds.createIscTrHandle();
                         gds.iscStartTransaction(trHandle2, gdsHelper.getCurrentDbHandle(), getDefaultTpb().getTransactionParameterBuffer());
+                        gdsHelper.setCurrentTrHandle(trHandle2);
 
                         AbstractIscStmtHandle stmtHandle2 = (AbstractIscStmtHandle) gds.createIscStmtHandle();
                         gds.iscDsqlAllocateStatement(gdsHelper.getCurrentDbHandle(), stmtHandle2);
@@ -865,7 +866,7 @@ public class FBManagedConnectionFactory implements ManagedConnectionFactory,
         }
     }
 
-    public FBConnectionProperties getCacheKey() {
+    public final FBConnectionProperties getCacheKey() {
         return (FBConnectionProperties) connectionProperties.clone();
     }
 }
