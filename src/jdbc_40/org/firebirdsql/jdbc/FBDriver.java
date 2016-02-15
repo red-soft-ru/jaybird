@@ -20,7 +20,6 @@
  */
 package org.firebirdsql.jdbc;
 
-
 import java.sql.*;
 import java.util.logging.Logger;
 
