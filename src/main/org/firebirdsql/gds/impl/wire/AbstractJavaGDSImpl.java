@@ -58,9 +58,9 @@ import org.firebirdsql.logging.LoggerFactory;
 public abstract class AbstractJavaGDSImpl extends AbstractGDS implements GDS {
 
 	public static final String PURE_JAVA_TYPE_NAME = "PURE_JAVA";
+	private static final String LEGACY_PASSWORD_SALT = "9z";
 
-	private static Logger log = LoggerFactory.getLogger(
-			AbstractJavaGDSImpl.class, false);
+	private static Logger log = LoggerFactory.getLogger(AbstractJavaGDSImpl.class, false);
 
 	/* Operation (packet) types */
 
@@ -461,6 +461,12 @@ public abstract class AbstractJavaGDSImpl extends AbstractGDS implements GDS {
                 if (!newDpb.hasArgument(DatabaseParameterBuffer.SQL_DIALECT)) {
                     newDpb.addArgument(DatabaseParameterBuffer.SQL_DIALECT, ISCConstants.SQL_DIALECT_CURRENT);
                 }
+				if (databaseParameterBuffer.hasArgument(DatabaseParameterBuffer.PASSWORD)) {
+					String password = databaseParameterBuffer.getArgumentAsString(DatabaseParameterBuffer.PASSWORD);
+					databaseParameterBuffer.removeArgument(DatabaseParameterBuffer.PASSWORD);
+					databaseParameterBuffer.addArgument(DatabaseParameterBuffer.PASSWORD_ENC,
+							UnixCrypt.crypt(password, LEGACY_PASSWORD_SALT).substring(2, 13));
+				}
 
 				db.out.writeTyped(ISCConstants.isc_dpb_version1, (Xdrable) newDpb);
 				db.out.flush();
@@ -2618,12 +2624,10 @@ public abstract class AbstractJavaGDSImpl extends AbstractGDS implements GDS {
 		int mgrIndex = service.indexOf(serviceMgrStr);
 		if (mgrIndex == -1
 				|| mgrIndex + serviceMgrStr.length() != service.length())
-			throw new GDSException(ISCConstants.isc_arg_gds,
-					ISCConstants.isc_svcnotdef, service);
+			throw new GDSException(ISCConstants.isc_arg_gds, ISCConstants.isc_svcnotdef, service);
 
         if (mgrIndex > 0 && service.charAt(mgrIndex - 1) != ':')
-            throw new GDSException(ISCConstants.isc_arg_gds,
-                ISCConstants.isc_svcnotdef, service);
+            throw new GDSException(ISCConstants.isc_arg_gds, ISCConstants.isc_svcnotdef, service);
         
         int port = 3050;
         String host = null;
@@ -2706,6 +2710,12 @@ public abstract class AbstractJavaGDSImpl extends AbstractGDS implements GDS {
 					throw new GDSException(ISCConstants.isc_connect_reject);
 				}
 
+				if (serviceParameterBuffer.hasArgument(ServiceParameterBuffer.PASSWORD)) {
+					String password = serviceParameterBuffer.getArgumentAsString(ServiceParameterBuffer.PASSWORD);
+					serviceParameterBuffer.removeArgument(ServiceParameterBuffer.PASSWORD);
+					serviceParameterBuffer.addArgument(ServiceParameterBuffer.PASSWORD_ENC,
+							UnixCrypt.crypt(password, LEGACY_PASSWORD_SALT).substring(2, 13));
+				}
 				
 				if (debug)
 					log.debug("op_service_attach ");
