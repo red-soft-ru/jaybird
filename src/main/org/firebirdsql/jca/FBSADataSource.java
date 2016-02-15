@@ -4,8 +4,10 @@ import java.io.PrintWriter;
 import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 import javax.naming.NamingException;
 import javax.naming.Reference;
@@ -437,6 +439,10 @@ public class FBSADataSource implements DataSource, Serializable, Referenceable, 
      */
     public int getLoginTimeout() throws SQLException {
         return loginTimeout;
+    }
+
+    public Logger getParentLogger() throws SQLFeatureNotSupportedException {
+        throw new FBDriverNotCapableException();
     }
 
     /**
