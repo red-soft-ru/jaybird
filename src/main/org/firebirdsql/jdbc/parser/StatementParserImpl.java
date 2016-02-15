@@ -1,7 +1,5 @@
 /*
- * $Id$
- * 
- * Firebird Open Source J2EE Connector - JDBC Driver
+ * Firebird Open Source JavaEE Connector - JDBC Driver
  *
  * Distributable under LGPL license.
  * You may obtain a copy of the License at http://www.gnu.org/copyleft/lgpl.html
@@ -14,7 +12,7 @@
  * This file was created by members of the firebird development team.
  * All individual contributions remain the Copyright (C) of those
  * individuals.  Contributors to this file are either listed here or
- * can be obtained from a CVS history command.
+ * can be obtained from a source control history command.
  *
  * All rights reserved.
  */
@@ -40,9 +38,15 @@ public class StatementParserImpl implements StatementParser {
             CommonTokenStream tokenStream = new CommonTokenStream(lexer);
             
             JaybirdSqlParser parser = new JaybirdSqlParser(tokenStream);
-            parser.statement().getTree();
-            
+            parser.statement();
+
             JaybirdStatementModel statementModel = parser.getStatementModel();
+            if (statementModel.getStatementType() == JaybirdStatementModel.UNDETECTED_TYPE) {
+                throw new ParseException("Unable to detect statement type or unsupported statement type");
+            }
+            if (statementModel.getTableName() == null) {
+                throw new ParseException("Unable to parse query: no table name found");
+            }
             return statementModel;
         } catch (RecognitionException e) {
             throw new ParseException("Unable to parse query", e);

@@ -1,7 +1,7 @@
 /*
  * $Id$
- * 
- * Firebird Open Source J2ee connector - jdbc driver
+ *
+ * Firebird Open Source JavaEE Connector - JDBC Driver
  *
  * Distributable under LGPL license.
  * You may obtain a copy of the License at http://www.gnu.org/copyleft/lgpl.html
@@ -14,7 +14,7 @@
  * This file was created by members of the firebird development team.
  * All individual contributions remain the Copyright (C) of those
  * individuals.  Contributors to this file are either listed here or
- * can be obtained from a CVS history command.
+ * can be obtained from a source control history command.
  *
  * All rights reserved.
  */
@@ -3066,23 +3066,16 @@ public abstract class AbstractJavaGDSImpl extends AbstractGDS implements GDS {
                     int port = db.in.readShort();
                     respLen -= 2;
 
-                    // IP address
-                    byte[] ipBytes = db.in.readRawBuffer(4);
+                    // IP address (ignore)
+                    db.in.readRawBuffer(4);
                     respLen -= 4;
-                    
-                    StringBuffer ipBuf = new StringBuffer();
-                    for (int i = 0; i < 4; i++){
-                        ipBuf.append((int)(ipBytes[i] & 0xff));
-                        if (i < 3) ipBuf.append(".");
-                    }
-                    String ipAddress = ipBuf.toString();
 
                     // Ignore
                     db.in.readRawBuffer(respLen);
                     readStatusVector(db);
 
                     db.eventCoordinator = 
-                        new EventCoordinatorImp(auxHandle, ipAddress, port);
+                        new EventCoordinatorImp(auxHandle, db.socket.getInetAddress(), port);
                 }
 
                 db.eventCoordinator.queueEvents(
@@ -3143,15 +3136,15 @@ public abstract class AbstractJavaGDSImpl extends AbstractGDS implements GDS {
 
     class EventCoordinatorImp implements EventCoordinator, Runnable {
 
-        private int handle;
-        private String ipAddress;
-        private int port;
+        private final int handle;
+        private final InetAddress ipAddress;
+        private final int port;
         private int eventsId = 0;
         isc_db_handle_impl db;
-        private Map globMap = new HashMap();
-        private boolean running = true;
+        private final Map globMap = new HashMap();
+        private volatile boolean running = true;
 
-        public EventCoordinatorImp(int handle, String ipAddress, int port) 
+        public EventCoordinatorImp(int handle, InetAddress ipAddress, int port)
                 throws GDSException {
             this.handle = handle;
             this.ipAddress = ipAddress;
@@ -3206,10 +3199,9 @@ public abstract class AbstractJavaGDSImpl extends AbstractGDS implements GDS {
                                 }
                             }
 
-                            EventGlob glob = null;
+                            EventGlob glob;
                             synchronized (globMap){
-                                glob = (EventGlob)globMap.remove(
-                                        Integer.toString(eventId));
+                                glob = (EventGlob)globMap.remove(Integer.toString(eventId));
                             }
                             if (glob != null){
                                 glob.getEventHandle().setInternalCount(count);
@@ -3251,16 +3243,16 @@ public abstract class AbstractJavaGDSImpl extends AbstractGDS implements GDS {
                 throw new GDSException(
                         ISCConstants.isc_arg_gds, 
                         ISCConstants.isc_network_error,
-                        ipAddress, uhe);
+                        ipAddress.toString(), uhe);
             } catch (IOException ioe){
                 throw new GDSException(
                         ISCConstants.isc_arg_gds, 
-                        ISCConstants.isc_network_error, 
-                        ipAddress, ioe);
+                        ISCConstants.isc_network_error,
+                        ipAddress.toString(), ioe);
             }
         }
 
-        public void close() throws IOException {
+        public synchronized void close() throws IOException {
             running = false;
         }
 
@@ -3286,7 +3278,6 @@ public abstract class AbstractJavaGDSImpl extends AbstractGDS implements GDS {
                         mainDb.out.writeInt(eventHandle.getLocalId());
                         mainDb.out.flush();
 
-
                         receiveResponse(mainDb,-1);
                         int eventId = mainDb.getResp_object();
                         eventHandle.setEventId(eventId);
@@ -3294,7 +3285,6 @@ public abstract class AbstractJavaGDSImpl extends AbstractGDS implements GDS {
                                 Integer.toString(eventHandle.getLocalId()), 
                                 new EventGlob(eventHandler, eventHandle));
                     }
-
                 } catch (IOException ioe){
                     throw new GDSException(
                             ISCConstants.isc_arg_gds, 

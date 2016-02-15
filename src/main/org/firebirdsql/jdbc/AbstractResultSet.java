@@ -1,7 +1,7 @@
 /*
  * $Id$
- * 
- * Firebird Open Source J2ee connector - jdbc driver
+ *
+ * Firebird Open Source JavaEE Connector - JDBC Driver
  *
  * Distributable under LGPL license.
  * You may obtain a copy of the License at http://www.gnu.org/copyleft/lgpl.html
@@ -14,7 +14,7 @@
  * This file was created by members of the firebird development team.
  * All individual contributions remain the Copyright (C) of those
  * individuals.  Contributors to this file are either listed here or
- * can be obtained from a CVS history command.
+ * can be obtained from a source control history command.
  *
  * All rights reserved.
  */
@@ -145,10 +145,9 @@ public abstract class AbstractResultSet implements ResultSet, FirebirdResultSet,
             
             if (rsType == ResultSet.TYPE_SCROLL_SENSITIVE) {
                 fbStatement.addWarning(new FBSQLWarning(
-                    "Result set type changed. " 
-                    + "ResultSet.TYPE_SCROLL_SENSITIVE is not supported."));
+                    "Result set type changed. ResultSet.TYPE_SCROLL_SENSITIVE is not supported."));
                     
-                rsType = ResultSet.TYPE_SCROLL_INSENSITIVE;
+                this.rsType = ResultSet.TYPE_SCROLL_INSENSITIVE;
             }
             
             if (updatableCursor)  
@@ -168,14 +167,18 @@ public abstract class AbstractResultSet implements ResultSet, FirebirdResultSet,
                 fbStatement.addWarning(new FBSQLWarning(
                     "Result set concurrency changed to READ ONLY."));
 
-                rsConcurrency = ResultSet.CONCUR_READ_ONLY;
+                this.rsConcurrency = ResultSet.CONCUR_READ_ONLY;
             }
         }
     }
 
     protected AbstractResultSet(XSQLVAR[] xsqlvars, ArrayList rows) throws SQLException {
+        this(xsqlvars, null, rows, false);
+    }
+
+    protected AbstractResultSet(XSQLVAR[] xsqlvars, GDSHelper gdsHelper, ArrayList rows, boolean retrieveBlobs) throws SQLException {
         maxRows = 0;
-        fbFetcher = new FBCachedFetcher(rows,this);
+        fbFetcher = new FBCachedFetcher(rows, this, xsqlvars, gdsHelper, retrieveBlobs);
         this.xsqlvars = xsqlvars;
         prepareVars(true);
     }
@@ -183,7 +186,7 @@ public abstract class AbstractResultSet implements ResultSet, FirebirdResultSet,
     private void prepareVars(boolean cached) throws SQLException {
         fields = new FBField[xsqlvars.length];
         colNames = new HashMap(xsqlvars.length,1);
-        for (int i=0; i<xsqlvars.length; i++){
+        for (int i=0; i < xsqlvars.length; i++){
             final int fieldPosition = i;
             
               // anonymous implementation of the FieldDataProvider interface
@@ -216,10 +219,19 @@ public abstract class AbstractResultSet implements ResultSet, FirebirdResultSet,
      * @throws SQLException if statement is closed.
      */
     protected void checkCursorMove() throws SQLException {
-        if (isClosed()) 
-            throw new FBSQLException("The result set is closed");
-        
+        checkOpen();
         closeFields();
+    }
+
+    /**
+     * Check if result set is open.
+     *
+     * @throws SQLException if result set is closed.
+     */
+    protected void checkOpen() throws SQLException {
+        if (isClosed()) {
+            throw new FBSQLException("The result set is closed", FBSQLException.SQL_STATE_NO_RESULT_SET);
+        }
     }
     
     /**
@@ -1304,15 +1316,21 @@ public abstract class AbstractResultSet implements ResultSet, FirebirdResultSet,
     /**
      * Retrieves the current row number.  The first row is number 1, the
      * second number 2, and so on.
+     * <p>
+     * <strong>Note:</strong>Support for the <code>getRow</code> method
+     * is optional for <code>ResultSet</code>s with a result
+     * set type of <code>TYPE_FORWARD_ONLY</code>
      *
      * @return the current row number; <code>0</code> if there is no current row
      * @exception SQLException if a database access error occurs
+     * or this method is called on a closed result set
+     * @exception SQLFeatureNotSupportedException if the JDBC driver does not support
+     * this method
      * @since 1.2
-     * @see <a href="package-summary.html#2.0 API">What Is in the JDBC
-     *      2.0 API</a>
      */
     public int getRow() throws  SQLException {
-       return fbFetcher.getRowNum();
+        checkOpen();
+        return fbFetcher.getRowNum();
     }
 
     /**

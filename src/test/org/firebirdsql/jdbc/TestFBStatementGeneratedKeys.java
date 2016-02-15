@@ -1,7 +1,5 @@
 /*
- * $Id$
- * 
- * Firebird Open Source J2EE Connector - JDBC Driver
+ * Firebird Open Source JavaEE Connector - JDBC Driver
  *
  * Distributable under LGPL license.
  * You may obtain a copy of the License at http://www.gnu.org/copyleft/lgpl.html
@@ -14,7 +12,7 @@
  * This file was created by members of the firebird development team.
  * All individual contributions remain the Copyright (C) of those
  * individuals.  Contributors to this file are either listed here or
- * can be obtained from a CVS history command.
+ * can be obtained from a source control history command.
  *
  * All rights reserved.
  */
@@ -104,6 +102,48 @@ public class TestFBStatementGeneratedKeys extends FBTestGeneratedKeysBase {
             assertEquals(TEXT_VALUE, rs.getString(2));
             assertFalse("Expected no second row", rs.next());
             
+            closeQuietly(rs);
+            closeQuietly(stmt);
+        } finally {
+            closeQuietly(con);
+        }
+    }
+
+    /**
+     * Test for {@link FBStatement#execute(String, int)} for an UPDATE statement including a WHERE with {@link Statement#RETURN_GENERATED_KEYS}.
+     * <p>
+     * Expected: all columns of table returned, single row result set
+     * </p>
+     * <p>
+     * Rationale: the (current) parser doesn't check the full UPDATE syntax, it just parses enough to find the table name.
+     * </p>
+     */
+    public void testExecute_UPDATE_with_WHERE_returnGeneratedKeys() throws Exception {
+        Connection con = getConnectionViaDriverManager();
+        try {
+            Statement stmt = con.createStatement();
+            // Add row
+            stmt.executeUpdate(TEST_INSERT_QUERY);
+
+            boolean producedResultSet = stmt.execute(
+                    "UPDATE TABLE_WITH_TRIGGER SET TEXT = '" + TEXT_VALUE + "_1' WHERE 1 = 1",
+                    Statement.RETURN_GENERATED_KEYS);
+            assertTrue("Expected execute to report true (has result set) for UPDATE with generated keys returned",
+                    producedResultSet);
+
+            ResultSet rs = stmt.getGeneratedKeys();
+            assertNotNull("Expected a non-null resultset from getGeneratedKeys", rs);
+
+            ResultSetMetaData metaData = rs.getMetaData();
+            assertEquals("Expected resultset with 3 columns", 3, metaData.getColumnCount());
+            assertEquals("Unexpected first column", "ID", metaData.getColumnName(1));
+            assertEquals("Unexpected second column", "TEXT", metaData.getColumnName(2));
+
+            assertTrue("Expected first row in resultset", rs.next());
+            assertEquals(513, rs.getInt(1));
+            assertEquals(TEXT_VALUE + "_1", rs.getString(2));
+            assertFalse("Expected no second row", rs.next());
+
             closeQuietly(rs);
             closeQuietly(stmt);
         } finally {
@@ -283,7 +323,7 @@ public class TestFBStatementGeneratedKeys extends FBTestGeneratedKeysBase {
         try {
             Statement stmt = con.createStatement();
 
-            stmt.execute(TEST_INSERT_QUERY, new String[] {"ID", "NON_EXISTENT"});
+            stmt.execute(TEST_INSERT_QUERY, new String[] { "ID", "NON_EXISTENT" });
             fail("Expected an SQLException for specifying a non-existent column");
         } catch (SQLException ex) {
             assertEquals("42000", ex.getSQLState());
@@ -293,6 +333,48 @@ public class TestFBStatementGeneratedKeys extends FBTestGeneratedKeysBase {
             closeQuietly(con);
         }
     }
-    
+
     // TODO In the current implementation executeUpdate uses execute, decide to test separately or not
+
+    public void testExecute_SELECT_RETURN_GENERATED_KEYS_handledNormally() throws Exception {
+        Connection con = getConnectionViaDriverManager();
+        try {
+            Statement stmt = con.createStatement();
+            boolean isResultSet = stmt.execute("SELECT * FROM RDB$DATABASE", Statement.RETURN_GENERATED_KEYS);
+            assertTrue("Expected first result to be a result set", isResultSet);
+            ResultSet rs = stmt.getResultSet();
+            assertNotNull("Expected a result set", rs);
+            assertTrue("Expected a row", rs.next());
+        } finally {
+            closeQuietly(con);
+        }
+    }
+
+    public void testExecute_SELECT_columnIndexes_handledNormally() throws Exception {
+        Connection con = getConnectionViaDriverManager();
+        try {
+            Statement stmt = con.createStatement();
+            boolean isResultSet = stmt.execute("SELECT * FROM RDB$DATABASE", new int[] { 1, 2 });
+            assertTrue("Expected first result to be a result set", isResultSet);
+            ResultSet rs = stmt.getResultSet();
+            assertNotNull("Expected a result set", rs);
+            assertTrue("Expected a row", rs.next());
+        } finally {
+            closeQuietly(con);
+        }
+    }
+
+    public void testExecute_SELECT_columnNames_handledNormally() throws Exception {
+        Connection con = getConnectionViaDriverManager();
+        try {
+            Statement stmt = con.createStatement();
+            boolean isResultSet = stmt.execute("SELECT * FROM RDB$DATABASE", new String[] { "field1", "field2" });
+            assertTrue("Expected first result to be a result set", isResultSet);
+            ResultSet rs = stmt.getResultSet();
+            assertNotNull("Expected a result set", rs);
+            assertTrue("Expected a row", rs.next());
+        } finally {
+            closeQuietly(con);
+        }
+    }
 }
