@@ -597,6 +597,16 @@ public class FBSADataSource implements DataSource, Serializable, Referenceable, 
         mcf.setConnectTimeout(connectTimeout);
     }
 
+    @Override
+    public boolean isUseFirebirdAutocommit() {
+        return mcf.isUseFirebirdAutocommit();
+    }
+
+    @Override
+    public void setUseFirebirdAutocommit(boolean useFirebirdAutocommit) {
+        mcf.setUseFirebirdAutocommit(useFirebirdAutocommit);
+    }
+
     public int getSoTimeout() {
         return mcf.getSoTimeout();
     }
