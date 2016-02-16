@@ -132,7 +132,7 @@ public class GDSExceptionHelper {
         public int getParamCount() {
             int count = 0;
             for(int i = 0; i < template.length(); i++)
-                if (template.charAt(i) == '{') count++;
+                if (template.charAt(i) == '@') count++;
             return count;
         }
 
@@ -153,14 +153,14 @@ public class GDSExceptionHelper {
         public String toString() {
             String message = template;
             for(int i = 0; i < params.length; i++) {
-                String param = "{" + i + "}";
+                String param = "@" + (i + 1);
                 int pos = message.indexOf(param);
-                if (pos > -1)
+                if (pos > -1) 
                 {
-                    String temp = message.substring(0, pos);
-                    temp += (params[i] == null) ? "" : params[i];
-                    temp += message.substring(pos + param.length());
-                    message = temp;
+                   String temp = message.substring(0, pos);
+                   temp += (params[i] == null) ? "" : params[i];
+                   temp += message.substring(pos + param.length());
+                   message = temp;
                 } // end of if ()
             }
             return message;
