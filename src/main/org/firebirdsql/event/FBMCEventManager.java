@@ -66,4 +66,54 @@ public class FBMCEventManager extends AbstractEventManager {
     protected void detachDatabase() throws FBSQLException {
         // nothing
     }
+
+    @Override
+    public void setUser(String user) {
+        // nothing
+    }
+
+    @Override
+    public String getUser() {
+        return null;
+    }
+
+    @Override
+    public void setPassword(String password) {
+        // nothing
+    }
+
+    @Override
+    public String getPassword() {
+        return null;
+    }
+
+    @Override
+    public void setDatabase(String database) {
+        // nothing
+    }
+
+    @Override
+    public String getDatabase() {
+        return null;
+    }
+
+    @Override
+    public String getHost() {
+        return null;
+    }
+
+    @Override
+    public void setHost(String host) {
+        // nothing
+    }
+
+    @Override
+    public int getPort() {
+        return 0;
+    }
+
+    @Override
+    public void setPort(int port) {
+        // nothing
+    }
 }

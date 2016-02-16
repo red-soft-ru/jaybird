@@ -65,6 +65,61 @@ public interface EventManager {
     public void disconnect() throws SQLException;
 
     /**
+     * Sets the username for the connection to the database .
+     * @param user for the connection to the database.
+     */
+    public void setUser(String user);
+
+    /**
+     * @return the username for the connection to the database.
+     */
+    public String getUser();
+
+    /**
+     * Sets the password for the connection to the database.
+     * @param password for the connection to the database.
+     */
+    public void setPassword(String password);
+
+    /**
+     * @return the password for the connection to the database.
+     */
+    public String getPassword();
+
+    /**
+     * Sets the database path for the connection to the database.
+     * @param database path for the connection to the database.
+     */
+    public void setDatabase(String database);
+
+    /**
+     * @return the database path for the connection to the database.
+     */
+    public String getDatabase();
+
+    /**
+     * @return the host for the connection to the database.
+     */
+    public String getHost();
+
+    /**
+     * Sets the host for the connection to the database.
+     * @param host for the connection to the database.
+     */
+    public void setHost(String host);
+
+    /**
+     * @return the port for the connection to the database.
+     */
+    public int getPort();
+
+    /**
+     * Sets the port for the connection to the database.
+     * @param port for the connection to the database.
+     */
+    public void setPort(int port);
+
+    /**
      * Register an EventListener that will be called when an event occurs.
      *
      * @param eventName The name of the event for which the listener will
