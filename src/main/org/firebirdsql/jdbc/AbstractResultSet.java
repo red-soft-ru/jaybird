@@ -25,7 +25,6 @@ import java.sql.*;
 import java.sql.Date;
 import java.util.*;
 
-import org.firebirdsql.gds.*;
 import org.firebirdsql.gds.impl.GDSHelper;
 import org.firebirdsql.gds.ng.FbStatement;
 import org.firebirdsql.gds.ng.fields.RowDescriptor;
@@ -228,10 +227,6 @@ public abstract class AbstractResultSet implements ResultSet, FirebirdResultSet,
         rsType = ResultSet.TYPE_FORWARD_ONLY;
         rsConcurrency = ResultSet.CONCUR_READ_ONLY;
         rsHoldability = ResultSet.CLOSE_CURSORS_AT_COMMIT;
-    }
-
-    public AbstractResultSet(XSQLVAR[] xsqlvars, List<byte[][]> rows) throws SQLException {
-        throw new UnsupportedOperationException("This constructor needs to be removed");
     }
 
     private void prepareVars(boolean cached) throws SQLException {
@@ -1498,8 +1493,18 @@ public abstract class AbstractResultSet implements ResultSet, FirebirdResultSet,
      * @see Statement#setFetchDirection
      */
     public void setFetchDirection(int direction) throws SQLException {
-        if (direction != ResultSet.FETCH_FORWARD)
-            throw new FBDriverNotCapableException("Can't set fetch direction");
+        switch (direction) {
+        case ResultSet.FETCH_FORWARD:
+            // Value is always FETCH_FORWARD
+            return;
+        case ResultSet.FETCH_REVERSE:
+        case ResultSet.FETCH_UNKNOWN:
+            // TODO: Documentation suggests that the driver is free to ignore the hint, maybe register as warning instead?
+            throw new FBDriverNotCapableException("Fetch direction other than FETCH_FORWARD not supported");
+        default:
+            throw new SQLException(String.format("Invalid fetchDirection, value %d", direction),
+                    FBSQLException.SQL_STATE_INVALID_ARG_VALUE);
+        }
     }
 
     /**
