@@ -60,6 +60,8 @@ public class FBBlobInputStream extends InputStream
                 /** @todo fix this */
                 throw new IOException(ex.getMessage());
             }
+            buffer = null;
+            blobHandle.clearEof();
         }
     }
     
