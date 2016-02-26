@@ -213,7 +213,7 @@
         NOTE: Install pandoc from http://johnmacfarlane.net/pandoc/installing.html
         Override by use of build-local.properties in the root of the project.
     -->
-    <property name="pandoc.app" location="/home/${user.name}/.cabal/bin/pandoc"/>
+    <property name="pandoc.app" location="/usr/bin/pandoc"/>
 
     <path id="javac.j2ee.classpath">
       <pathelement location="${module.thirdparty}/connector-api-1.5.jar"/>
