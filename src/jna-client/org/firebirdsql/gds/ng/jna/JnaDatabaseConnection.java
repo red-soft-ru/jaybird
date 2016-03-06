@@ -32,7 +32,7 @@ import java.sql.SQLException;
  * @author <a href="mailto:mrotteveel@users.sourceforge.net">Mark Rotteveel</a>
  * @since 3.0
  */
-public final class JnaDatabaseConnection extends JnaConnection<IConnectionProperties, JnaDatabase>  {
+public class JnaDatabaseConnection extends JnaConnection<IConnectionProperties, JnaDatabase>  {
 
     /**
      * Creates a JnaDatabaseConnection (without establishing a connection to the server).
@@ -44,7 +44,7 @@ public final class JnaDatabaseConnection extends JnaConnection<IConnectionProper
      */
     public JnaDatabaseConnection(FbClientLibrary clientLibrary, IConnectionProperties connectionProperties)
             throws SQLException {
-        this(clientLibrary, connectionProperties, EncodingFactory.createInstance((EncodingDefinition) null));
+        this(clientLibrary, connectionProperties, EncodingFactory.getPlatformDefault());
     }
 
     /**

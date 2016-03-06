@@ -142,7 +142,7 @@ public class FBConnection implements FirebirdConnection {
      * @throws SQLException if at least one of the active statements failed
      * to close gracefully.
      */
-    private void freeStatements() throws SQLException {
+    protected void freeStatements() throws SQLException {
         // copy statements to avoid concurrent modification exception
         List<Statement> statements = new ArrayList<>(activeStatements);
         
@@ -403,9 +403,13 @@ public class FBConnection implements FirebirdConnection {
         txCoordinator.switchTransactionCoordinator(autoCommit);
     }
 
-    public synchronized void setManagedEnvironment(boolean managedConnection) throws SQLException {
+    protected synchronized void setTransactionCoordinator(boolean managedConnection, boolean autoCommit) throws SQLException {
         checkValidity();
-        txCoordinator.setTransactionCoordinator(managedConnection, true);
+        txCoordinator.setTransactionCoordinator(managedConnection, autoCommit);
+    }
+
+    public synchronized void setManagedEnvironment(boolean managedConnection) throws SQLException {
+        setTransactionCoordinator(managedConnection, true);
     }
 
     /**
