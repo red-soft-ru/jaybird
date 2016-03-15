@@ -20,6 +20,7 @@ package org.firebirdsql.gds.ng.wire.version10;
 
 import org.firebirdsql.gds.EventHandle;
 import org.firebirdsql.gds.ISCConstants;
+import org.firebirdsql.gds.JaybirdErrorCodes;
 import org.firebirdsql.gds.impl.wire.XdrOutputStream;
 import org.firebirdsql.gds.ng.FbDatabase;
 import org.firebirdsql.gds.ng.FbExceptionBuilder;
@@ -56,7 +57,7 @@ public class V10AsynchronousChannel implements FbWireAsynchronousChannel {
     private final FbWireDatabase database;
     /*
      * Expecting:
-     * single operation: 1 byte (op_dummy, op_exit, op_disconnect)
+     * single operation: 1 byte (op_dummy, op_exit, op_disconnect, op_void)
      *
      * Normal response:
      * (see processing)
@@ -107,11 +108,13 @@ public class V10AsynchronousChannel implements FbWireAsynchronousChannel {
         // Lock already held by another close of the channel
         if (!closeLock.tryLock()) return;
         try {
+            if (!isConnected()) return;
             channelListenerDispatcher.channelClosing(this);
             socketChannel.close();
         } catch (IOException ex) {
-            // TODO Jaybird error code
-            throw new SQLException("Unable to close asynchronous channel", ex);
+            throw FbExceptionBuilder.forException(JaybirdErrorCodes.jb_errorAsynchronousEventChannelClose)
+                    .cause(ex)
+                    .toFlatSQLException();
         } finally {
             socketChannel = null;
             closeLock.unlock();
@@ -167,9 +170,14 @@ public class V10AsynchronousChannel implements FbWireAsynchronousChannel {
                         break bufferProcessing;
                     }
                     break;
+                case op_void:
+                    // ignore
+                    break;
                 default:
-                    log.error("Unexpected event operation received: " + operation);
-                    // TODO Close channel?
+                    if (log.isErrorEnabled()) {
+                        log.error("Unexpected event operation received: " + operation + " position " +
+                                eventBuffer.position() + " limit " + eventBuffer.limit());
+                    }
                 }
             }
             eventBuffer.compact();
