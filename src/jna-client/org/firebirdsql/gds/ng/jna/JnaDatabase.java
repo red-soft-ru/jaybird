@@ -25,7 +25,6 @@ import org.firebirdsql.gds.*;
 import org.firebirdsql.gds.impl.DatabaseParameterBufferExtension;
 import org.firebirdsql.gds.ng.*;
 import org.firebirdsql.gds.ng.listeners.TransactionListener;
-import org.firebirdsql.jdbc.SQLStateConstants;
 import org.firebirdsql.jna.fbclient.FbClientLibrary;
 import org.firebirdsql.jna.fbclient.ISC_STATUS;
 import org.firebirdsql.jna.fbclient.WinFbClientLibrary;
@@ -72,9 +71,8 @@ public class JnaDatabase extends AbstractFbDatabase<JnaDatabaseConnection>
     @Override
     protected void checkConnected() throws SQLException {
         if (!isAttached()) {
-            // TODO Update message / externalize
-            throw new SQLException("The connection is not attached to a database",
-                    SQLStateConstants.SQL_STATE_CONNECTION_ERROR);
+            throw FbExceptionBuilder.forException(JaybirdErrorCodes.jb_notAttachedToDatabase)
+                    .toFlatSQLException();
         }
     }
 
@@ -309,8 +307,9 @@ public class JnaDatabase extends AbstractFbDatabase<JnaDatabaseConnection>
         try {
             if (isAttached()) {
                 if (transaction == null) {
-                    // TODO SQLState and/or Firebird specific error
-                    throw new SQLException("executeImmediate requires a transaction when attached");
+                    throw FbExceptionBuilder
+                            .forException(JaybirdErrorCodes.jb_executeImmediateRequiresTransactionAttached)
+                            .toFlatSQLException();
                 } else if (!(transaction instanceof JnaTransaction)) {
                     // TODO SQLState and/or Firebird specific error
                     throw new SQLNonTransientException(
@@ -319,8 +318,9 @@ public class JnaDatabase extends AbstractFbDatabase<JnaDatabaseConnection>
                 }
                 checkTransactionActive(transaction);
             } else if (transaction != null) {
-                // TODO SQLState and/or Firebird specific error
-                throw new SQLException("executeImmediate when not attached should have no transaction");
+                throw FbExceptionBuilder
+                        .forException(JaybirdErrorCodes.jb_executeImmediateRequiresNoTransactionDetached)
+                        .toFlatSQLException();
             }
 
             final byte[] statementArray = getEncoding().encodeToCharset(statementText);
