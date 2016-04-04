@@ -338,6 +338,7 @@ public class FBManager implements FBManagerMBean {
             dpb.addArgument(DatabaseParameterBuffer.SET_DB_SQL_DIALECT, dialect);
             if (mac_plugin != null && !mac_plugin.isEmpty())
                 dpb.addArgument(DatabaseParameterBuffer.MAC_PLUGIN, mac_plugin);
+            dpb.addArgument(DatabaseParameterBuffer.SQL_DIALECT, dialect);
             gds.iscCreateDatabase(getConnectString(fileName), db, dpb);
             gds.iscDetachDatabase(db);
         } catch (Exception e) {
