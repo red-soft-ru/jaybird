@@ -79,6 +79,16 @@ public class FBServiceManager implements ServiceManager {
         dbFactory = GDSFactory.getDatabaseFactoryForType(gdsType);
     }
 
+    @Override
+    public void setCharSet(String charSet) {
+        serviceProperties.setCharSet(charSet);
+    }
+
+    @Override
+    public String getCharSet() {
+        return serviceProperties.getCharSet();
+    }
+
     /**
      * Set the name of the user that performs the operation.
      *
