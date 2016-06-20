@@ -27,6 +27,7 @@ package org.firebirdsql.gds.impl;
 import org.firebirdsql.encodings.Encoding;
 import org.firebirdsql.encodings.EncodingFactory;
 import org.firebirdsql.gds.*;
+import org.firebirdsql.jdbc.Synchronizable;
 import org.firebirdsql.logging.Logger;
 import org.firebirdsql.logging.LoggerFactory;
 
@@ -37,7 +38,7 @@ import java.util.List;
 /**
  * Helper class for all GDS-related operations.
  */
-public class GDSHelper {
+public final class GDSHelper implements Synchronizable {
 
     public static final int DEFAULT_BLOB_BUFFER_SIZE = 16 * 1024;
 
@@ -57,8 +58,8 @@ public class GDSHelper {
 
     private static final Logger log = LoggerFactory.getLogger(GDSHelper.class, false);
 
-    private GDS gds;
-    private IscDbHandle currentDbHandle;
+    private final GDS gds;
+    private final IscDbHandle currentDbHandle;
     private AbstractIscTrHandle currentTr;
     /**
      * Needed from mcf when killing a db handle when a new tx cannot be started.
@@ -88,13 +89,16 @@ public class GDSHelper {
             listener.errorOccured(ex);
     }
 
-    public synchronized AbstractIscTrHandle getCurrentTrHandle() {
-        return currentTr;
+    public AbstractIscTrHandle getCurrentTrHandle() {
+        synchronized (getSynchronizationObject()) {
+            return currentTr;
+        }
     }
 
-    public synchronized void setCurrentTrHandle(AbstractIscTrHandle currentTr) {
-        this.currentTr = currentTr;
-        notify();
+    public void setCurrentTrHandle(AbstractIscTrHandle currentTr) {
+        synchronized (getSynchronizationObject()) {
+            this.currentTr = currentTr;
+        }
     }
 
     public IscDbHandle getCurrentDbHandle() {
@@ -153,6 +157,21 @@ public class GDSHelper {
             }
             int length = gds.iscVaxInteger(trInfo, 1, 2);
             return gds.iscVaxInteger(trInfo, 3, length);
+        } catch (GDSException ex) {
+            notifyListeners(ex);
+            throw ex;
+        }
+    }
+
+    public long getTransactionIdLong(IscTrHandle trHandle) throws GDSException {
+        try {
+            byte[] trInfo = gds.iscTransactionInformation(
+                    trHandle, new byte[] { ISCConstants.isc_info_tra_id }, 32);
+            if (trInfo.length < 3 || trInfo[0] != ISCConstants.isc_info_tra_id) {
+                throw new GDSException("Unexpected response buffer");
+            }
+            int length = gds.iscVaxInteger(trInfo, 1, 2);
+            return gds.iscVaxLong(trInfo, 3, length);
         } catch (GDSException ex) {
             notifyListeners(ex);
             throw ex;
@@ -837,4 +856,8 @@ public class GDSHelper {
         return gds;
     }
 
+    @Override
+    public final Object getSynchronizationObject() {
+        return currentDbHandle;
+    }
 }
