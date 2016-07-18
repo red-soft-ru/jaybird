@@ -74,7 +74,8 @@ public class FBBinaryField extends FBField {
         }
 
         if (value.length > fieldDescriptor.getLength()) {
-            throw new DataTruncation(-1, true, false, value.length, fieldDescriptor.getLength());
+            throw new DataTruncation(fieldDescriptor.getPosition() + 1, true, false, value.length,
+                    fieldDescriptor.getLength());
         }
 
         setFieldData(value);
@@ -87,14 +88,15 @@ public class FBBinaryField extends FBField {
     }
 
     @Override
-    public void setBinaryStream(InputStream in, long length) throws SQLException {
+    protected void setBinaryStreamInternal(InputStream in, long length) throws SQLException {
         if (in == null) {
             setNull();
             return;
         }
 
         if (length > fieldDescriptor.getLength()) {
-            throw new DataTruncation(-1, true, false, (int) length, fieldDescriptor.getLength());
+            throw new DataTruncation(fieldDescriptor.getPosition() + 1, true, false, (int) length,
+                    fieldDescriptor.getLength());
         }
 
         try {
@@ -105,14 +107,15 @@ public class FBBinaryField extends FBField {
     }
 
     @Override
-    public void setCharacterStream(Reader in, long length) throws SQLException {
+    protected void setCharacterStreamInternal(Reader in, long length) throws SQLException {
         if (in == null) {
             setNull();
             return;
         }
 
         if (length > fieldDescriptor.getLength()) {
-            throw new DataTruncation(-1, true, false, (int) length, fieldDescriptor.getLength());
+            throw new DataTruncation(fieldDescriptor.getPosition() + 1, true, false, (int) length,
+                    fieldDescriptor.getLength());
         }
 
         try {
