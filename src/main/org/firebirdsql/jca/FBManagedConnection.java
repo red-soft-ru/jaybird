@@ -18,13 +18,24 @@
  */
 package org.firebirdsql.jca;
 
+import java.io.ByteArrayInputStream;
+import java.io.PrintWriter;
+import java.sql.*;
+import java.util.*;
+
+import javax.resource.ResourceException;
+import javax.resource.spi.*;
+import javax.resource.spi.security.PasswordCredential;
+import javax.security.auth.Subject;
+import javax.transaction.xa.*;
+
 import org.firebirdsql.gds.*;
 import org.firebirdsql.gds.impl.*;
 import org.firebirdsql.gds.impl.AbstractIscStmtHandle;
 import org.firebirdsql.gds.impl.AbstractIscTrHandle;
 import org.firebirdsql.gds.impl.GDSHelper;
 import org.firebirdsql.gds.impl.GDSHelper.GDSHelperErrorListener;
-import org.firebirdsql.jdbc.AbstractConnection;
+import org.firebirdsql.jdbc.*;
 import org.firebirdsql.jdbc.field.FBField;
 import org.firebirdsql.jdbc.field.FieldDataProvider;
 import org.firebirdsql.logging.Logger;

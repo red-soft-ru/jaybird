@@ -364,7 +364,7 @@ public class ParameterBufferBase implements java.io.Serializable, Xdrable {
     //---------------------------------------------------------------------------
     // ByteArrayArgument
     //---------------------------------------------------------------------------
-    private static final class ByteArrayArgument extends Argument {
+    public static class ByteArrayArgument extends Argument {
         ByteArrayArgument(int type, byte[] value) {
             this.type = type;
             this.value = value;

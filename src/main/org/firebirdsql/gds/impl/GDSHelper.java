@@ -38,7 +38,7 @@ import java.util.List;
 /**
  * Helper class for all GDS-related operations.
  */
-public final class GDSHelper implements Synchronizable {
+public class GDSHelper implements Synchronizable {
 
     public static final int DEFAULT_BLOB_BUFFER_SIZE = 16 * 1024;
 
