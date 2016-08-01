@@ -18,8 +18,7 @@ node('master')
 
     utils = fileLoader.fromGit('utils', 'http://git.red-soft.biz/utils/jenkins_pipeline_utils.git', 'master', null, '')
 
-    //checkout scm
-    git url: 'http://git.red-soft.biz/red-database/jaybird.git', branch: 'branch_2_2'
+    checkout scm
 
     rev = utils.getGitRevision(wd)
     
