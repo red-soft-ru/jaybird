@@ -95,7 +95,7 @@ node('master')
     sh "echo end >> artifacts"
     for (jdk in ['16', '17', '18'])
     {
-        sh "echo artifact jaybird-jdk${jdk} ${version} > artifacts"
+        sh "echo artifact jaybird-jdk${jdk} ${version} >> artifacts"
         sh "echo file dist-${jdk}/bin/jaybird-jdk${jdk}-${version}.jar jar >> artifacts"
         sh "echo file dist-${jdk}/bin/jaybird-full-jdk${jdk}-${version}.jar jar full >> artifacts"
         sh "echo file dist-${jdk}/esp/jaybird-esp-jdk${jdk}-${version}.jar jar esp >> artifacts"
