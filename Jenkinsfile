@@ -1,6 +1,7 @@
 import java.text.SimpleDateFormat 
 
 String release_hub_project = 'jaybird2'
+String maven_group = 'ru.red-soft.jdbc'
 String rev
 String version
 String vcs_url
@@ -88,23 +89,23 @@ node('master')
         unstash "test-${jdk}"
     }
 
-    sh 'find'
-
-    sh "echo artifact jaybird ${version} > artifacts"
+    sh "echo artifact jaybird-src ${version} > artifacts"
     sh "echo file dist-src/${archive_prefix}.tar.gz tar.gz src >> artifacts"
     sh "echo file dist-src/${archive_prefix}.zip zip src >> artifacts"
+    sh "echo end >> artifacts"
     for (jdk in ['16', '17', '18'])
     {
-        sh "echo file dist-${jdk}/bin/jaybird-jdk${jdk}-${version}.jar jar jdk${jdk} >> artifacts"
-        sh "echo file dist-${jdk}/bin/jaybird-full-jdk${jdk}-${version}.jar jar full-jdk${jdk} >> artifacts"
-        sh "echo file dist-${jdk}/esp/jaybird-esp-jdk${jdk}-${version}.jar jar esp-jdk${jdk} >> artifacts"
-        sh "echo file dist-${jdk}/test/jaybird-test-jdk${jdk}-${version}.jar jar test-jdk${jdk} >> artifacts"
-        sh "echo file dist-${jdk}/sources/jaybird-jdk${jdk}-${version}-sources.jar jar sources-jdk${jdk} >> artifacts"
-        sh "echo file dist-${jdk}/javadoc/jaybird-jdk${jdk}-${version}-javadoc.jar jar javadoc-jdk${jdk} >> artifacts"
+        sh "echo artifact jaybird-jdk${jdk} ${version} > artifacts"
+        sh "echo file dist-${jdk}/bin/jaybird-jdk${jdk}-${version}.jar jar >> artifacts"
+        sh "echo file dist-${jdk}/bin/jaybird-full-jdk${jdk}-${version}.jar jar full >> artifacts"
+        sh "echo file dist-${jdk}/esp/jaybird-esp-jdk${jdk}-${version}.jar jar esp >> artifacts"
+        sh "echo file dist-${jdk}/test/jaybird-test-jdk${jdk}-${version}.jar jar test >> artifacts"
+        sh "echo file dist-${jdk}/sources/jaybird-jdk${jdk}-${version}-sources.jar jar sources >> artifacts"
+        sh "echo file dist-${jdk}/javadoc/jaybird-jdk${jdk}-${version}-javadoc.jar jar javadoc >> artifacts"
+        sh "echo end >> artifacts"
     }
-    sh "echo end >> artifacts"
     
-    utils.deployAndRegister(release_hub_project, version, wd+'/artifacts', env.BUILD_URL, vcs_url, 'jaybird', wd, '', '', branch)
+    utils.deployAndRegister(release_hub_project, version, wd+'/artifacts', env.BUILD_URL, vcs_url, maven_group, wd, '', '', branch)
 
     utils.defaultSuccessActions()
 }
