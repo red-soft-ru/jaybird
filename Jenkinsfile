@@ -67,7 +67,7 @@ node('master')
     stash includes: 'dist-src/**', name: 'src'
 }
 
-for (j in ['16', '17', '18'])
+for (j in ['17', '18'])
 {
     jdk = j
     build(jdk, archive_prefix, version_tag)
@@ -80,7 +80,7 @@ node('master')
     def wd = pwd()
     
     unstash 'src'
-    for (jdk in ['16', '17', '18'])
+    for (jdk in ['17', '18'])
     {
         unstash "bin-${jdk}"
         unstash "javadoc-${jdk}"
@@ -92,7 +92,7 @@ node('master')
     sh "echo file dist-src/${archive_prefix}.tar.gz tar.gz src >> artifacts"
     sh "echo file dist-src/${archive_prefix}.zip zip src >> artifacts"
     sh "echo end >> artifacts"
-    for (jdk in ['16', '17', '18'])
+    for (jdk in ['17', '18'])
     {
         sh "echo artifact jaybird-jdk${jdk} ${version} >> artifacts"
         sh "echo file dist-${jdk}/bin/jaybird-${version}.jar jar >> artifacts"
@@ -138,11 +138,7 @@ def build(String jdk, archive_prefix, version_tag)
         deleteDir()
         unstash 'src'
         
-        if (jdk == '16')
-        {
-            java_home = env.JAVA_HOME_1_6
-        }
-        else if (jdk == '17')
+        if (jdk == '17')
         {
             java_home = env.JAVA_HOME_1_7
         }
