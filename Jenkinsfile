@@ -149,12 +149,16 @@ def build(String jdk, archive_prefix, version_tag)
         
         sh "tar xf dist-src/${archive_prefix}.tar.gz"
         withEnv(["JAVA_HOME=${java_home}", "archive_prefix=${archive_prefix}", "version_tag=${version_tag}", "jdk=${jdk}"]) {
-            sh "cd ${archive_prefix} && ./build.sh -Dversion.tag=-${version_tag} jars"
-            sh "mkdir -p dist-${jdk}/{bin,sources,javadoc,test}"
-            sh "mv ${archive_prefix}/output/lib/jaybird-*javadoc* dist-${jdk}/javadoc"
-            sh "mv ${archive_prefix}/output/lib/jaybird-*sources* dist-${jdk}/sources"
-            sh "mv ${archive_prefix}/output/lib/jaybird-*test* dist-${jdk}/test"
-            sh "mv ${archive_prefix}/output/lib/* dist-${jdk}/bin"
+            sh """#!/bin/bash
+                pushd ${archive_prefix}
+                ./build.sh -Dversion.tag=-${version_tag} jars
+                popd
+                mkdir -p dist-${jdk}/{bin,sources,javadoc,test}
+                mv ${archive_prefix}/output/lib/jaybird-*javadoc* dist-${jdk}/javadoc
+                mv ${archive_prefix}/output/lib/jaybird-*sources* dist-${jdk}/sources
+                mv ${archive_prefix}/output/lib/jaybird-*test* dist-${jdk}/test
+                mv ${archive_prefix}/output/lib/* dist-${jdk}/bin
+            """
         }
         
         stash includes: "dist-${jdk}/bin/**", name: "bin-${jdk}"
