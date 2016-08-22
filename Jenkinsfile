@@ -155,7 +155,7 @@ def build(String jdk, archive_prefix, version_tag)
         
         sh "tar xf dist-src/${archive_prefix}.tar.gz"
         withEnv(["JAVA_HOME=${java_home}", "archive_prefix=${archive_prefix}", "version_tag=${version_tag}", "jdk=${jdk}"]) {
-            sh "#!/bin/bash
+            sh """#!/bin/bash
                 pushd ${archive_prefix}
                 ./build.sh -Dversion.tag.maven=-${version_tag} jars
                 popd
@@ -165,7 +165,7 @@ def build(String jdk, archive_prefix, version_tag)
                 mv ${archive_prefix}/output/lib/jaybird-*test* dist-${jdk}/test
                 mv ${archive_prefix}/output/lib/jaybird-*esp* dist-${jdk}/esp
                 mv ${archive_prefix}/output/lib/* dist-${jdk}/bin
-            "
+            """
         }
         
         stash includes: "dist-${jdk}/bin/**", name: "bin-${jdk}"
