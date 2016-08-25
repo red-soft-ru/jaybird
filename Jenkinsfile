@@ -22,27 +22,11 @@ node('master')
     checkout scm
 
     rev = utils.getGitRevision(wd)
-    
-    def sout = new StringBuilder()
-    def serr = new StringBuilder()
-    def proc = 'git show-ref --tags -d'.execute(null, new File(wd))
-    proc.waitForProcessOutput(sout, serr)
-    
-    if (proc.exitValue() != 0)
+    version = utils.versionFromGitTags(wd, rev)
+
+    if (!version)
     {
-        println(serr)
-        throw new Exception("Unable obtain tags")
-    }        
-    proc = null
-        
-    def matcher = (sout =~ /(?sm).*${rev} refs\/tags\/v(?<version>.+)\n.*/)
-    if (matcher.matches())
-    {
-        version = matcher.group('version')
-    }
-    else
-    {
-        matcher = (new File(wd + '/build.properties').text =~ /(?sm).*version\.major=(?<major>\d+).*version\.minor=(?<minor>\d+).*version\.revision=(?<revision>\d+).*/)
+        def matcher = (new File(wd + '/build.properties').text =~ /(?sm).*version\.major=(?<major>\d+).*version\.minor=(?<minor>\d+).*version\.revision=(?<revision>\d+).*/)
         if (!matcher.matches())
         {
             throw new Exception("Unable obtain version")
@@ -53,8 +37,8 @@ node('master')
         version = version_major + '.' + version_minor + '.' + version_revision
         version_tag = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
         version += "-" + version_tag
+        matcher = null    
     }
-    matcher = null    
     
     vcs_url = "http://git.red-soft.biz/red-database/jaybird/commit/" + rev
     
