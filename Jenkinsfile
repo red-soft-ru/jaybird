@@ -147,11 +147,14 @@ def build(String jdk, archive_prefix, version_tag)
             java_home = env.JAVA_HOME_1_8
         }
         
+        if (version_tag)
+        	version_tag = "-Dversion.tag=-${version_tag}"
+
         sh "tar xf dist-src/${archive_prefix}.tar.gz"
         withEnv(["JAVA_HOME=${java_home}", "archive_prefix=${archive_prefix}", "version_tag=${version_tag}", "jdk=${jdk}"]) {
             sh """#!/bin/bash
                 pushd ${archive_prefix}
-                ./build.sh -Dversion.tag=-${version_tag} jars
+                ./build.sh ${version_tag} jars
                 popd
                 mkdir -p dist-${jdk}/{bin,sources,javadoc,test}
                 mv ${archive_prefix}/output/lib/jaybird-*javadoc* dist-${jdk}/javadoc
