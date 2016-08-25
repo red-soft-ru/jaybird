@@ -35,7 +35,7 @@ node('master')
     }        
     proc = null
         
-    def matcher = (sout =~ /(?sm).*${rev} refs\/tags\/v(?<version>\d+\.\d+(\.\d+)?).*/)
+    def matcher = (sout =~ /(?sm).*${rev} refs\/tags\/v(?<version>.+)\n.*/)
     if (matcher.matches())
     {
         version = matcher.group('version')
