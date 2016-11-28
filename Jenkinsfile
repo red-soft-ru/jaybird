@@ -22,23 +22,19 @@ node('master')
     checkout scm
 
     rev = utils.getGitRevision(wd)
-    version = utils.versionFromGitTags(wd, rev)
 
-    if (!version)
+    def matcher = (new File(wd + '/build.properties').text =~ /(?sm).*version\.major=(?<major>\d+).*version\.minor=(?<minor>\d+).*version\.revision=(?<revision>\d+).*/)
+    if (!matcher.matches())
     {
-        def matcher = (new File(wd + '/build.properties').text =~ /(?sm).*version\.major=(?<major>\d+).*version\.minor=(?<minor>\d+).*version\.revision=(?<revision>\d+).*/)
-        if (!matcher.matches())
-        {
-            throw new Exception("Unable obtain version")
-        }
-        version_major = matcher.group('major')
-        version_minor = matcher.group('minor')
-        version_revision = matcher.group('revision')
-        version = version_major + '.' + version_minor + '.' + version_revision
-        version_tag = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
-        version += "-" + version_tag
-        matcher = null    
+        throw new Exception("Unable obtain version")
     }
+    version_major = matcher.group('major')
+    version_minor = matcher.group('minor')
+    version_revision = matcher.group('revision')
+    version = version_major + '.' + version_minor + '.' + version_revision
+    version_tag = utils.getBuildNo(release_hub_project, version)
+    version += "." + version_tag
+    matcher = null    
     
     vcs_url = "http://git.red-soft.biz/red-database/jaybird/commit/" + rev
     
@@ -99,18 +95,9 @@ catch (any)
 }
 finally
 {
-    def body = utils.defaultEmailBody()
-    def subject = "Job '${env.JOB_NAME}' (${version}~${rev}) - ${currentBuild.result}"
-
-    body += "\n\nVCS: ${vcs_url}"
-    if (currentBuild.result == 'SUCCESS' || currentBuild.result == 'UNSTABLE')
-    {
-        body += "\n\nBuild page: http://builds.red-soft.biz/release_hub/${release_hub_project}/${version}"
-    }
-    
     mail(to: utils.defaultEmailAddresses(),
-         subject: subject,
-         body: body);
+         subject: utils.defaultEmailSubject(version, rev),
+         body: utils.defaultEmailBody(vcs_url, release_hub_project, version));
 }
 
 def build(String jdk, archive_prefix, version_tag)
