@@ -119,7 +119,7 @@ def build(String jdk, archive_prefix, version_tag)
         }
         
         if (version_tag)
-        	version_tag = "-Dversion.tag=-${version_tag}"
+        	version_tag = "-Dversion.tag=.${version_tag}"
 
         sh "tar xf dist-src/${archive_prefix}.tar.gz"
         withEnv(["JAVA_HOME=${java_home}", "archive_prefix=${archive_prefix}", "version_tag=${version_tag}", "jdk=${jdk}"]) {
