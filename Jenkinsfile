@@ -102,7 +102,7 @@ finally
 
 def build(String jdk, archive_prefix, version_tag)
 {
-    node('jdk' + jdk + '&&linux')
+    node('jdk' + jdk + '&&builder&&linux')
     {
         stage 'Build JDK' + jdk
         
