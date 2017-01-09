@@ -96,7 +96,7 @@ public interface TraceManager extends ServiceManager {
      *
      * @throws IOException
      */
-    String loadConfigurationFromFile(String fileName) throws IOException;
+    String loadConfigurationFromFile(String fileName, boolean lineSeparation) throws IOException;
 
     /**
      * Gets the sessionId for the given name.

@@ -262,12 +262,14 @@ public class FBTraceManager extends FBServiceManager implements TraceManager {
      * @throws FileNotFoundException
      * @throws IOException
      */
-    public String loadConfigurationFromFile(String fileName) throws IOException {
+    public String loadConfigurationFromFile(String fileName, boolean lineSeparation) throws IOException {
         StringBuilder sb = new StringBuilder(256);
         String s;
         try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
             while ((s = br.readLine()) != null) {
                 sb.append(s);
+                if (lineSeparation)
+                    sb.append(System.getProperty("line.separator"));
             }
         }
 
