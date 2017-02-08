@@ -415,6 +415,16 @@ public class FBManagedConnectionFactory implements ManagedConnectionFactory, Fir
         connectionProperties.setUseFirebirdAutocommit(useFirebirdAutocommit);
     }
 
+    @Override
+    public int getGSSAuth() {
+        return connectionProperties.getGSSAuth();
+    }
+
+    @Override
+    public void setGSSAuth(int gssAuth) {
+        connectionProperties.setGSSAuth(gssAuth);
+    }
+
     public int hashCode() {
         if (hashCode != 0) 
             return hashCode;

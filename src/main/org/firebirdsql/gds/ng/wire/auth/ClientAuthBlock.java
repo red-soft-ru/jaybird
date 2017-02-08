@@ -319,5 +319,6 @@ public final class ClientAuthBlock {
         pb.removeArgument(tagMapping.getPasswordTag());
         pb.removeArgument(tagMapping.getEncryptedPasswordTag());
         pb.removeArgument(tagMapping.getTrustedAuthTag());
+        pb.removeArgument(tagMapping.getGSSAuthTag());
     }
 }

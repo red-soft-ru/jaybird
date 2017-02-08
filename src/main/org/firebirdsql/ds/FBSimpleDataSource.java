@@ -390,6 +390,16 @@ public class FBSimpleDataSource extends RootCommonDataSource implements DataSour
     public void setUseFirebirdAutocommit(boolean useFirebirdAutocommit) {
         mcf.setUseFirebirdAutocommit(useFirebirdAutocommit);
     }
+
+    @Override
+    public int getGSSAuth() {
+        return mcf.getGSSAuth();
+    }
+
+    @Override
+    public void setGSSAuth(int gssAuth) {
+        mcf.setGSSAuth(gssAuth);
+    }
     
     /*
      * INTERFACES IMPLEMENTATION

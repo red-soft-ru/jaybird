@@ -67,6 +67,11 @@ public enum ParameterTagMapping {
         public int getSpecificAuthDataTag() {
             return ISCConstants.isc_dpb_specific_auth_data;
         }
+
+        @Override
+        public int getGSSAuthTag() {
+            return ISCConstants.isc_dpb_gss;
+        }
     },
     SPB() {
 
@@ -104,6 +109,11 @@ public enum ParameterTagMapping {
         public int getSpecificAuthDataTag() {
             return ISCConstants.isc_spb_specific_auth_data;
         }
+
+        @Override
+        public int getGSSAuthTag() {
+            return ISCConstants.isc_dpb_gss;
+        }
     };
 
     public abstract int getUserNameTag();
@@ -113,4 +123,5 @@ public enum ParameterTagMapping {
     public abstract int getAuthPluginNameTag();
     public abstract int getAuthPluginListTag();
     public abstract int getSpecificAuthDataTag();
+    public abstract int getGSSAuthTag();
 }

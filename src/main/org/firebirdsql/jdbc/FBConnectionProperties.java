@@ -59,6 +59,7 @@ public class FBConnectionProperties implements FirebirdConnectionProperties, Ser
     public static final String SO_TIMEOUT = "soTimeout";
     public static final String CONNECT_TIMEOUT = "connectTimeout";
     public static final String USE_FIREBIRD_AUTOCOMMIT = "useFirebirdAutocommit";
+    public static final String USE_GSS_AUTH = "useGSSAuth";
 
     private Map<String, Object> properties = new HashMap<>();
     private String type;
@@ -338,6 +339,14 @@ public class FBConnectionProperties implements FirebirdConnectionProperties, Ser
 
     public void setSoTimeout(int soTimeout) {
         setIntProperty(SO_TIMEOUT, soTimeout);
+    }
+
+    public int getGSSAuth() {
+        return getIntProperty(USE_GSS_AUTH);
+    }
+
+    public void setGSSAuth(int gssAuth) {
+        setIntProperty(USE_GSS_AUTH, gssAuth);
     }
 
     @Override

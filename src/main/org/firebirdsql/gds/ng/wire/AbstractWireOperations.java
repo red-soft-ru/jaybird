@@ -19,8 +19,10 @@
 package org.firebirdsql.gds.ng.wire;
 
 import org.firebirdsql.encodings.Encoding;
+import org.firebirdsql.gds.DatabaseParameterBuffer;
 import org.firebirdsql.gds.ISCConstants;
 import org.firebirdsql.gds.JaybirdErrorCodes;
+import org.firebirdsql.gds.impl.DatabaseParameterBufferImp;
 import org.firebirdsql.gds.impl.wire.XdrInputStream;
 import org.firebirdsql.gds.impl.wire.XdrOutputStream;
 import org.firebirdsql.gds.ng.FbExceptionBuilder;
@@ -201,6 +203,10 @@ public abstract class AbstractWireOperations implements FbWireOperations {
             return new FetchResponse(xdrIn.readInt(), xdrIn.readInt());
         case op_sql_response:
             return new SqlResponse(xdrIn.readInt());
+            // GSS Auth
+        case op_crypt:
+            // TODO Make separate class
+            return new GenericResponse(0, 0, xdrIn.readBuffer(), null);
         default:
             throw new FbExceptionBuilder().nonTransientException(JaybirdErrorCodes.jb_unexpectedOperationCode)
                     .messageParameter(operation)
@@ -216,6 +222,8 @@ public abstract class AbstractWireOperations implements FbWireOperations {
      *         For errors returned from the server.
      */
     public final void processResponse(Response response) throws SQLException {
+        if (response == null)
+            return;
         if (response instanceof GenericResponse) {
             GenericResponse genericResponse = (GenericResponse) response;
             SQLException exception = genericResponse.getException();

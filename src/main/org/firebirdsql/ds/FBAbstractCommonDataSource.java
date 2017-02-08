@@ -518,6 +518,21 @@ public abstract class FBAbstractCommonDataSource extends RootCommonDataSource im
             connectionProperties.setUseFirebirdAutocommit(useFirebirdAutocommit);
         }
     }
+
+    @Override
+    public int getGSSAuth() {
+        synchronized (lock) {
+            return connectionProperties.getGSSAuth();
+        }
+    }
+
+    @Override
+    public void setGSSAuth(int gssAuth) {
+        synchronized (lock) {
+            checkNotStarted();
+            connectionProperties.setGSSAuth(gssAuth);
+        }
+    }
     
     /**
      * Method that allows setting non-standard property in the form "key=value"
