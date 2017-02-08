@@ -36,6 +36,7 @@ public abstract class AbstractAttachProperties<T extends IAttachProperties> impl
     private int socketBufferSize = IAttachProperties.DEFAULT_SOCKET_BUFFER_SIZE;
     private int soTimeout = IAttachProperties.DEFAULT_SO_TIMEOUT;
     private int connectTimeout = IAttachProperties.DEFAULT_CONNECT_TIMEOUT;
+    private int gssAuth = IAttachProperties.DEFAULT_GSS_AUTH;
 
     /**
      * Copy constructor for IAttachProperties.
@@ -58,6 +59,7 @@ public abstract class AbstractAttachProperties<T extends IAttachProperties> impl
             socketBufferSize = src.getSocketBufferSize();
             soTimeout = src.getSoTimeout();
             connectTimeout = src.getConnectTimeout();
+            gssAuth = src.getGSSAuth();
         }
     }
 
@@ -176,6 +178,18 @@ public abstract class AbstractAttachProperties<T extends IAttachProperties> impl
         this.connectTimeout = connectTimeout;
         dirtied();
     }
+
+    @Override
+    public int getGSSAuth() {
+        return gssAuth;
+    }
+
+    @Override
+    public void setGSSAuth(int gssAuth) {
+        this.gssAuth = gssAuth;
+        dirtied();
+    }
+
 
     /**
      * Called by setters if they have been called.

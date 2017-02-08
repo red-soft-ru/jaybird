@@ -50,6 +50,8 @@ public final class FbConnectionProperties extends AbstractAttachProperties<IConn
 
     private FbImmutableConnectionProperties immutableConnectionPropertiesCache;
 
+    private int useGSSAuth;
+
     /**
      * Copy constructor for FbConnectionProperties.
      * <p>
@@ -68,6 +70,7 @@ public final class FbConnectionProperties extends AbstractAttachProperties<IConn
             pageCacheSize = src.getPageCacheSize();
             resultSetDefaultHoldable = src.isResultSetDefaultHoldable();
             columnLabelForName = src.isColumnLabelForName();
+
             for (Parameter parameter : src.getExtraDatabaseParameters()) {
                 parameter.copyTo(extraDatabaseParameters, null);
             }
@@ -212,6 +215,9 @@ public final class FbConnectionProperties extends AbstractAttachProperties<IConn
                 // Filter out, handled explicitly in protocol implementation
                 break;
             case isc_dpb_specific_auth_data:
+                break;
+            case isc_dpb_gss:
+                setGSSAuth(parameter.getValueAsInt());
                 break;
             default:
                 log.warn(String.format("Unknown or unsupported parameter with type %d added to extra database parameters", parameter.getType()));

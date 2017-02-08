@@ -18,6 +18,7 @@
  */
 package org.firebirdsql.gds.ng.wire.version10;
 
+import com.sun.security.jgss.GSSUtil;
 import org.firebirdsql.encodings.Encoding;
 import org.firebirdsql.gds.*;
 import org.firebirdsql.gds.impl.DatabaseParameterBufferExtension;
@@ -31,10 +32,18 @@ import org.firebirdsql.gds.ng.wire.*;
 import org.firebirdsql.jdbc.SQLStateConstants;
 import org.firebirdsql.logging.Logger;
 import org.firebirdsql.logging.LoggerFactory;
+import org.ietf.jgss.*;
+import sun.misc.BASE64Encoder;
+import sun.security.jgss.GSSCredentialImpl;
+import sun.security.jgss.GSSToken;
+import sun.security.jgss.spi.GSSNameSpi;
 
+import javax.security.auth.Subject;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.nio.charset.Charset;
+import java.security.PrivilegedAction;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.sql.SQLNonTransientConnectionException;
@@ -107,6 +116,8 @@ public class V10Database extends AbstractFbWireDatabase implements FbWireDatabas
                     throw new FbExceptionBuilder().exception(ISCConstants.isc_net_write_err).cause(e).toSQLException();
                 }
                 try {
+                    if (dpb.hasArgument(ISCConstants.isc_dpb_gss))
+                        gssReceiveResponse();
                     authReceiveResponse(null);
                 } catch (IOException e) {
                     throw new FbExceptionBuilder().exception(ISCConstants.isc_net_read_err).cause(e).toSQLException();
@@ -569,5 +580,58 @@ public class V10Database extends AbstractFbWireDatabase implements FbWireDatabas
                 processAttachOrCreateResponse(response);
             }
         });
+    }
+
+    final void gssReceiveResponse() throws IOException, SQLException {
+
+        GenericResponse gr = (GenericResponse)wireOperations.readResponse(null);
+
+        // Be sure to set the javax.security.auth.useSubjectCredsOnly
+        // system property value to false if you want the underlying
+        // mechanism to obtain credentials, rather than your application
+        // or a wrapper program performing authentication using JAAS.
+        System.setProperty( "javax.security.auth.useSubjectCredsOnly", "false");
+
+        String response = new String(gr.getData());
+
+        response = response.trim();
+        String[] arr = response.split("\n");
+
+        Oid oid = sun.security.jgss.GSSUtil.GSS_SPNEGO_MECH_OID;
+
+        GSSManager manager = GSSManager.getInstance();
+
+        GSSName gssServerName = null;
+
+        InetAddress addr = InetAddress.getByName(arr[0]);
+        String host = addr.getHostName();
+
+        String serverName = arr[1].trim() + "@" + host;
+
+        try {
+            gssServerName = manager.createName(serverName, GSSName.NT_HOSTBASED_SERVICE);
+        } catch (GSSException e) {
+            e.printStackTrace();
+        }
+
+        // Get the context for authentication
+        GSSContext context = null;
+        byte[] token = new byte[0];
+        try {
+            context = manager.createContext(gssServerName, null, null,
+                GSSContext.INDEFINITE_LIFETIME);
+            context.requestMutualAuth(true); // Request mutual authentication
+            token = context.initSecContext(token, 0, token.length);
+        } catch (GSSException e) {
+            e.printStackTrace();
+        }
+
+        final XdrOutputStream xdrOut = getXdrOut();
+
+        // send to server token
+        xdrOut.writeInt(op_crypt);
+        xdrOut.writeBuffer(token);
+
+        xdrOut.flush();
     }
 }

@@ -163,6 +163,22 @@ public interface ISCConstants {
     int isc_dpb_reset_icu				= 89;
     int isc_dpb_map_attach              = 90;
 
+    /* Red Database security parameters */
+    int isc_dpb_mac_plugin				= 148;
+    int isc_dpb_krb5					= 149;
+    int isc_dpb_multi_factor_auth       = 150;
+    int isc_dpb_certificate             = 151;
+    int isc_dpb_repository_name         = 152;
+    int isc_dpb_eye                     = 153;
+    int isc_dpb_session_key             = 154;
+    int isc_dpb_session_key_iv          = 155;
+    int isc_dpb_verify_server           = 156;
+    int isc_dpb_hw_address              = 157;
+    int isc_dpb_certificate_body        = 158;
+    int isc_dpb_repository_pin          = 159;
+    int isc_dpb_gss						          = 164;
+
+
     /*
      * Driver-specific DPB params that will be removed before sending them
      * to the server. These params influence only client side.
