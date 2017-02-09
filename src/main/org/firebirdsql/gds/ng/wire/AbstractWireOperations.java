@@ -205,8 +205,7 @@ public abstract class AbstractWireOperations implements FbWireOperations {
             return new SqlResponse(xdrIn.readInt());
             // GSS Auth
         case op_crypt:
-            // TODO Make separate class
-            return new GenericResponse(0, 0, xdrIn.readBuffer(), null);
+            return new CryptResponse(xdrIn.readBuffer());
         default:
             throw new FbExceptionBuilder().nonTransientException(JaybirdErrorCodes.jb_unexpectedOperationCode)
                     .messageParameter(operation)
