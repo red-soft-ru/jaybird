@@ -520,17 +520,17 @@ public abstract class FBAbstractCommonDataSource extends RootCommonDataSource im
     }
 
     @Override
-    public int getGSSAuth() {
+    public boolean isUseGSSAuth() {
         synchronized (lock) {
-            return connectionProperties.getGSSAuth();
+            return connectionProperties.isUseGSSAuth();
         }
     }
 
     @Override
-    public void setGSSAuth(int gssAuth) {
+    public void setUseGSSAuth(boolean useGSSAuth) {
         synchronized (lock) {
             checkNotStarted();
-            connectionProperties.setGSSAuth(gssAuth);
+            connectionProperties.setUseGSSAuth(useGSSAuth);
         }
     }
     

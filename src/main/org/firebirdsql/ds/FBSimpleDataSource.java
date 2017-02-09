@@ -392,13 +392,13 @@ public class FBSimpleDataSource extends RootCommonDataSource implements DataSour
     }
 
     @Override
-    public int getGSSAuth() {
-        return mcf.getGSSAuth();
+    public boolean isUseGSSAuth() {
+        return mcf.isUseGSSAuth();
     }
 
     @Override
-    public void setGSSAuth(int gssAuth) {
-        mcf.setGSSAuth(gssAuth);
+    public void setUseGSSAuth(boolean useGssAuth) {
+        mcf.setUseGSSAuth(useGssAuth);
     }
     
     /*

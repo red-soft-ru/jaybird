@@ -341,12 +341,12 @@ public class FBConnectionProperties implements FirebirdConnectionProperties, Ser
         setIntProperty(SO_TIMEOUT, soTimeout);
     }
 
-    public int getGSSAuth() {
-        return getIntProperty(USE_GSS_AUTH);
+    public boolean isUseGSSAuth() {
+        return getBooleanProperty(USE_GSS_AUTH);
     }
 
-    public void setGSSAuth(int gssAuth) {
-        setIntProperty(USE_GSS_AUTH, gssAuth);
+    public void setUseGSSAuth(boolean useGSSAuth) {
+        setBooleanProperty(USE_GSS_AUTH, useGSSAuth);
     }
 
     @Override
