@@ -416,13 +416,13 @@ public class FBManagedConnectionFactory implements ManagedConnectionFactory, Fir
     }
 
     @Override
-    public int getGSSAuth() {
-        return connectionProperties.getGSSAuth();
+    public boolean isUseGSSAuth() {
+        return connectionProperties.isUseGSSAuth();
     }
 
     @Override
-    public void setGSSAuth(int gssAuth) {
-        connectionProperties.setGSSAuth(gssAuth);
+    public void setUseGSSAuth(boolean useGSSAuth) {
+        connectionProperties.setUseGSSAuth(useGSSAuth);
     }
 
     public int hashCode() {

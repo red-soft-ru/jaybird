@@ -217,7 +217,6 @@ public final class FbConnectionProperties extends AbstractAttachProperties<IConn
             case isc_dpb_specific_auth_data:
                 break;
             case isc_dpb_gss:
-                setGSSAuth(parameter.getValueAsInt());
                 break;
             default:
                 log.warn(String.format("Unknown or unsupported parameter with type %d added to extra database parameters", parameter.getType()));

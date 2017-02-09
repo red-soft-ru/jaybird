@@ -51,7 +51,7 @@ public class V10ParameterConverter extends AbstractParameterConverter<WireDataba
             pb.addArgument(tagMapping.getEncryptedPasswordTag(), UnixCrypt.crypt(props.getPassword(),
                     LegacyAuthenticationPlugin.LEGACY_PASSWORD_SALT).substring(2, 13));
         }
-        if (props.getGSSAuth() != IConnectionProperties.DEFAULT_GSS_AUTH) {
+        if (props.isUseGSSAuth()) {
             pb.addArgument(tagMapping.getGSSAuthTag(), 1);
         }
     }

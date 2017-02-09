@@ -411,7 +411,7 @@ public interface FirebirdConnectionProperties {
      */
     void setUseFirebirdAutocommit(boolean useFirebirdAutocommit);
 
-    int getGSSAuth();
+    boolean isUseGSSAuth();
 
-    void setGSSAuth(int gssAuth);
+    void setUseGSSAuth(boolean useGSSAuth);
 }

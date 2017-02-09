@@ -36,7 +36,7 @@ public final class FbImmutableConnectionProperties extends AbstractImmutableAtta
     private final boolean resultSetDefaultHoldable;
     private final boolean columnLabelForName;
     private final DatabaseParameterBuffer extraDatabaseParameters;
-    private final int useGSSAuth;
+    private final boolean useGSSAuth;
 
     /**
      * Copy constructor for FbConnectionProperties.
@@ -56,7 +56,7 @@ public final class FbImmutableConnectionProperties extends AbstractImmutableAtta
         resultSetDefaultHoldable = src.isResultSetDefaultHoldable();
         columnLabelForName = src.isColumnLabelForName();
         extraDatabaseParameters = src.getExtraDatabaseParameters().deepCopy();
-        useGSSAuth = src.getGSSAuth();
+        useGSSAuth = src.isUseGSSAuth();
 
     }
 
@@ -76,12 +76,12 @@ public final class FbImmutableConnectionProperties extends AbstractImmutableAtta
     }
 
     @Override
-    public int getGSSAuth() {
+    public boolean isUseGSSAuth() {
         return useGSSAuth;
     }
 
     @Override
-    public void setGSSAuth(int gssAuth) {
+    public void setUseGSSAuth(boolean useGSSAuth) {
         immutable();
     }
 

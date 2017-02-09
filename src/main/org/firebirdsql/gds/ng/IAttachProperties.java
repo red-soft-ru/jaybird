@@ -36,7 +36,7 @@ public interface IAttachProperties<T extends IAttachProperties> {
     int DEFAULT_SOCKET_BUFFER_SIZE = -1;
     int DEFAULT_SO_TIMEOUT = -1;
     int DEFAULT_CONNECT_TIMEOUT = -1;
-    int DEFAULT_GSS_AUTH = -1;
+    boolean DEFAULT_GSS_AUTH = false;
 
     /**
      * @return The name of the object to attach to (either a database or service name).
@@ -234,9 +234,9 @@ public interface IAttachProperties<T extends IAttachProperties> {
      */
     void setConnectTimeout(int connectTimeout);
 
-    int getGSSAuth();
+    boolean isUseGSSAuth();
 
-    void setGSSAuth(int gssAuth);
+    void setUseGSSAuth(boolean useGSSAuth);
 
     /**
      * @return An immutable version of this instance as an implementation of {@link IAttachProperties}
