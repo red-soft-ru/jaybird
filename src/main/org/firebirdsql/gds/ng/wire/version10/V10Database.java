@@ -29,6 +29,7 @@ import org.firebirdsql.gds.ng.FbTransaction;
 import org.firebirdsql.gds.ng.TransactionState;
 import org.firebirdsql.gds.ng.fields.BlrCalculator;
 import org.firebirdsql.gds.ng.wire.*;
+import org.firebirdsql.gds.ng.wire.auth.GSSClient;
 import org.firebirdsql.jdbc.SQLStateConstants;
 import org.firebirdsql.logging.Logger;
 import org.firebirdsql.logging.LoggerFactory;
@@ -584,47 +585,11 @@ public class V10Database extends AbstractFbWireDatabase implements FbWireDatabas
 
     final void gssReceiveResponse() throws IOException, SQLException {
 
-        GenericResponse gr = (GenericResponse)wireOperations.readResponse(null);
+        CryptResponse cryptResponse = (CryptResponse) wireOperations.readResponse(null);
 
-        // Be sure to set the javax.security.auth.useSubjectCredsOnly
-        // system property value to false if you want the underlying
-        // mechanism to obtain credentials, rather than your application
-        // or a wrapper program performing authentication using JAAS.
-        System.setProperty( "javax.security.auth.useSubjectCredsOnly", "false");
+        GSSClient client = new GSSClient(cryptResponse.getData());
 
-        String response = new String(gr.getData());
-
-        response = response.trim();
-        String[] arr = response.split("\n");
-
-        Oid oid = sun.security.jgss.GSSUtil.GSS_SPNEGO_MECH_OID;
-
-        GSSManager manager = GSSManager.getInstance();
-
-        GSSName gssServerName = null;
-
-        InetAddress addr = InetAddress.getByName(arr[0]);
-        String host = addr.getHostName();
-
-        String serverName = arr[1].trim() + "@" + host;
-
-        try {
-            gssServerName = manager.createName(serverName, GSSName.NT_HOSTBASED_SERVICE);
-        } catch (GSSException e) {
-            e.printStackTrace();
-        }
-
-        // Get the context for authentication
-        GSSContext context = null;
-        byte[] token = new byte[0];
-        try {
-            context = manager.createContext(gssServerName, null, null,
-                GSSContext.INDEFINITE_LIFETIME);
-            context.requestMutualAuth(true); // Request mutual authentication
-            token = context.initSecContext(token, 0, token.length);
-        } catch (GSSException e) {
-            e.printStackTrace();
-        }
+        byte[] token = client.getToken();
 
         final XdrOutputStream xdrOut = getXdrOut();
 
