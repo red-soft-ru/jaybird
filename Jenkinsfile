@@ -9,6 +9,10 @@ String archive_prefix
 String version_tag = ''
 String branch = env.BRANCH_NAME
 
+properties([
+    buildDiscarder(logRotator(artifactDaysToKeepStr: '', artifactNumToKeepStr: '', daysToKeepStr: '90', numToKeepStr: ''))
+])
+
 try
 {
 
