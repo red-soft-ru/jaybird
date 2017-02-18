@@ -32,6 +32,8 @@ import org.firebirdsql.jca.FBManagedConnection;
 import org.firebirdsql.jca.FirebirdLocalTransaction;
 import org.firebirdsql.jdbc.escape.FBEscapedParser;
 import org.firebirdsql.jdbc.escape.FBEscapedParser.EscapeParserMode;
+import org.firebirdsql.logging.Logger;
+import org.firebirdsql.logging.LoggerFactory;
 import org.firebirdsql.util.SQLExceptionChainBuilder;
 
 import javax.resource.ResourceException;
@@ -50,6 +52,8 @@ import static org.firebirdsql.gds.impl.DatabaseParameterBufferExtension.USE_FIRE
  * @author <a href="mailto:mrotteveel@users.sourceforge.net">Mark Rotteveel</a>
  */
 public class FBConnection implements FirebirdConnection, Synchronizable {
+
+    private static final Logger log = LoggerFactory.getLogger(FBConnection.class);
 
     private static final String GET_CLIENT_INFO_SQL = "SELECT "
                 + "    rdb$get_context('USER_SESSION', ?) session_context "
@@ -101,11 +105,17 @@ public class FBConnection implements FirebirdConnection, Synchronizable {
     }
     
     public int getHoldability() throws SQLException {
-        return resultSetHoldability;
+        synchronized (getSynchronizationObject()) {
+            checkValidity();
+            return resultSetHoldability;
+        }
     }
 
     public void setHoldability(int holdability) throws SQLException {
-        this.resultSetHoldability = holdability;
+        synchronized (getSynchronizationObject()) {
+            checkValidity();
+            this.resultSetHoldability = holdability;
+        }
     }
 
     /**
@@ -203,45 +213,60 @@ public class FBConnection implements FirebirdConnection, Synchronizable {
      * @return instance of {@link DatabaseParameterBuffer}.
      */
     public DatabaseParameterBuffer getDatabaseParameterBuffer() {
-        return mc.getConnectionRequestInfo().getDpb();
+        return mc != null ? mc.getConnectionRequestInfo().getDpb() : null;
     }
 
     @Deprecated
 	public void setTransactionParameters(int isolationLevel, int[] parameters) throws SQLException {
-        TransactionParameterBuffer tpbParams = createTransactionParameterBuffer();
+        synchronized (getSynchronizationObject()) {
+            checkValidity();
+            TransactionParameterBuffer tpbParams = createTransactionParameterBuffer();
 
-        for (int parameter : parameters) {
-            tpbParams.addArgument(parameter);
+            for (int parameter : parameters) {
+                tpbParams.addArgument(parameter);
+            }
+
+            setTransactionParameters(isolationLevel, tpbParams);
         }
-        
-        setTransactionParameters(isolationLevel, tpbParams);
 	}
     
     public TransactionParameterBuffer getTransactionParameters(int isolationLevel) throws SQLException {
-        return mc.getTransactionParameters(isolationLevel);
+        synchronized (getSynchronizationObject()) {
+            checkValidity();
+            return mc.getTransactionParameters(isolationLevel);
+        }
     }
 
     public TransactionParameterBuffer createTransactionParameterBuffer() throws SQLException {
-        return getFbDatabase().createTransactionParameterBuffer();
+        synchronized (getSynchronizationObject()) {
+            checkValidity();
+            return getFbDatabase().createTransactionParameterBuffer();
+        }
     }
     
     public void setTransactionParameters(int isolationLevel, TransactionParameterBuffer tpb) throws SQLException {
-        if (mc.isManagedEnvironment()) {
-            throw new FBSQLException("Cannot set transaction parameters in managed environment.");
+        synchronized (getSynchronizationObject()) {
+            checkValidity();
+            if (mc.isManagedEnvironment()) {
+                throw new FBSQLException("Cannot set transaction parameters in managed environment.");
+            }
+
+            mc.setTransactionParameters(isolationLevel, tpb);
         }
-        
-        mc.setTransactionParameters(isolationLevel, tpb);
     }
     
     public void setTransactionParameters(TransactionParameterBuffer tpb) throws SQLException {
-        try {
-            if (getLocalTransaction().inTransaction()) {
-                throw new FBSQLException("Cannot set transaction parameters when transaction is already started.");
+        synchronized (getSynchronizationObject()) {
+            checkValidity();
+            try {
+                if (getLocalTransaction().inTransaction()) {
+                    throw new FBSQLException("Cannot set transaction parameters when transaction is already started.");
+                }
+
+                mc.setTransactionParameters(tpb);
+            } catch (ResourceException ex) {
+                throw new FBSQLException(ex);
             }
-            
-            mc.setTransactionParameters(tpb);
-        } catch(ResourceException ex) {
-            throw new FBSQLException(ex);
         }
     }
 
@@ -329,6 +354,7 @@ public class FBConnection implements FirebirdConnection, Synchronizable {
     
     public Blob createBlob() throws SQLException {
         synchronized (getSynchronizationObject()) {
+            checkValidity();
             return new FBBlob(getGDSHelper(), txCoordinator);
         }
     }
@@ -339,10 +365,12 @@ public class FBConnection implements FirebirdConnection, Synchronizable {
     }
     
     public Struct createStruct(String typeName, Object[] attributes) throws SQLException {
+        checkValidity();
         throw new FBDriverNotCapableException("Type STRUCT not supported");
     }
     
     public Array createArrayOf(String typeName, Object[] elements) throws SQLException {
+        checkValidity();
         throw new FBDriverNotCapableException("Type ARRAY not yet supported");
     }
 
@@ -358,7 +386,10 @@ public class FBConnection implements FirebirdConnection, Synchronizable {
      * @exception SQLException if a database access error occurs
      */
     public String nativeSQL(String sql) throws SQLException {
-        return getEscapedParser().parse(sql);
+        synchronized (getSynchronizationObject()) {
+            checkValidity();
+            return getEscapedParser().parse(sql);
+        }
     }
     
     /**
@@ -515,6 +546,9 @@ public class FBConnection implements FirebirdConnection, Synchronizable {
     public void close() throws SQLException {
         SQLExceptionChainBuilder<SQLException> chainBuilder = new SQLExceptionChainBuilder<>();
         synchronized (getSynchronizationObject()) {
+            if (log.isTraceEnabled()) {
+                log.trace("Connection closed requested at", new RuntimeException("Connection close logging"));
+            }
             try {
                 freeStatements();
                 if (metaData != null) metaData.close();
@@ -545,9 +579,9 @@ public class FBConnection implements FirebirdConnection, Synchronizable {
                     mc = null;
                 }
             }
-            if (chainBuilder.hasException()) {
-                throw chainBuilder.getException();
-            }
+        }
+        if (chainBuilder.hasException()) {
+            throw chainBuilder.getException();
         }
     }
 
@@ -564,19 +598,25 @@ public class FBConnection implements FirebirdConnection, Synchronizable {
         if (timeout < 0) {
             throw new SQLException("Timeout should be >= 0", SQLStateConstants.SQL_STATE_INVALID_ARG_VALUE);
         }
-        // TODO Check if we can set the connection timeout temporarily for this call
-        if (timeout != 0) {
-            addWarning(new SQLWarning(
-                    String.format("Connection.isValid does not support non-zero timeouts, timeout value %d has been ignored",
-                            timeout)));
-        }
-        try {
-            // TODO Is isc_info_user_names a good info item to use?
-            getFbDatabase().getDatabaseInfo(new byte[] { ISCConstants.isc_info_user_names, ISCConstants.isc_info_end },
-                    1024);
-            return true;
-        } catch(SQLException ex) {
-            return false;
+        synchronized (getSynchronizationObject()) {
+            if (isClosed()) {
+                return false;
+            }
+            // TODO Check if we can set the connection timeout temporarily for this call
+            if (timeout != 0) {
+                addWarning(new SQLWarning(
+                        String.format("Connection.isValid does not support non-zero timeouts, timeout value %d has been ignored",
+                                timeout)));
+            }
+            try {
+                // TODO Is isc_info_user_names a good info item to use?
+                getFbDatabase().getDatabaseInfo(new byte[] { ISCConstants.isc_info_user_names,
+                                ISCConstants.isc_info_end },
+                        1024);
+                return true;
+            } catch (SQLException ex) {
+                return false;
+            }
         }
     }
 
@@ -596,6 +636,7 @@ public class FBConnection implements FirebirdConnection, Synchronizable {
      */
     public DatabaseMetaData getMetaData() throws SQLException {
         synchronized (getSynchronizationObject()) {
+            checkValidity();
             if (metaData == null)
                 metaData = new FBDatabaseMetaData(this);
             return metaData;
@@ -616,6 +657,7 @@ public class FBConnection implements FirebirdConnection, Synchronizable {
      */
     public void setReadOnly(boolean readOnly) throws SQLException {
         synchronized (getSynchronizationObject()) {
+            checkValidity();
             try {
                 if (getLocalTransaction().inTransaction() && !mc.isManagedEnvironment())
                     throw new FBSQLException("Calling setReadOnly(boolean) method " +
@@ -636,7 +678,10 @@ public class FBConnection implements FirebirdConnection, Synchronizable {
      * @exception SQLException if a database access error occurs
      */
     public boolean isReadOnly() throws SQLException {
-        return mc.isReadOnly();
+        synchronized (getSynchronizationObject()) {
+            checkValidity();
+            return mc.isReadOnly();
+        }
     }
 
 
@@ -682,13 +727,9 @@ public class FBConnection implements FirebirdConnection, Synchronizable {
      */
     public void setTransactionIsolation(int level) throws SQLException {
         synchronized (getSynchronizationObject()) {
-            if (isClosed())
-                throw new FBSQLException(
-                        "Connection has being closed.",
-                        SQLStateConstants.SQL_STATE_CONNECTION_CLOSED);
+            checkValidity();
 
             try {
-
                 if (!getAutoCommit() && !mc.isManagedEnvironment())
                     txCoordinator.commit();
 
@@ -708,6 +749,7 @@ public class FBConnection implements FirebirdConnection, Synchronizable {
      */
     public int getTransactionIsolation() throws SQLException {
         synchronized (getSynchronizationObject()) {
+            checkValidity();
             try {
                 return mc.getTransactionIsolation();
             } catch (ResourceException e) {
@@ -728,6 +770,7 @@ public class FBConnection implements FirebirdConnection, Synchronizable {
      */
     public SQLWarning getWarnings() throws SQLException {
         synchronized (getSynchronizationObject()) {
+            checkValidity();
             return firstWarning;
         }
     }
@@ -743,6 +786,7 @@ public class FBConnection implements FirebirdConnection, Synchronizable {
      */
     public void clearWarnings() throws SQLException {
         synchronized (getSynchronizationObject()) {
+            checkValidity();
             firstWarning = null;
         }
     }
@@ -801,6 +845,7 @@ public class FBConnection implements FirebirdConnection, Synchronizable {
     public Statement createStatement(int resultSetType, int resultSetConcurrency, int resultSetHoldability)
             throws SQLException {
         synchronized (getSynchronizationObject()) {
+            checkValidity();
             if (resultSetHoldability == ResultSet.HOLD_CURSORS_OVER_COMMIT &&
                     resultSetType == ResultSet.TYPE_FORWARD_ONLY) {
 
@@ -1121,6 +1166,7 @@ public class FBConnection implements FirebirdConnection, Synchronizable {
     protected PreparedStatement prepareStatement(String sql, int resultSetType, int resultSetConcurrency,
             int resultSetHoldability, boolean metaData, boolean generatedKeys) throws SQLException {
         synchronized (getSynchronizationObject()) {
+            checkValidity();
             if (resultSetHoldability == ResultSet.HOLD_CURSORS_OVER_COMMIT
                     && resultSetType == ResultSet.TYPE_FORWARD_ONLY) {
                 addWarning(FbExceptionBuilder
@@ -1174,6 +1220,7 @@ public class FBConnection implements FirebirdConnection, Synchronizable {
     public CallableStatement prepareCall(String sql, int resultSetType, int resultSetConcurrency,
             int resultSetHoldability) throws SQLException {
         synchronized (getSynchronizationObject()) {
+            checkValidity();
             if (resultSetHoldability == ResultSet.HOLD_CURSORS_OVER_COMMIT
                     && resultSetType == ResultSet.TYPE_FORWARD_ONLY) {
                 addWarning(FbExceptionBuilder
@@ -1241,10 +1288,13 @@ public class FBConnection implements FirebirdConnection, Synchronizable {
     }
     
     public Savepoint setSavepoint() throws SQLException {
-        FBSavepoint savepoint = new FBSavepoint(getNextSavepointCounter());
-        setSavepoint(savepoint);
-        
-        return savepoint;
+        synchronized (getSynchronizationObject()) {
+            checkValidity();
+            FBSavepoint savepoint = new FBSavepoint(getNextSavepointCounter());
+            setSavepoint(savepoint);
+
+            return savepoint;
+        }
     }
     
     /**
@@ -1255,33 +1305,35 @@ public class FBConnection implements FirebirdConnection, Synchronizable {
      * @throws SQLException if something went wrong.
      */
     private void setSavepoint(FBSavepoint savepoint) throws SQLException {
-        synchronized (getSynchronizationObject()) {
-            if (getAutoCommit()) {
-                throw new SQLException("Connection.setSavepoint() method cannot be used in auto-commit mode.",
-                        SQLStateConstants.SQL_STATE_INVALID_TX_STATE);
-            }
-
-            if (mc.inDistributedTransaction()) {
-                throw new SQLException("Connection enlisted in distributed transaction",
-                        SQLStateConstants.SQL_STATE_INVALID_TX_STATE);
-            }
-
-            txCoordinator.ensureTransaction();
-
-            getGDSHelper().executeImmediate("SAVEPOINT " + savepoint.getServerSavepointId());
-            savepoints.add(savepoint);
+        if (getAutoCommit()) {
+            throw new SQLException("Connection.setSavepoint() method cannot be used in auto-commit mode.",
+                    SQLStateConstants.SQL_STATE_INVALID_TX_STATE);
         }
+
+        if (mc.inDistributedTransaction()) {
+            throw new SQLException("Connection enlisted in distributed transaction",
+                    SQLStateConstants.SQL_STATE_INVALID_TX_STATE);
+        }
+
+        txCoordinator.ensureTransaction();
+
+        getGDSHelper().executeImmediate("SAVEPOINT " + savepoint.getServerSavepointId());
+        savepoints.add(savepoint);
     }
 
     public Savepoint setSavepoint(String name) throws SQLException {
-        FBSavepoint savepoint = new FBSavepoint(name);
-        setSavepoint(savepoint);
-        
-        return savepoint;
+        synchronized (getSynchronizationObject()) {
+            checkValidity();
+            FBSavepoint savepoint = new FBSavepoint(name);
+            setSavepoint(savepoint);
+
+            return savepoint;
+        }
     }
     
     public void rollback(Savepoint savepoint) throws SQLException {
         synchronized (getSynchronizationObject()) {
+            checkValidity();
             if (getAutoCommit()) {
                 throw new SQLException("Connection.rollback(Savepoint) method cannot be used in auto-commit mode.",
                         SQLStateConstants.SQL_STATE_INVALID_TX_STATE);
@@ -1308,6 +1360,7 @@ public class FBConnection implements FirebirdConnection, Synchronizable {
 
     public void releaseSavepoint(Savepoint savepoint) throws SQLException {
         synchronized (getSynchronizationObject()) {
+            checkValidity();
             if (getAutoCommit()) {
                 throw new SQLException("Connection.releaseSavepoint() method cannot be used in auto-commit mode.",
                         SQLStateConstants.SQL_STATE_INVALID_TX_STATE);
@@ -1424,6 +1477,7 @@ public class FBConnection implements FirebirdConnection, Synchronizable {
     }
 
     public SQLXML createSQLXML() throws SQLException {
+        checkValidity();
         throw new FBDriverNotCapableException("Type SQLXML not supported");
     }
 
@@ -1437,7 +1491,8 @@ public class FBConnection implements FirebirdConnection, Synchronizable {
 
     @Override
     public boolean isUseFirebirdAutoCommit() {
-        return getDatabaseParameterBuffer().hasArgument(USE_FIREBIRD_AUTOCOMMIT);
+        DatabaseParameterBuffer dpb = getDatabaseParameterBuffer();
+        return dpb != null && dpb.hasArgument(USE_FIREBIRD_AUTOCOMMIT);
     }
     
     protected void finalize() throws Throwable {
