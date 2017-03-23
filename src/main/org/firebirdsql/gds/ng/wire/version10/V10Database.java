@@ -585,18 +585,28 @@ public class V10Database extends AbstractFbWireDatabase implements FbWireDatabas
 
     final void gssReceiveResponse() throws IOException, SQLException {
 
-        CryptResponse cryptResponse = (CryptResponse) wireOperations.readResponse(null);
+        Response response = wireOperations.readResponse(null);
+        if (response instanceof CryptResponse) {
+            CryptResponse cryptResponse = (CryptResponse) response;
 
-        GSSClient client = new GSSClient(cryptResponse.getData());
+            GSSClient client = new GSSClient(cryptResponse.getData());
 
-        byte[] token = client.getToken();
+            byte[] token = client.getToken();
 
-        final XdrOutputStream xdrOut = getXdrOut();
+            final XdrOutputStream xdrOut = getXdrOut();
 
-        // send to server token
-        xdrOut.writeInt(op_crypt);
-        xdrOut.writeBuffer(token);
+            // send to server token
+            xdrOut.writeInt(op_crypt);
+            xdrOut.writeBuffer(token);
 
-        xdrOut.flush();
+            xdrOut.flush();
+        } else {
+            GenericResponse genericResponse = (GenericResponse) response;
+            SQLException exception = genericResponse.getException();
+            if (exception != null) {
+                throw exception;
+            }
+            processReleaseObjectResponse(genericResponse);
+        }
     }
 }
