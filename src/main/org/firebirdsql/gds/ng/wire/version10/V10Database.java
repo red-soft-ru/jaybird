@@ -605,8 +605,9 @@ public class V10Database extends AbstractFbWireDatabase implements FbWireDatabas
             SQLException exception = genericResponse.getException();
             if (exception != null) {
                 throw exception;
+            } else {
+                throw new FbExceptionBuilder().exception(ISCConstants.isc_login).toSQLException();
             }
-            processReleaseObjectResponse(genericResponse);
         }
     }
 }
