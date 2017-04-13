@@ -160,7 +160,46 @@ public class FBDriverPropertyManager {
      */
     @Deprecated
     public static Map<String, String> normalize(String url, Properties props) throws SQLException {
+        HashMap tempProps = new HashMap();
+        tempProps.putAll(props);
+        convertUrlParams(url, tempProps);
+        props.putAll(tempProps);
+
         return normalize(props);
+    }
+
+    /**
+     * Extract properties specified as URL parameter into the specified list
+     * of properties.
+     *
+     * @param url specified URL.
+     *
+     * @param info instance of {@link Properties} into which values should
+     * be extracted.
+     */
+    private static void convertUrlParams(String url, HashMap info) {
+        if (url == null)
+            return;
+
+        int iQuestionMark = url.indexOf("?");
+
+        if (iQuestionMark == -1)
+            return;
+
+        String propString = url.substring(iQuestionMark+1);
+
+        StringTokenizer st = new StringTokenizer(propString,"&;");
+        while(st.hasMoreTokens()) {
+            String propertyString = st.nextToken();
+            int iIs = propertyString.indexOf("=");
+            if(iIs > -1) {
+                String property = propertyString.substring(0, iIs);
+                String value = propertyString.substring(iIs+1);
+                info.put(property,value);
+            } else {
+                info.put(propertyString, "");
+            }
+        }
     }
     
     /**
