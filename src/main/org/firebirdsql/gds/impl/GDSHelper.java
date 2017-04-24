@@ -421,21 +421,30 @@ public class GDSHelper implements Synchronizable {
     }
 
     public void populateStatementInfo(AbstractIscStmtHandle fixedStmt) throws GDSException {
-        final byte[] REQUEST = new byte[] {
-                ISCConstants.isc_info_sql_get_plan,
-                ISCConstants.isc_info_sql_stmt_type,
-                ISCConstants.isc_info_end };
-
         try {
-            int bufferSize = 2048;
-            byte[] buffer;
-            while (true) {
-                buffer = gds.iscDsqlSqlInfo(fixedStmt, REQUEST, bufferSize);
-                if (parseStatementInfo(fixedStmt, buffer)) {
-                    break;
+            fixedStmt.setExecutionPlan(null);
+            fixedStmt.setStatementType(IscStmtHandle.TYPE_UNKNOWN);
+
+            for(byte req_part: new byte[] {ISCConstants.isc_info_sql_stmt_type, ISCConstants.isc_info_sql_get_plan} ) {
+                final byte[] REQUEST = new byte[] { req_part, ISCConstants.isc_info_end };
+                long bufferSize = 2048;
+                byte[] buffer;
+                while (true) {
+                    buffer = gds.iscDsqlSqlInfo(fixedStmt, REQUEST, (int) bufferSize);
+                    if (parseStatementInfo(fixedStmt, buffer)) {
+                        break;
+                    }
+
+                    //Max buffer size in isc_dsql_sql_info is USHORT, but we use signed int in java, so we can use
+                    //only 32767. Big plans can exceed this length, so silently sacrifice them.
+                    if (bufferSize == 32767) {
+                        break;
+                    }
+                    else {
+                        bufferSize = Math.min(bufferSize * 2, 32767);
+                    }
                 }
-                bufferSize *= 2;
-            }            
+            }
         } catch(GDSException ex) {
             notifyListeners(ex);
             throw ex;
@@ -445,11 +454,8 @@ public class GDSHelper implements Synchronizable {
 
     private boolean parseStatementInfo(AbstractIscStmtHandle fixedStmt, byte[] buffer) throws GDSException {
         if (buffer[0] == ISCConstants.isc_info_end){
-            throw new GDSException(ISCConstants.isc_req_sync);
+            return true;
         }
-        String executionPlan = null;
-        int statementType = IscStmtHandle.TYPE_UNKNOWN;
-
         int dataLength = -1;
         for (int i = 0; i < buffer.length; i++){
             switch(buffer[i]){
@@ -459,13 +465,13 @@ public class GDSHelper implements Synchronizable {
                     dataLength = gds.iscVaxInteger(buffer, ++i, 2);
                     i += 2;
                     // Skipping first char as it is a linefeed
-                    executionPlan = new String(buffer, i + 1, dataLength - 1);
+                    fixedStmt.setExecutionPlan(new String(buffer, i + 1, dataLength - 1));
                     i += dataLength - 1;
                     break;
                 case ISCConstants.isc_info_sql_stmt_type:
                     dataLength = gds.iscVaxInteger(buffer, ++i, 2);
                     i += 2;
-                    statementType = gds.iscVaxInteger(buffer, i, dataLength);
+                    fixedStmt.setStatementType(gds.iscVaxInteger(buffer, i, dataLength));
                     i += dataLength;
                     break;
                 case ISCConstants.isc_info_end:
@@ -476,8 +482,6 @@ public class GDSHelper implements Synchronizable {
             }
         }
 
-        fixedStmt.setExecutionPlan(executionPlan);
-        fixedStmt.setStatementType(statementType);
         return true;
     }
     
