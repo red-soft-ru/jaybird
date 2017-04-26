@@ -297,10 +297,10 @@ public class XdrOutputStream {
      */
     public void writeInt(int v) throws IOException {
         checkBufferSize(4);
-        buf[count++] = (byte) (v >>> 24);
-        buf[count++] = (byte) (v >>> 16);
-        buf[count++] = (byte) (v >>>  8);
-        buf[count++] = (byte) (v >>>  0);
+        buf[count++] = (byte) (v >>> 24 & 0xFF);
+        buf[count++] = (byte) (v >>> 16 & 0xFF);
+        buf[count++] = (byte) (v >>>  8 & 0xFF);
+        buf[count++] = (byte) (v >>>  0 & 0xFF);
     }
 
     //

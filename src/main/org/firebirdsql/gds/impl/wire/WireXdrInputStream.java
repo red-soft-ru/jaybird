@@ -42,8 +42,11 @@ public class WireXdrInputStream extends XdrInputStream {
     }
 
     public int readBuffer(isc_db_handle_impl dbHandle) throws IOException {
-        int len = readInt();
-        
+        //HACK!: This function used only in receiveResponse, and
+        //buffer length of op_response actually is USHORT, but sent as SSHORT
+        //so cast it to unsigned.
+        int len = readInt() & 0xFFFF;
+
         byte[] buffer = dbHandle.getResp_data();
         if (len > buffer.length) {
             buffer = new byte[len];

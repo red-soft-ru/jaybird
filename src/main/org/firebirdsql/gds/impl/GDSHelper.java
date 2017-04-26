@@ -425,23 +425,25 @@ public class GDSHelper implements Synchronizable {
             fixedStmt.setExecutionPlan(null);
             fixedStmt.setStatementType(IscStmtHandle.TYPE_UNKNOWN);
 
+            //Max buffer size in isc_dsql_sql_info is USHORT. Big plans can exceed this length,
+            // so silently sacrifice them.
             for(byte req_part: new byte[] {ISCConstants.isc_info_sql_stmt_type, ISCConstants.isc_info_sql_get_plan} ) {
                 final byte[] REQUEST = new byte[] { req_part, ISCConstants.isc_info_end };
-                long bufferSize = 2048;
+                final int MAXBUFSIZE = 65535;
+                final int DEFAULTBUFSIZE = 2048;
+                int bufferSize = DEFAULTBUFSIZE;
                 byte[] buffer;
                 while (true) {
-                    buffer = gds.iscDsqlSqlInfo(fixedStmt, REQUEST, (int) bufferSize);
+                    buffer = gds.iscDsqlSqlInfo(fixedStmt, REQUEST, bufferSize);
                     if (parseStatementInfo(fixedStmt, buffer)) {
                         break;
                     }
 
-                    //Max buffer size in isc_dsql_sql_info is USHORT, but we use signed int in java, so we can use
-                    //only 32767. Big plans can exceed this length, so silently sacrifice them.
-                    if (bufferSize == 32767) {
+                    if (bufferSize == MAXBUFSIZE) {
                         break;
                     }
                     else {
-                        bufferSize = Math.min(bufferSize * 2, 32767);
+                        bufferSize = Math.min(bufferSize * 2, MAXBUFSIZE);
                     }
                 }
             }
