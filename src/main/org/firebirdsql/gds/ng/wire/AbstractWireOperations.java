@@ -205,10 +205,6 @@ public abstract class AbstractWireOperations implements FbWireOperations {
             return new FetchResponse(xdrIn.readInt(), xdrIn.readInt());
         case op_sql_response:
             return new SqlResponse(xdrIn.readInt());
-        case op_trusted_auth:
-
-            int i = 0;
-            return null;
         default:
             throw new FbExceptionBuilder().nonTransientException(JaybirdErrorCodes.jb_unexpectedOperationCode)
                     .messageParameter(operation)
