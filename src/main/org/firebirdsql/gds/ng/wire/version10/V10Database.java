@@ -21,7 +21,11 @@ package org.firebirdsql.gds.ng.wire.version10;
 import org.firebirdsql.encodings.Encoding;
 import org.firebirdsql.gds.*;
 import org.firebirdsql.gds.impl.DatabaseParameterBufferExtension;
+import org.firebirdsql.gds.impl.wire.ByteBuffer;
+import org.firebirdsql.gds.impl.wire.XdrInputStream;
 import org.firebirdsql.gds.impl.wire.XdrOutputStream;
+import org.firebirdsql.gds.impl.wire.auth.AuthSspi;
+import org.firebirdsql.gds.impl.wire.auth.GDSAuthException;
 import org.firebirdsql.gds.ng.FbExceptionBuilder;
 import org.firebirdsql.gds.ng.FbStatement;
 import org.firebirdsql.gds.ng.FbTransaction;
@@ -107,6 +111,30 @@ public class V10Database extends AbstractFbWireDatabase implements FbWireDatabas
                     throw new FbExceptionBuilder().exception(ISCConstants.isc_net_write_err).cause(e).toSQLException();
                 }
                 try {
+                    AuthSspi sspi = getSspi();
+                    if (sspi != null) try {
+                        final ByteBuffer authData = new ByteBuffer(256);
+                        int operation = connection.readNextOperation();
+                        while (operation == op_trusted_auth) {
+                            receiveAuthResponse(authData);
+                            if (!sspi.request(authData)) {
+                                throw new FbExceptionBuilder()
+                                        .nonTransientConnectionException(ISCConstants.isc_unavailable).toFlatSQLException();
+                            }
+                            writeAuthData(authData);
+                            operation = connection.readNextOperation();
+                        }
+                    } catch (GDSAuthException e) {
+                        throw new SQLException(e.getMessage());
+                    } catch (GDSException e) {
+                        throw new SQLException(e.getMessage());
+                    } finally {
+                        try {
+                            sspi.free();
+                        } catch (GDSAuthException e) {
+                            throw new SQLException(e.getMessage());
+                        }
+                    }
                     authReceiveResponse(null);
                 } catch (IOException e) {
                     throw new FbExceptionBuilder().exception(ISCConstants.isc_net_read_err).cause(e).toSQLException();
@@ -140,13 +168,36 @@ public class V10Database extends AbstractFbWireDatabase implements FbWireDatabas
 
         final Encoding filenameEncoding = getFilenameEncoding(dpb);
 
+        final boolean trustedAuth = dpb.hasArgument(ISCConstants.isc_dpb_trusted_auth);
+        final boolean multifactor = dpb.hasArgument(ISCConstants.isc_dpb_multi_factor_auth);
+
+        if (trustedAuth && !multifactor)
+            throw new SQLException("Trusted authorization is not supported. Use multi factor authorization instead of this one.");
+
+        DatabaseParameterBuffer newDpb = dpb.deepCopy();
+
+        newDpb.addArgument(ISCConstants.isc_dpb_utf8_filename, new byte[0]);
+
+        AuthSspi sspi;
+        if (multifactor) {
+            sspi = new AuthSspi();
+            try {
+                sspi.fillFactors(newDpb);
+            } catch (GDSException e) {
+                throw new SQLException(e.getMessage());
+            }
+        }
+        else sspi = null;
+
+        setSspi(sspi);
+
         xdrOut.writeInt(operation);
         xdrOut.writeInt(0); // Database object ID
         xdrOut.writeString(connection.getAttachObjectName(), filenameEncoding);
 
-        dpb = ((DatabaseParameterBufferExtension) dpb).removeExtensionParams();
+        newDpb = ((DatabaseParameterBufferExtension) newDpb).removeExtensionParams();
 
-        xdrOut.writeTyped(dpb);
+        xdrOut.writeTyped(newDpb);
     }
 
     /**
@@ -569,5 +620,37 @@ public class V10Database extends AbstractFbWireDatabase implements FbWireDatabas
                 processAttachOrCreateResponse(response);
             }
         });
+    }
+
+    private void receiveAuthResponse(ByteBuffer data) throws GDSException, SQLException {
+        final XdrInputStream xdrIn = getXdrIn();
+        final boolean debug = log != null && log.isDebugEnabled();
+        try {
+            if (debug)
+                log.debug("op_auth_response ");
+            final int size = xdrIn.readInt();
+            if (debug)
+                log.debug("received");
+            data.clear();
+            data.read(xdrIn, size);
+        } catch (IOException ex) {
+            if (debug)
+                log.warn("IOException in receiveAuthResponse", ex);
+            // ex.getMessage() makes little sense here, it will not be displayed
+            // because error message for isc_net_read_err does not accept params
+            throw new GDSException(ISCConstants.isc_arg_gds,
+                    ISCConstants.isc_net_read_err, ex.getMessage());
+        }
+    }
+
+    protected void writeAuthData(final ByteBuffer authData) throws IOException, SQLException {
+        boolean debug = log != null && log.isDebugEnabled();
+        final XdrOutputStream xdrOut = getXdrOut();
+        xdrOut.writeInt(op_trusted_auth);
+//      db.out.writeInt(0); // packet->p_atch->p_atch_database
+        authData.write(xdrOut);
+        xdrOut.flush();
+        if (debug)
+            log.debug("auth data");
     }
 }

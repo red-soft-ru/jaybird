@@ -24,6 +24,7 @@ import org.firebirdsql.gds.EventHandler;
 import org.firebirdsql.gds.JaybirdErrorCodes;
 import org.firebirdsql.gds.impl.wire.XdrInputStream;
 import org.firebirdsql.gds.impl.wire.XdrOutputStream;
+import org.firebirdsql.gds.impl.wire.auth.AuthSspi;
 import org.firebirdsql.gds.ng.*;
 
 import java.io.IOException;
@@ -43,6 +44,8 @@ public abstract class AbstractFbWireDatabase extends AbstractFbDatabase<WireData
     protected final ProtocolDescriptor protocolDescriptor;
     protected final FbWireOperations wireOperations;
     private FbWireAsynchronousChannel asynchronousChannel;
+
+    private AuthSspi sspi = null;
 
     /**
      * Creates an AbstractFbWireDatabase instance.
@@ -255,5 +258,13 @@ public abstract class AbstractFbWireDatabase extends AbstractFbDatabase<WireData
         } finally {
             super.finalize();
         }
+    }
+
+    protected AuthSspi getSspi() {
+        return sspi;
+    }
+
+    protected void setSspi(AuthSspi sspi) {
+        this.sspi = sspi;
     }
 }

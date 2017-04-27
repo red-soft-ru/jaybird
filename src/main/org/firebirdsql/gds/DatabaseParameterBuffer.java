@@ -114,6 +114,8 @@ public interface DatabaseParameterBuffer extends ConnectionParameterBuffer {
     int NO_DB_TRIGGERS          = ISCConstants.isc_dpb_no_db_triggers;
     int TRUSTED_AUTH            = ISCConstants.isc_dpb_trusted_auth;
     int PROCESS_NAME            = ISCConstants.isc_dpb_process_name;
+
+    int MULTI_FACTOR_AUTH       = ISCConstants.isc_dpb_multi_factor_auth;
     //@formatter:on
 
     /**

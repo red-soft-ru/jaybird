@@ -183,6 +183,17 @@ public interface ISCConstants {
     int isc_dpb_so_timeout              = 141;
     int isc_dpb_column_label_for_name   = 142;
     int isc_dpb_use_firebird_autocommit = 143;
+    int isc_dpb_certificate_base64      = 142;
+
+    /* Red Database security parameters */
+    int isc_dpb_multi_factor_auth       = 150;
+    int isc_dpb_certificate             = 151;
+    int isc_dpb_repository_name         = 152;
+    int isc_dpb_eye                     = 153;
+    int isc_dpb_session_key             = 154;
+    int isc_dpb_session_key_iv          = 155;
+    int isc_dpb_verify_server           = 156;
+    int isc_dpb_hw_address              = 157;
 
     /*************************************/
     /* Transaction parameter block stuff */

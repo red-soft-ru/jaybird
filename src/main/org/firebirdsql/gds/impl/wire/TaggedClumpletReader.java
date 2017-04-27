@@ -1,0 +1,53 @@
+package org.firebirdsql.gds.impl.wire;
+
+import org.firebirdsql.gds.impl.wire.auth.GDSAuthException;
+
+/**
+ * @author roman.kisluhin
+ * @version 1.0
+ *          Date: 12.10.12
+ *          Time: 14:19
+ */
+public class TaggedClumpletReader extends ClumpletReader {
+  public TaggedClumpletReader(final byte[] data, final int length) {
+    super(data, length);
+  }
+
+  public TaggedClumpletReader(final byte[] data, final int offset, final int length) {
+    super(data, offset, length);
+  }
+
+  @Override
+  public void rewind() {
+    setCurOffset(getBufferStart() + 1);
+  }
+
+  @Override
+  public void moveNext() throws GDSAuthException {
+    if (isEof())
+      return;   // no need to raise useless exceptions
+    final int cs = getClumpletSize(true, true, true);
+    setCurOffset(getCurOffset() + cs);
+  }
+
+  public boolean find(int tag) throws GDSAuthException {
+    final int co = getCurOffset();
+    for (rewind(); !isEof(); moveNext()) {
+      if (tag == getClumpTag())
+        return true;
+    }
+    setCurOffset(co);
+    return false;
+  }
+
+  public int getClumpTag() throws GDSAuthException {
+    if (isEof())
+      throw new GDSAuthException("ClumpletReader>> read past EOF");
+    return data[getCurOffset()];
+  }
+
+  @Override
+  protected int getClumpletType(final byte b) {
+    return TraditionalDpb;
+  }
+}
