@@ -31,10 +31,8 @@ import java.io.Reader;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.Map;
+import java.sql.Date;
+import java.util.*;
 
 /**
  * Implementation of {@link ResultSet} interface.
@@ -69,6 +67,7 @@ public abstract class AbstractResultSet implements ResultSet, FirebirdResultSet,
     private SQLWarning firstWarning = null;
      
     private FBField[] fields = null;
+    private List<FBField> closeableFields = null;
     private final Map<String, Integer> colNames;
     
     private String cursorName;
@@ -198,7 +197,13 @@ public abstract class AbstractResultSet implements ResultSet, FirebirdResultSet,
                   }
               };
               
-            fields[i] = FBField.createField(xsqlvars[i], dataProvider, gdsHelper, cached);
+            final FBField field = FBField.createField(xsqlvars[i], dataProvider, gdsHelper, cached);
+            if (field.isNeedClose()) {
+                if (closeableFields == null)
+                    closeableFields = new LinkedList<FBField>();
+                closeableFields.add(field);
+            }
+            fields[i] = field;
         }
     }
     
@@ -243,14 +248,16 @@ public abstract class AbstractResultSet implements ResultSet, FirebirdResultSet,
 
         SQLExceptionChainBuilder<SQLException> chain = new SQLExceptionChainBuilder<SQLException>();
         // close current fields, so that resources are freed.
-        for (FBField field : fields) {
-            try {
-                field.close();
-            } catch (SQLException ex) {
-                chain.append(ex);
+        if (closeableFields != null) {
+            for (FBField closeableField : closeableFields) {
+                try {
+                    closeableField.close();
+                } catch (SQLException ex) {
+                    chain.append(ex);
+                }
             }
         }
-        
+
         if (chain.hasException()) {
         	throw chain.getException();
         }
