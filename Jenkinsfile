@@ -55,7 +55,7 @@ node('master')
 def buildTasks = [:]
 for (j in ['16', '17', '18'])
 {
-    jdk = j
+    def jdk = j
     buildTasks["build-${jdk}"] = { build(jdk, archive_prefix, version_tag) }
 }
 buildTasks.failFast = true

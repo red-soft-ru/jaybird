@@ -38,6 +38,7 @@ check_variable BINDIR
 check_variable SRCDIR
 check_variable JDK_VERSION
 check_variable JAYBIRD_VERSION
+check_variable JAVA_HOME
 
 OS=linux
 RDB_VERSION=2.6.0.13002
@@ -58,6 +59,7 @@ echo "Installing RedDatabase"
 sudo /tmp/installer.bin --DBAPasswd masterkey --mode unattended --architecture classic || die "Unable to install RedDatabase"
 sudo rm -f /tmp/installer.bin
 
+export JAVA_HOME
 ant -Djdk=${JDK_VERSION} -Dversion=$JAYBIRD_VERSION -Dbindir=${BINDIR} -Dsrcdir=${SRCDIR} -f test.xml
 
 uninstallrdb
