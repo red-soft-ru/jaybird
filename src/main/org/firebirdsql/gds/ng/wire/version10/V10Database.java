@@ -156,7 +156,7 @@ public class V10Database extends AbstractFbWireDatabase implements FbWireDatabas
 
         AuthSspi sspi;
         if (multifactor) {
-            if (!newDpb.hasArgument(ISCConstants.isc_dpb_password))
+            if (!newDpb.hasArgument(ISCConstants.isc_dpb_password) && connection.getAttachProperties().getPassword() != null)
                 newDpb.addArgument(ISCConstants.isc_dpb_password, connection.getAttachProperties().getPassword());
             sspi = new AuthSspi();
             try {
