@@ -182,7 +182,7 @@ def test(jdk, archive_prefix, version_tag)
             }
             
             sh "tar xf dist-src/${archive_prefix}.tar.gz"
-            sh "tar xf dist-${jdk}/${archive_prefix}.tar.gz"
+            sh "tar xf dist-${jdk}/bin/${archive_prefix}.tar.gz"
 
             withEnv(["JAVA_HOME=${java_home}", "archive_prefix=${archive_prefix}", "JDK_VERSION=${jdk}", "BINDIR=${wd}/dist-${jdk}/bin", "SRCDIR=${wd}/${archive_prefix}"]) {
                 sh """#!/bin/bash
