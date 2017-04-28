@@ -61,7 +61,7 @@ for (j in ['16', '17', '18'])
 buildTasks.failFast = true
 parallel buildTasks
 
-test('18', archive_prefix, version_tag)
+test('18', archive_prefix, version)
 
 node('master')
 {
@@ -160,7 +160,7 @@ def build(String jdk, archive_prefix, version_tag)
     }    
 }
 
-def test(jdk, archive_prefix, version_tag)
+def test(jdk, archive_prefix, version)
 {
     node('jdk' + jdk + '&&tester&&linux')
     {
