@@ -12,14 +12,14 @@
     <target name="test" description="All the tests.">
       <junit fork="true">
         <classpath>
-          <pathelement location="${bindir}/jaybird-full-jdk${jdk}-${version}.jar" />
-          <pathelement location="${bindir}/jaybird-test-jdk${jdk}-${version}.jar" />
+          <pathelement location="${bindir}/bin/jaybird-full-jdk${jdk}-${version}.jar" />
+          <pathelement location="${bindir}/test/jaybird-test-jdk${jdk}-${version}.jar" />
           <pathelement location="${srcdir}/lib/junit.jar" />
           <fileset dir="${srcdir}/lib/test/" includes="*.jar" />
         </classpath>
         <batchtest haltonfailure="false" todir="${test.report.dir}">
           <formatter type="xml"/>
-          <zipfileset src="${bindir}/jaybird-test-jdk${jdk}-${version}.jar">
+          <zipfileset src="${bindir}/test/jaybird-test-jdk${jdk}-${version}.jar">
             <include name="**/Test*.class"/>
             <exclude name="**/jni/Test*.class"/>
             <exclude name="**/TestAll.class"/>
