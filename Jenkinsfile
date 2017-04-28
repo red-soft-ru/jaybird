@@ -123,6 +123,7 @@ def build(String jdk, archive_prefix, version_tag)
             deleteDir()
             unstash 'src'
             
+            String java_home
             if (jdk == '16')
             {
                 java_home = env.JAVA_HOME_1_6
@@ -135,7 +136,12 @@ def build(String jdk, archive_prefix, version_tag)
             {
                 java_home = env.JAVA_HOME_1_8
             }
-            
+            else
+            {
+                println("Unknown jdk version ${jdk}")
+            }
+            println("JDK${jdk}. JAVA_HOME=${java_home}")
+        
             sh "tar xf dist-src/${archive_prefix}.tar.gz"
             withEnv(["JAVA_HOME=${java_home}", "archive_prefix=${archive_prefix}", "version_tag=${version_tag}", "jdk=${jdk}"]) {
                 sh """#!/bin/bash
