@@ -45,8 +45,6 @@ public abstract class AbstractFbWireDatabase extends AbstractFbDatabase<WireData
     protected final FbWireOperations wireOperations;
     private FbWireAsynchronousChannel asynchronousChannel;
 
-    private AuthSspi sspi = null;
-
     /**
      * Creates an AbstractFbWireDatabase instance.
      *
@@ -258,13 +256,5 @@ public abstract class AbstractFbWireDatabase extends AbstractFbDatabase<WireData
         } finally {
             super.finalize();
         }
-    }
-
-    protected AuthSspi getSspi() {
-        return sspi;
-    }
-
-    protected void setSspi(AuthSspi sspi) {
-        this.sspi = sspi;
     }
 }
