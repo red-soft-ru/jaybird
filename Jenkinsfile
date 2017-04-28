@@ -175,6 +175,7 @@ def test(jdk, archive_prefix, version)
             deleteDir()
             def wd = pwd()
             unstash "bin-${jdk}"
+            unstash "test-${jdk}"
             unstash 'src'
             
             if (jdk == '16')
