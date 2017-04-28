@@ -52,11 +52,14 @@ node('master')
     }
 }
 
+def buildTasks = [:]
 for (j in ['16', '17', '18'])
 {
     jdk = j
-    build(jdk, archive_prefix, version_tag)
+    buildTasks["build-${jdk}"] = { build(jdk, archive_prefix, version_tag) }
 }
+buildTasks.failFast = true
+parallel buildTasks
 
 test('18', archive_prefix, version_tag)
 
@@ -183,7 +186,7 @@ def test(jdk, archive_prefix, version_tag)
             
             sh "tar xf dist-src/${archive_prefix}.tar.gz"
 
-            withEnv(["JAVA_HOME=${java_home}", "archive_prefix=${archive_prefix}", "JDK_VERSION=${jdk}", "BINDIR=${wd}/dist-${jdk}", "SRCDIR=${wd}/${archive_prefix}"]) {
+            withEnv(["JAVA_HOME=${java_home}", "archive_prefix=${archive_prefix}", "JDK_VERSION=${jdk}", "BINDIR=${wd}/dist-${jdk}", "SRCDIR=${wd}/${archive_prefix}", "JAYBIRD_VERSION=${version}"]) {
                 sh """#!/bin/bash
                     cd ${archive_prefix}/ci
                     ./test.sh
