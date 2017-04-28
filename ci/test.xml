@@ -1,0 +1,34 @@
+<project name="jaybird" default="test" basedir=".">
+    <property name="test.db.host" value="localhost"/>
+    <property name="test.db.port" value="3050"/>
+    <property name="test.db.dir" value="/tmp/db"/>
+    <property name="test.db.lc_ctype" value="NONE"/>
+    <property name="test.report.dir" value="report"/>
+
+    <mkdir dir="${test.db.dir}"/>
+    <chmod dir="${test.db.dir}" perm="777"/>
+    <mkdir dir="${test.report.dir}"/>
+
+    <target name="test" description="All the tests.">
+      <junit fork="true">
+        <classpath>
+          <pathelement location="${bindir}/jaybird-full-jdk${jdk}-${version}.jar" />
+          <pathelement location="${bindir}/jaybird-test-jdk${jdk}-${version}.jar" />
+          <pathelement location="${srcdir}/lib/junit.jar" />
+          <fileset dir="${srcdir}/lib/test/" includes="*.jar" />
+        </classpath>
+        <batchtest haltonfailure="false" todir="${test.report.dir}">
+          <formatter type="xml"/>
+          <zipfileset src="${bindir}/jaybird-test-jdk${jdk}-${version}.jar">
+            <include name="**/Test*.class"/>
+            <exclude name="**/jni/Test*.class"/>
+            <exclude name="**/TestAll.class"/>
+            <exclude name="**/TestXABase*.class"/>
+            <exclude name="**/TestConst.class"/>
+            <exclude name="**/*$$*.class"/>
+          </zipfileset>
+        </batchtest>
+        <formatter type="plain" usefile="false" />
+      </junit>
+    </target>
+</project>
