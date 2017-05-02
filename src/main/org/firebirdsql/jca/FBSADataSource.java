@@ -379,7 +379,7 @@ public class FBSADataSource implements DataSource, Serializable, Referenceable, 
     public Connection getConnection() throws SQLException {
       try {
         FBConnectionRequestInfo subjectCri = mcf.getDefaultConnectionRequestInfo();
-        FBManagedConnection mc = getManagedConnection(subjectCri)/*.forkManagedConnection()*/;
+        FBManagedConnection mc = getManagedConnection(subjectCri).forkManagedConnection();
         mc.setManagedEnvironment(false);
         mc.setConnectionSharing(false);
         mc.addConnectionEventListener(this);
