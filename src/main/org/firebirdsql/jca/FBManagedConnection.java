@@ -82,6 +82,8 @@ public class FBManagedConnection implements ManagedConnection, XAResource, Excep
     private final FbDatabase database;
     private final Object syncObject;
 
+    private FBManagedConnection parent;
+
     private final FBConnectionRequestInfo cri;
     private FBTpb tpb;
     private int transactionIsolation;
@@ -144,6 +146,22 @@ public class FBManagedConnection implements ManagedConnection, XAResource, Excep
         } catch(SQLException ex) {
             throw new FBResourceException(ex);
         }
+    }
+
+    private FBManagedConnection(FBManagedConnection mc) throws ResourceException {
+        this.parent = mc;
+        this.mcf = mc.mcf;
+        this.cri = mc.cri;
+        this.tpb = mc.tpb;
+        this.transactionIsolation = mc.transactionIsolation;
+        this.database = mc.database;
+        this.syncObject = mc.syncObject;
+
+        this.gdsHelper = new GDSHelper(database);
+    }
+
+    public FBManagedConnection forkManagedConnection() throws ResourceException {
+        return new FBManagedConnection(parent != null ? parent : this);
     }
 
     @Override
@@ -550,6 +568,9 @@ public class FBManagedConnection implements ManagedConnection, XAResource, Excep
         if (inTransaction())
             throw new javax.resource.spi.IllegalStateException(
                 "Can't destroy managed connection  with active transaction");
+
+        if (parent != null)
+            return;
         
         try {
             gdsHelper.detachDatabase();
