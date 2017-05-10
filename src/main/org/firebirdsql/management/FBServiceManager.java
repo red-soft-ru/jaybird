@@ -18,6 +18,7 @@
  */
 package org.firebirdsql.management;
 
+import org.firebirdsql.gds.ServiceParameterBuffer;
 import org.firebirdsql.gds.ServiceRequestBuffer;
 import org.firebirdsql.gds.impl.GDSFactory;
 import org.firebirdsql.gds.impl.GDSServerVersion;
@@ -217,18 +218,28 @@ public class FBServiceManager implements ServiceManager {
         ServiceRequestBuffer infoSRB = service.createServiceRequestBuffer();
         infoSRB.addArgument(isc_info_svc_to_eof);
 
+        ServiceParameterBuffer reqSPB = service.createServiceParameterBuffer();
+
+        // use one second timeout to poll service
+        byte sendTimeout[] = { 1 };
+
+        reqSPB.addArgument(isc_info_svc_timeout, sendTimeout);
+
         int bufferSize = BUFFER_SIZE;
 
         boolean processing = true;
         while (processing) {
-            byte[] buffer = service.getServiceInfo(null, infoSRB, bufferSize);
+            byte[] buffer = service.getServiceInfo(reqSPB, infoSRB, bufferSize);
 
             switch (buffer[0]) {
             case isc_info_svc_to_eof:
 
                 int dataLength = iscVaxInteger2(buffer, 1);
                 if (dataLength == 0) {
-                    if (buffer[3] != isc_info_end)
+                    if (buffer[3] == isc_info_svc_timeout) {
+                        break;
+                    }
+                    else if (buffer[3] != isc_info_end)
                         throw new SQLException("Unexpected end of stream reached.");
                     else {
                         processing = false;
