@@ -1,6 +1,6 @@
 import java.text.SimpleDateFormat 
 
-String release_hub_project = 'jaybird3'
+String release_hub_project = 'jaybird'
 String maven_group = 'ru.red-soft.jdbc'
 String rev
 String version
