@@ -5,12 +5,16 @@
     <property name="test.db.lc_ctype" value="NONE"/>
     <property name="test.report.dir" value="report"/>
 
-    <mkdir dir="${test.db.dir}"/>
-    <chmod dir="${test.db.dir}" perm="777"/>
     <mkdir dir="${test.report.dir}"/>
 
     <target name="test" description="All the tests.">
-      <junit fork="true">
+      <junit fork="true" haltonfailure="false">
+        <sysproperty key="test.db.host" value="${test.db.host}"/>
+        <sysproperty key="test.db.port" value="${test.db.port}"/>
+        <sysproperty key="test.db.dir" value="${test.db.dir}"/>
+        <sysproperty key="test.db.lc_ctype" value="${test.db.lc_ctype}"/>
+        <sysproperty key="test.report.dir" value="${test.report.dir}"/>
+
         <classpath>
           <pathelement location="${bindir}/bin/jaybird-full-jdk${jdk}-${version}.jar" />
           <pathelement location="${bindir}/test/jaybird-test-jdk${jdk}-${version}.jar" />

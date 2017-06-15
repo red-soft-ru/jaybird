@@ -193,13 +193,13 @@ def test(jdk, archive_prefix, version)
             
             sh "tar xf dist-src/${archive_prefix}.tar.gz"
 
-            withEnv(["JAVA_HOME=${java_home}", "archive_prefix=${archive_prefix}", "JDK_VERSION=${jdk}", "BINDIR=${wd}/dist-${jdk}", "SRCDIR=${wd}/${archive_prefix}", "JAYBIRD_VERSION=${version}"]) {
+            withEnv(["JAVA_HOME=${java_home}", "archive_prefix=${archive_prefix}", "JDK_VERSION=${jdk}", "BINDIR=${wd}/dist-${jdk}", "SRCDIR=${wd}/${archive_prefix}", "JAYBIRD_VERSION=${version}", "WORKSPACE=${wd}"]) {
                 sh """#!/bin/bash
                     cd ${archive_prefix}/ci
                     ./test.sh
                 """
             }
-            step([$class: "JUnitResultArchiver", testResults: "${wd}/${archive_prefix}/ci/report/*.xml"])        
+            step([$class: "JUnitResultArchiver", testResults: "${wd}/results/*.xml"])
         }   
     }
 }
