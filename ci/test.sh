@@ -70,6 +70,7 @@ if [ "$ARCH" == "i686" ]; then
 	ARCH="x86"
 fi
 RDB_URL=http://artifactory.red-soft.biz/list/red-database-rc/red-database/linux-${ARCH}/${RDB_VERSION}/linux-${ARCH}-${RDB_VERSION}-installer.bin
+ARCHITECTURE=classic
 
 uninstallrdb
 
@@ -79,7 +80,7 @@ echo "Downloading RedDatabase $RDB_BUILD_ID"
 (wget -q "$RDB_URL" -O /tmp/installer.bin && chmod +x /tmp/installer.bin) || die "Unable to download RedDatabase"
 
 echo "Installing RedDatabase"
-sudo /tmp/installer.bin --DBAPasswd masterkey --mode unattended --architecture classic || die "Unable to install RedDatabase"
+sudo /tmp/installer.bin --DBAPasswd masterkey --mode unattended --architecture $ARCHITECTURE || die "Unable to install RedDatabase"
 sudo rm -f /tmp/installer.bin
 sudo rm -rf $TEST_DIR
 mkdir -p $TEST_DIR
