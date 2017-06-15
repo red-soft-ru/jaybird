@@ -199,7 +199,7 @@ def test(jdk, archive_prefix, version)
                     ./test.sh
                 """
             }
-            step([$class: "JUnitResultArchiver", testResults: "${wd}/results/*.xml"])
+            step([$class: "JUnitResultArchiver", testResults: "results/TEST-*.xml"])
         }   
     }
 }
