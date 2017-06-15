@@ -32,6 +32,27 @@ function fail()
 	exit 1
 }
 
+function rdb_control()
+{
+	if [ "${ARCHITECTURE}" == "super" -o "${ARCHITECTURE}" == "superclassic" ]; then
+		if [ "${SYSTEMCTL}" == "1" ]; then
+			sudo systemctl reset-failed
+			sudo systemctl $1 firebird-super || true
+		else
+			sudo service firebird $1 || true
+		fi
+	elif [ "${ARCHITECTURE}" == "classic" ]; then
+		if [ "${SYSTEMCTL}" == "1" ]; then
+			sudo systemctl reset-failed
+			sudo systemctl $1 firebird-classic.socket || true
+		else
+			sudo service xinetd $1 || true
+		fi
+	fi
+}
+
+command -v systemctl >/dev/null 2>&1 && SYSTEMCTL=1 || SYSTEMCTL=0
+
 trap "fail" ERR INT QUIT KILL TERM
 
 check_variable BINDIR
@@ -64,6 +85,9 @@ sudo rm -rf $TEST_DIR
 mkdir -p $TEST_DIR
 mkdir -p $WORKSPACE/results
 sudo chmod 777 $TEST_DIR
+
+rdb_control restart
+sleep 5
 
 export JAVA_HOME
 ant -Dtest.report.dir=$TEST_DIR -Dtest.db.dir=$TEST_DIR -Djdk=${JDK_VERSION} -Dversion=$JAYBIRD_VERSION -Dbindir=${BINDIR} -Dsrcdir=${SRCDIR} -f test.xml
