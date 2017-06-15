@@ -19,6 +19,7 @@
           <pathelement location="${bindir}/bin/jaybird-full-${version}.jar" />
           <pathelement location="${bindir}/test/jaybird-test-${version}.jar" />
           <pathelement location="${srcdir}/lib/junit.jar" />
+          <pathelement location="${srcdir}/src/lib/antlr-runtime-4.7.jar" />
           <fileset dir="${srcdir}/lib/test/" includes="*.jar" />
         </classpath>
         <batchtest haltonfailure="false" todir="${test.report.dir}">
