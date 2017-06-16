@@ -163,6 +163,7 @@
   <target name="compile-tests" depends="compile-pool,set-jdbc-40-test,set-jdbc-42-test">
     <mkdir dir="${build.test}"/>
     <javac 
+           encoding="UTF-8"
            destdir="${build.test}"
            target="${ant.java.version}"
 		   source="${ant.java.version}"
