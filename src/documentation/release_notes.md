@@ -140,20 +140,18 @@ dependency:
 ~~~
 
 If you want to use Type 2 support (native, local or embedded), you need to 
-explicitly include JNA 4.4.0 as a dependency:
+explicitly include JNA 4.2.2 as a dependency:
 
 ~~~ {.xml}
 <dependency>
     <groupId>net.java.dev.jna</groupId>
     <artifactId>jna</artifactId>
-    <version>4.4.0</version>
+    <version>4.2.2</version>
 </dependency>
 ~~~
 
 We plan to make native and embedded support a separate library in future 
 releases, and provide Firebird client libraries as Maven dependencies as well.
-
-See also [Type 2 (native) and embedded driver].
 
 ### Download ###
 
@@ -171,8 +169,8 @@ server.
 For `getGeneratedKeys` support you will need to include 
 `antlr-runtime-4.7.jar` on your classpath.
 
-For native, local or embedded support, you will need to include `jna-4.4.0.jar` 
-on your classpath. See also [Type 2 (native) and embedded driver].
+For native, local or embedded support, you will need to include `jna-4.2.2.jar` 
+on your classpath.
 
 Upgrading from Jaybird 2.2 to Jaybird 3.0
 =========================================
@@ -206,9 +204,9 @@ If you manage your dependencies manually, you need to do the following:
     - `jaybird22_x64.jar` or
     - `libjaybird22_x64.so`
     
-    Instead you need to add `jna-4.4.0.jar` to the classpath of your 
+    Instead you need to add `jna-4.2.2.jar` to the classpath of your 
     application. This library is necessary for native, local and embedded 
-    support. For more information, see [Type 2 (native) and embedded driver]
+    support.
     
 Gotcha's
 --------
@@ -259,7 +257,7 @@ The following has been changed or fixed since Jaybird 3.0.0-beta-3
     This synchronisation proxy will serialise all access to the native library.
     In previous versions of Jaybird this was always applied for Embedded on 
     platforms other than Windows.
--   Upgraded `antlr-runtime` dependency from 4.6 to 4.7 ([JDBC-488](http://tracker.firebirdsql.org/browse/JDBC-488))  
+-   Upgrade `antlr-runtime` dependency from 4.6 to 4.7 ([JDBC-488](http://tracker.firebirdsql.org/browse/JDBC-488))  
     If you tested with previous snapshot or beta versions of Jaybird 3.0, make
     sure to replace `antlr-runtime-4.5.3.jar` or `antlr-runtime-4.6.jar` 
     with `antlr-runtime-4.7.jar`.
@@ -1035,7 +1033,13 @@ Jaybird no longer needs a `jaybirdxx.dll` or `libjaybirdxx.so` for the Type 2
 and embedded driver. Jaybird now uses JNA to access the client library.
 
 If you want to use the Type 2 driver, or Firebird embedded, then you need to
+<<<<<<< HEAD
 include `jna-4.4.0.jar` on the classpath.
+||||||| 829d711... JDBC-489 Upgrade to JNA 4.4.0
+include the `jna-4.4.0.jar` on the classpath.
+=======
+include the `jna-4.2.2.jar` on the classpath.
+>>>>>>> parent of 829d711... JDBC-489 Upgrade to JNA 4.4.0
 
 When using Maven, you need to specify the dependency on JNA yourself, as we 
 don't depend on it by default:
@@ -1044,7 +1048,7 @@ don't depend on it by default:
 <dependency>
     <groupId>net.java.dev.jna</groupId>
     <artifactId>jna</artifactId>
-    <version>4.4.0</version>
+    <version>4.2.2</version>
 </dependency>
 ```
 
