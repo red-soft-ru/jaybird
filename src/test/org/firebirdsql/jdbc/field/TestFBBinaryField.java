@@ -19,10 +19,12 @@
 package org.firebirdsql.jdbc.field;
 
 import org.firebirdsql.gds.ISCConstants;
+import org.firebirdsql.jdbc.FBRowId;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.*;
+import java.sql.RowId;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Random;
@@ -232,6 +234,79 @@ public class TestFBBinaryField extends BaseJUnit4TestFBField<FBBinaryField, byte
         setValueExpectations(bytes);
 
         field.setBytes(bytes);
+    }
+
+    // Binary fields supports setting RowId, because Firebird doesn't support detection of row id parameters
+
+    @Test
+    @Override
+    public void getRowIdNonNull() throws SQLException {
+        final byte[] bytes = getRandomBytes();
+        toReturnValueExpectations(bytes);
+
+        RowId rowId = field.getRowId();
+
+        assertArrayEquals(bytes, rowId.getBytes());
+    }
+
+    @Test
+    @Override
+    public void setRowIdNonNull() throws SQLException {
+        final byte[] bytes = getRandomBytes();
+        final RowId rowId = new FBRowId(bytes);
+        setValueExpectations(bytes);
+
+        field.setRowId(rowId);
+    }
+
+    @Test
+    @Override
+    public void getObject_RowId() throws SQLException {
+        final byte[] bytes = getRandomBytes();
+        toReturnValueExpectations(bytes);
+
+        RowId rowId = field.getObject(RowId.class);
+
+        assertArrayEquals(bytes, rowId.getBytes());
+    }
+
+    @Test
+    public void getObject_RowId_null() throws SQLException {
+        toReturnNullExpectations();
+
+        RowId rowId = field.getObject(RowId.class);
+
+        assertNull(rowId);
+    }
+
+    @Test
+    @Override
+    public void getObject_FBRowId() throws SQLException {
+        final byte[] bytes = getRandomBytes();
+        toReturnValueExpectations(bytes);
+
+        FBRowId rowId = field.getObject(FBRowId.class);
+
+        assertArrayEquals(bytes, rowId.getBytes());
+    }
+
+    @Test
+    public void getObject_FBRowId_null() throws SQLException {
+        toReturnNullExpectations();
+
+        FBRowId rowId = field.getObject(FBRowId.class);
+
+        assertNull(rowId);
+    }
+
+    @Test
+    @Override
+    public void setObject_RowId() throws SQLException {
+        final byte[] bytes = getRandomBytes();
+        final RowId rowId = new FBRowId(bytes);
+        setValueExpectations(bytes);
+
+        field.setObject(rowId);
     }
 
     private byte[] getRandomBytes() {

@@ -1,3 +1,11 @@
+Documentation crowd-funding{-}
+==============================
+
+The Firebird Project is currently holding a crowd-funding for the Firebird 
+Developer Guide. Your donation is much appreciated!
+
+See <https://www.firebirdsql.org/en/doc-funding-2017/> for details.
+
 Jaybird
 =======
 
@@ -6,43 +14,21 @@ Where do I get Jaybird?
 
 ### Maven ###
 
-#### Jaybird 2.2 ####
+#### Jaybird 3.0 ####
 
-Jaybird is available on maven (since version 2.2.0), with a separate artifact
-for each supported Java version.
+Jaybird 3.0 is available from Maven central:
 
-Groupid: `org.firebirdsql.jdbc`,\
-Artifactid: `jaybird-jdkXX` (where `XX` is `16`, `17` or `18`).\
-Version: `2.2.12`
+Groupid: `org.firebirdsql.jdbc`,  
+Artifactid: `jaybird-jdkXX` (where `XX` is `17` or `18`)  
+Version: `3.0.1`
 
-For example:
-
-~~~ {.xml}
-<dependency>
-    <groupId>org.firebirdsql.jdbc</groupId>
-    <artifactId>jaybird-jdk18</artifactId>
-    <version>2.2.12</version>
-</dependency>
-~~~
-
-When deploying to a JavaEE environment, exclude the `javax.resource connector-api`
-dependency as this will be provided by the application server.
-
-#### Jaybird 3.0 for testing ####
-
-Jaybird 3.0 Beta 2 is available from Maven central:
-
-Groupid: `org.firebirdsql.jdbc`,\
-Artifactid: `jaybird-jdkXX` (where `XX` is `17` or `18`).\
-Version: `3.0.0-beta-2`
-
-For example:
+For example, for Java 8:
 
 ~~~ {.xml}
 <dependency>
     <groupId>org.firebirdsql.jdbc</groupId>
     <artifactId>jaybird-jdk18</artifactId>
-    <version>3.0.0-beta-2</version>
+    <version>3.0.1</version>
 </dependency>
 ~~~
 
@@ -54,7 +40,7 @@ dependency:
 <dependency>
     <groupId>org.firebirdsql.jdbc</groupId>
     <artifactId>jaybird-jdk18</artifactId>
-    <version>3.0.0-beta-2</version>
+    <version>3.0.1</version>
     <exclusions>
         <exclusion>
             <groupId>javax.resource</groupId>
@@ -81,10 +67,32 @@ explicitly include JNA 4.2.2 as a dependency:
 </dependency>
 ~~~
 
+#### Jaybird 2.2 ####
+
+Jaybird 2.2 is available on maven, with a separate artifact
+for each supported Java version.
+
+Groupid: `org.firebirdsql.jdbc`,  
+Artifactid: `jaybird-jdkXX` (where `XX` is `16`, `17` or `18`)  
+Version: `2.2.13`
+
+For example:
+
+~~~ {.xml}
+<dependency>
+    <groupId>org.firebirdsql.jdbc</groupId>
+    <artifactId>jaybird-jdk18</artifactId>
+    <version>2.2.12</version>
+</dependency>
+~~~
+
+When deploying to a JavaEE environment, exclude the `javax.resource connector-api`
+dependency as this will be provided by the application server.
+
 ### Download ###
 
 Firebird can be downloaded from the Firebird website, under Downloads,
-[JDBC Driver](http://www.firebirdsql.org/en/jdbc-driver/).
+[JDBC Driver](https://www.firebirdsql.org/en/jdbc-driver/).
 
 Alternatively, you can go directly to GitHub and download Jaybird from the
 [jaybird releases](https://github.com/FirebirdSQL/jaybird/releases).
@@ -171,22 +179,24 @@ Where to get more information on Jaybird
 Apart from this FAQ, you can get additional information from:
 
 * [Jaybird wiki](https://github.com/FirebirdSQL/jaybird/wiki/)
-* [Jaybird 2.1 Programmers Manual](http://www.firebirdsql.org/file/documentation/drivers_documentation/Jaybird_2_1_JDBC_driver_manual.pdf) (PDF)
-* [Firebird Website: Development, JDBC Driver](http://www.firebirdsql.org/en/devel-jdbc-driver/)
+* [Jaybird 2.1 Programmers Manual](https://www.firebirdsql.org/file/documentation/drivers_documentation/Jaybird_2_1_JDBC_driver_manual.pdf) (PDF)
+* [Firebird Website: Development, JDBC Driver](https://www.firebirdsql.org/en/devel-jdbc-driver/)
 
 Where to get help
 -----------------
 
-*   On [Stack Overflow](http://stackoverflow.com/), please tag your questions
+*   On [Stack Overflow](https://stackoverflow.com/), please tag your questions
     with *jaybird* and *firebird*
+    
 *   The [Firebird-Java group](http://groups.yahoo.com/group/Firebird-Java) and
     corresponding mailing list firebird-java@yahoogroups.com
 
     You can subscribe to the mailing list by sending an email to
     [firebird-java-subscribe@yahoogroups.com](mailto:firebird-java-subscribe@yahoogroups.com)
 
-*   The [Firebird project home page](http://www.firebirdsql.org)
-*   Firebird support and other [Firebird mailing lists](http://www.firebirdsql.org/en/mailing-lists/)
+*   The [Firebird project home page](https://www.firebirdsql.org)
+
+*   Firebird support and other [Firebird mailing lists](https://www.firebirdsql.org/en/mailing-lists/)
     for questions not directly related to Jaybird and java.
 
 Contributing
@@ -194,15 +204,13 @@ Contributing
 
 There are several ways you can contribute to Jaybird or Firebird in general:
 
-* Participate on the mailing lists (see [http://www.firebirdsql.org/en/mailing-lists/](http://www.firebirdsql.org/en/mailing-lists/))
+* Participate on the mailing lists (see <https://www.firebirdsql.org/en/mailing-lists/>)
 * Report bugs or submit patches on the tracker (see [Reporting Bugs])
-* Create pull requests on GitHub ([https://github.com/FirebirdSQL/jaybird](https://github.com/FirebirdSQL/jaybird))
+* Create pull requests on GitHub (<https://github.com/FirebirdSQL/jaybird>)
 * Become a developer (for Jaybird contact us on firebird-java, for Firebird in
   general, use the Firebird-devel mailing list)
 * Become a paying member or sponsor of the Firebird Foundation (see
-  [http://www.firebirdsql.org/en/firebird-foundation/](http://www.firebirdsql.org/en/firebird-foundation/))
-
-See also [http://www.firebirdsql.org/en/consider-your-contribution/](http://www.firebirdsql.org/en/consider-your-contribution/)
+  <https://www.firebirdsql.org/en/firebird-foundation/>)
 
 Reporting Bugs
 --------------
@@ -247,8 +255,7 @@ path of the database file as it hides implementation details like file locations
 and OS type.
 
 On Linux the root `/` should be included in the path. A database located on
-`/opt/firebird/db.fdb` should use (note the double slash after
-port!):  
+`/opt/firebird/db.fdb` should use (note the double slash after port!):  
 
     jdbc:firebirdsql://host:port//opt/firebird/db.fdb
 
@@ -297,15 +304,74 @@ Similar to the Firebird client library, however `fbembed.dll` on Windows and
 Firebird embedded library and - for Jaybird 2.2 or earlier - the Jaybird native
 library, or - for Jaybird 3.0 - the JNA jar file.
 
-How can I solve the error "Connection rejected: No connection character set specified"
---------------------------------------------------------------------------------------
+Character sets
+--------------
+
+### How can I specify the connection character set?
+
+Jaybird provides two connection properties to specify the connection character set:
+
+-   `charSet` with a Java character set name (alias: `localEncoding`)
+
+    The Java character set name must map to an equivalent Firebird character set.
+
+-   `encoding` with a Firebird character set name (alias: `lc_ctype`)
+
+    The Firebird character set name - with the exception of `NONE` must map to
+    an equivalent Java character set.
+
+For most applications, use only one of these two properties.
+
+For special situations it is possible to specify both `charSet` and `encoding` to
+convert/reinterpret a character set into another character set, this is usually only
+necessary to fix data problems.
+
+To phrase differently:
+
+-   `encoding=<firebird charset>`: use connection encoding `<firebird charset>` and 
+    interpret in the equivalent Java character set
+    
+-   `charSet=<java charset>`: use Firebird equivalent of `<java charset>` as 
+    connection encoding and interpret in <java charset>
+    
+-   `encoding=<firebird charset>&charSet=<java charset>`: use connection encoding 
+    `<firebird charset>`, but interpret in `<java charset>`
+
+The handling of Firebird character set `NONE` is slightly different, see below.
+
+### How does character set `NONE` work?
+
+The Firebird character set `NONE` is a special case, it essentially means "no 
+character set". You can store anything in it, but conversions to or from this
+character set are not defined.
+
+When used as a connection character set, Jaybird handles `NONE` as follows:
+
+#### Jaybird 3.0 {#none-jaybird3}
+
+-   `encoding=NONE` means connection encoding `NONE` and interpret columns with 
+    character set `NONE` using the default JVM encoding, and interpret columns
+    with an explicit character set in their equivalent Java character set
+    
+-   `encoding=NONE&charSet=ISO-8859-1` the same, but instead of the JVM default,
+    use `ISO-8859-1`
+
+#### Jaybird 2.2 and earlier {#none-jaybird2-2}
+
+-   `encoding=NONE` means use connection encoding `NONE` and interpret everything 
+    using the default JVM encoding
+
+-   `encoding=NONE&charSet=ISO-8859-1` the same, but instead of the JVM default, 
+    use `ISO-8859-1`
+
+### How can I solve the error "Connection rejected: No connection character set specified"
 
 If no explicit character set has been set, Jaybird 3.0 will reject the 
 connection with an `SQLNonTransientConnectionException` with message 
 _"Connection rejected: No connection character set specified (property lc_ctype,
 encoding, charSet or localEncoding). Please specify a connection character set 
 (eg property charSet=utf-8) or consult the Jaybird documentation for more 
-information."_ ([JDBC-446](http://tracker.firebirdsql.org/browse/JDBC-446))
+information."_ (see [JDBC-446](http://tracker.firebirdsql.org/browse/JDBC-446))
 
 In Jaybird 2.2 and earlier, Jaybird would default to connection character set 
 `NONE` if no character set had been specified (through `encoding` 
@@ -318,13 +384,13 @@ explicit connection character set.
 To address this change, explicitly set the connection character set using
 one of the following options:
 
-*   Use connection property `encoding` (or `lc_ctype`) with a Firebird character
+*   Use connection property `encoding` (alias: `lc_ctype`) with a Firebird character
     set name. 
     
     Use `encoding=NONE` for the old default behavior (with some caveats, see 
-    other sections).
+    [How does character set `NONE` work?]).
 
-*   Use connection property `charSet` (or `localEncoding`) with a Java character
+*   Use connection property `charSet` (alias: `localEncoding`) with a Java character
     set name.
     
 *   Use a combination of `encoding` and `charSet`, if you want to reinterpret a 
@@ -339,7 +405,26 @@ one of the following options:
     This property only supports Firebird character set names.
 
     Use `-Dorg.firebirdsql.jdbc.defaultConnectionEncoding=NONE` to revert to the
-    old behavior (with some caveats, see the Jaybird 3 release notes).
+    old behavior (with some caveats, see [How does character set `NONE` work?]).
+    
+How can I enable the Windows "TCP Loopback Fast Path" introduced in Firebird 3.0.2?
+-----------------------------------------------------------------------------------
+
+Firebird 3.0.2 adds support for "TCP Loopback Fast Path" (`SIO_LOOPBACK_FAST_PATH` 
+socket option). This is available in Windows 8 / Windows Server 2012 and higher.
+This feature enables performance optimizations when connecting through 
+localhost (127.0.01 / ::1). It requires support on both client and server side.
+
+Java support for "TCP Loopback Fast Path" was introduced in Java 8 update 60, 
+it can be enabled by specifying the system property `jdk.net.useFastTcpLoopback` 
+with value `true` (eg specify `-Djdk.net.useFastTcpLoopback=true` in your Java 
+commandline).
+  
+Unfortunately, Java only has an 'all-or-nothing' support for the "TCP Loopback 
+Fast Path", so Jaybird cannot enable this for you: you must specify this 
+property on JVM startup. On the other hand, this has the benefit that this works 
+for all Jaybird versions, as long as you use Java 8 update 60 or higher (and 
+Firebird 3.0.2 or higher).
 
 JDBC Support
 ============
@@ -452,9 +537,6 @@ Compatibility notes
 Wildfly
 -------
 
-When you use Jaybird 3 in Wildfly (or JBoss), you will need to add the module 
-`javax.xml.bind.api` to your module to get it to work.
-
 The minimal `module.xml` to use Jaybird 3 under Wildfly is:
 
 ``` {.xml}
@@ -467,7 +549,6 @@ The minimal `module.xml` to use Jaybird 3 under Wildfly is:
     <module name="javax.api"/>
     <module name="javax.transaction.api"/>
     <module name="javax.resource.api"/>
-    <module name="javax.xml.bind.api"/> <!-- Add this -->
   </dependencies>
 </module>
 ```

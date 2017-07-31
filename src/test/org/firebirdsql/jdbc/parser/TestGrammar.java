@@ -18,8 +18,8 @@
  */
 package org.firebirdsql.jdbc.parser;
 
-import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CharStream;
+import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.junit.Test;
 
@@ -33,7 +33,7 @@ public class TestGrammar {
 	// TODO Add more testcases for grammar
 
     protected JaybirdSqlParser createParser(String testString) {
-        CharStream stream = new ANTLRInputStream(testString);
+        CharStream stream = CharStreams.fromString(testString);
         
         JaybirdSqlLexer lexer = new JaybirdSqlLexer(stream);
         CommonTokenStream tokenStream = new CommonTokenStream(lexer);
@@ -169,6 +169,18 @@ public class TestGrammar {
         JaybirdStatementModel statementModel = parser.getStatementModel();
         assertEquals("Unexpected statement type", JaybirdStatementModel.UPDATE_TYPE, statementModel.getStatementType());
         assertEquals("\"someTable\"", statementModel.getTableName());
+    }
+
+    @Test
+    public void update_quotedTableNameWithSpace() throws Exception {
+        JaybirdSqlParser parser = createParser(
+                "Update \"some Table\" Set col1 = 25, col2 = 'abc' Where 1=0");
+
+        parser.statement();
+
+        JaybirdStatementModel statementModel = parser.getStatementModel();
+        assertEquals("Unexpected statement type", JaybirdStatementModel.UPDATE_TYPE, statementModel.getStatementType());
+        assertEquals("\"some Table\"", statementModel.getTableName());
     }
 
     @Test

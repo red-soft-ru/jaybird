@@ -1,6 +1,4 @@
 /*
- * $Id$
- *
  * Firebird Open Source JavaEE Connector - JDBC Driver
  *
  * Distributable under LGPL license.
@@ -20,24 +18,30 @@
  */
 package org.firebirdsql.management;
 
-import java.io.OutputStream;
-import java.io.ByteArrayOutputStream;
-
-import java.sql.Connection;
-import java.sql.Statement;
-import java.sql.SQLException;
-
-import org.firebirdsql.common.FBTestBase;
+import org.firebirdsql.common.FBJUnit4TestBase;
 import org.firebirdsql.gds.impl.GDSType;
+import org.firebirdsql.util.FirebirdSupportInfo;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
+
+import java.io.ByteArrayOutputStream;
+import java.io.OutputStream;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 import static org.firebirdsql.common.FBTestProperties.*;
+import static org.junit.Assert.*;
 
 /**
  * Test the FBStatisticsManager class
  */
-public class TestFBStatisticsManager extends FBTestBase {
+public class TestFBStatisticsManager extends FBJUnit4TestBase {
 
-//    private FBManager fbManager;
+    @Rule
+    public final ExpectedException expectedException = ExpectedException.none();
 
     private FBStatisticsManager statManager;
 
@@ -48,14 +52,12 @@ public class TestFBStatisticsManager extends FBTestBase {
         + "     TESTVAL INTEGER NOT NULL"
         + ")";
 
-    public TestFBStatisticsManager(String name) throws ClassNotFoundException {
-        super(name);
+    public TestFBStatisticsManager() throws ClassNotFoundException {
         Class.forName("org.firebirdsql.jdbc.FBDriver");
     }
 
+    @Before
     public void setUp() throws Exception {
-        super.setUp();
-
         loggingStream = new ByteArrayOutputStream();
     
         statManager = new FBStatisticsManager(getGdsType());
@@ -74,15 +76,13 @@ public class TestFBStatisticsManager extends FBTestBase {
     }
 
     private void createTestTable(String tableDef) throws SQLException {
-        Connection conn = getConnectionViaDriverManager();
-        try {
+        try (Connection conn = getConnectionViaDriverManager()) {
             Statement stmt = conn.createStatement();
-            stmt.executeUpdate(tableDef);
-        } finally {
-            conn.close();
+            stmt.execute(tableDef);
         }
     }
 
+    @Test
     public void testGetHeaderPage() throws SQLException {
         statManager.getHeaderPage();
         String headerPage = loggingStream.toString();
@@ -96,6 +96,7 @@ public class TestFBStatisticsManager extends FBTestBase {
                 headerPage.contains("Data pages"));
     }
 
+    @Test
     public void testGetDatabaseStatistics() throws SQLException {
         
         createTestTable();
@@ -109,6 +110,7 @@ public class TestFBStatisticsManager extends FBTestBase {
                 statistics.contains("RDB$DATABASE"));
     }
 
+    @Test
     public void testGetStatsWithBadOptions() throws SQLException {
         try {
             statManager.getDatabaseStatistics(
@@ -122,9 +124,9 @@ public class TestFBStatisticsManager extends FBTestBase {
             // Ignore
         }
     }
-    
+
+    @Test
     public void testGetSystemStats() throws SQLException {
-    
         statManager.getDatabaseStatistics(
                 StatisticsManager.SYSTEM_TABLE_STATISTICS);
         String statistics = loggingStream.toString();
@@ -133,8 +135,8 @@ public class TestFBStatisticsManager extends FBTestBase {
                 statistics.contains("RDB$DATABASE"));
     }
 
+    @Test
     public void testGetTableStatistics() throws SQLException {
-        
         createTestTable();
         statManager.getTableStatistics(new String[]{"TEST"});
         String statistics = loggingStream.toString();
@@ -146,5 +148,63 @@ public class TestFBStatisticsManager extends FBTestBase {
 
         assertTrue("The table name must be in the statistics",
                 statistics.contains("TEST"));
+    }
+
+    @Test
+    public void testGetDatabaseTransactionInfo_usingServiceConfig() throws SQLException {
+        int oldest = getDefaultSupportInfo().isVersionEqualOrAbove(2, 5) ? 1: 5;
+        int expectedNextOffset = getDefaultSupportInfo().isVersionEqualOrAbove(3, 0) ? 1 : 2;
+        createTestTable();
+        
+        try (Connection conn = getConnectionViaDriverManager()) {
+            conn.setAutoCommit(false);
+            Statement stmt = conn.createStatement();
+            stmt.execute("select * from rdb$database");
+            FBStatisticsManager.DatabaseTransactionInfo databaseTransactionInfo =
+                    statManager.getDatabaseTransactionInfo();
+            // The transaction values checked here might be implementation dependent
+            assertEquals("oldest", oldest, databaseTransactionInfo.getOldestTransaction());
+            assertEquals("oldest active", oldest + 1, databaseTransactionInfo.getOldestActiveTransaction());
+            assertEquals("oldest snapshot", oldest + 1, databaseTransactionInfo.getOldestSnapshotTransaction());
+            assertEquals("next", oldest + expectedNextOffset, databaseTransactionInfo.getNextTransaction());
+            assertEquals("active", 1, databaseTransactionInfo.getActiveTransactionCount());
+        }
+    }
+
+    @Test
+    public void testGetDatabaseTransactionInfo_noDatabaseNameSpecified() throws SQLException {
+        statManager.setDatabase(null);
+        expectedException.expect(SQLException.class);
+        statManager.getDatabaseTransactionInfo();
+    }
+
+    @Test
+    public void testGetDatabaseTransactionInfo_usingConnection() throws SQLException {
+        FirebirdSupportInfo supportInfo = getDefaultSupportInfo();
+        int oldest = supportInfo.isVersionEqualOrAbove(2, 5) ? 1: 5;
+        int expectedNextOffset;
+        if (supportInfo.isVersionEqualOrAbove(3, 0)) {
+            expectedNextOffset = 1;
+        } else if (supportInfo.isVersionEqualOrAbove(2, 5)) {
+            expectedNextOffset = 2;
+        } else {
+            expectedNextOffset = 1;
+        }
+        createTestTable();
+
+        try (Connection conn = getConnectionViaDriverManager()) {
+            conn.setAutoCommit(false);
+            Statement stmt = conn.createStatement();
+            stmt.execute("select * from rdb$database");
+
+            FBStatisticsManager.DatabaseTransactionInfo databaseTransactionInfo =
+                    FBStatisticsManager.getDatabaseTransactionInfo(conn);
+            // The transaction values checked here might be implementation dependent
+            assertEquals("oldest", oldest, databaseTransactionInfo.getOldestTransaction());
+            assertEquals("oldest active", oldest + 1, databaseTransactionInfo.getOldestActiveTransaction());
+            assertEquals("oldest snapshot", oldest + 1, databaseTransactionInfo.getOldestSnapshotTransaction());
+            assertEquals("next", oldest + expectedNextOffset, databaseTransactionInfo.getNextTransaction());
+            assertEquals("active", 1, databaseTransactionInfo.getActiveTransactionCount());
+        }
     }
 }

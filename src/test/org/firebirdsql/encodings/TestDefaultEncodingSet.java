@@ -20,8 +20,6 @@ package org.firebirdsql.encodings;
 
 import org.junit.Test;
 
-import java.util.List;
-
 import static org.junit.Assert.*;
 
 /**
@@ -39,17 +37,7 @@ public class TestDefaultEncodingSet {
      */
     @Test
     public void testDefinitionWithUnsupportedCharset() {
-        EncodingSet encodingSet = new DefaultEncodingSet() {
-            @Override
-            protected String getXmlResourceName() {
-                return "testUnsupportedCharsetEncodings.xml";
-            }
-        };
-
-        final List<EncodingDefinition> encodings = encodingSet.getEncodings();
-        assertEquals("Expected one EncodingDefinition", 1, encodings.size());
-
-        final EncodingDefinition encodingDefinition = encodings.get(0);
+        final EncodingDefinition encodingDefinition = new DefaultEncodingDefinition("INVALID", "INVALID", 1, 132, false);
         assertNotNull("Expected a non-null EncodingDefinition", encodingDefinition);
         assertEquals("Unexpected firebirdEncodingName", "INVALID", encodingDefinition.getFirebirdEncodingName());
         assertNull("Expected javaCharset to be null", encodingDefinition.getJavaCharset());

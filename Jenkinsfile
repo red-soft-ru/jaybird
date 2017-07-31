@@ -1,6 +1,6 @@
 import java.text.SimpleDateFormat 
 
-String release_hub_project = 'jaybird3'
+String release_hub_project = 'jaybird'
 String maven_group = 'ru.red-soft.jdbc'
 String rev
 String version
@@ -8,6 +8,10 @@ String vcs_url
 String archive_prefix
 String version_tag = ''
 String branch = env.BRANCH_NAME
+
+properties([
+    buildDiscarder(logRotator(artifactDaysToKeepStr: '', artifactNumToKeepStr: '', daysToKeepStr: '90', numToKeepStr: ''))
+])
 
 try
 {

@@ -162,10 +162,9 @@ public abstract class AbstractCallableStatement extends FBPreparedStatement impl
     
     private void executeSingleForBatch(List<Long> results) throws SQLException {
         if (internalExecute(!isSelectableProcedure())) {
-            // TODO SQL state
             throw jdbcVersionSupport.createBatchUpdateException(
                     "Statements executed as batch should not produce a result set",
-                    SQLStateConstants.SQL_STATE_GENERAL_ERROR, 0, toLargeArray(results), null);
+                    SQLStateConstants.SQL_STATE_INVALID_STMT_TYPE, 0, toLargeArray(results), null);
         }
 
         results.add(getLargeUpdateCount());
@@ -1480,20 +1479,11 @@ public abstract class AbstractCallableStatement extends FBPreparedStatement impl
     }
 
     public void setRowId(String parameterName, RowId x) throws SQLException {
-        throw new FBDriverNotCapableException("Type ROWID not yet supported");
+        throw new FBDriverNotCapableException(SET_BY_STRING_NOT_SUPPORTED);
     }
 
     public void setSQLXML(String parameterName, SQLXML xmlObject) throws SQLException {
         throw new FBDriverNotCapableException("Type SQLXML not supported");
-    }
-
-    @Override
-    public final boolean equals(Object other) {
-        if (!(other instanceof AbstractCallableStatement)) {
-            return false;
-        }
-
-        return super.equals(other);
     }
 
     private static class WrapperWithCalendar {

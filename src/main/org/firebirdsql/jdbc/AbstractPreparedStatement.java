@@ -183,8 +183,8 @@ public abstract class AbstractPreparedStatement extends FBStatement implements F
      */
     @Override
     public ResultSet executeQuery() throws SQLException {
-        checkValidity();
         synchronized (getSynchronizationObject()) {
+            checkValidity();
             notifyStatementStarted();
 
             if (!internalExecute(isExecuteProcedureStatement))  
@@ -205,8 +205,8 @@ public abstract class AbstractPreparedStatement extends FBStatement implements F
      *                if a database access error occurs
      */
     public int executeUpdate() throws SQLException {
-        checkValidity();
         synchronized (getSynchronizationObject()) {
+            checkValidity();
             notifyStatementStarted();
             try {
                 if (internalExecute(isExecuteProcedureStatement) && !generatedKeys) {
@@ -724,8 +724,8 @@ public abstract class AbstractPreparedStatement extends FBStatement implements F
      * @see Statement#execute
      */
     public boolean execute() throws SQLException {
-        checkValidity();
         synchronized (getSynchronizationObject()) {
+            checkValidity();
             notifyStatementStarted();
             
             boolean hasResultSet = internalExecute(isExecuteProcedureStatement);
@@ -749,8 +749,8 @@ public abstract class AbstractPreparedStatement extends FBStatement implements F
      *             if something went wrong or no result set was available.
      */
     ResultSet executeMetaDataQuery() throws SQLException {
-        checkValidity();
         synchronized (getSynchronizationObject()) {
+            checkValidity();
             notifyStatementStarted();
 
             boolean hasResultSet = internalExecute(isExecuteProcedureStatement);
@@ -867,8 +867,8 @@ public abstract class AbstractPreparedStatement extends FBStatement implements F
 
     @Override
     protected List<Long> executeBatchInternal() throws SQLException {
-        checkValidity();
         synchronized (getSynchronizationObject()) {
+            checkValidity();
             final BatchStatementListener batchStatementListener;
             boolean commit = false;
             try {
@@ -929,10 +929,9 @@ public abstract class AbstractPreparedStatement extends FBStatement implements F
         }
 
         if (internalExecute(isExecuteProcedureStatement)) {
-            // TODO SQL state
             throw jdbcVersionSupport.createBatchUpdateException(
                     "Statements executed as batch should not produce a result set",
-                    SQLStateConstants.SQL_STATE_GENERAL_ERROR, 0, toLargeArray(results), null);
+                    SQLStateConstants.SQL_STATE_INVALID_STMT_TYPE, 0, toLargeArray(results), null);
         }
 
         results.add(getLargeUpdateCount());
@@ -1283,7 +1282,8 @@ public abstract class AbstractPreparedStatement extends FBStatement implements F
     }
 
     public void setRowId(int parameterIndex, RowId x) throws SQLException {
-        throw new FBDriverNotCapableException("Type ROWID not yet supported");
+        getField(parameterIndex).setRowId(x);
+        isParamSet[parameterIndex - 1] = true;
     }
 
     public void setSQLXML(int parameterIndex, SQLXML xmlObject) throws SQLException {
@@ -1345,15 +1345,6 @@ public abstract class AbstractPreparedStatement extends FBStatement implements F
     public long executeLargeUpdate() throws SQLException {
         executeUpdate();
         return getLargeUpdateCount();
-    }
-
-    @Override
-    public boolean equals(Object other) {
-        if (!(other instanceof AbstractPreparedStatement)) {
-            return false;
-        }
-
-        return super.equals(other);
     }
 
     private static class BatchStatementListener extends DefaultStatementListener {

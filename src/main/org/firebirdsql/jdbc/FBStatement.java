@@ -988,7 +988,7 @@ public class FBStatement implements FirebirdStatement, Synchronizable {
         boolean closeResultSet = mode == Statement.CLOSE_ALL_RESULTS
                 || mode == Statement.CLOSE_CURRENT_RESULT;
         
-        if (closeResultSet && currentRs != null) {
+        if (currentStatementResult == StatementResult.RESULT_SET && closeResultSet) {
             closeResultSet(true);
         }
         currentStatementResult = currentStatementResult.nextResult();
@@ -1590,18 +1590,23 @@ public class FBStatement implements FirebirdStatement, Synchronizable {
     }
 
     @Override
+    public final int getLocalStatementId() {
+        return localStatementId;
+    }
+
+    @Override
     public final int hashCode() {
         return localStatementId;
     }
 
     @Override
-    public boolean equals(Object other) {
-        if (!(other instanceof FBStatement)) {
+    public final boolean equals(Object other) {
+        if (!(other instanceof FirebirdStatement)) {
             return false;
         }
 
-        FBStatement otherStmt = (FBStatement) other;
-        return this.localStatementId == otherStmt.localStatementId;
+        FirebirdStatement otherStmt = (FirebirdStatement) other;
+        return this.localStatementId == otherStmt.getLocalStatementId();
     }
 
     /**

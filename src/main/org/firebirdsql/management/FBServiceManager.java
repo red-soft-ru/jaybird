@@ -23,10 +23,7 @@ import org.firebirdsql.gds.ServiceRequestBuffer;
 import org.firebirdsql.gds.impl.GDSFactory;
 import org.firebirdsql.gds.impl.GDSServerVersion;
 import org.firebirdsql.gds.impl.GDSType;
-import org.firebirdsql.gds.ng.FbDatabaseFactory;
-import org.firebirdsql.gds.ng.FbService;
-import org.firebirdsql.gds.ng.FbServiceProperties;
-import org.firebirdsql.gds.ng.IServiceProperties;
+import org.firebirdsql.gds.ng.*;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -200,6 +197,21 @@ public class FBServiceManager implements ServiceManager {
         return fbService;
     }
 
+    protected FbDatabase attachDatabase() throws SQLException {
+        if (database == null) {
+            throw new SQLException("Property database needs to be set.");
+        }
+        FbConnectionProperties connectionProperties = new FbConnectionProperties();
+        connectionProperties.setServerName(serviceProperties.getServerName());
+        connectionProperties.setPortNumber(serviceProperties.getPortNumber());
+        connectionProperties.setUser(serviceProperties.getUser());
+        connectionProperties.setPassword(serviceProperties.getPassword());
+        connectionProperties.setDatabaseName(database);
+        FbDatabase fbDatabase = dbFactory.connect(connectionProperties);
+        fbDatabase.attach();
+        return fbDatabase;
+    }
+
     public void queueService(FbService service) throws SQLException, IOException {
         OutputStream currentLogger = getLogger();
 
@@ -293,14 +305,7 @@ public class FBServiceManager implements ServiceManager {
         return srb;
     }
 
-    /**
-     * Obtains the server version through a service call.
-     *
-     * @return Parsed server version, or {@link org.firebirdsql.gds.impl.GDSServerVersion#INVALID_VERSION} if parsing
-     * failed.
-     * @throws SQLException
-     *         For errors connecting to the service manager.
-     */
+    @Override
     public GDSServerVersion getServerVersion() throws SQLException {
         try (FbService service = attachServiceManager()) {
             return service.getServerVersion();

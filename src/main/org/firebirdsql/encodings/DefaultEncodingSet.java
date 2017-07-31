@@ -1,6 +1,4 @@
 /*
- * $Id$
- *
  * Firebird Open Source JavaEE Connector - JDBC Driver
  *
  * Distributable under LGPL license.
@@ -20,22 +18,14 @@
  */
 package org.firebirdsql.encodings;
 
-import org.firebirdsql.encodings.xml.EncodingDefinitionType;
-import org.firebirdsql.encodings.xml.Encodings;
-import org.firebirdsql.logging.Logger;
-import org.firebirdsql.logging.LoggerFactory;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
-import java.io.IOException;
-import java.io.InputStream;
 import java.nio.charset.Charset;
-import java.nio.charset.IllegalCharsetNameException;
-import java.nio.charset.UnsupportedCharsetException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import static org.firebirdsql.gds.ISCConstants.CS_BINARY;
+import static org.firebirdsql.gds.ISCConstants.CS_NONE;
 
 /**
  * The default encoding set for Jaybird.
@@ -52,7 +42,6 @@ import java.util.List;
  */
 public class DefaultEncodingSet implements EncodingSet {
 
-    private static final Logger logger = LoggerFactory.getLogger(DefaultEncodingSet.class);
     private List<EncodingDefinition> encodingDefinitions = null;
 
     @Override
@@ -63,156 +52,73 @@ public class DefaultEncodingSet implements EncodingSet {
     @Override
     public final synchronized List<EncodingDefinition> getEncodings() {
         if (encodingDefinitions == null) {
-            encodingDefinitions = createEncodingDefinitions(getXmlResourceName());
+            encodingDefinitions = createEncodingDefinitions();
         }
         return encodingDefinitions;
     }
 
     /**
-     * Relative or absolute resource reference to the xml file to load.
+     * Creates all encoding definitions of the default set.
      *
-     * @return Path of the XML file
-     * @see #loadEncodingsFromXml(String)
+     * @return List of encoding definitions
      */
-    protected String getXmlResourceName() {
-        return "default-firebird-encodings.xml";
+    private static List<EncodingDefinition> createEncodingDefinitions() {
+        final Charset noCharset = null;
+        final List<EncodingDefinition> definitionList = new ArrayList<>(52);
+        definitionList.add(new DefaultEncodingDefinition("NONE", noCharset, 1, CS_NONE, false));
+        definitionList.add(new DefaultEncodingDefinition("OCTETS", noCharset, 1, CS_BINARY, false));
+        definitionList.add(new DefaultEncodingDefinition("ASCII", StandardCharsets.US_ASCII, 1, 2, false));
+        definitionList.add(new DefaultEncodingDefinition("UNICODE_FSS", StandardCharsets.UTF_8, 3, 3, true));
+        definitionList.add(new DefaultEncodingDefinition("UTF8", StandardCharsets.UTF_8, 4, 4, false));
+        definitionList.add(new DefaultEncodingDefinition("SJIS_0208", "MS932", 2, 5, false));
+        definitionList.add(new DefaultEncodingDefinition("EUCJ_0208", "EUC_JP", 2, 6, false));
+        definitionList.add(new DefaultEncodingDefinition("DOS737", "Cp737", 1, 9, false));
+        definitionList.add(new DefaultEncodingDefinition("DOS437", "Cp437", 1, 10, false));
+        definitionList.add(new DefaultEncodingDefinition("DOS850", "Cp850", 1, 11, false));
+        definitionList.add(new DefaultEncodingDefinition("DOS865", "Cp865", 1, 12, false));
+        definitionList.add(new DefaultEncodingDefinition("DOS860", "Cp860", 1, 13, false));
+        definitionList.add(new DefaultEncodingDefinition("DOS863", "Cp863", 1, 14, false));
+        definitionList.add(new DefaultEncodingDefinition("DOS775", "Cp775", 1, 15, false));
+        definitionList.add(new DefaultEncodingDefinition("DOS858", "Cp858", 1, 16, false));
+        definitionList.add(new DefaultEncodingDefinition("DOS862", "Cp862", 1, 17, false));
+        definitionList.add(new DefaultEncodingDefinition("DOS864", "Cp864", 1, 18, false));
+        definitionList.add(new DefaultEncodingDefinition("NEXT", noCharset, 1, 19, false));
+        definitionList.add(new DefaultEncodingDefinition("ISO8859_1", StandardCharsets.ISO_8859_1, 1, 21, false));
+        definitionList.add(new DefaultEncodingDefinition("ISO8859_2", "ISO-8859-2", 1, 22, false));
+        definitionList.add(new DefaultEncodingDefinition("ISO8859_3", "ISO-8859-3", 1, 23, false));
+        definitionList.add(new DefaultEncodingDefinition("ISO8859_4", "ISO-8859-4", 1, 34, false));
+        definitionList.add(new DefaultEncodingDefinition("ISO8859_5", "ISO-8859-5", 1, 35, false));
+        definitionList.add(new DefaultEncodingDefinition("ISO8859_6", "ISO-8859-6", 1, 36, false));
+        definitionList.add(new DefaultEncodingDefinition("ISO8859_7", "ISO-8859-7", 1, 37, false));
+        definitionList.add(new DefaultEncodingDefinition("ISO8859_8", "ISO-8859-8", 1, 38, false));
+        definitionList.add(new DefaultEncodingDefinition("ISO8859_9", "ISO-8859-9", 1, 39, false));
+        definitionList.add(new DefaultEncodingDefinition("ISO8859_13", "ISO-8859-13", 1, 40, false));
+        definitionList.add(new DefaultEncodingDefinition("KSC_5601", "MS949", 2, 44, false));
+        definitionList.add(new DefaultEncodingDefinition("DOS852", "Cp852", 1, 45, false));
+        definitionList.add(new DefaultEncodingDefinition("DOS857", "Cp857", 1, 46, false));
+        definitionList.add(new DefaultEncodingDefinition("DOS861", "Cp861", 1, 47, false));
+        definitionList.add(new DefaultEncodingDefinition("DOS866", "Cp866", 1, 48, false));
+        definitionList.add(new DefaultEncodingDefinition("DOS869", "Cp869", 1, 49, false));
+        definitionList.add(new DefaultEncodingDefinition("CYRL", noCharset, 1, 50, false));
+        definitionList.add(new DefaultEncodingDefinition("WIN1250", "Cp1250", 1, 51, false));
+        definitionList.add(new DefaultEncodingDefinition("WIN1251", "Cp1251", 1, 52, false));
+        definitionList.add(new DefaultEncodingDefinition("WIN1252", "Cp1252", 1, 53, false));
+        definitionList.add(new DefaultEncodingDefinition("WIN1253", "Cp1253", 1, 54, false));
+        definitionList.add(new DefaultEncodingDefinition("WIN1254", "Cp1254", 1, 55, false));
+        definitionList.add(new DefaultEncodingDefinition("BIG_5", "Big5", 2, 56, false));
+        definitionList.add(new DefaultEncodingDefinition("GB_2312", "EUC_CN", 2, 57, false));
+        definitionList.add(new DefaultEncodingDefinition("WIN1255", "Cp1255", 1, 58, false));
+        definitionList.add(new DefaultEncodingDefinition("WIN1256", "Cp1256", 1, 59, false));
+        definitionList.add(new DefaultEncodingDefinition("WIN1257", "Cp1257", 1, 60, false));
+        definitionList.add(new DefaultEncodingDefinition("KOI8R", "KOI8_R", 1, 63, false));
+        definitionList.add(new DefaultEncodingDefinition("KOI8U", "KOI8_U", 1, 64, false));
+        definitionList.add(new DefaultEncodingDefinition("WIN1258", "Cp1258", 1, 65, false));
+        definitionList.add(new DefaultEncodingDefinition("TIS620", "TIS620", 1, 66, false));
+        definitionList.add(new DefaultEncodingDefinition("GBK", "GBK", 2, 67, false));
+        definitionList.add(new DefaultEncodingDefinition("CP943C", "Cp943C", 2, 68, false));
+        definitionList.add(new DefaultEncodingDefinition("GB18030", "GB18030", 3, 69, false));
+
+        return Collections.unmodifiableList(definitionList);
     }
 
-    /**
-     * Loads the {@link Encodings} from the specified file.
-     * <p>
-     * The loaded file must conform to the <code>http://www.firebirdsql.org/schemas/Jaybird/encodings/1</code> schema
-     * (as found in <code>org/firebirdsql/encodings/xml/encodings.xsd</code>)
-     * </p>
-     * <p>
-     * This file is loading using <code>getClass().getResourceAsStream(xmlFileResource)</code>
-     * </p>
-     *
-     * @param xmlFileResource
-     *         Absolute or relative path of the resource containing the encodings definition
-     * @return Loaded encodings, or <code>null</code> if the resource could not be found
-     * @throws JAXBException
-     *         For errors unmarshalling the objects from the XML file
-     */
-    protected final Encodings loadEncodingsFromXml(String xmlFileResource) throws JAXBException {
-        InputStream inputStream = null;
-        try {
-            JAXBContext ctx = JAXBContext.newInstance(Encodings.class);
-            Unmarshaller unmarshaller = ctx.createUnmarshaller();
-            inputStream = getClass().getResourceAsStream(xmlFileResource);
-            if (inputStream == null) {
-                logger.fatal(String.format("The encoding definition file %s was not found", xmlFileResource));
-                return null;
-            }
-            return (Encodings) unmarshaller.unmarshal(inputStream);
-        } finally {
-            if (inputStream != null) {
-                try {
-                    inputStream.close();
-                } catch (IOException e) {
-                    // ignore
-                }
-            }
-        }
-    }
-
-    /**
-     * Creates all encodings listed in xmlFileResource.
-     *
-     * @param xmlFileResource
-     *         Absolute or relative path of the resource containing the encodings definition
-     * @return List of {@link Encoding} instances
-     * @see #loadEncodingsFromXml(String)
-     */
-    protected final List<EncodingDefinition> createEncodingDefinitions(String xmlFileResource) {
-        try {
-            Encodings encodings = loadEncodingsFromXml(xmlFileResource);
-            if (encodings == null) {
-                return Collections.emptyList();
-            }
-            List<EncodingDefinition> encodingSet = new ArrayList<EncodingDefinition>();
-            for (EncodingDefinitionType definition : encodings.getEncodingDefinition()) {
-                final EncodingDefinition encoding = createEncodingDefinition(definition);
-                if (encoding != null) {
-                    encodingSet.add(encoding);
-                }
-            }
-            return encodingSet;
-        } catch (JAXBException e) {
-            logger.fatal(String.format("Error loading encoding definition from %s", xmlFileResource), e);
-            return Collections.emptyList();
-        }
-    }
-
-    /**
-     * Creates an {@link Encoding} for the <code>definition</code>
-     *
-     * @param definition
-     *         XML definition of the encoding
-     * @return Encoding instance or <code>null</code> if creating the instance failed for any reason.
-     */
-    protected EncodingDefinition createEncodingDefinition(final EncodingDefinitionType definition) {
-        try {
-            if (definition.getEncodingDefinitionImplementation() != null) {
-                return createEncodingDefinitionImplementation(definition);
-            } else {
-                try {
-                    final Charset charset = definition.getJavaName() != null ? Charset.forName(definition.getJavaName()) : null;
-                    return new DefaultEncodingDefinition(definition.getFirebirdName(), charset, definition.getMaxBytesPerCharacter(), definition.getCharacterSetId(), definition.isFirebirdOnly());
-                } catch (IllegalCharsetNameException e) {
-                    logger.warn(String.format("javaName=\"%s\" specified for encoding \"%s\" is an illegal character set name, skipping encoding",
-                            definition.getJavaName(), definition.getFirebirdName()), e);
-                } catch (UnsupportedCharsetException e) {
-                    logger.warn(String.format("javaName=\"%s\" specified for encoding \"%s\" is not supported by the jvm, creating information-only EncodingDefinition",
-                            definition.getJavaName(), definition.getFirebirdName()));
-                    // Create an 'information-only' definition by using null for charset
-                    return new DefaultEncodingDefinition(definition.getFirebirdName(), null, definition.getMaxBytesPerCharacter(), definition.getCharacterSetId(), definition.isFirebirdOnly());
-                }
-            }
-        } catch (Exception e) {
-            logger.warn(String.format("Loading information for encoding \"%s\" failed with an Exception", definition.getFirebirdName()), e);
-        }
-        return null;
-    }
-
-    /**
-     * Creates an instance of {@link EncodingDefinition} by creating an instance of the class specified by
-     * encodingDefinitionImplementation in
-     * the xml definition.
-     *
-     * @param definition
-     *         XML definition of the encoding
-     * @return Instance of Encoding, or <code>null</code> if the specified class could not be loaded or did not meet
-     *         the
-     *         expectations.
-     */
-    protected EncodingDefinition createEncodingDefinitionImplementation(final EncodingDefinitionType definition) {
-        assert definition.getEncodingDefinitionImplementation() != null;
-        try {
-            final Class<?> encodingClazz = Class.forName(definition.getEncodingDefinitionImplementation());
-            if (!EncodingDefinition.class.isAssignableFrom(encodingClazz)) {
-                logger.warn(String.format("encodingDefinitionImplementation=\"%s\" specified for encoding \"%s\" is not an implementation of org.firebirdsql.encodings.EncodingDefinition",
-                        definition.getEncodingDefinitionImplementation(), definition.getFirebirdName()));
-            }
-
-            final EncodingDefinition encoding = (EncodingDefinition) encodingClazz.newInstance();
-            if (encoding.getFirebirdEncodingName().equals(definition.getFirebirdName())) {
-                return encoding;
-            } else {
-                logger.warn(String.format("Property value FirebirdEncodingName \"%s\" of encodingDefinitionImplementation=\"%s\" specified for encoding \"%s\" does not match",
-                        encoding.getFirebirdEncodingName(), definition.getEncodingDefinitionImplementation(), definition.getFirebirdName()));
-                return null;
-            }
-        } catch (ClassNotFoundException e) {
-            logger.warn(String.format("encodingDefinitionImplementation=\"%s\" specified for encoding \"%s\" could not be found",
-                    definition.getEncodingDefinitionImplementation(), definition.getFirebirdName()), e);
-        } catch (InstantiationException e) {
-            logger.warn(String.format("encodingDefinitionImplementation=\"%s\" specified for encoding \"%s\" is abstract or does not have a no-arg constructor",
-                    definition.getEncodingDefinitionImplementation(), definition.getFirebirdName()), e);
-        } catch (IllegalAccessException e) {
-            logger.warn(String.format("encodingDefinitionImplementation=\"%s\" specified for encoding \"%s\" or its constructor is not accessible",
-                    definition.getEncodingDefinitionImplementation(), definition.getFirebirdName()), e);
-        }
-        return null;
-    }
 }
