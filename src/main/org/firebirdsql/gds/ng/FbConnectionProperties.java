@@ -50,8 +50,6 @@ public final class FbConnectionProperties extends AbstractAttachProperties<IConn
 
     private FbImmutableConnectionProperties immutableConnectionPropertiesCache;
 
-    private int useGSSAuth;
-
     /**
      * Copy constructor for FbConnectionProperties.
      * <p>
