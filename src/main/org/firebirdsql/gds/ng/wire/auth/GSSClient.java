@@ -38,27 +38,21 @@ public class GSSClient {
         } catch (UnknownHostException e) {
             e.printStackTrace();
         }
-
         hostName = addr.getHostName();
-
         principalName = serverName + "@" + hostName;
-
         GSSManager manager = GSSManager.getInstance();
-
         GSSName gssServerName = null;
-
         try {
             gssServerName = manager.createName(principalName, GSSName.NT_HOSTBASED_SERVICE);
         } catch (GSSException e) {
             e.printStackTrace();
         }
-
         // Get the context for authentication
         GSSContext context = null;
         byte[] token = new byte[0];
         try {
             context = manager.createContext(gssServerName, null, null,
-                    GSSContext.INDEFINITE_LIFETIME);
+                    GSSContext.DEFAULT_LIFETIME);
             context.requestMutualAuth(true); // Request mutual authentication
             token = context.initSecContext(token, 0, token.length);
         } catch (GSSException e) {
