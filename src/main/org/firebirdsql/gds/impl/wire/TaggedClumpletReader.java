@@ -1,5 +1,6 @@
 package org.firebirdsql.gds.impl.wire;
 
+import org.firebirdsql.gds.ISCConstants;
 import org.firebirdsql.gds.impl.wire.auth.GDSAuthException;
 
 /**
@@ -43,11 +44,18 @@ public class TaggedClumpletReader extends ClumpletReader {
   public int getClumpTag() throws GDSAuthException {
     if (isEof())
       throw new GDSAuthException("ClumpletReader>> read past EOF");
-    return data[getCurOffset()];
+    return data[getCurOffset()] & 0xff;
   }
 
   @Override
   protected int getClumpletType(final byte b) {
+    int tag = b & 0xff;
+    switch (tag)
+    {
+      case ISCConstants.isc_dpb_certificate_body:
+      case ISCConstants.isc_spb_skip_data:
+        return Wide;
+    }
     return TraditionalDpb;
   }
 }

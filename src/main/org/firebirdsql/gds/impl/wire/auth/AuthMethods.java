@@ -123,4 +123,34 @@ public class AuthMethods {
       throw new GDSAuthException("Error hashing data: " + e.getMessage());
     }
   }
+
+  public static byte[] ccfiEncrypt(final byte[] data) throws GDSAuthException {
+    try {
+      return AuthCryptoPlugin.getPlugin().ccfiEncrypt(data);
+    } catch (AuthCryptoException e) {
+      throw new GDSAuthException("Error encrypting data: " + e.getMessage());
+    }
+  }
+
+  public static byte[] ccfiDecrypt(final byte[] data) throws GDSAuthException {
+    final AuthCryptoPlugin p = AuthCryptoPlugin.getPlugin();
+    final byte[] res;
+    try {
+      res = p.ccfiDecrypt(data);
+    } catch (AuthCryptoException e) {
+      throw new GDSAuthException("Error decrypting data: " + e.getMessage());
+    }
+    return res;
+  }
+
+  public static byte[] ccfiSign(final byte[] data, String certBase64) throws GDSAuthException {
+    final AuthCryptoPlugin p = AuthCryptoPlugin.getPlugin();
+    final byte[] res;
+    try {
+      res = p.ccfiSign(data, certBase64);
+    } catch (AuthCryptoException e) {
+      throw new GDSAuthException("Error signing data: " + e.getMessage());
+    }
+    return res;
+  }
 }

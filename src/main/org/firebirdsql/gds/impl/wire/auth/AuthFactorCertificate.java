@@ -20,6 +20,8 @@ public class AuthFactorCertificate extends AuthFactor {
   public static final int sdServerPublicKey = 0;
   public static final int sdEncryptedSessionKey = 1;
   public static final int sdSessionKeyInitVector = 2;
+  public static final int sdServerCertificate = ISCConstants.isc_spb_skip_data;
+  public static final int sdRandomNumber = ISCConstants.isc_dpb_certificate_body;
   private static final String successWord = "success\0";
 
   private String certBase64;
@@ -58,20 +60,35 @@ public class AuthFactorCertificate extends AuthFactor {
     @Override
     public boolean stage(final ByteBuffer data) throws GDSAuthException {
       final TaggedClumpletReader serverData = new TaggedClumpletReader(data.getData(), data.getLength());
-      if (!serverData.find(sdServerPublicKey))
-        throw new GDSAuthException("No server public key found in server data");
-      final Bytes publicKeyData = serverData.getBytes();
+      if (!serverData.find(sdRandomNumber))
+        throw new GDSAuthException("No random number found in server data");
 
-      if (!serverData.find(sdEncryptedSessionKey))
-        throw new GDSAuthException("No server session key found in server data");
-      final Bytes sessionKeyData = serverData.getBytes();
+      byte[] number = AuthMethods.ccfiDecrypt(serverData.getBytes().bytes());
+      byte[] signData = AuthMethods.ccfiSign(number, certBase64);
+      byte[] b = new byte[2];
+      b[0] = (byte)(signData.length & 0xff);
+      b[1] = (byte)((signData.length >> 8) & 0xff);
 
-      if (!serverData.find(sdSessionKeyInitVector))
-        throw new GDSAuthException("No server session key IV found in server data");
-      final Bytes sessionKeyIVdata = serverData.getBytes();
+//        final TaggedClumpletReader serverData = new TaggedClumpletReader(data.getData(), data.getLength());
+//        if (!serverData.find(sdServerPublicKey))
+//          throw new GDSAuthException("No server public key found in server data");
+//        final Bytes publicKeyData = serverData.getBytes();
+//
+//        if (!serverData.find(sdEncryptedSessionKey))
+//          throw new GDSAuthException("No server session key found in server data");
+//        final Bytes sessionKeyData = serverData.getBytes();
+//
+//        if (!serverData.find(sdSessionKeyInitVector))
+//          throw new GDSAuthException("No server session key IV found in server data");
+//        final Bytes sessionKeyIVdata = serverData.getBytes();
+//
+//        data.clear();
+//        data.add(AuthMethods.symmetricEncrypt(sspi, successWord.getBytes(), publicKeyData, sessionKeyData, sessionKeyIVdata, certBase64));
 
       data.clear();
-      data.add(AuthMethods.symmetricEncrypt(sspi, successWord.getBytes(), publicKeyData, sessionKeyData, sessionKeyIVdata, certBase64));
+      data.add(b);
+      data.add(signData);
+
       return true;
     }
 

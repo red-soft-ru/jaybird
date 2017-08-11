@@ -176,6 +176,12 @@ public interface ISCConstants {
     public static final int isc_dpb_hw_address              = 157;
     public static final int isc_dpb_certificate_body        = 158;
     public static final int isc_dpb_repository_pin          = 159;
+    public static final int isc_dpb_set_db_replica          = 160;
+    public static final int isc_dpb_session_encryption      = 161;
+    public static final int isc_dpb_salt                    = 162;
+    public static final int isc_dpb_master_attach           = 163;
+    public static final int isc_dpb_gss                     = 164;
+    public static final int isc_dpb_security_authentication = 165;
 
     /*************************************/
     /* Transaction parameter block stuff */

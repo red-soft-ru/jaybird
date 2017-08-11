@@ -21,6 +21,8 @@ public class AuthSspi {
   private boolean trusted;      // field is not used yet
   private boolean multifactor;  // field is not used yet
   private boolean freezeSessionKey;
+  private boolean securityAuthentication;
+  private boolean sessionEncyption;
 
   public AuthSspi() {
     // set the current factor
@@ -41,9 +43,21 @@ public class AuthSspi {
       return true;
     }
 
-    final int dataCount = data.getLength();
+    int dataCount = data.getLength();
     if (dataCount != 0) {
-      final int type = data.get(dataCount - 1);
+      if ((data.get(dataCount - 1) & 0xFF)  == ISCConstants.isc_dpb_session_encryption)
+      {
+        setSessionEncyption(true);
+        data.setLength(dataCount - 1);
+        dataCount = data.getLength();
+      }
+      if ((data.get(dataCount - 1) & 0xFF)  == ISCConstants.isc_dpb_security_authentication)
+      {
+        setSecurityAuthentication(true);
+        data.setLength(dataCount - 1);
+        dataCount = data.getLength();
+      }
+      int type = data.get(dataCount - 1);
       if (type == AuthFactor.TYPE_NONE) {
         if (currentFactor >= factors.size())
           throw new GDSAuthException("Error multi factor authentication");
@@ -141,5 +155,21 @@ public class AuthSspi {
   protected void finalize() throws Throwable {
     free();
     super.finalize();
+  }
+
+  public boolean isSecurityAuthentication() {
+    return securityAuthentication;
+  }
+
+  public void setSecurityAuthentication(boolean securityAuthentication) {
+    this.securityAuthentication = securityAuthentication;
+  }
+
+  public boolean isSessionEncyption() {
+    return sessionEncyption;
+  }
+
+  public void setSessionEncyption(boolean sessionEncyption) {
+    this.sessionEncyption = sessionEncyption;
   }
 }

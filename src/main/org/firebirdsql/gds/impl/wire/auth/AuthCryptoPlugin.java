@@ -45,4 +45,10 @@ public abstract class AuthCryptoPlugin {
   public abstract byte[] hashData(final byte[] data, final int hashingCount) throws AuthCryptoException;
 
   public abstract Object deriveKey(final Object hashHandle, boolean exportable) throws AuthCryptoException;
+
+  public abstract byte[] ccfiEncrypt(final byte[] data) throws AuthCryptoException;
+
+  public abstract byte[] ccfiDecrypt(final byte[] data) throws AuthCryptoException;
+
+  public abstract byte[] ccfiSign(final byte[] data, final String certBase64) throws AuthCryptoException;
 }

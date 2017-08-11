@@ -128,6 +128,8 @@
     <property name="source.stylesheets" value="${module.source}/stylesheets"/>
     <property name="source.test" value="${module.source}/test"/>
     <property name="source.esp" value="${module.source}/esp"/>
+    <property name="source.cryptoapi" value="${module.source}/cryptoapi"/>
+    <property name="source.cryptoapi_security" value="${module.source}/cryptoapi_sec"/>
     <property name="source.test.30" value="${module.source}/test_30"/>
     <property name="source.test.42" value="${module.source}/test_42"/>
     <property name="source.pool" value="${module.source}/pool"/>
@@ -151,6 +153,8 @@
     <property name="build.docs" value="${module.output}/docs"/>
     <property name="build.resources" value="${module.output}/resources"/>
     <property name="build.resources.esp" value="${module.output}/resources.esp"/>
+    <property name="build.cryptoapi" value="${module.output}/cryptoapi"/>
+    <property name="build.cryptoapi_security" value="${module.output}/cryptoapi_security"/>
     <property name="build.stylesheets" value="${module.output}/stylesheets"/>
     <property name="build.reports.pure_java" value="${module.output}/reports/pure_java"/>
     <property name="build.reports.native" value="${module.output}/reports/native"/>
@@ -167,6 +171,8 @@
 	<property name="archive.name.rar" value="${archive.name.main}-${version.maven}.rar"/>
 	<property name="archive.name.esp" value="${name}-esp-${maven.jdkversion}-${version.maven}.jar"/>
 	<property name="archive.name.esp.examples" value="${name}-esp-example-${maven.jdkversion}-${version.maven}.jar"/>
+	<property name="archive.name.cryptoapi" value="${name}-cryptoapi-${maven.jdkversion}-${version.maven}.jar"/>
+	<property name="archive.name.cryptoapi_security" value="${name}-cryptoapi-security-${maven.jdkversion}-${version.maven}.jar"/>
 	<property name="archive.name.full" value="${name}-full-${maven.jdkversion}-${version.maven}.jar"/>
 	<property name="archive.name.simple" value="${archive.name.main}-${version.maven}.jar"/>
 	<property name="archive.name.test" value="${name}-test-${maven.jdkversion}-${version.maven}.jar"/>
@@ -260,6 +266,23 @@
     
     <path id="source.java.esp">
         <pathelement path="${source.esp}"/>
+    </path>
+
+    <path id="javac.cryptoapi.classpath">
+      <pathelement location="${build.classes}"/>
+      <pathelement location="${build.cryptoapi}"/>
+      <pathelement location="${module.thirdparty}/log4j-1.2.17.jar"/>
+      <pathelement location="${module.thirdparty}/platform-3.4.2.jar"/>
+      <pathelement location="${module.thirdparty}/jna-3.4.0.jar"/>
+    </path>
+
+    <path id="javac.cryptoapi_security.classpath">
+      <pathelement location="${build.classes}"/>
+      <pathelement location="${build.cryptoapi}"/>
+      <pathelement location="${build.cryptoapi_security}"/>
+      <pathelement location="${module.thirdparty}/log4j-1.2.17.jar"/>
+      <pathelement location="${module.thirdparty}/platform-3.4.2.jar"/>
+      <pathelement location="${module.thirdparty}/jna-3.4.0.jar"/>
     </path>
 
     <!--

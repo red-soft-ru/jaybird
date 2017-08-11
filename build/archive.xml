@@ -36,6 +36,24 @@
        </fileset>
     </jar>
 
+    <jar jarfile="${build.lib}/${archive.name.cryptoapi}" manifest="${build.etc}/default.mf">
+       <fileset dir="${build.cryptoapi}">
+         <include name="**"/>
+       </fileset>
+    </jar>
+
+    <jar jarfile="${build.lib}/${archive.name.cryptoapi_security}" manifest="${build.etc}/default.mf">
+        <fileset dir="${build.cryptoapi_security}">
+            <include name="**"/>
+        </fileset>
+        <fileset dir="${build.cryptoapi}">
+            <include name="**"/>
+            <exclude name="org/firebirdsql/cryptoapi/windows/advapi/Advapi.class"/>
+            <exclude name="org/firebirdsql/cryptoapi/windows/advapi/AdvapiLib.class"/>
+            <exclude name="org/firebirdsql/cryptoapi/AuthCryptoPluginImpl.class"/>
+        </fileset>
+    </jar>
+
     <jar jarfile="${build.lib}/${archive.name.esp.examples}" manifest="${build.etc}/default.mf">
        <fileset dir="${build.esp}">
          <include name="firebird/**"/>
