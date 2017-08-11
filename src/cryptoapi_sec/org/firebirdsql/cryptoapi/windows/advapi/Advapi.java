@@ -218,7 +218,7 @@ public class Advapi {
 
   public static synchronized List<String> enumContainers(Pointer provHandle) throws CryptoException {
     int flag = CRYPT_FIRST;
-    final List<String> containers = new ArrayList<>();
+    final List<String> containers = new ArrayList<String>();
 
     final IntByReference dataSize = new IntByReference();
     if (!lib.CryptGetProvParam(provHandle, Wincrypt.PP_ENUMCONTAINERS, null, dataSize, CRYPT_FIRST)) {

@@ -148,8 +148,8 @@ public class CertUtils {
    * Возвращает список сертификатов в доступных на данный момент контейнерах
    */
   public static List<ContainerInfo> getAvailableContainersCertificatesList(Pointer provHandle) throws CryptoException, CertificateException {
-    final List<ContainerInfo> res = new ArrayList<>();
-    Map<String, ContainerInfo> containers = new HashMap<>();
+    final List<ContainerInfo> res = new ArrayList<ContainerInfo>();
+    Map<String, ContainerInfo> containers = new HashMap<String, ContainerInfo>();
     readAvailableCertificatesFromContainers(provHandle, containers);
     readAvailableCertificatesFromSystemStore("MY", containers);
     res.addAll(containers.values());
