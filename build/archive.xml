@@ -50,7 +50,6 @@
             <include name="**"/>
             <exclude name="org/firebirdsql/cryptoapi/windows/advapi/Advapi.class"/>
             <exclude name="org/firebirdsql/cryptoapi/windows/advapi/AdvapiLib.class"/>
-            <exclude name="org/firebirdsql/cryptoapi/AuthCryptoPluginImpl.class"/>
         </fileset>
     </jar>
 
