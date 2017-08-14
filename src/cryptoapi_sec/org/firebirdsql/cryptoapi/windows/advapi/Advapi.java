@@ -9,6 +9,7 @@ import org.apache.log4j.Logger;
 import org.firebirdsql.cryptoapi.cryptopro.exception.CryptoException;
 import org.firebirdsql.cryptoapi.windows.*;
 import org.firebirdsql.cryptoapi.windows.crypt32._CRYPT_DECRYPT_MESSAGE_PARA;
+import org.firebirdsql.gds.impl.wire.auth.AuthCryptoException;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -273,7 +274,7 @@ public class Advapi {
       boolean Final,
       byte[] pbData
   ) throws CryptoException {
-    return new byte[0];
+    throw new CryptoException("Not available in secure mode");
   }
 
   public static byte[] cryptDecrypt(
@@ -283,7 +284,7 @@ public class Advapi {
       int dwFlags,
       byte[] pbData
   ) throws CryptoException {
-    return new byte[0];
+    throw new CryptoException("Not available in secure mode");
   }
 
   public static Pointer cryptDeriveKey(
@@ -292,7 +293,7 @@ public class Advapi {
       Pointer hashHandle,
       int flags
   ) throws CryptoException {
-    return null;
+    throw new CryptoException("Not available in secure mode");
   }
 
   public static byte[] hashData(Pointer provHandle, byte[] data, int algId, int hashCount) throws CryptoException {
