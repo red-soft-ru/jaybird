@@ -43,7 +43,7 @@ public class TestFBFloatField extends BaseJUnit4TestFBField<FBFloatField, Float>
 
         rowDescriptorBuilder.setType(ISCConstants.SQL_FLOAT);
         fieldDescriptor = rowDescriptorBuilder.toFieldDescriptor();
-        field = new FBFloatField(fieldDescriptor, fieldData, Types.FLOAT);
+        field = new FBFloatField(fieldDescriptor, fieldData, Types.REAL);
     }
 
     @Test
