@@ -91,7 +91,7 @@ public final class JdbcTypeConverter {
             else
                 return Types.DOUBLE;
         case ISCConstants.SQL_FLOAT:
-            return Types.REAL;
+            return Types.FLOAT;
         case ISCConstants.SQL_TEXT:
             if (subtype == ISCConstants.CS_BINARY){
                 return Types.BINARY;
