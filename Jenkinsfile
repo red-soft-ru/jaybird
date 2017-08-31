@@ -107,7 +107,7 @@ node('master')
 } // try
 catch (any)
 {
-    utils.defaultFailureActions(any)
+    Pipeline.defaultFailureActions(currentBuild, any)
 }
 finally
 {
