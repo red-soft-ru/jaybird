@@ -30,9 +30,9 @@ public enum ErrorMessages {
   SEC_E_CERT_UNKNOWN          (0x80090327,               "An unknown error occurred while processing the certificate"),
   SEC_E_WRONG_PRINCIPAL       (0x80090322,               "The target principal name is incorrect"),
   SEC_E_MESSAGE_ALTERED       (0x8009030F,               "The message or signature supplied for verification has been altered"),
-  SCARD_W_WRONG_CHV           (0x8010006B,               "The card cannot be accessed because the wrong PIN was presented", "Введен ошибочный ПИН-код"),
-  NTE_BAD_KEYSET              (0x80090016,               "Key container does not exist", "Контейнер ключей не существует"),
-  ERROR_CANCELLED_BY_USER     (Winerror.ERROR_CANCELLED_BY_USER,  "The action was cancelled by the user", "Операция была отменена пользователем")
+  SCARD_W_WRONG_CHV           (0x8010006B,               "The card cannot be accessed because the wrong PIN was presented"),
+  NTE_BAD_KEYSET              (0x80090016,               "Key container does not exist"),
+  ERROR_CANCELLED_BY_USER     (Winerror.ERROR_CANCELLED_BY_USER,  "The action was cancelled by the user")
   ;
   private int code;
   private String message;

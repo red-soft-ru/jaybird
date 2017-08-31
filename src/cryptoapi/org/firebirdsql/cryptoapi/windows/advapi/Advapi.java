@@ -359,31 +359,4 @@ public class Advapi {
       return Win32Api.getMessage(errorCode);
     }
   }
-
-  public static byte[] cryptDecryptMessage(
-      Pointer certStore,
-      byte[] pbData
-  ) throws CryptoException {
-    final _CRYPT_DECRYPT_MESSAGE_PARA.PCRYPT_DECRYPT_MESSAGE_PARA decryptPara = new _CRYPT_DECRYPT_MESSAGE_PARA.PCRYPT_DECRYPT_MESSAGE_PARA();
-    decryptPara.cbSize = decryptPara.size();
-    decryptPara.dwMsgAndCertEncodingType = X509_ASN_ENCODING | PKCS_7_ASN_ENCODING;
-    decryptPara.cCertStore = 1;
-    PointerByReference p = new PointerByReference(certStore);
-    decryptPara.rghCertStore = p;
-
-    IntByReference pdwDataLen = new IntByReference(pbData.length);
-
-    if (!lib.CryptDecryptMessage(decryptPara, pbData, pbData.length, null, pdwDataLen, null))
-      throw CryptoUtil.raiseCryptoError("CryptDecryptMessage - initialization", getLastError());
-
-    final byte[] data = new byte[Math.max(pbData.length, pdwDataLen.getValue())];
-    System.arraycopy(pbData, 0, data, 0, pbData.length);
-
-    final int ciferSize = pdwDataLen.getValue();
-    pdwDataLen.setValue(pbData.length);
-    if (!lib.CryptDecryptMessage(decryptPara, pbData, pbData.length, data, pdwDataLen, null))
-      throw CryptoUtil.raiseCryptoError("CryptDecryptMessage", getLastError());
-
-    return Win32Api.getActualData(data, pdwDataLen.getValue());
-  }
 }

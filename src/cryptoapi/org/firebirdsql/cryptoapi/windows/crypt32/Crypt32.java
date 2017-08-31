@@ -6,13 +6,17 @@ import com.sun.jna.Pointer;
 import com.sun.jna.ptr.IntByReference;
 import com.sun.jna.ptr.PointerByReference;
 import org.apache.log4j.Logger;
+import org.firebirdsql.cryptoapi.windows.CryptoUtil;
 import org.firebirdsql.cryptoapi.windows.JnaUtils;
 import org.firebirdsql.cryptoapi.cryptopro.exception.CryptoException;
+import org.firebirdsql.cryptoapi.windows.Win32Api;
 import org.firebirdsql.cryptoapi.windows.advapi.Advapi;
 
 import java.util.Arrays;
 
 import static com.sun.jna.Platform.isWindows;
+import static org.firebirdsql.cryptoapi.windows.Wincrypt.PKCS_7_ASN_ENCODING;
+import static org.firebirdsql.cryptoapi.windows.Wincrypt.X509_ASN_ENCODING;
 
 /**
  * @author roman.kisluhin
@@ -120,5 +124,32 @@ public class Crypt32 {
       return false;
     }
     return true;
+  }
+
+  public static byte[] cryptDecryptMessage(
+      Pointer certStore,
+      byte[] pbData
+  ) throws CryptoException {
+    final _CRYPT_DECRYPT_MESSAGE_PARA.PCRYPT_DECRYPT_MESSAGE_PARA decryptPara = new _CRYPT_DECRYPT_MESSAGE_PARA.PCRYPT_DECRYPT_MESSAGE_PARA();
+    decryptPara.cbSize = decryptPara.size();
+    decryptPara.dwMsgAndCertEncodingType = X509_ASN_ENCODING | PKCS_7_ASN_ENCODING;
+    decryptPara.cCertStore = 1;
+    PointerByReference p = new PointerByReference(certStore);
+    decryptPara.rghCertStore = p;
+
+    IntByReference pdwDataLen = new IntByReference(pbData.length);
+
+    if (!lib.CryptDecryptMessage(decryptPara, pbData, pbData.length, null, pdwDataLen, null))
+      throw CryptoUtil.raiseCryptoError("CryptDecryptMessage - initialization", Advapi.getLastError());
+
+    final byte[] data = new byte[Math.max(pbData.length, pdwDataLen.getValue())];
+    System.arraycopy(pbData, 0, data, 0, pbData.length);
+
+    final int ciferSize = pdwDataLen.getValue();
+    pdwDataLen.setValue(pbData.length);
+    if (!lib.CryptDecryptMessage(decryptPara, pbData, pbData.length, data, pdwDataLen, null))
+      throw CryptoUtil.raiseCryptoError("CryptDecryptMessage", Advapi.getLastError());
+
+    return Win32Api.getActualData(data, pdwDataLen.getValue());
   }
 }

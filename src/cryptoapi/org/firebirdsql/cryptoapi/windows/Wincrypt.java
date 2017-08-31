@@ -851,22 +851,22 @@ public class Wincrypt {
   public static final String szOID_REMOVE_CERTIFICATE       = "1.3.6.1.4.1.311.10.8.1";
   public static final String szOID_CROSS_CERT_DIST_POINTS   = "1.3.6.1.4.1.311.10.9.1";
   /**
-   * Следующая дата публикации
+   * next publication date
    */
   public static final String szOID_CRL_NEXT_PUBLISH         = "1.3.6.1.4.1.311.21.4";
   
 
-  public static final String szOID_CP_GOST_28147            = "1.2.643.2.2.21"; // Алгоритм шифрования ГОСТ 28147-89
-  public static final String szOID_CP_GOST_R3411            = "1.2.643.2.2.9";  // Функция хэширования ГОСТ Р 34.11-94
-  public static final String szOID_CP_GOST_R3410            = "1.2.643.2.2.20"; // Алгоритм ГОСТ Р 34.10-94, используемый при экспорте/импорте ключей
-  public static final String szOID_CP_GOST_R3410EL          = "1.2.643.2.2.19"; // Алгоритм ГОСТ Р 34.10-2001, используемый при экспорте/импорте ключей
-  public static final String szOID_CP_DH_EX	                = "1.2.643.2.2.99"; // Алгоритм Диффи-Хеллмана на базе потенциальной функции
-  public static final String szOID_CP_DH_EL	                = "1.2.643.2.2.98"; // Алгоритм Диффи-Хеллмана на базе эллиптической кривой
-  public static final String szOID_CP_GOST_R3411_R3410      = "1.2.643.2.2.4";  // Алгоритм цифровой подписи ГОСТ Р 34.10-94
-  public static final String szOID_CP_GOST_R3411_R3410EL    = "1.2.643.2.2.3";  // Алгоритм цифровой подписи ГОСТ Р 34.10-2001
-  public static final String szOID_KP_TLS_PROXY	            = "1.2.643.2.2.34.1"; // Аудит TLS-трафика
-  public static final String szOID_KP_RA_CLIENT_AUTH        = "1.2.643.2.2.34.2"; // Идентификация пользователя на центре регистрации
-  public static final String szOID_KP_WEB_CONTENT_SIGNING	  = "1.2.643.2.2.34.3"; // Подпись содержимого сервера Интернет
+  public static final String szOID_CP_GOST_28147            = "1.2.643.2.2.21"; // Encryption algorithm GOST 28147-89
+  public static final String szOID_CP_GOST_R3411            = "1.2.643.2.2.9";  // Encryption algorithm GOST Р 34.11-94
+  public static final String szOID_CP_GOST_R3410            = "1.2.643.2.2.20"; // Algorithm GOST Р 34.10-94, used when exporting/importing keys
+  public static final String szOID_CP_GOST_R3410EL          = "1.2.643.2.2.19"; // Algorithm GOST Р 34.10-2001, used when exporting/importing keys
+  public static final String szOID_CP_DH_EX	                = "1.2.643.2.2.99"; // Diffie-Hellman algorithm based on a potential function
+  public static final String szOID_CP_DH_EL	                = "1.2.643.2.2.98"; // Diffie-Hellman algorithm based on a elliptic curve
+  public static final String szOID_CP_GOST_R3411_R3410      = "1.2.643.2.2.4";  // Digital signature algorithm GOST Р 34.10-94
+  public static final String szOID_CP_GOST_R3411_R3410EL    = "1.2.643.2.2.3";  // Digital signature algorithm GOST Р 34.10-2001
+  public static final String szOID_KP_TLS_PROXY	            = "1.2.643.2.2.34.1"; // Audit TLS-traffic
+  public static final String szOID_KP_RA_CLIENT_AUTH        = "1.2.643.2.2.34.2"; // User identification at the registration center
+  public static final String szOID_KP_WEB_CONTENT_SIGNING	  = "1.2.643.2.2.34.3"; // Signing the contents of the server Internet
 
   //+-------------------------------------------------------------------------
   //  Enhanced Key Usage (Purpose) Object Identifiers

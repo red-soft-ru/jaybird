@@ -128,4 +128,23 @@ public interface Crypt32Lib extends Library {
    * );
    */
   public boolean CertFreeCertificateContext(Pointer pCertContext);
+
+  /**
+   *  BOOL WINAPI CryptDecryptMessage(
+   *  _In_              PCRYPT_DECRYPT_MESSAGE_PARA pDecryptPara,
+   *  _In_        const BYTE                        *pbEncryptedBlob,
+   *  _In_              DWORD                       cbEncryptedBlob,
+   *  _Out_opt_         BYTE                        *pbDecrypted,
+   *  _Inout_opt_       DWORD                       *pcbDecrypted,
+   *  _Out_opt_         PCCERT_CONTEXT              *ppXchgCert
+   * );
+   */
+  public boolean CryptDecryptMessage(
+      _CRYPT_DECRYPT_MESSAGE_PARA.PCRYPT_DECRYPT_MESSAGE_PARA decryptPara,
+      byte[] pbEncryptedBlob,
+      int cbEncryptedBlob,
+      byte[] pbDecrypted,
+      IntByReference cbDecrypted,
+      _CERT_CONTEXT.PCCERT_CONTEXT pXchgCert
+  );
 }

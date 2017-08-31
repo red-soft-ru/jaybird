@@ -230,7 +230,7 @@ public class AuthCryptoPluginImpl extends AuthCryptoPlugin {
   @Override
   public byte[] ccfiDecrypt(byte[] data) throws AuthCryptoException {
     try {
-      return Advapi.cryptDecryptMessage(myStore, data);
+      return Crypt32.cryptDecryptMessage(myStore, data);
     } catch (Exception e) {
       throw new AuthCryptoException("Can't decrypt message.", e);
     }
