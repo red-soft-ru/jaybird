@@ -1,4 +1,8 @@
-import java.text.SimpleDateFormat 
+@Library('jenkins_pipeline_utils') 
+ 
+import ru.redsoft.jenkins.Pipeline; 
+import ru.redsoft.jenkins.Git; 
+import ru.redsoft.jenkins.ReleaseHub;  
 
 String release_hub_project = 'jaybird2'
 String maven_group = 'ru.red-soft.jdbc'
@@ -17,13 +21,11 @@ node('master')
     stage('Prepare')
     {
         deleteDir()
-        def wd = pwd()
-
-        utils = fileLoader.fromGit('utils', 'http://git.red-soft.biz/utils/jenkins_pipeline_utils.git', 'master', null, '')
+        def wd = pwd()      
 
         checkout scm
 
-        rev = utils.getGitRevision(wd)
+        rev = Git.getGitRevision(wd)
 
         def matcher = (new File(wd + '/build/init.xml').text =~ /(?sm).*version\.major" value="(?<major>\d+)".*version\.minor" value="(?<minor>\d+).*version\.revision" value="(?<revision>\d+).*/)
         if (!matcher.matches())
@@ -34,7 +36,7 @@ node('master')
         version_minor = matcher.group('minor')
         version_revision = matcher.group('revision')
         version = version_major + '.' + version_minor + '.' + version_revision
-        version_tag = utils.getBuildNo(release_hub_project, version)
+        version += "." + ReleaseHub.getBuildNo(release_hub_project, version)
         version += "." + version_tag
 
         matcher = null    
@@ -98,9 +100,9 @@ node('master')
             sh "echo end >> artifacts"
         }
         
-        utils.deployAndRegister(release_hub_project, version, wd+'/artifacts', env.BUILD_URL, vcs_url, maven_group, wd, '', '', branch)
+        ReleaseHub.deployToReleaseHub(release_hub_project, version, env.BUILD_URL, rev, wd+'/artifacts', wd, maven_group, '', '', branch) 
 
-        utils.defaultSuccessActions()
+        Pipeline.defaultSuccessActions(currentBuild)
     }
 }
 
@@ -111,9 +113,9 @@ catch (any)
 }
 finally
 {
-    mail(to: utils.defaultEmailAddresses(),
-         subject: utils.defaultEmailSubject(version, rev),
-         body: utils.defaultEmailBody(vcs_url, release_hub_project, version));
+     mail(to: Pipeline.defaultEmailAddresses(), 
+         subject: Pipeline.defaultEmailSubject(currentBuild, version, rev), 
+         body: Pipeline.defaultEmailBody(currentBuild, vcs_url, release_hub_project, version));
 }
 
 def build(String jdk, archive_prefix, version_tag)
