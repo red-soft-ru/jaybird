@@ -36,7 +36,7 @@ node('master')
         version_minor = matcher.group('minor')
         version_revision = matcher.group('revision')
         version = version_major + '.' + version_minor + '.' + version_revision
-        version += "." + ReleaseHub.getBuildNo(release_hub_project, version)
+        version_tag = "." + ReleaseHub.getBuildNo(release_hub_project, version)
         version += "." + version_tag
 
         matcher = null    
