@@ -21,12 +21,18 @@ package org.firebirdsql.gds.ng;
 import org.firebirdsql.encodings.Encoding;
 import org.firebirdsql.encodings.IEncodingFactory;
 
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.Reader;
+import java.io.Writer;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+
+import static java.util.Objects.requireNonNull;
 
 /**
  * The default datatype coder.
@@ -44,12 +50,29 @@ import java.util.GregorianCalendar;
 public class DefaultDatatypeCoder implements DatatypeCoder {
 
     private final IEncodingFactory encodingFactory;
+    private final Encoding encoding;
 
+    /**
+     * Returns an instance of {@code DefaultDatatypeCoder} for an encoding factory.
+     *
+     * @param encodingFactory Encoding factory
+     * @return Datatype coder, this might be a cached instance
+     */
+    public static DefaultDatatypeCoder forEncodingFactory(IEncodingFactory encodingFactory) {
+        return encodingFactory.getOrCreateDatatypeCoder(DefaultDatatypeCoder.class);
+    }
+
+    /**
+     * Creates a default datatype coder for the wire protocol.
+     * <p>
+     * In almost all cases, it is better to use {@link #forEncodingFactory(IEncodingFactory)}.
+     * </p>
+     *
+     * @param encodingFactory Encoding factory
+     */
     public DefaultDatatypeCoder(IEncodingFactory encodingFactory) {
-        if (encodingFactory == null) {
-            throw new NullPointerException("encodingFactory should not be null");
-        }
-        this.encodingFactory = encodingFactory;
+        this.encodingFactory = requireNonNull(encodingFactory, "encodingFactory");
+        encoding = encodingFactory.getDefaultEncoding();
     }
 
     @Override
@@ -152,8 +175,28 @@ public class DefaultDatatypeCoder implements DatatypeCoder {
     }
 
     @Override
+    public final byte[] encodeString(String value) {
+        return encoding.encodeToCharset(value);
+    }
+
+    @Override
+    public final Writer createWriter(OutputStream outputStream) {
+        return encoding.createWriter(outputStream);
+    }
+
+    @Override
     public String decodeString(byte[] value, Encoding encoding) throws SQLException {
         return encoding.decodeFromCharset(value);
+    }
+
+    @Override
+    public final String decodeString(byte[] value) {
+        return encoding.decodeFromCharset(value);
+    }
+
+    @Override
+    public final Reader createReader(InputStream inputStream) {
+        return encoding.createReader(inputStream);
     }
 
     // times,dates...
@@ -376,7 +419,7 @@ public class DefaultDatatypeCoder implements DatatypeCoder {
     }
 
     @Override
-    public IEncodingFactory getEncodingFactory() {
+    public final IEncodingFactory getEncodingFactory() {
         return encodingFactory;
     }
 
