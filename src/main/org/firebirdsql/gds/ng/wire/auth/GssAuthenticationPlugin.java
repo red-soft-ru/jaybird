@@ -2,7 +2,9 @@ package org.firebirdsql.gds.ng.wire.auth;
 
 import org.firebirdsql.logging.Logger;
 import org.firebirdsql.logging.LoggerFactory;
+import org.ietf.jgss.GSSException;
 
+import java.net.UnknownHostException;
 import java.sql.SQLException;
 
 /**
@@ -34,7 +36,13 @@ public class GssAuthenticationPlugin implements AuthenticationPlugin {
     }
     log.debug("Gss phase 2");
     gssClient = new GSSClient(serverData);
-    clientData = gssClient.getToken();
+    try {
+      clientData = gssClient.getToken();
+    } catch (UnknownHostException e) {
+      throw new SQLException(e);
+    } catch (GSSException e) {
+      throw new SQLException(e);
+    }
 
     return AuthStatus.AUTH_SUCCESS;
   }
