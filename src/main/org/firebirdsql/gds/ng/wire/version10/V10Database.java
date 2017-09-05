@@ -591,7 +591,12 @@ public class V10Database extends AbstractFbWireDatabase implements FbWireDatabas
 
             GSSClient client = new GSSClient(cryptResponse.getData());
 
-            byte[] token = client.getToken();
+            byte[] token = new byte[0];
+            try {
+                token = client.getToken();
+            } catch (GSSException e) {
+                throw new SQLException(e);
+            }
 
             final XdrOutputStream xdrOut = getXdrOut();
 

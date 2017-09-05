@@ -19,7 +19,7 @@ public class GSSClient {
         this.gssData = gssData;
     }
 
-    public byte[] getToken() {
+    public byte[] getToken() throws UnknownHostException, GSSException {
         // Be sure to set the javax.security.auth.useSubjectCredsOnly
         // system property value to false if you want the underlying
         // mechanism to obtain credentials, rather than your application
@@ -28,36 +28,25 @@ public class GSSClient {
 
         String response = new String(gssData);
         response = response.trim();
-        String[] arr = response.split("\n");
+        response = response.replace("\u0000", "");
+        String[] arr = response.split("(\t|\n)");
 
         serverName = arr[1].trim();
 
         InetAddress addr = null;
-        try {
-            addr = InetAddress.getByName(arr[0]);
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
-        }
+        addr = InetAddress.getByName(arr[0]);
         hostName = addr.getHostName();
         principalName = serverName + "@" + hostName;
         GSSManager manager = GSSManager.getInstance();
         GSSName gssServerName = null;
-        try {
-            gssServerName = manager.createName(principalName, GSSName.NT_HOSTBASED_SERVICE);
-        } catch (GSSException e) {
-            e.printStackTrace();
-        }
+        gssServerName = manager.createName(principalName, GSSName.NT_HOSTBASED_SERVICE);
         // Get the context for authentication
         GSSContext context = null;
         byte[] token = new byte[0];
-        try {
-            context = manager.createContext(gssServerName, null, null,
-                    GSSContext.DEFAULT_LIFETIME);
-            context.requestMutualAuth(true); // Request mutual authentication
-            token = context.initSecContext(token, 0, token.length);
-        } catch (GSSException e) {
-            e.printStackTrace();
-        }
+        context = manager.createContext(gssServerName, null, null,
+                GSSContext.DEFAULT_LIFETIME);
+        context.requestMutualAuth(true); // Request mutual authentication
+        token = context.initSecContext(token, 0, token.length);
 
         return token;
     }
