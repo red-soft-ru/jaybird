@@ -4,6 +4,7 @@ import org.ietf.jgss.*;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Arrays;
 
 /**
  * Created by vasiliy on 09.02.17.
@@ -26,15 +27,12 @@ public class GSSClient {
         // or a wrapper program performing authentication using JAAS.
         System.setProperty( "javax.security.auth.useSubjectCredsOnly", "false");
 
-        String response = new String(gssData);
-        response = response.trim();
-        response = response.replace("\u0000", "");
-        String[] arr = response.split("(\t|\n)");
-
-        serverName = arr[1].trim();
-
+        int val = ((gssData[1] & 0xff) << 8) | (gssData[0] & 0xff);
+        String address  = new String(Arrays.copyOfRange(gssData, 2, val+2));
+        int val2 = ((gssData[3+val] & 0xff) << 8) | (gssData[2+val] & 0xff);
         InetAddress addr = null;
-        addr = InetAddress.getByName(arr[0]);
+        serverName =  new String(Arrays.copyOfRange(gssData, 4+val, 4+val+val2));
+        addr = InetAddress.getByName(address);
         hostName = addr.getHostName();
         principalName = serverName + "@" + hostName;
         GSSManager manager = GSSManager.getInstance();
