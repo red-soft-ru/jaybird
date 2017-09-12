@@ -34,6 +34,7 @@ import javax.security.auth.Subject;
 import javax.transaction.xa.*;
 
 import org.firebirdsql.gds.*;
+import org.firebirdsql.gds.impl.DatabaseParameterBufferExtension;
 import org.firebirdsql.gds.impl.DbAttachInfo;
 import org.firebirdsql.gds.impl.GDSHelper;
 import org.firebirdsql.gds.impl.jni.EmbeddedGDSFactoryPlugin;
@@ -65,6 +66,8 @@ public class FBManagedConnection implements ManagedConnection, XAResource, Excep
             + "Please specify a connection character set (eg property charSet=utf-8) or consult the Jaybird documentation for more information.";
 
     private static final Logger log = LoggerFactory.getLogger(FBManagedConnection.class);
+    private static final String DEFAULT_CONNECTION_ENCODING_PROPERTY = "org.firebirdsql.jdbc.defaultConnectionEncoding";
+    private static final String REQUIRE_CONNECTION_ENCODING_PROPERTY = "org.firebirdsql.jdbc.requireConnectionEncoding";
 
     private final FBManagedConnectionFactory mcf;
 
@@ -105,7 +108,8 @@ public class FBManagedConnection implements ManagedConnection, XAResource, Excep
         try {
             DatabaseParameterBuffer dpb = this.cri.getDpb();
 
-            if (dpb.getArgumentAsString(DatabaseParameterBuffer.LC_CTYPE) == null) {
+            if (dpb.getArgumentAsString(DatabaseParameterBuffer.LC_CTYPE) == null
+                    && dpb.getArgumentAsString(DatabaseParameterBufferExtension.LOCAL_ENCODING) == null) {
                 String defaultEncoding = getDefaultConnectionEncoding();
                 if (defaultEncoding == null) {
                     throw new SQLNonTransientConnectionException(ERROR_NO_CHARSET,
@@ -1458,11 +1462,18 @@ public class FBManagedConnection implements ManagedConnection, XAResource, Excep
 
     private static String getDefaultConnectionEncoding() {
         try {
-            return getSystemPropertyPrivileged("org.firebirdsql.jdbc.defaultConnectionEncoding");
+            String defaultConnectionEncoding = getSystemPropertyPrivileged(DEFAULT_CONNECTION_ENCODING_PROPERTY);
+            if (defaultConnectionEncoding == null) {
+                if (Boolean.valueOf(getSystemPropertyPrivileged(REQUIRE_CONNECTION_ENCODING_PROPERTY))) {
+                    return null;
+                }
+                return "NONE";
+            }
+            return defaultConnectionEncoding;
         } catch (Exception e) {
             log.error("Exception obtaining default connection encoding", e);
         }
-        return null;
+        return "NONE";
     }
 
     private static String getSystemPropertyPrivileged(final String propertyName) {

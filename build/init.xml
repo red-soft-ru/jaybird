@@ -86,7 +86,7 @@
         <property name="specification.vendor" value="Oracle Corporation"/>
 
         <property name="implementation.title" value="Jaybird"/>
-        <property name="implementation.url" value="http://www.firebirdsql.org"/>
+        <property name="implementation.url" value="https://www.firebirdsql.org"/>
         <property name="implementation.version"
                   value="${version.full} (build: tag=${version.svntag} date=${build.id})"/>
         <property name="implementation.vendor" value="Firebird project"/>
@@ -209,7 +209,7 @@
             <path refid="javac.j2ee.classpath"/>
             <pathelement location="${build.j2ee}"/>
             <pathelement location="${module.thirdparty}/antlr-runtime-4.7.jar"/>
-            <pathelement location="${module.thirdparty}/jna-4.4.0.jar"/>
+            <pathelement location="${module.thirdparty}/jna-4.2.2.jar"/>
         </path>
 
         <path id="javac.test.classpath">

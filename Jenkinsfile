@@ -59,6 +59,8 @@ for (j in ['17', '18'])
     build(jdk, archive_prefix, version_tag)
 }
 
+test('18', archive_prefix, version)
+
 node('master')
 {
     stage 'Deploy'
@@ -146,4 +148,42 @@ def build(String jdk, archive_prefix, version_tag)
         stash includes: "dist-${jdk}/sources/**", name: "sources-${jdk}"
         stash includes: "dist-${jdk}/test/**", name: "test-${jdk}"
     }    
+}
+
+def test(jdk, archive_prefix, version)
+{
+    node('jdk' + jdk + '&&tester&&linux')
+    {
+        stage ('Test on JDK' + jdk)
+        {        
+            deleteDir()
+            def wd = pwd()
+            unstash "bin-${jdk}"
+            unstash "test-${jdk}"
+            unstash 'src'
+            
+            if (jdk == '16')
+            {
+                java_home = env.JAVA_HOME_1_6
+            }
+            else if (jdk == '17')
+            {
+                java_home = env.JAVA_HOME_1_7
+            }
+            else if (jdk == '18')
+            {
+                java_home = env.JAVA_HOME_1_8
+            }
+            
+            sh "tar xf dist-src/${archive_prefix}.tar.gz"
+
+            withEnv(["JAVA_HOME=${java_home}", "archive_prefix=${archive_prefix}", "JDK_VERSION=${jdk}", "BINDIR=${wd}/dist-${jdk}", "SRCDIR=${wd}/${archive_prefix}", "JAYBIRD_VERSION=${version}", "WORKSPACE=${wd}"]) {
+                sh """#!/bin/bash
+                    cd ${archive_prefix}/ci
+                    ./test.sh
+                """
+            }
+            step([$class: "JUnitResultArchiver", testResults: "results/TEST-*.xml"])
+        }   
+    }
 }

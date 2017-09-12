@@ -1,19 +1,3 @@
-WARNING {-}
-=======
-
-Jaybird 3 is still in development. This version is provided for testing
-purposes only. We'd appreciate your feedback, but we'd like to emphasize that
-this version is **not intended for production**.
-
-The protocol implementation has been fundamentally rewritten and changes have
-been made for stricter JDBC conformance. As a result the driver might exhibit
-different behavior than previous versions. Read these release notes carefully to
-see if those differences are intentional. 
-
-Bug reports about undocumented changes in behavior are appreciated. Feedback can
-be sent to the Firebird-java mailing list or reported on the issue tracker
-<http://tracker.firebirdsql.org/browse/JDBC>.
-
 General Notes
 =============
 
@@ -31,20 +15,24 @@ the application server and driver.
 About this version
 ------------------
 
-Jaybird 3.0 is a big change from Jaybird 2.2 and earlier. We have rewritten the
-entire low-level implementation to be able to support protocol improvements in 
-newer Firebird versions, made changes with a stricter interpretation of the JDBC 
-requirements, and removed some parts that were either obsolete or not 
-functioning correctly.
+Jaybird 3.0 is a big change from Jaybird 2.2 and earlier. The entire low-level 
+implementation has been rewritten to be able to support protocol improvements in
+newer Firebird versions. We have also made changes with a stricter 
+interpretation of the JDBC requirements, and removed some parts that were either 
+obsolete or not functioning correctly.
 
 We recommend that you do not consider Jaybird 3.0 a drop-in replacement for 
-Jaybird 2.2, and study these release notes carefully. Test your product with
+Jaybird 2.2, and study these release notes carefully. Test your application with
 Jaybird 3.0 before using it in production.
+
+Bug reports about undocumented changes in behavior are appreciated. Feedback can
+be sent to the Firebird-java mailing list or reported on the issue tracker
+<http://tracker.firebirdsql.org/browse/JDBC>.
 
 Supported Firebird versions
 ---------------------------
 
-Jaybird 3.0 was tested against Firebird 2.5.7, and 3.0.0, but should also 
+Jaybird 3.0 was tested against Firebird 2.5.7, and 3.0.2, but should also 
 support other Firebird versions from 2.0 and up.
 
 Formal support for Firebird 1.x has been dropped (although in general we expect
@@ -58,7 +46,7 @@ Jaybird 3.0 is the last version to support Firebird 2.0 and 2.1.
 
 ### Notes on Firebird 3 support
 
-Jaybird 3 does not support the Firebird 3 wire encryption nor zlib compression.
+Jaybird 3.0 does not support the Firebird 3 wire encryption nor zlib compression.
 
 To be able to connect to Firebird 3, it is necessary to change the `WireCrypt` 
 setting from its default `Required` to `Enabled` in `firebird.conf`:
@@ -76,9 +64,9 @@ Jaybird 3.0 supports Java 7 (JDBC 4.1) and Java 8 (JDBC 4.2). Support for
 earlier Java versions has been dropped.
 
 Rudimentary support for Java 9 (JDBC 4.3) is available using the Java 8 version,
-but real module support will not be available until Jaybird 3.1 (or even later).
+but real module support will not be available until Jaybird 4 (or later).
 
-Jaybird 3.0 is the last version to support Java 7.
+Jaybird 3.0 is the last version to support Java 7 (_decision under debate_).
 
 Specification support
 ---------------------
@@ -144,27 +132,25 @@ dependency:
 ~~~
 
 If you want to use Type 2 support (native, local or embedded), you need to 
-explicitly include JNA 4.4.0 as a dependency:
+explicitly include JNA 4.2.2 as a dependency:
 
 ~~~ {.xml}
 <dependency>
     <groupId>net.java.dev.jna</groupId>
     <artifactId>jna</artifactId>
-    <version>4.4.0</version>
+    <version>4.2.2</version>
 </dependency>
 ~~~
 
 We plan to make native and embedded support a separate library in future 
 releases, and provide Firebird client libraries as Maven dependencies as well.
 
-See also [Type 2 (native) and embedded driver].
-
 ### Download ###
 
-You can download the latest versions from <http://www.firebirdsql.org/en/jdbc-driver/>
+You can download the latest versions from <https://www.firebirdsql.org/en/jdbc-driver/>
 
 At minimum Jaybird 3.0 requires `jaybird-@VERSION@.jar` and 
-`connector-api-1.5.jar`. You can also use `jaybird-full-@VERSION@.jar` as it
+`connector-api-1.5.jar`. You can also use `jaybird-full-@VERSION@.jar` which
 includes the connector-api files.
 
 If you deploy your application to a Java EE application server, then you must 
@@ -175,8 +161,8 @@ server.
 For `getGeneratedKeys` support you will need to include 
 `antlr-runtime-4.7.jar` on your classpath.
 
-For native, local or embedded support, you will need to include `jna-4.4.0.jar` 
-on your classpath. See also [Type 2 (native) and embedded driver].
+For native, local or embedded support, you will need to include `jna-4.2.2.jar` 
+on your classpath.
 
 Upgrading from Jaybird 2.2 to Jaybird 3.0
 =========================================
@@ -210,18 +196,48 @@ If you manage your dependencies manually, you need to do the following:
     - `jaybird22_x64.jar` or
     - `libjaybird22_x64.so`
     
-    Instead you need to add `jna-4.4.0.jar` to the classpath of your 
+    Instead you need to add `jna-4.2.2.jar` to the classpath of your 
     application. This library is necessary for native, local and embedded 
-    support. For more information, see [Type 2 (native) and embedded driver]
+    support.
     
 Gotcha's
 --------
 
 No known gotcha's at this time. If you find a problem: please report it on
-http://tracker.firebirdsql.org/brows/JDBC
+<http://tracker.firebirdsql.org/brows/JDBC>
 
 Jaybird 3.0.x changelog
 =======================
+
+Changes in Jaybird 3.0.2
+------------------------
+
+The following has been changed or fixed since Jaybird 3.0.1
+
+-   Fixed: Specifying an unknown Java character set in connection property 
+    `charSet` or `localEncoding` was handled as if no connection character
+    set had been specified, now we throw an exception that the character set 
+    is unknown. ([JDBC-498](http://tracker.firebirdsql.org/browse/JDBC-498))
+-   Changed: Specifying a connection character set is no longer required, and
+    will now default to `NONE` again, if system property 
+    `org.firebirdsql.jdbc.defaultConnectionEncoding` is not specified. ([JDBC-502](http://tracker.firebirdsql.org/browse/JDBC-502))  
+    The new requirement turned out to be too restrictive and hindering adoption
+    of Jaybird 3. If you do want strict behaviour, you can specify system
+    property `org.firebirdsql.jdbc.requireConnectionEncoding` with value `true`.
+    See [Connecting without explicit character set] for more information.
+
+Changes in Jaybird 3.0.1
+------------------------
+
+The following has been changed or fixed since Jaybird 3.0.0
+
+-   Fixed: `FBTraceManager.loadConfigurationFromFile` strips line breaks ([JDBC-493](http://tracker.firebirdsql.org/browse/JDBC-493))
+-   Fixed: `FBDatabaseMetaData.getTables` does not list tables where 
+    `rdb$relation_type` is `null` ([JDBC-494](http://tracker.firebirdsql.org/browse/JDBC-494))
+-   Improvement: Character sets are now initialized lazily ([JDBC-495](http://tracker.firebirdsql.org/browse/JDBC-495))  
+    Under Excelsior Jet, the eager loading of character sets could lead to slow
+    initialization if character sets were excluded from the build.
+-   Fixed: Memory leak caused by retaining blob handles until connection close ([JDBC-497](http://tracker.firebirdsql.org/browse/JDBC-497))
 
 Changes in Jaybird 3.0.0
 ------------------------
@@ -250,7 +266,7 @@ The following has been changed or fixed since Jaybird 3.0.0-beta-3
     This synchronisation proxy will serialise all access to the native library.
     In previous versions of Jaybird this was always applied for Embedded on 
     platforms other than Windows.
--   Upgraded `antlr-runtime` dependency from 4.6 to 4.7 ([JDBC-488](http://tracker.firebirdsql.org/browse/JDBC-488))  
+-   Upgrade `antlr-runtime` dependency from 4.6 to 4.7 ([JDBC-488](http://tracker.firebirdsql.org/browse/JDBC-488))  
     If you tested with previous snapshot or beta versions of Jaybird 3.0, make
     sure to replace `antlr-runtime-4.5.3.jar` or `antlr-runtime-4.6.jar` 
     with `antlr-runtime-4.7.jar`.
@@ -358,7 +374,7 @@ Jaybird currently does not formally support Java 9 (JDBC 4.3), although most of
 the JDBC 4.3 features have been implemented (in as far as they are supported by 
 Firebird). 
 
-You can use the Java 8 driver under Java 9, contrary to earlier Jaybird 3 test 
+You can use the Java 8 driver under Java 9, contrary to earlier Jaybird 3.0 test 
 releases, it is no longer necessary to add the `java.xml.bind` module using 
 `--add-modules java.xml.bind`.
 
@@ -381,7 +397,7 @@ version 12.
 Firebird 3.0 support is improved with the (partial) implementation of wire
 protocol 13 and support for the _Srp_ authentication plugin. Version 13 support
 does not yet provide Firebird 3.0 wire encryption and zlib compression. Wire
-encryption is planned for Jaybird 3.1. Support for zlib compression is not 
+encryption is planned for Jaybird 4. Support for zlib compression is not 
 planned yet.
 
 See also [Jaybird and Firebird 3](https://github.com/FirebirdSQL/jaybird/wiki/Jaybird-and-Firebird-3)
@@ -505,8 +521,10 @@ See also [Compatibility changes] for details.
 
 ### Specifying connection character set is now required ###
 
-Jaybird 3.0 requires you to specify the connection character set by either
+Jaybird 3.0.0 and 3.0.1 required you to specify the connection character set by either
 specifying `encoding=<Firebird encoding>` or `charSet=<Java encoding>`.
+
+This requirement has been dropped again in 3.0.2.
 
 For more information see: [Connection rejected without an explicit character set]
 
@@ -596,7 +614,7 @@ Known Issues
 
 -   Firebird 3.0.1 does not correctly support `BOOLEAN` parameters, see [CORE-5367](http://tracker.firebirdsql.org/browse/CORE-5367)
 
-    Either use Firebird 3.0.0 or 3.0.2 (when available).
+    Either use Firebird 3.0.0 or 3.0.2 and higher.
 
 -   Using a native connection with a Firebird 3 client library to a Firebird 2.5
     or older server may be slow to connect. The workaround is to specify the
@@ -615,8 +633,9 @@ The changes due to the new protocol implementation and/or JDBC conformance are
 listed below.
 
 **The list might not be complete, if you notice a difference in behavior that is
-not listed, please report it as bug.** It might have been a change we forgot to
-document, but it could just as well be an implementation bug.
+not listed, please [report it as bug](http://tracker.firebirdsql.org/brows/JDBC).** 
+It might have been a change we forgot to document, but it could just as well be 
+an implementation bug.
 
 Character set handling
 ----------------------
@@ -661,29 +680,27 @@ right character set.
 
 ### Connection rejected without an explicit character set ###
 
-If no explicit character set has been set, Jaybird 3.0 will reject the 
-connection with an `SQLNonTransientConnectionException` with message 
-_"Connection rejected: No connection character set specified (property lc_ctype,
-encoding, charSet or localEncoding). Please specify a connection character set 
-(eg property charSet=utf-8) or consult the Jaybird documentation for more 
-information."_ ([JDBC-446](http://tracker.firebirdsql.org/browse/JDBC-446))
+Jaybird version 3.0.0 and 3.0.1 would not connect if no connection character set
+had been specified. This requirement has been dropped again. See 
+[Connecting without explicit character set] for more information on the behavior
+in Jaybird 3.0.2 and higher. 
 
-In Jaybird 2.2 and earlier, Jaybird would default to connection character set 
-`NONE` if no character set had been specified (through `encoding` 
-and/or `charSet`). This can result in incorrect character set
-handling when the database is used from different locales.
+### Connecting without explicit character set ###
 
-To prevent potential data-corruption, we no longer allow connecting without an
-explicit connection character set.
+If no connection character set has been specified (using connection property 
+`encoding` or `charSet` or their aliases), then - by default - Jaybird 3.0.2 and 
+higher will default to connection character set `NONE`. Be aware that `NONE` in 
+Jaybird 3 does not behave the same as in Jaybird 2.2 and earlier, see 
+[Connection character set NONE] for information.
 
-To address this change, explicitly set the connection character set using
-one of the following options:
+Note that using `NONE` can result in incorrect character set handling when the 
+database is used from different locales.
+
+You can explicitly set the connection character set using one of the following 
+options:
 
 *   Use connection property `encoding` (alias: `lc_ctype`) with a Firebird character
     set name. 
-    
-    Use `encoding=NONE` for the old default behavior (with some caveats, see 
-    other sections).
 
 *   Use connection property `charSet` (alias: `localEncoding`) with a Java character
     set name.
@@ -692,15 +709,31 @@ one of the following options:
     Firebird character set in a Java character set other than the default 
     mapping.
 
-*   By providing a default Firebird character set with system property 
+To control how Jaybird handles connections without explicit character sets, you
+can use the following options:
+
+*   You can configure a default Firebird character set - overriding the default 
+    of `NONE` - with system property 
     `org.firebirdsql.jdbc.defaultConnectionEncoding`. Jaybird will apply the
     specified character set as the default when no character set is specified
     in the connection properties.
-    
+      
     This property only supports Firebird character set names.
-
-    Use `-Dorg.firebirdsql.jdbc.defaultConnectionEncoding=NONE` to revert to the
-    old behavior (with some caveats, see other sections).
+    
+*   You can require an explicit character set to be specified with system
+    property `org.firebirdsql.jdbc.requireConnectionEncoding` set to `true`.
+    With this property specified, a connection character set must have been
+    specified using connection properties or using the system property 
+    `org.firebirdsql.jdbc.defaultConnectionEncoding`.
+    
+    This is the behaviour that was the default in Jaybird 3.0.0 and 3.0.1.
+  
+    This property will cause Jaybird to reject the connection, if no character 
+    set has been set, with an `SQLNonTransientConnectionException` with message 
+    _"Connection rejected: No connection character set specified (property 
+    lc_ctype, encoding, charSet or localEncoding). Please specify a connection 
+    character set (eg property charSet=utf-8) or consult the Jaybird 
+    documentation for more information."_.
 
 Logging
 -------
@@ -824,7 +857,7 @@ specification.
 
 Most methods in JDBC objects are required to throw an `SQLException` if 
 the object is closed or otherwise invalid. Not all Jaybird methods followed this
-requirement. We have improved this in Jaybird 3, but there are still some cases
+requirement. We have improved this in Jaybird 3.0, but there are still some cases
 left to fix (which we might do in point releases).
 
 ### Statement ###
@@ -949,8 +982,8 @@ The changes made are as follows:
 
 *   `null` will always be interpreted as `"%"` (before this rule was applied
     inconsistently)
-*   Empty string will no longer match (ie they are no longer interpreted as
-    `"%"`) unless explicitly allowed by the method javadoc (usually only the
+*   Empty string will no longer match (ie it is no longer interpreted as `"%"`) 
+    unless explicitly allowed by the method javadoc (usually only the
     `catalogPattern` and `schemaPattern`, which are always ignored by Jaybird as
     Firebird currently doesn't support this)
 *   Double quotes around a pattern will no longer be stripped, and therefor will
@@ -1025,7 +1058,13 @@ Jaybird no longer needs a `jaybirdxx.dll` or `libjaybirdxx.so` for the Type 2
 and embedded driver. Jaybird now uses JNA to access the client library.
 
 If you want to use the Type 2 driver, or Firebird embedded, then you need to
+<<<<<<< HEAD
+include `jna-4.4.0.jar` on the classpath.
+||||||| 829d711... JDBC-489 Upgrade to JNA 4.4.0
 include the `jna-4.4.0.jar` on the classpath.
+=======
+include the `jna-4.2.2.jar` on the classpath.
+>>>>>>> parent of 829d711... JDBC-489 Upgrade to JNA 4.4.0
 
 When using Maven, you need to specify the dependency on JNA yourself, as we 
 don't depend on it by default:
@@ -1034,13 +1073,14 @@ don't depend on it by default:
 <dependency>
     <groupId>net.java.dev.jna</groupId>
     <artifactId>jna</artifactId>
-    <version>4.4.0</version>
+    <version>4.2.2</version>
 </dependency>
 ```
 
 The `fbclient.dll`, `fbembed.dll`, `libfbclient.so`, or `libfbembed.so` need to
 be on the path, or the location needs to be specified in the system property 
-`jna.library.path`.
+`jna.library.path` (as an absolute or relative path to the directory/directories
+containing the library file(s)).
 
 In the future we will move the Type 2 support to a separate library and provide 
 JNA-compatible jars that provide the native libraries of a specific Firebird 
@@ -1056,7 +1096,7 @@ removed completely, with the exception of
 `org.firebirdsql.pool.FBSimpleDataSource`. This class has been moved to
 `org.firebirdsql.ds.FBSimpleDataSource`. A subclass with the same name is kept
 in `org.firebirdsql.pool` for backwards compatibility. This subclass will be
-removed in Jaybird 3.1.
+removed in Jaybird 4.
 
 With this change, there are no `javax.sql.DataSource` implementations in Jaybird
 that provide connection pooling (the `javax.sql.ConnectionPoolDataSource`
@@ -1110,28 +1150,54 @@ Miscellaneous
 Breaking changes for Jaybird 3.1
 --------------------------------
 
-With Jaybird 3.1 the following breaking changes will be introduced.
+The version previously announced as 3.1 will be released as Jaybird 4.
+
+Breaking changes for Jaybird 4
+------------------------------
+
+With Jaybird 4 the following breaking changes will be introduced.
 
 ### Dropping support for Firebird 2.0 and 2.1 ###
 
-Jaybird 3.1 will drop support for Firebird 2.0 and 2.1. In general we expect the
+Jaybird 4 will drop support for Firebird 2.0 and 2.1. In general we expect the
 driver to remain functional, but chances are certain metadata (eg 
 `DatabaseMetaData`) will break if we use features introduced in newer versions.
 
 ### Dropping support for Java 7 ###
 
-Jaybird 3.1 will very likely drop support for Java 7 (this decision is not final yet).
+Jaybird 4 will very likely drop support for Java 7 (this decision is not final yet).
 
 ### Removal of deprecated methods ###
 
-The following methods will be removed in Jaybird 3.1:
+The following methods will be removed in Jaybird 4:
 
--   `CharacterTranslator.getMapping()`, use `CharacterTranslator.getMapping(char)`
-    instead.
+-   Character set mapping (translation) will be removed entirely. Connection 
+    property `useTranslation` (and it's alias `mapping_path`) will no longer be
+    available.
     
-    Complete removal of the character translation support is also being
-    considered, as similar effects can be achieved by a custom encoding 
-    implementation.
+    Similar effects can be achieved by a custom encoding implementation.
+    
+    As part of this change the following parts of the implementation will be 
+    removed (note that most are internal to Jaybird):
+    
+    -   `org.firebirdsql.encodings.CharacterTranslator` will be removed entirely
+    -   `DatatypeCoder#encodeString(String value, String javaEncoding, String mappingPath)`
+    -   `DatatypeCoder#encodeString(String value, Encoding encoding, String mappingPath)`
+    -   `DatatypeCoder#decodeString(byte[] value, String javaEncoding, String mappingPath)`
+    -   `DatatypeCoder#decodeString(byte[] value, Encoding encoding, String mappingPath)`
+    -   `Encoding#withTranslation(CharacterTranslator translator)`
+    -   `EncodingFactory#getEncoding(String encoding, String mappingPath)`
+    -   `EncodingFactory#getEncoding(Charset charset, String mappingPath)`
+    -   `FirebirdConnectionProperties#setUseTranslation(String translationPath)` (and on data sources)
+    -   `FirebirdConnectionProperties#getUseTranslation` (and on data sources)
+    -   `IEncodingFactory#getCharacterTranslator(String mappingPath)`
+    
+-   The following connection properties will be removed:
+
+    -   `useTranslation`: See previous item
+    -   `octetsAsBytes`: Since Jaybird 3 octets is always handled as `BINARY`
+    -   `noResultSetTracking`: Option does nothing since Jaybird 3
+    -   `paranoia_mode`: Option does nothing since Jaybird 2.2 (maybe earlier)
     
 -   `GDSHelper.iscVaxInteger(byte[] buffer, int pos, int length)` use
     `VaxEncoding.iscVaxInteger(byte[] buffer, int startPosition, int length)`
@@ -1143,10 +1209,12 @@ The following methods will be removed in Jaybird 3.1:
     `MaintenanceManager.commitTransaction(long transactionId)` instead.
 -   `MaintenanceManager.rollbackTransaction(int transactionId)`, use
     `MaintenanceManager.rollbackTransaction(long transactionId)` instead.
+-   `FBBlob#copyCharacterStream(Reader reader, long length, String encoding)`
+-   `FBBlob#copyCharacterStream(Reader reader, String encoding)`  
 
 ### Removal of deprecated constants ###
 
-The following constants will be removed in Jaybird 3.1:
+The following constants will be removed in Jaybird 4:
 
 -   All `SQL_STATE_*` constants in `FBSQLException`,
     `FBResourceTransactionException`, `FBResourceException`, and
