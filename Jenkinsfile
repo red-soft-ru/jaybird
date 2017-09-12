@@ -4,7 +4,7 @@ import ru.redsoft.jenkins.Pipeline;
 import ru.redsoft.jenkins.Git; 
 import ru.redsoft.jenkins.ReleaseHub;  
 
-String release_hub_project = 'jaybird3'
+String release_hub_project = 'jaybird'
 String maven_group = 'ru.red-soft.jdbc'
 String rev
 String version
