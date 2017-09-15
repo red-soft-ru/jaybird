@@ -5,13 +5,10 @@ import org.firebirdsql.cryptoapi.windows.Win32Api;
 import org.firebirdsql.cryptoapi.windows.Winerror;
 import org.firebirdsql.cryptoapi.windows.CryptoUtil;
 import org.firebirdsql.cryptoapi.cryptopro.exception.CryptoException;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
 import org.apache.log4j.Logger;
-
 import com.sun.jna.Native;
 import com.sun.jna.Platform;
 import com.sun.jna.Pointer;
@@ -19,12 +16,8 @@ import com.sun.jna.ptr.IntByReference;
 import com.sun.jna.ptr.PointerByReference;
 import org.firebirdsql.cryptoapi.windows.ErrorMessages;
 import org.firebirdsql.cryptoapi.windows.Wincrypt;
-import org.firebirdsql.cryptoapi.windows.crypt32._CRYPT_DECRYPT_MESSAGE_PARA;
 
 import static org.firebirdsql.cryptoapi.windows.Wincrypt.CRYPT_FIRST;
-import static org.firebirdsql.cryptoapi.windows.Wincrypt.PKCS_7_ASN_ENCODING;
-import static org.firebirdsql.cryptoapi.windows.Wincrypt.X509_ASN_ENCODING;
-
 
 public class Advapi {
   private static Logger LOG = Logger.getLogger(Advapi.class);
@@ -271,6 +264,15 @@ public class Advapi {
     return res;
   }
 
+  public static boolean cryptSetProvParam(Pointer provHandle, int paramCode, byte[] data, int flags) {
+    if (LOGGING)
+      LOG.debug("cryptSetProvParam " + provHandle + " " + paramCode + " (data) " + flags);
+    boolean res = lib.CryptSetProvParam(provHandle, paramCode, data, flags);
+    if (LOGGING)
+      LOG.debug("cryptSetProvParam " + res);
+    return res;
+  }
+
   /**
    * Important!
    * The CryptEncrypt function is not guaranteed to be thread safe and may return incorrect results
@@ -348,6 +350,10 @@ public class Advapi {
 
   public static int getLastError() {
     return Platform.isWindows() ? Win32Api.getLastError() : lib.GetLastError();
+  }
+
+  public static void setPin(Pointer provHandle, String pin) {
+    cryptSetProvParam(provHandle, Wincrypt.PP_KEYEXCHANGE_PIN, (pin + '\0').getBytes(), 0);
   }
 
   public static String formatMessage(int errorCode) {

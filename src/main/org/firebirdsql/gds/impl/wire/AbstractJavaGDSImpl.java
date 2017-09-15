@@ -441,6 +441,10 @@ public abstract class AbstractJavaGDSImpl extends AbstractGDS implements GDS {
 				final AuthSspi sspi;
 				if (multifactor) {
 				  sspi = new AuthSspi();
+					if (((ParameterBufferBase)newDpb).hasArgument(ISCConstants.isc_dpb_repository_pin)) {
+						sspi.setRepositoryPin(((ParameterBufferBase) newDpb).getArgumentAsString(ISCConstants.isc_spb_repository_pin));
+						((ParameterBufferBase) newDpb).removeArgument(ISCConstants.isc_dpb_repository_pin);
+					}
 				  sspi.fillFactors(newDpb);
 				}
 				else sspi = null;
@@ -2683,6 +2687,10 @@ public abstract class AbstractJavaGDSImpl extends AbstractGDS implements GDS {
         newDpb.getArgumentsList().addAll(((ParameterBufferBase)serviceParameterBuffer).getArgumentsList());
 
         sspi = new AuthSspi();
+				if (((ParameterBufferBase)newDpb).hasArgument(ISCConstants.isc_spb_repository_pin)) {
+					sspi.setRepositoryPin(((ParameterBufferBase) newDpb).getArgumentAsString(ISCConstants.isc_spb_repository_pin));
+					((ParameterBufferBase) newDpb).removeArgument(ISCConstants.isc_spb_repository_pin);
+				}
         sspi.fillFactors(newDpb);
         svc.setAuthSspi(sspi);
 

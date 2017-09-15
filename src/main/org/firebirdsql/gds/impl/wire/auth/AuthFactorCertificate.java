@@ -63,7 +63,7 @@ public class AuthFactorCertificate extends AuthFactor {
       if (!serverData.find(sdRandomNumber))
         throw new GDSAuthException("No random number found in server data");
 
-      byte[] number = AuthMethods.ccfiDecrypt(serverData.getBytes().bytes());
+      byte[] number = AuthMethods.ccfiDecrypt(serverData.getBytes().bytes(), certBase64);
       byte[] signData = AuthMethods.ccfiSign(number, certBase64);
       byte[] b = new byte[2];
       b[0] = (byte)(signData.length & 0xff);

@@ -565,6 +565,8 @@ public class Wincrypt {
   public static int CERT_STORE_REVOCATION_FLAG         = 0x00000004;
   public static int CERT_STORE_NO_CRL_FLAG             = 0x00010000;
   public static int CERT_STORE_NO_ISSUER_FLAG          = 0x00020000;
+  public static int CERT_STORE_READONLY_FLAG           = 0x00008000;
+  public static int CERT_STORE_OPEN_EXISTING_FLAG      = 0x00004000;
 
   public static int CERT_STORE_BASE_CRL_FLAG           = 0x00000100;
   public static int CERT_STORE_DELTA_CRL_FLAG          = 0x00000200;

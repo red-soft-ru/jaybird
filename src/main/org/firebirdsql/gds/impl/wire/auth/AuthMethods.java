@@ -132,11 +132,11 @@ public class AuthMethods {
     }
   }
 
-  public static byte[] ccfiDecrypt(final byte[] data) throws GDSAuthException {
+  public static byte[] ccfiDecrypt(final byte[] data, String certBase64) throws GDSAuthException {
     final AuthCryptoPlugin p = AuthCryptoPlugin.getPlugin();
     final byte[] res;
     try {
-      res = p.ccfiDecrypt(data);
+      res = p.ccfiDecrypt(data, certBase64);
     } catch (AuthCryptoException e) {
       throw new GDSAuthException("Error decrypting data: " + e.getMessage());
     }

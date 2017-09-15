@@ -246,7 +246,7 @@ public interface ISCConstants {
     public final static int isc_spb_svc_name                = 156;
     public final static int isc_spb_verify_server           = 157;
     public final static int isc_spb_hw_address              = 158;
-    public final static int isc_spb_repository_pin          = 159;
+    public final static int isc_spb_repository_pin          = isc_dpb_repository_pin;
 
     public final static int isc_spb_connect_timeout         = isc_dpb_connect_timeout;
     public final static int isc_spb_dummy_packet_interval   = isc_dpb_dummy_packet_interval;

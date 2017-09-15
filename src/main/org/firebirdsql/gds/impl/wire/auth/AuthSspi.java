@@ -172,4 +172,8 @@ public class AuthSspi {
   public void setSessionEncyption(boolean sessionEncyption) {
     this.sessionEncyption = sessionEncyption;
   }
+
+  public void setRepositoryPin(String pin) throws GDSAuthException {
+    AuthCryptoPlugin.getPlugin().setRepositoryPin(pin);
+  }
 }

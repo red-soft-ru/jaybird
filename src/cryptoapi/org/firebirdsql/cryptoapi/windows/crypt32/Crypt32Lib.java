@@ -13,6 +13,24 @@ import com.sun.jna.ptr.PointerByReference;
  */
 @SuppressWarnings({"JavaDoc", "UnusedDeclaration"})
 public interface Crypt32Lib extends Library {
+
+  /**
+   * The CertOpenStore function opens a certificate store by using a specified store provider type.
+   * While this function can open a certificate store for most purposes, CertOpenSystemStore is recommended to open
+   * the most common certificate stores. CertOpenStore is required for more complex options and special cases.
+   *
+   * Syntax:
+   *
+   * HCERTSTORE WINAPI CertOpenStore(
+   *   __in  LPCSTR lpszStoreProvider,
+   *   __in  DWORD dwMsgAndCertEncodingType,
+   *   __in  HCRYPTPROV_LEGACY hCryptProv,
+   *   __in  DWORD dwFlags,
+   *   __in  const void *pvPara
+   * );
+   */
+  public Pointer CertOpenStore(int lpszStoreProvider, int dwMsgAndCertEncodingType, Pointer hCryptProv, int dwFlags, String pvPara);
+
   /**
    * The CertOpenSystemStore function is a simplified function that opens the most common system certificate store.
    * To open certificate stores with more complex requirements, such as file-based or memory-based stores, use CertOpenStore.
@@ -95,6 +113,20 @@ public interface Crypt32Lib extends Library {
                                                    PointerByReference phCryptProvOrNCryptKey,
                                                    IntByReference pdwKeySpec, IntByReference pfCallerFreeProvOrNCryptKey);
 
+  /**
+   * The CertFreeCertificateChain function frees a certificate chain by reducing its reference count.
+   * If the reference count becomes zero, memory allocated for the chain is released.
+   * To free a context obtained by a get, duplicate, or create function, call the appropriate free function.
+   * To free a context obtained by a find or enumerate function, either pass it in as the previous context
+   * parameter to a subsequent invocation of the function, or call the appropriate free function.
+   * For more information, see the reference topic for the function that obtains the context.
+   *
+   * Syntax:
+   * VOID WINAPI CertFreeCertificateChain(
+   *   __in  PCCERT_CHAIN_CONTEXT pChainContext
+   * );
+   */
+  public void CertFreeCertificateChain(Pointer pChainContext);
 
   /**
    * The CertCreateCertificateContext function creates a certificate context from an encoded certificate.
@@ -128,6 +160,23 @@ public interface Crypt32Lib extends Library {
    * );
    */
   public boolean CertFreeCertificateContext(Pointer pCertContext);
+
+  /**
+   * BOOL WINAPI CertGetCertificateContextProperty(
+   *   _In_     PCCERT_CONTEXT pCertContext,
+   *   _In_     DWORD dwPropId,
+   *   _Out_    void *pvData,
+   *   _Inout_  DWORD *pcbData
+   * );
+   */
+
+  public boolean CertGetCertificateContextProperty(
+      _CERT_CONTEXT.PCCERT_CONTEXT pCertContext,
+      int dwPropId,
+      //Structure pvData,
+      Pointer pvData,
+      IntByReference pcbData
+  );
 
   /**
    *  BOOL WINAPI CryptDecryptMessage(

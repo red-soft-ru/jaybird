@@ -1,6 +1,8 @@
 package org.firebirdsql.cryptoapi;
 
+import com.sun.jna.Native;
 import com.sun.jna.Pointer;
+import com.sun.jna.platform.win32.WinCrypt;
 import com.sun.jna.ptr.IntByReference;
 import com.sun.jna.ptr.PointerByReference;
 import org.firebirdsql.gds.impl.wire.Bytes;
@@ -27,13 +29,15 @@ import static org.firebirdsql.cryptoapi.windows.advapi.Advapi.cryptSetKeyParam;
 
 
 public class AuthCryptoPluginImpl extends AuthCryptoPlugin {
-  private final Pointer provider;
-  private final Pointer myStore;
+  private Pointer provider;
+  private Pointer myStore;
+  private String repositoryPin;
 
   public AuthCryptoPluginImpl() throws CryptoException {
     try {
-      provider = CryptoProProvider.acquireContext();
+      provider = Advapi.cryptAcquireContext(null, null, CryptoProProvider.PROV_DEFAULT, Wincrypt.CRYPT_VERIFYCONTEXT);
       myStore = Crypt32.certOpenSystemStore(null, "MY");
+      repositoryPin = null;
     } catch (CryptoException e) {
       throw e;
     }
@@ -73,7 +77,8 @@ public class AuthCryptoPluginImpl extends AuthCryptoPlugin {
       final byte[] certData = CertUtils.decode(certBase64);
       for (ContainerInfo cert : certs) {
         if (Arrays.equals(cert.certData, certData)) {
-          final Pointer keyProv = Advapi.cryptAcquireContext(cert.containerName, null, CryptoProProvider.PROV_DEFAULT, 0);
+          final Pointer keyProv = Advapi.cryptAcquireContext(cert.containerName, null, CryptoProProvider.PROV_DEFAULT,
+              Wincrypt.CRYPT_SILENT);
           try {
             final Pointer hKey = Advapi.cryptGetUserKey(keyProv, AT_KEYEXCHANGE);
             return new AuthPrivateKeyContext(keyProv, hKey);
@@ -228,8 +233,18 @@ public class AuthCryptoPluginImpl extends AuthCryptoPlugin {
   }
 
   @Override
-  public byte[] ccfiDecrypt(byte[] data) throws AuthCryptoException {
+  public byte[] ccfiDecrypt(byte[] data, String certBase64) throws AuthCryptoException {
+    AuthPrivateKeyContext cont = null;
+    Pointer p = null;
+    String containerName = null;
     try {
+      cont = getUserKey(certBase64);
+      byte[] keyParam = Advapi.cryptGetProvParam(/*provHandle.getValue()*/(Pointer) cont.getProvHandle(), Wincrypt.PP_CONTAINER, 0);
+      if (keyParam != null)
+        containerName = Native.toString(keyParam);
+      provider = Advapi.cryptAcquireContext(containerName, null, CryptoProProvider.PROV_DEFAULT, Wincrypt.CRYPT_SILENT);
+      if (repositoryPin != null)
+        Advapi.setPin(provider, repositoryPin);
       return Crypt32.cryptDecryptMessage(myStore, data);
     } catch (Exception e) {
       throw new AuthCryptoException("Can't decrypt message.", e);
@@ -238,9 +253,12 @@ public class AuthCryptoPluginImpl extends AuthCryptoPlugin {
 
   @Override
   public byte[] ccfiSign(byte[] data, String certBase64) throws AuthCryptoException {
+    AuthPrivateKeyContext cont = null;
+    Pointer p = null;
+    String containerName = null;
     try {
-      AuthPrivateKeyContext cont = getUserKey(certBase64);
-      Pointer p = (Pointer)cont.getProvHandle();
+      cont = getUserKey(certBase64);
+      p = (Pointer)cont.getProvHandle();
       final Pointer hashHandle = Advapi.cryptCreateHash(p, Wincrypt.CALG_GR3411);
 //      Advapi.cryptGetHashParam(hashHandle, 0x000a, data);
       Advapi.cryptHashData(hashHandle, data, 0);
@@ -257,5 +275,10 @@ public class AuthCryptoPluginImpl extends AuthCryptoPlugin {
     } catch (Exception e) {
       throw new AuthCryptoException("Can't sign data.", e);
     }
+  }
+
+  @Override
+  public void setRepositoryPin(String pin) {
+    this.repositoryPin = pin;
   }
 }
