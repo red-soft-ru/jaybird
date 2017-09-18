@@ -57,11 +57,6 @@ public class AuthCryptoPluginImpl extends AuthCryptoPlugin {
       throw new AuthCryptoException(e);
     }
     try {
-      // поищем сначала в контейнерах
-      final AuthPrivateKeyContext keyContext = findCertInContainers(certBase64);
-      if (keyContext != null)
-        return keyContext;
-      // на Linux мы должны сами поискать сертификат в хранилище, так как КриптоПро не ищет.
       final _CERT_CONTEXT.PCCERT_CONTEXT cert = CertUtils.findCertificate(myStore, certContext);
       if (cert == null)
         throw new AuthCryptoException("Can't find certificate in personal store");
@@ -72,32 +67,6 @@ public class AuthCryptoPluginImpl extends AuthCryptoPlugin {
       }
     } finally {
       Crypt32.certFreeCertificateContext(certContext.getPointer());
-    }
-  }
-
-  private AuthPrivateKeyContext findCertInContainers(String certBase64) throws AuthCryptoException {
-    try {
-      final Pointer hProv = CryptoProProvider.acquireContext();
-      final List<ContainerInfo> certs = CertUtils.getAvailableContainersCertificatesList(hProv);
-      final byte[] certData = CertUtils.decode(certBase64);
-      for (ContainerInfo cert : certs) {
-        if (Arrays.equals(cert.certData, certData)) {
-          final Pointer keyProv = Advapi.cryptAcquireContext(cert.containerName, null, CryptoProProvider.PROV_DEFAULT,
-              Wincrypt.CRYPT_SILENT);
-          try {
-            final Pointer hKey = Advapi.cryptGetUserKey(keyProv, AT_KEYEXCHANGE);
-            return new AuthPrivateKeyContext(keyProv, hKey);
-          } catch (CryptoException e) {
-            Advapi.cryptReleaseContext(keyProv);
-            throw e;
-          }
-        }
-      }
-      return null;
-    } catch (CryptoException e) {
-      throw new AuthCryptoException(e);
-    } catch (CertificateException e) {
-      throw new AuthCryptoException(e);
     }
   }
 
