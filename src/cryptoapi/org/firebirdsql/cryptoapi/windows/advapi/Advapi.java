@@ -5,6 +5,8 @@ import org.firebirdsql.cryptoapi.windows.Win32Api;
 import org.firebirdsql.cryptoapi.windows.Winerror;
 import org.firebirdsql.cryptoapi.windows.CryptoUtil;
 import org.firebirdsql.cryptoapi.cryptopro.exception.CryptoException;
+
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -149,6 +151,15 @@ public class Advapi {
     return Win32Api.getActualData(sign, len.getValue());
   }
 
+  public static boolean cryptVerifySignature(Pointer hashHandle, byte[] signature, Pointer pubKeyHandle, int flags) {
+    if (LOGGING)
+      LOG.debug("cryptVerifySignature " + hashHandle + " " + Arrays.toString(signature) + " " + pubKeyHandle + " " + flags);
+    boolean res = lib.CryptVerifySignatureA(hashHandle, signature, signature.length, pubKeyHandle, null, flags);
+    if (LOGGING)
+      LOG.debug("cryptVerifySignature " + res);
+    return res;
+  }
+
   public static byte[] cryptGetKeyParam(Pointer keyHandle, int paramCode) throws CryptoException {
     if (LOGGING)
       LOG.debug("cryptGetKeyParam " + keyHandle + " " + paramCode);
@@ -271,6 +282,13 @@ public class Advapi {
     if (LOGGING)
       LOG.debug("cryptSetProvParam " + res);
     return res;
+  }
+
+  public static ByteBuffer cryptGenRandom(Pointer provHandle, int bufferSize) throws CryptoException {
+    final ByteBuffer buf = ByteBuffer.wrap(new byte[bufferSize]);
+    if (!lib.CryptGenRandom(provHandle, bufferSize, buf))
+      throw CryptoUtil.raiseCryptoError("CryptGenRandom", getLastError());
+    return buf;
   }
 
   /**

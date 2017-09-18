@@ -176,6 +176,16 @@ public class Crypt32 {
     return pvData;
   }
 
+  public static Pointer cryptImportPublicKeyInfo(Pointer provHandle, int certEncodingType, _CERT_PUBLIC_KEY_INFO.PCERT_PUBLIC_KEY_INFO info) {
+    if (LOGGING)
+      LOG.debug("cryptImportPublicKeyInfo " + provHandle + " " + certEncodingType + " " + toString(info));
+    final PointerByReference keyHandle = new PointerByReference();
+    Pointer res = lib.CryptImportPublicKeyInfo(provHandle, certEncodingType, info, keyHandle) ? keyHandle.getValue() : null;
+    if (LOGGING)
+      LOG.debug("cryptImportPublicKeyInfo " + res);
+    return res;
+  }
+
   public static byte[] cryptDecryptMessage(
       Pointer certStore,
       byte[] pbData

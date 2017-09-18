@@ -179,6 +179,21 @@ public interface Crypt32Lib extends Library {
   );
 
   /**
+   * The CryptImportPublicKeyInfo function converts and imports the public key information into the provider and
+   * returns a handle of the public key. CryptImportPublicKeyInfoEx provides a revised version of this function.
+   *
+   * Syntax:
+   *
+   * BOOL WINAPI CryptImportPublicKeyInfo(
+   *   __in   HCRYPTPROV hCryptProv,
+   *   __in   DWORD dwCertEncodingType,
+   *   __in   PCERT_PUBLIC_KEY_INFO pInfo,
+   *   __out  HCRYPTKEY *phKey
+   * );
+   */
+  public boolean CryptImportPublicKeyInfo(Pointer hCryptProv, int dwCertEncodingType, _CERT_PUBLIC_KEY_INFO.PCERT_PUBLIC_KEY_INFO pInfo, PointerByReference phKey);
+
+  /**
    *  BOOL WINAPI CryptDecryptMessage(
    *  _In_              PCRYPT_DECRYPT_MESSAGE_PARA pDecryptPara,
    *  _In_        const BYTE                        *pbEncryptedBlob,

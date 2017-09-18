@@ -5,6 +5,9 @@ import com.sun.jna.Pointer;
 import com.sun.jna.platform.win32.WinCrypt;
 import com.sun.jna.ptr.IntByReference;
 import com.sun.jna.ptr.PointerByReference;
+import org.firebirdsql.cryptoapi.cryptopro.RandomUtil;
+import org.firebirdsql.cryptoapi.windows.Win32Api;
+import org.firebirdsql.cryptoapi.windows.crypt32._CERT_PUBLIC_KEY_INFO;
 import org.firebirdsql.gds.impl.wire.Bytes;
 import org.firebirdsql.gds.impl.wire.auth.AuthCryptoException;
 import org.firebirdsql.gds.impl.wire.auth.AuthCryptoPlugin;
@@ -20,13 +23,15 @@ import org.firebirdsql.cryptoapi.windows.crypt32.Crypt32;
 import org.firebirdsql.cryptoapi.windows.crypt32._CERT_CONTEXT;
 import org.firebirdsql.cryptoapi.windows.sspi._ALG_ID;
 
+import java.security.SignatureException;
+import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.Arrays;
 import java.util.List;
 
 import static org.firebirdsql.cryptoapi.windows.Wincrypt.*;
 import static org.firebirdsql.cryptoapi.windows.advapi.Advapi.cryptSetKeyParam;
-
 
 public class AuthCryptoPluginImpl extends AuthCryptoPlugin {
   private Pointer provider;
@@ -280,5 +285,76 @@ public class AuthCryptoPluginImpl extends AuthCryptoPlugin {
   @Override
   public void setRepositoryPin(String pin) {
     this.repositoryPin = pin;
+  }
+
+  @Override
+  public byte[] generateRandom(Object provHandle, int size) throws AuthCryptoException {
+    byte[] res = null;
+    try {
+      if (provHandle == null)
+        res = RandomUtil.createRandomBuffer(size).array();
+      else
+        res = RandomUtil.createRandomBuffer((Pointer)provHandle, size).array();
+    } catch (CryptoException e) {
+      throw new AuthCryptoException("Can't create random number.", e);
+    }
+    return res;
+  }
+
+  @Override
+  public boolean verifySign(byte[]data, byte[] serverPublicCert, byte[] signedNumber) throws AuthCryptoException {
+    boolean result = false;
+    try {
+      String publicCert = new String(serverPublicCert);
+      byte[] cert = CertUtils.decode(publicCert);
+      X509Certificate xCert = null;
+      try {
+        xCert = CertUtils.generateCertificate(cert);
+      } catch (CertificateException e) {
+        throw new CryptoException("Can't acquire public key.", Advapi.getLastError());
+      }
+      final Pointer provHandle = Advapi.cryptAcquireContext(null, null, CryptoProProvider.PROV_DEFAULT, Wincrypt.CRYPT_VERIFYCONTEXT);
+      final _CERT_CONTEXT.PCCERT_CONTEXT context = Crypt32.certCreateCertificateContext(X509_ASN_ENCODING | PKCS_7_ASN_ENCODING, xCert.getEncoded());
+      if (context == null) {
+        final int error = Advapi.getLastError();
+        throw new CryptoException("Import certificate failed.", error);
+      }
+      try {
+        final Pointer keyHandle = Crypt32.cryptImportPublicKeyInfo(provHandle, X509_ASN_ENCODING | PKCS_7_ASN_ENCODING, new _CERT_PUBLIC_KEY_INFO.PCERT_PUBLIC_KEY_INFO(context.pCertInfo.SubjectPublicKeyInfo.getPointer()));
+        if (keyHandle == null) {
+          final int error = Advapi.getLastError();
+          throw new CryptoException("Import public key failed.", error);
+        }
+        try {
+          // Acquire a hash object handle.
+          final Pointer hashHandle = Advapi.cryptCreateHash(provHandle, Wincrypt.CALG_GR3411);
+          if (hashHandle == null)
+            throw new CryptoException("Error acquiring digest handle. Error code: " + Advapi.getLastError());
+          try {
+            int res1 = Advapi.cryptGetHashParam(hashHandle, 0x000a, null);
+            byte[] byteRes1 = new byte[res1];
+            int res2 = Advapi.cryptGetHashParam(hashHandle, 0x000a, byteRes1);
+            Advapi.cryptHashData(hashHandle, data, 0);
+            // Verify the signature
+            result = Advapi.cryptVerifySignature(hashHandle, signedNumber, keyHandle, 0);
+            if (!result)
+              throw new CryptoException("Can't verify signature.", Advapi.getLastError());
+          } finally {
+            Advapi.cryptDestroyHash(hashHandle);
+          }
+        } finally {
+          Advapi.cryptDestroyKey(keyHandle);
+        }
+      } finally {
+        Crypt32.certFreeCertificateContext(context.getPointer());
+        if (!Advapi.cryptReleaseContext(provHandle))
+          throw new CryptoException("Error destroying provider context.");
+      }
+    } catch (CryptoException e) {
+      throw new AuthCryptoException("Can't verify signature.", e);
+    } catch (CertificateEncodingException e) {
+      throw new AuthCryptoException("Can't acquire public key.", e);
+    }
+    return result;
   }
 }

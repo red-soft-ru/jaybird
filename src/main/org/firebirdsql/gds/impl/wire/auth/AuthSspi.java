@@ -114,6 +114,13 @@ public class AuthSspi {
       addFactor(f);
     }
 
+    // Server certificate factor
+    if (dpb.hasArgument(ISCConstants.isc_dpb_verify_server)) {
+      final AuthFactorServerCertificate f = new AuthFactorServerCertificate(this);
+      dpb.removeArgument(ISCConstants.isc_dpb_verify_server);
+      addFactor(f);
+    }
+
     if (dpb.hasArgument(ISCConstants.isc_dpb_trusted_auth)) {
       trusted = true;
 //      dpb.removeArgument(ISCConstants.isc_dpb_trusted_auth);

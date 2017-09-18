@@ -153,4 +153,24 @@ public class AuthMethods {
     }
     return res;
   }
+
+  public static byte[] generateRandom(Object provHandle, int size) throws GDSAuthException {
+    final AuthCryptoPlugin p = AuthCryptoPlugin.getPlugin();
+    final byte[] res;
+    try {
+      res = p.generateRandom(provHandle, size);
+    } catch (AuthCryptoException e) {
+      throw new GDSAuthException("Error generating random number: " + e.getMessage());
+    }
+    return res;
+  }
+
+  public static boolean verifySign(final byte[] data, final byte[] serverPublicCert, final byte[] signedNumber) throws GDSAuthException {
+    final AuthCryptoPlugin p = AuthCryptoPlugin.getPlugin();
+    try {
+      return p.verifySign(data, serverPublicCert, signedNumber);
+    } catch (AuthCryptoException e) {
+      throw new GDSAuthException("Error verifying signed message: " + e.getMessage());
+    }
+  }
 }

@@ -312,10 +312,25 @@ public interface AdvapiLib extends Library {
    *);
    **/
   public boolean CryptGenKey(
-      Pointer hProv,
-      int Algid,
-      int dwFlags,
-      PointerByReference phKey);
+    Pointer hProv,
+    int Algid,
+    int dwFlags,
+    PointerByReference phKey);
+
+  /** The CryptGenRandom function fills a buffer with cryptographically random bytes.
+   *
+   * Syntax:
+   *
+   *BOOL WINAPI CryptGenRandom(
+   *  __in     HCRYPTPROV hProv,
+   *  __in     DWORD dwLen,
+   *  __inout  BYTE *pbBuffer
+   *);
+   **/
+  public boolean CryptGenRandom(
+    Pointer hProv,
+    int dwFlags,
+    ByteBuffer buffer);
 
   public int GetLastError();
 

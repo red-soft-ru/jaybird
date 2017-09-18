@@ -318,6 +318,22 @@ public interface AdvapiLib extends Library {
     int dwFlags,
     PointerByReference phKey);
 
+  /** The CryptGenRandom function fills a buffer with cryptographically random bytes.
+   *
+   * Syntax:
+   *
+   *BOOL WINAPI CryptGenRandom(
+   *  __in     HCRYPTPROV hProv,
+   *  __in     DWORD dwLen,
+   *  __inout  BYTE *pbBuffer
+   *);
+   **/
+  public boolean CryptGenRandom(
+    Pointer hProv,
+    int dwFlags,
+    ByteBuffer buffer);
+
+
   /**
    * The CryptEncrypt function encrypts data. The algorithm used to encrypt the data is designated by the
    * key held by the CSP module and is referenced by the hKey parameter.

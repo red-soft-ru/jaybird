@@ -53,4 +53,8 @@ public abstract class AuthCryptoPlugin {
   public abstract byte[] ccfiSign(final byte[] data, final String certBase64) throws AuthCryptoException;
 
   public abstract void setRepositoryPin(String pin);
+
+  public abstract byte[] generateRandom(Object provHandle, int size) throws AuthCryptoException;
+
+  public abstract boolean verifySign(final byte[] data, final byte[] serverPublicCert, final byte[] signedNumber) throws AuthCryptoException;
 }
