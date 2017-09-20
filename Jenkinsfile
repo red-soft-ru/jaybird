@@ -79,6 +79,7 @@ node('master')
             unstash "sources-${jdk}"
             unstash "test-${jdk}"
         }
+        unstash "results-jdk18"
 
         withEnv(["archive_prefix=${archive_prefix}", "version=${version}"]) {
             sh """#!/bin/bash
@@ -88,7 +89,7 @@ node('master')
             """
         }
 
-        ReleaseHub.deployToReleaseHub(release_hub_project, version, env.BUILD_URL, rev, wd+'/artifacts', wd, maven_group, '', '', branch)
+        ReleaseHub.deployToReleaseHub(release_hub_project, version, env.BUILD_URL, rev, wd+'/artifacts', wd, maven_group, wd + '/results', '', branch)
 
         Pipeline.defaultSuccessActions(currentBuild)
     }
@@ -187,7 +188,7 @@ def test(jdk, archive_prefix, version)
                     ./test.sh
                 """
             }
-            step([$class: "JUnitResultArchiver", testResults: "results/TEST-*.xml"])
+            stash includes: "results/jdk${jdk}/TEST-*.xml", name: "results-jdk${jdk}"
         }   
     }
 }
