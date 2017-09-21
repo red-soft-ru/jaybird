@@ -374,6 +374,10 @@ public class Advapi {
     cryptSetProvParam(provHandle, Wincrypt.PP_KEYEXCHANGE_PIN, (pin + '\0').getBytes(), 0);
   }
 
+  public static void clearPin(Pointer provHandle) {
+    cryptSetProvParam(provHandle, Wincrypt.PP_KEYEXCHANGE_PIN, null, 0);
+  }
+
   public static String formatMessage(int errorCode) {
     if (Platform.isLinux()) {
       final byte[] bytes = new byte[4096];

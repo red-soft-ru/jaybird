@@ -249,6 +249,9 @@ public class AuthCryptoPluginImpl extends AuthCryptoPlugin {
       return res;
     } catch (Exception e) {
       throw new AuthCryptoException("Can't sign data.", e);
+    } finally {
+      Advapi.clearPin((Pointer)cont.getProvHandle());
+      Advapi.cryptReleaseContext((Pointer)cont.getProvHandle());
     }
   }
 
