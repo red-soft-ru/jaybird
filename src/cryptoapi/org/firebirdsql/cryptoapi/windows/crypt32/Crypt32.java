@@ -196,7 +196,7 @@ public class Crypt32 {
     decryptPara.cCertStore = 1;
     PointerByReference p = new PointerByReference(certStore);
     decryptPara.rghCertStore = p;
-    decryptPara.dwFlags = CRYPT_SILENT;
+    decryptPara.dwFlags = /*CRYPT_SILENT*/0;
 
     IntByReference pdwDataLen = new IntByReference(pbData.length);
 
