@@ -56,11 +56,10 @@ node('master')
     }
 }
 
-for (j in ['17', '18'])
-{
-    jdk = j
-    build(jdk, archive_prefix, version_tag)
-}
+def buildTasks = [:]
+buildTasks['build-jdk17'] = { build('17', archive_prefix, version_tag) }
+buildTasks['build-jdk18'] = { build('18', archive_prefix, version_tag) }
+parallel buildTasks
 
 test('18', archive_prefix, version)
 
