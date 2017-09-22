@@ -58,6 +58,10 @@ public class AuthCryptoPluginImpl extends AuthCryptoPlugin {
       throw new AuthCryptoException(e);
     }
     try {
+      // try to find in containers	
+      final AuthPrivateKeyContext keyContext = findCertInContainers(certBase64);
+      if (keyContext != null)
+        return keyContext;
       final _CERT_CONTEXT.PCCERT_CONTEXT cert = CertUtils.findCertificate(myStore, certContext);
       if (cert == null)
         throw new AuthCryptoException("Can't find certificate in personal store");
@@ -91,6 +95,31 @@ public class AuthCryptoPluginImpl extends AuthCryptoPlugin {
 //      freeProviderContext(provHandle);
     }
     return null;
+  }
+
+  private AuthPrivateKeyContext findCertInContainers(String certBase64) throws AuthCryptoException {
+    try {
+      final Pointer hProv = CryptoProProvider.acquireContext();
+      final List<ContainerInfo> certs = CertUtils.getAvailableContainersCertificatesList(hProv);
+      final byte[] certData = CertUtils.decode(certBase64);
+      for (ContainerInfo cert : certs) {
+        if (Arrays.equals(cert.certData, certData)) {
+          final Pointer keyProv = Advapi.cryptAcquireContext(cert.containerName, null, CryptoProProvider.PROV_DEFAULT, 0);
+          try {
+            final Pointer hKey = Advapi.cryptGetUserKey(keyProv, Wincrypt.AT_KEYEXCHANGE);
+            return new AuthPrivateKeyContext(keyProv, hKey);
+          } catch (CryptoException e) {
+            Advapi.cryptReleaseContext(keyProv);
+            throw e;
+          }
+        }
+      }
+      return null;
+    } catch (CryptoException e) {
+      throw new AuthCryptoException(e);
+    } catch (CertificateException e) {
+      throw new AuthCryptoException(e);
+    }
   }
 
   @Override
@@ -225,7 +254,7 @@ public class AuthCryptoPluginImpl extends AuthCryptoPlugin {
       throw new AuthCryptoException("Can't decrypt message.", e);
     } finally {
         if (cont != null)
-            cont.free();
+            cont.free(this);
     }
   }
 
@@ -254,7 +283,7 @@ public class AuthCryptoPluginImpl extends AuthCryptoPlugin {
       throw new AuthCryptoException("Can't sign data.", e);
     } finally {
       if (cont != null)
-        cont.free();
+        cont.free(this);
       Advapi.clearPin((Pointer)cont.getProvHandle());
       Advapi.cryptReleaseContext((Pointer)cont.getProvHandle());
     }
