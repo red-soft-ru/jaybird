@@ -1,9 +1,6 @@
 package org.firebirdsql.cryptoapi.windows.crypt32;
 
-import com.sun.jna.Memory;
-import com.sun.jna.Native;
-import com.sun.jna.Platform;
-import com.sun.jna.Pointer;
+import com.sun.jna.*;
 import com.sun.jna.platform.win32.WinError;
 import com.sun.jna.ptr.IntByReference;
 import com.sun.jna.ptr.PointerByReference;
@@ -12,6 +9,7 @@ import org.firebirdsql.cryptoapi.windows.CryptoUtil;
 import org.firebirdsql.cryptoapi.windows.JnaUtils;
 import org.firebirdsql.cryptoapi.cryptopro.exception.CryptoException;
 import org.firebirdsql.cryptoapi.windows.Win32Api;
+import org.firebirdsql.cryptoapi.windows.Wincrypt;
 import org.firebirdsql.cryptoapi.windows.advapi.Advapi;
 
 import java.util.Arrays;
@@ -87,6 +85,12 @@ public class Crypt32 {
     return res;
   }
 
+  public static void certAddCertificateContextToStore(Pointer hCertStore, Pointer pCertContext) throws CryptoException {
+    if (!lib.CertAddCertificateContextToStore(hCertStore, pCertContext,
+        Platform.isWindows() ? Wincrypt.CERT_STORE_ADD_NEWER : Wincrypt.CERT_STORE_ADD_REPLACE_EXISTING, null))
+      throw new CryptoException("Error adding certificate to store", Advapi.getLastError());
+  }
+
   public static boolean certCloseStore(Pointer certStoreHandle) {
     if (LOGGING)
       LOG.debug("certCloseStore " + certStoreHandle);
@@ -158,6 +162,14 @@ public class Crypt32 {
       return false;
     }
     return true;
+  }
+
+  public static void certSetCertificateContextProperty(
+      _CERT_CONTEXT.PCCERT_CONTEXT pCertContext, int dwPropId,
+      int dwFlags, Structure pvData
+  ) throws CryptoException {
+    if (!lib.CertSetCertificateContextProperty(pCertContext, dwPropId, dwFlags, pvData))
+      throw CryptoUtil.raiseCryptoError("certSetCertificateContextProperty", Advapi.getLastError());
   }
 
   public static Pointer certGetCertificateContextProperty(

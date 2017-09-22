@@ -1,7 +1,9 @@
 package org.firebirdsql.cryptoapi.cryptopro;
 
 import com.sun.jna.Native;
+import com.sun.jna.Platform;
 import com.sun.jna.Pointer;
+import com.sun.jna.WString;
 import com.sun.jna.ptr.IntByReference;
 import com.sun.jna.ptr.PointerByReference;
 import org.apache.log4j.Logger;
@@ -13,6 +15,7 @@ import org.firebirdsql.cryptoapi.windows.crypt32.Crypt32;
 import org.firebirdsql.cryptoapi.windows.crypt32._CERT_CONTEXT;
 import org.firebirdsql.cryptoapi.windows.crypt32._CERT_CONTEXT.PCCERT_CONTEXT;
 import org.firebirdsql.cryptoapi.windows.crypt32._CERT_CONTEXT.PCERT_CONTEXT;
+import org.firebirdsql.cryptoapi.windows.crypt32._CRYPT_KEY_PROV_INFO.PCRYPT_KEY_PROV_INFO;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -77,6 +80,37 @@ public class CertUtils {
       }
     }
     return null;
+  }
+
+  public static String getProvName(PCCERT_CONTEXT certContext) throws CryptoException {
+    final PointerByReference provHandle = new PointerByReference();
+    final IntByReference keySpec = new IntByReference();
+    final IntByReference pfCallerFreeProv = new IntByReference();
+    final boolean hasPrivateKey = Crypt32.cryptAcquireCertificatePrivateKey(certContext, 0, provHandle, keySpec, pfCallerFreeProv);
+    try {
+      if (!hasPrivateKey)
+        throw new CryptoException("Certificate does not contain private key", Advapi.getLastError());
+      return getProvName(provHandle.getValue());
+    } finally {
+      if (pfCallerFreeProv.getValue() != 0 && provHandle.getValue() != null)
+        Advapi.cryptReleaseContext(provHandle.getValue());
+    }
+  }
+
+  public static String getProvName(String container) throws CryptoException {
+    final Pointer provHandle= Advapi.cryptAcquireContext(container, null, CryptoProProvider.PROV_DEFAULT, 0);
+    try {
+      if (provHandle == null)
+        throw new CryptoException("Container " + container + " not found", Advapi.getLastError());
+      return getProvName(provHandle);
+    } finally {
+      Advapi.cryptReleaseContext(provHandle);
+    }
+  }
+
+  public static String getProvName(Pointer provHandle) throws CryptoException {
+    final byte[] bytes = Advapi.cryptGetProvParam(provHandle, Wincrypt.PP_NAME, 0);
+    return Native.toString(bytes);
   }
 
   public static <T extends Collection<String>> T getListItems(String str, char delimeter, T list) {
@@ -309,7 +343,7 @@ public class CertUtils {
   public static void setCertificateContainerNameParam(PCCERT_CONTEXT certContext, String containerName)
           throws CryptoException {
     // Add container name to certificate
-    if (!StringUtils.isEmpty(containerName)) {
+    if (!isEmpty(containerName)) {
       final PCRYPT_KEY_PROV_INFO keyProvInfo = new PCRYPT_KEY_PROV_INFO();
       keyProvInfo.pwszContainerName = new WString(containerName);
       keyProvInfo.pwszProvName =  Platform.isLinux() ? new WString(CertUtils.getProvName(containerName)) : null;// (Roman: on linux we got SIGSEGV with null value)

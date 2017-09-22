@@ -2,6 +2,7 @@ package org.firebirdsql.cryptoapi.windows.crypt32;
 
 import com.sun.jna.Library;
 import com.sun.jna.Pointer;
+import com.sun.jna.Structure;
 import com.sun.jna.ptr.IntByReference;
 import com.sun.jna.ptr.PointerByReference;
 
@@ -45,6 +46,26 @@ public interface Crypt32Lib extends Library {
 
   // linux version
   public Pointer CertOpenSystemStore(Pointer hprov, String szSubsystemProtocol);
+
+  /**
+   * CertAddCertificateContextToStore Function
+   *
+   * The CertAddCertificateContextToStore function adds a certificate context to the certificate store.
+   * Syntax
+   *
+   * BOOL WINAPI CertAddCertificateContextToStore(
+   *   __in       HCERTSTORE hCertStore,
+   *   __in       PCCERT_CONTEXT pCertContext,
+   *   __in       DWORD dwAddDisposition,
+   *   __out_opt  PCCERT_CONTEXT *ppStoreContext
+   * );
+   */
+  public boolean CertAddCertificateContextToStore(
+      Pointer hCertStore,
+      Pointer pCertContext,
+      int dwAddDisposition,
+      PointerByReference ppStoreContext
+  );
 
   /**
    * The CertCloseStore function closes a certificate store handle and reduces the reference count on the store.
@@ -160,6 +181,25 @@ public interface Crypt32Lib extends Library {
    * );
    */
   public boolean CertFreeCertificateContext(Pointer pCertContext);
+
+  /**
+   * The CertSetCertificateContextProperty function sets an extended property for a specified certificate context.
+   *
+   * Syntax:
+   *
+   * BOOL WINAPI CertSetCertificateContextProperty(
+   *   __in  PCCERT_CONTEXT pCertContext,
+   *   __in  DWORD dwPropId,
+   *   __in  DWORD dwFlags,
+   *   __in  const void *pvData
+   * );
+   */
+  public boolean CertSetCertificateContextProperty(
+      _CERT_CONTEXT.PCCERT_CONTEXT pCertContext,
+      int dwPropId,
+      int dwFlags,
+      Structure pvData
+  );
 
   /**
    * BOOL WINAPI CertGetCertificateContextProperty(
