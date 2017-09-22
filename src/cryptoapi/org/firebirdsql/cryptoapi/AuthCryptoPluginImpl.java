@@ -74,7 +74,8 @@ public class AuthCryptoPluginImpl extends AuthCryptoPlugin {
       } catch (CryptoException e) {
         throw new AuthCryptoException("Can't add certificate to store", e);
       } finally {
-        Crypt32.certFreeCertificateContext(cert.getPointer());
+        if (cert != null)
+          Crypt32.certFreeCertificateContext(cert.getPointer());
       }
     } finally {
       Crypt32.certFreeCertificateContext(certContext.getPointer());
