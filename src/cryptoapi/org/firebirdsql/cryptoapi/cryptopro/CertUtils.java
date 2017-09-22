@@ -67,7 +67,7 @@ public class CertUtils {
   public static String decodeName(String x500String, String name) {
     if (!name.endsWith("="))
       name += "=";
-    final List<String> ss = new ArrayList<>();
+    final List<String> ss = new ArrayList<String>();
     getListItems(x500String, ',', ss, '"', false);
     for (String s : ss) {
       final String part = s.trim();
@@ -251,8 +251,8 @@ public class CertUtils {
   }
 
   public static List<ContainerInfo> getAvailableContainersCertificatesList(Pointer provHandle) throws CryptoException, CertificateException {
-    final List<ContainerInfo> res = new ArrayList<>();
-    Map<String, ContainerInfo> containers = new HashMap<>();
+    final List<ContainerInfo> res = new ArrayList<ContainerInfo>();
+    Map<String, ContainerInfo> containers = new HashMap<String, ContainerInfo>();
     readAvailableCertificatesFromContainers(provHandle, containers);
     readAvailableCertificatesFromSystemStore("MY", containers);
     res.addAll(containers.values());
