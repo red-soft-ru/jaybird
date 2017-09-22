@@ -17,9 +17,6 @@
       <sourceFolder url="file://$MODULE_DIR$/test" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/test_30" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/test_40" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/cryptoapi_sec" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/cryptoapi" isTestSource="false" />
-      <excludeFolder url="file://$MODULE_DIR$/cryptoapi/org/firebirdsql/cryptoapi/windows/advapi" />
       <excludeFolder url="file://$MODULE_DIR$/jdbccts" />
     </content>
     <orderEntry type="inheritedJdk" />
