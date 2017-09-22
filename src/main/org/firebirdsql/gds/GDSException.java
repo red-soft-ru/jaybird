@@ -165,6 +165,13 @@ public class GDSException extends Exception {
         initCause(cause);
     }
 
+    public GDSException(String message, Throwable e) {
+        super(message, e);
+        this.type = ISCConstants.isc_arg_string;
+        this.intParam = 0;
+        this.strParam = null;
+    }
+
     /**
      * Create a new instance with only a simple message.
      *

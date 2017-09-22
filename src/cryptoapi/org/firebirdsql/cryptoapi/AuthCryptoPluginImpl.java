@@ -60,12 +60,16 @@ public class AuthCryptoPluginImpl extends AuthCryptoPlugin {
     try {
       // try to find in containers	
       final AuthPrivateKeyContext keyContext = findCertInContainers(certBase64);
-      if (keyContext != null)
-        return keyContext;
       final _CERT_CONTEXT.PCCERT_CONTEXT cert = CertUtils.findCertificate(myStore, certContext);
-      if (cert == null)
+      if (keyContext == null && cert == null)
         throw new AuthCryptoException("Can't find certificate in personal store");
       try {
+        if (cert == null) {
+          final String container = Advapi.getContainerName(keyContext.getKeyHandle());
+          CertUtils.setCertificateContainerNameParam(certContext, container);
+          Crypt32.certAddCertificateContextToStore(myStore, certContext);
+          return keyContext;
+        }
         return getUserKey(cert);
       } finally {
         Crypt32.certFreeCertificateContext(cert.getPointer());

@@ -175,6 +175,20 @@ public class Advapi {
     return res;
   }
 
+  public static String getContainerName(Pointer providerHandle) throws CryptoException {
+    if (LOGGING)
+      LOG.debug("getContainerName (!!) " + providerHandle);
+    final IntByReference len = new IntByReference();
+    if (!lib.CryptGetProvParam(providerHandle, Wincrypt.PP_CONTAINER, null, len, 0))
+      throw CryptoUtil.raiseCryptoError("CryptGetProvParam", getLastError());
+    final byte[] data = new byte[len.getValue()];
+    if (!lib.CryptGetProvParam(providerHandle, Wincrypt.PP_CONTAINER, data, len, 0))
+      throw CryptoUtil.raiseCryptoError("CryptGetProvParam", getLastError());
+    if (LOGGING)
+      LOG.debug("getContainerName " + Native.toString(data));
+    return Native.toString(data).trim();
+  }
+
   public static Pointer cryptGetUserKey(Pointer provHandle, int keySpec) throws CryptoException {
     if (LOGGING)
       LOG.debug("cryptGetUserKey " + provHandle + " " + keySpec);

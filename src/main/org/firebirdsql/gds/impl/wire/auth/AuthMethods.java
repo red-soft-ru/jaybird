@@ -18,14 +18,14 @@ public class AuthMethods {
     try {
       userKey = p.getUserKey(certBase64);
     } catch (AuthCryptoException e) {
-      throw new GDSAuthException("No private key found for certificate: " + e.getMessage());
+      throw new GDSAuthException("No private key found for certificate: " + e.getMessage(), e);
     }
     final Object sessionKeyHandle;
     try {
       sessionKeyHandle = p.getSessionPublicKey(sessionKeyData, serverKeyData, userKey);
       sspi.setSessionKey(sessionKeyHandle);
     } catch (AuthCryptoException e) {
-      throw new GDSAuthException("Error accessing session key: " + e.getMessage());
+      throw new GDSAuthException("Error accessing session key: " + e.getMessage(), e);
     } finally {
       userKey.free(p);
     }
@@ -36,7 +36,7 @@ public class AuthMethods {
       res = p.encrypt(sessionKeyHandle, data);
       p.setIV(sessionKeyHandle, sessionKeyIVdata); // restore IV for following use (Copy from native driver. No need to do this???)
     } catch (AuthCryptoException e) {
-      throw new GDSAuthException("Error encrypting data: " + e.getMessage());
+      throw new GDSAuthException("Error encrypting data: " + e.getMessage(), e);
     }
     return res;
   }
@@ -45,7 +45,7 @@ public class AuthMethods {
     try {
       return AuthCryptoPlugin.getPlugin().encrypt(sessionKeyHandle, data);
     } catch (AuthCryptoException e) {
-      throw new GDSAuthException("Error encrypting data: " + e.getMessage());
+      throw new GDSAuthException("Error encrypting data: " + e.getMessage(), e);
     }
   }
 
@@ -73,7 +73,7 @@ public class AuthMethods {
         p.destroyHash(hash);
       }
     } catch (AuthCryptoException e) {
-      throw new GDSAuthException("Error creating session key: " + e.getMessage());
+      throw new GDSAuthException("Error creating session key: " + e.getMessage(), e);
     }
   }
 
@@ -87,7 +87,7 @@ public class AuthMethods {
     try {
       return p.getIV(sessionKey);
     } catch (AuthCryptoException e) {
-      throw new GDSAuthException("Error getting initialization vector: " + e.getMessage());
+      throw new GDSAuthException("Error getting initialization vector: " + e.getMessage(), e);
     }
   }
 
@@ -95,7 +95,7 @@ public class AuthMethods {
     try {
       AuthCryptoPlugin.getPlugin().setIV(sessionKey, dataIV);
     } catch (AuthCryptoException e) {
-      throw new GDSAuthException("Error setting initialization vector: " + e.getMessage());
+      throw new GDSAuthException("Error setting initialization vector: " + e.getMessage(), e);
     }
   }
 
@@ -112,7 +112,7 @@ public class AuthMethods {
 
       return data;
     } catch (AuthCryptoException e) {
-      throw new GDSAuthException("Error setting initialization vector: " + e.getMessage());
+      throw new GDSAuthException("Error setting initialization vector: " + e.getMessage(), e);
     }
   }
 
@@ -120,7 +120,7 @@ public class AuthMethods {
     try {
       return AuthCryptoPlugin.getPlugin().hashData(data, hashingCount);
     } catch (AuthCryptoException e) {
-      throw new GDSAuthException("Error hashing data: " + e.getMessage());
+      throw new GDSAuthException("Error hashing data: " + e.getMessage(), e);
     }
   }
 
@@ -128,7 +128,7 @@ public class AuthMethods {
     try {
       return AuthCryptoPlugin.getPlugin().ccfiEncrypt(data);
     } catch (AuthCryptoException e) {
-      throw new GDSAuthException("Error encrypting data: " + e.getMessage());
+      throw new GDSAuthException("Error encrypting data: " + e.getMessage(), e);
     }
   }
 
@@ -138,7 +138,7 @@ public class AuthMethods {
     try {
       res = p.ccfiDecrypt(data, certBase64);
     } catch (AuthCryptoException e) {
-      throw new GDSAuthException("Error decrypting data: " + e.getMessage());
+      throw new GDSAuthException("Error decrypting data: " + e.getMessage(), e);
     }
     return res;
   }
@@ -149,7 +149,7 @@ public class AuthMethods {
     try {
       res = p.ccfiSign(data, certBase64);
     } catch (AuthCryptoException e) {
-      throw new GDSAuthException("Error signing data: " + e.getMessage());
+      throw new GDSAuthException("Error signing data: " + e.getMessage(), e);
     }
     return res;
   }
@@ -160,7 +160,7 @@ public class AuthMethods {
     try {
       res = p.generateRandom(provHandle, size);
     } catch (AuthCryptoException e) {
-      throw new GDSAuthException("Error generating random number: " + e.getMessage());
+      throw new GDSAuthException("Error generating random number: " + e.getMessage(), e);
     }
     return res;
   }
@@ -170,7 +170,7 @@ public class AuthMethods {
     try {
       return p.verifySign(data, serverPublicCert, signedNumber);
     } catch (AuthCryptoException e) {
-      throw new GDSAuthException("Error verifying signed message: " + e.getMessage());
+      throw new GDSAuthException("Error verifying signed message: " + e.getMessage(), e);
     }
   }
 }

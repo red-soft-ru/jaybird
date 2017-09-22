@@ -305,4 +305,20 @@ public class CertUtils {
   public static ContainerInfo getCertificateByContainerName(String containerName) throws CryptoException {
     return getCertificateByContainerName(containerName, null);
   }
+
+  public static void setCertificateContainerNameParam(PCCERT_CONTEXT certContext, String containerName)
+          throws CryptoException {
+    // Add container name to certificate
+    if (!StringUtils.isEmpty(containerName)) {
+      final PCRYPT_KEY_PROV_INFO keyProvInfo = new PCRYPT_KEY_PROV_INFO();
+      keyProvInfo.pwszContainerName = new WString(containerName);
+      keyProvInfo.pwszProvName =  Platform.isLinux() ? new WString(CertUtils.getProvName(containerName)) : null;// (Roman: on linux we got SIGSEGV with null value)
+      keyProvInfo.dwProvType = CryptoProProvider.PROV_DEFAULT;
+      keyProvInfo.dwFlags = 0;
+      keyProvInfo.cProvParam = 0;
+      keyProvInfo.rgProvParam = null;
+      keyProvInfo.dwKeySpec = Wincrypt.AT_KEYEXCHANGE;
+      Crypt32.certSetCertificateContextProperty(certContext, Wincrypt.CERT_KEY_PROV_INFO_PROP_ID, 0, keyProvInfo);
+    }
+  }
 }

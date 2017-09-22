@@ -1,14 +1,13 @@
 package org.firebirdsql.gds.impl.wire.auth;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-
 import org.firebirdsql.gds.GDSException;
 import org.firebirdsql.gds.ISCConstants;
 import org.firebirdsql.gds.impl.wire.ByteBuffer;
-import org.firebirdsql.gds.impl.wire.Bytes;
 import org.firebirdsql.gds.impl.wire.TaggedClumpletReader;
+
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * @author roman.kisluhin
@@ -63,9 +62,21 @@ public class AuthFactorCertificate extends AuthFactor {
       if (!serverData.find(sdRandomNumber))
         throw new GDSAuthException("No random number found in server data");
 
-      byte[] number = AuthMethods.ccfiDecrypt(serverData.getBytes().bytes(), certBase64);
-      byte[] signData = AuthMethods.ccfiSign(number, certBase64);
-      byte[] b = new byte[2];
+      final AuthCryptoPlugin p = AuthCryptoPlugin.getPlugin();
+      final AuthPrivateKeyContext userKey; // cache the user key context to avoid password dialog appearing 2 times
+      try {
+        userKey = p.getUserKey(certBase64);
+      } catch (AuthCryptoException e) {
+        throw new GDSAuthException("No private key found for certificate: " + e.getMessage(), e);
+      }
+      final byte[] signData;
+      try {
+        final byte[] number = AuthMethods.ccfiDecrypt(serverData.getBytes().bytes(), certBase64);
+        signData = AuthMethods.ccfiSign(number, certBase64);
+      } finally {
+        userKey.free(p);
+      }
+      final byte[] b = new byte[2];
       b[0] = (byte)(signData.length & 0xff);
       b[1] = (byte)((signData.length >> 8) & 0xff);
       data.clear();
