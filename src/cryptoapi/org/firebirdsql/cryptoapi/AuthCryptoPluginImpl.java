@@ -223,6 +223,9 @@ public class AuthCryptoPluginImpl extends AuthCryptoPlugin {
       return Crypt32.cryptDecryptMessage(myStore, data);
     } catch (Exception e) {
       throw new AuthCryptoException("Can't decrypt message.", e);
+    } finally {
+        if (cont != null)
+            cont.free();
     }
   }
 
@@ -250,6 +253,8 @@ public class AuthCryptoPluginImpl extends AuthCryptoPlugin {
     } catch (Exception e) {
       throw new AuthCryptoException("Can't sign data.", e);
     } finally {
+      if (cont != null)
+        cont.free();
       Advapi.clearPin((Pointer)cont.getProvHandle());
       Advapi.cryptReleaseContext((Pointer)cont.getProvHandle());
     }
