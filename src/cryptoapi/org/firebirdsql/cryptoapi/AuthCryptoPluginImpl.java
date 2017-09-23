@@ -1,30 +1,24 @@
 package org.firebirdsql.cryptoapi;
 
-import com.sun.jna.Native;
 import com.sun.jna.Pointer;
-import com.sun.jna.platform.win32.WinCrypt;
-import com.sun.jna.ptr.IntByReference;
-import com.sun.jna.ptr.PointerByReference;
+import org.firebirdsql.cryptoapi.cryptopro.CertUtils;
+import org.firebirdsql.cryptoapi.cryptopro.ContainerInfo;
+import org.firebirdsql.cryptoapi.cryptopro.CryptoProProvider;
 import org.firebirdsql.cryptoapi.cryptopro.RandomUtil;
-import org.firebirdsql.cryptoapi.windows.Win32Api;
+import org.firebirdsql.cryptoapi.cryptopro.exception.CryptoException;
+import org.firebirdsql.cryptoapi.windows.Wincrypt;
+import org.firebirdsql.cryptoapi.windows.Winerror;
+import org.firebirdsql.cryptoapi.windows.advapi.Advapi;
+import org.firebirdsql.cryptoapi.windows.crypt32.Crypt32;
+import org.firebirdsql.cryptoapi.windows.crypt32._CERT_CONTEXT;
 import org.firebirdsql.cryptoapi.windows.crypt32._CERT_PUBLIC_KEY_INFO;
 import org.firebirdsql.cryptoapi.windows.crypt32._CRYPT_KEY_PROV_INFO;
+import org.firebirdsql.cryptoapi.windows.sspi._ALG_ID;
 import org.firebirdsql.gds.impl.wire.Bytes;
 import org.firebirdsql.gds.impl.wire.auth.AuthCryptoException;
 import org.firebirdsql.gds.impl.wire.auth.AuthCryptoPlugin;
 import org.firebirdsql.gds.impl.wire.auth.AuthPrivateKeyContext;
-import org.firebirdsql.cryptoapi.windows.Winerror;
-import org.firebirdsql.cryptoapi.cryptopro.CertUtils;
-import org.firebirdsql.cryptoapi.cryptopro.ContainerInfo;
-import org.firebirdsql.cryptoapi.cryptopro.CryptoProProvider;
-import org.firebirdsql.cryptoapi.cryptopro.exception.CryptoException;
-import org.firebirdsql.cryptoapi.windows.Wincrypt;
-import org.firebirdsql.cryptoapi.windows.advapi.Advapi;
-import org.firebirdsql.cryptoapi.windows.crypt32.Crypt32;
-import org.firebirdsql.cryptoapi.windows.crypt32._CERT_CONTEXT;
-import org.firebirdsql.cryptoapi.windows.sspi._ALG_ID;
 
-import java.security.SignatureException;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
@@ -68,11 +62,12 @@ public class AuthCryptoPluginImpl extends AuthCryptoPlugin {
           final String container = Advapi.getContainerName((Pointer) keyContext.getProvHandle());
           CertUtils.setCertificateContainerNameParam(certContext, container);
           Crypt32.certAddCertificateContextToStore(myStore, certContext.getPointer());
-          return keyContext;
         } catch (CryptoException e) {
           throw new AuthCryptoException("Can't add certificate to store", e);
         }
       }
+      if (keyContext != null)
+        return keyContext;
       try {
         return getUserKey(cert);
       } finally {
@@ -108,7 +103,12 @@ public class AuthCryptoPluginImpl extends AuthCryptoPlugin {
   private AuthPrivateKeyContext findCertInContainers(String certBase64) throws AuthCryptoException {
     try {
       final Pointer hProv = CryptoProProvider.acquireContext();
-      final List<ContainerInfo> certs = CertUtils.getAvailableContainersCertificatesList(hProv);
+      final List<ContainerInfo> certs;
+      try {
+        certs = CertUtils.getAvailableContainersCertificatesList(hProv);
+      } finally {
+        Advapi.cryptReleaseContext(hProv);
+      }
       final byte[] certData = CertUtils.decode(certBase64);
       for (ContainerInfo cert : certs) {
         if (Arrays.equals(cert.certData, certData)) {
