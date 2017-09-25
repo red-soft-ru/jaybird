@@ -27,6 +27,7 @@ import javax.resource.ResourceException;
 import javax.sql.XAConnection;
 import javax.sql.XADataSource;
 
+import org.firebirdsql.ds.FBXAConnection;
 import org.firebirdsql.ds.RootCommonDataSource;
 import org.firebirdsql.gds.GDSException;
 import org.firebirdsql.gds.impl.GDSFactory;
