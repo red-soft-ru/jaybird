@@ -384,7 +384,7 @@ public class FBSADataSource implements DataSource, Serializable, Referenceable, 
         mc.setManagedEnvironment(false);
         mc.setConnectionSharing(false);
         mc.addConnectionEventListener(this);
-        Connection con = (Connection) mc.getConnection(null, subjectCri);
+        Connection con = (Connection) mc.getConnection(null, mc.getConnectionRequestInfo());
         connections.add(mc);
         return con;
       }
