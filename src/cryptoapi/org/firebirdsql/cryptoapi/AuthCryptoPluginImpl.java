@@ -251,29 +251,21 @@ public class AuthCryptoPluginImpl extends AuthCryptoPlugin {
   }
 
   @Override
-  public byte[] ccfiDecrypt(byte[] data, String certBase64) throws AuthCryptoException {
-    AuthPrivateKeyContext cont = null;
+  public byte[] ccfiDecrypt(final AuthPrivateKeyContext userKey, byte[] data, String certBase64) throws AuthCryptoException {
     try {
-      cont = getUserKey(certBase64);
       if (repositoryPin != null)
-        Advapi.setPin((Pointer)cont.getProvHandle(), repositoryPin);
+        Advapi.setPin((Pointer)userKey.getProvHandle(), repositoryPin);
       return Crypt32.cryptDecryptMessage(myStore, data);
     } catch (Exception e) {
       throw new AuthCryptoException("Can't decrypt message.", e);
-    } finally {
-        if (cont != null)
-            cont.free(this);
     }
   }
 
   @Override
-  public byte[] ccfiSign(byte[] data, String certBase64) throws AuthCryptoException {
-    AuthPrivateKeyContext cont = null;
+  public byte[] ccfiSign(final AuthPrivateKeyContext userKey, byte[] data, String certBase64) throws AuthCryptoException {
     Pointer p = null;
-    String containerName = null;
     try {
-      cont = getUserKey(certBase64);
-      p = (Pointer)cont.getProvHandle();
+      p = (Pointer)userKey.getProvHandle();
       final Pointer hashHandle = Advapi.cryptCreateHash(p, Wincrypt.CALG_GR3411);
 //      Advapi.cryptGetHashParam(hashHandle, 0x000a, data);
       Advapi.cryptHashData(hashHandle, data, 0);
@@ -289,11 +281,6 @@ public class AuthCryptoPluginImpl extends AuthCryptoPlugin {
       return res;
     } catch (Exception e) {
       throw new AuthCryptoException("Can't sign data.", e);
-    } finally {
-      if (cont != null)
-        cont.free(this);
-      Advapi.clearPin((Pointer)cont.getProvHandle());
-      Advapi.cryptReleaseContext((Pointer)cont.getProvHandle());
     }
   }
 
