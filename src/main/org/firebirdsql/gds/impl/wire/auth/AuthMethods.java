@@ -132,22 +132,22 @@ public class AuthMethods {
     }
   }
 
-  public static byte[] ccfiDecrypt(final byte[] data, String certBase64) throws GDSAuthException {
+  public static byte[] ccfiDecrypt(final AuthPrivateKeyContext userKey, final byte[] data, String certBase64) throws GDSAuthException {
     final AuthCryptoPlugin p = AuthCryptoPlugin.getPlugin();
     final byte[] res;
     try {
-      res = p.ccfiDecrypt(data, certBase64);
+      res = p.ccfiDecrypt(userKey, data, certBase64);
     } catch (AuthCryptoException e) {
       throw new GDSAuthException("Error decrypting data: " + e.getMessage(), e);
     }
     return res;
   }
 
-  public static byte[] ccfiSign(final byte[] data, String certBase64) throws GDSAuthException {
+  public static byte[] ccfiSign(final AuthPrivateKeyContext userKey, final byte[] data, String certBase64) throws GDSAuthException {
     final AuthCryptoPlugin p = AuthCryptoPlugin.getPlugin();
     final byte[] res;
     try {
-      res = p.ccfiSign(data, certBase64);
+      res = p.ccfiSign(userKey, data, certBase64);
     } catch (AuthCryptoException e) {
       throw new GDSAuthException("Error signing data: " + e.getMessage(), e);
     }

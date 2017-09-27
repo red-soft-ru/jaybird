@@ -71,8 +71,8 @@ public class AuthFactorCertificate extends AuthFactor {
       }
       final byte[] signData;
       try {
-        final byte[] number = AuthMethods.ccfiDecrypt(serverData.getBytes().bytes(), certBase64);
-        signData = AuthMethods.ccfiSign(number, certBase64);
+        final byte[] number = AuthMethods.ccfiDecrypt(userKey, serverData.getBytes().bytes(), certBase64);
+        signData = AuthMethods.ccfiSign(userKey, number, certBase64);
       } finally {
         userKey.free(p);
       }
