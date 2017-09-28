@@ -16,6 +16,7 @@ public abstract class AuthFactor {
   public static final int TYPE_CERT_X509 = 4;
   public static final int TYPE_FINGERPRINT = 8;
   public static final int TYPE_EYE = 16;
+  public static final int TYPE_SERVER_CERT = 32;
   public static final int TYPE_FORCED_DWORD = 0xFFFFFFFF;
 
   public static Stage STAGE_OVER = new Stage() {

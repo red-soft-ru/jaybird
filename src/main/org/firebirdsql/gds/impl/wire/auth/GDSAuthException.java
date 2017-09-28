@@ -9,6 +9,10 @@ import org.firebirdsql.gds.GDSException;
  *          Time: 15:18
  */
 public class GDSAuthException extends GDSException {
+  public GDSAuthException(String message, Throwable e) {
+    super(message, e);
+  }
+
   public GDSAuthException(String message) {
     super(message);
   }

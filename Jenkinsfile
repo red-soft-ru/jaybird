@@ -91,6 +91,8 @@ node('master')
             sh "echo artifact jaybird-jdk${jdk} ${version} >> artifacts"
             sh "echo file dist-${jdk}/bin/jaybird-jdk${jdk}-${version}.jar jar >> artifacts"
             sh "echo file dist-${jdk}/bin/jaybird-full-jdk${jdk}-${version}.jar jar full >> artifacts"
+            sh "echo file dist-${jdk}/bin/jaybird-cryptoapi-jdk${jdk}-${version}.jar jar cryptoapi >> artifacts"
+            sh "echo file dist-${jdk}/bin/jaybird-cryptoapi-security-jdk${jdk}-${version}.jar jar cryptoapi-security >> artifacts"
             sh "echo file dist-${jdk}/esp/jaybird-esp-jdk${jdk}-${version}.jar jar esp >> artifacts"
             sh "echo file dist-${jdk}/test/jaybird-test-jdk${jdk}-${version}.jar jar test >> artifacts"
             sh "echo file dist-${jdk}/sources/jaybird-jdk${jdk}-${version}-sources.jar jar sources >> artifacts"

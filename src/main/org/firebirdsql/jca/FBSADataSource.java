@@ -513,11 +513,11 @@ public class FBSADataSource implements DataSource, Serializable, Referenceable, 
                 "Database was not specified. Cannot provide connections.");
                 
         try {
-        	mc = (FBManagedConnection)mcf.createManagedConnection(null, cxRequestInfo);
-			mc.setManagedEnvironment(false);
-			mc.setConnectionSharing(false);
+            mc = (FBManagedConnection)mcf.createManagedConnection(null, cxRequestInfo);
+			      mc.setManagedEnvironment(false);
+			      mc.setConnectionSharing(false);
 
-			return mc;
+			      return mc;
         } catch(ResourceException rex) {
             throw new FBSQLException(rex);
         }
