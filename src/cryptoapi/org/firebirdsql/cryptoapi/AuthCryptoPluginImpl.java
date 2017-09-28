@@ -52,9 +52,19 @@ public class AuthCryptoPluginImpl extends AuthCryptoPlugin {
       throw new AuthCryptoException(e);
     }
     try {
-      // try to find in containers	
-      final AuthPrivateKeyContext keyContext = findCertInContainers(certBase64);
       final _CERT_CONTEXT.PCCERT_CONTEXT cert = CertUtils.findCertificate(myStore, certContext);
+      AuthPrivateKeyContext keyContext = null;
+      if (cert != null) {
+        try {
+          keyContext = getUserKey(cert);
+        } finally {
+          Crypt32.certFreeCertificateContext(cert.getPointer());
+        }
+      }
+      if (keyContext != null)
+        return keyContext;
+      // try to find in containers
+      keyContext = findCertInContainers(certBase64);
       if (keyContext == null && cert == null)
         throw new AuthCryptoException("Can't find certificate in personal store");
       if (cert == null) {
@@ -66,13 +76,7 @@ public class AuthCryptoPluginImpl extends AuthCryptoPlugin {
           throw new AuthCryptoException("Can't add certificate to store", e);
         }
       }
-      if (keyContext != null)
-        return keyContext;
-      try {
-        return getUserKey(cert);
-      } finally {
-        Crypt32.certFreeCertificateContext(cert.getPointer());
-      }
+      return keyContext;
     } finally {
       Crypt32.certFreeCertificateContext(certContext.getPointer());
     }
