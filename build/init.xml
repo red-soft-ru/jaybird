@@ -252,6 +252,7 @@
       <path refid="javac.driver.classpath"/>
       <pathelement location="${build.classes}"/>
       <pathelement location="${build.pool}"/>
+      <pathelement location="${build.cryptoapi}"/>
       <pathelement location="${lib.dir}/junit.jar"/>
       <pathelement location="${module.thirdparty}/fscontext.jar"/>
       <pathelement location="${module.thirdparty}/providerutil.jar"/>

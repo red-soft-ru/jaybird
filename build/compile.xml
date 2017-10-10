@@ -1,7 +1,7 @@
   <!-- =================================================================== -->
   <!-- Compiles the source code                                            -->
   <!-- =================================================================== -->
-  <target name="compile" depends="compile-j2ee, compile-driver, compile-pool, compile-compatibility, compile-tests, compile-etc, compile-examples, compile-resources, compile-resources-esp, compile-stylesheets, compile-esp, compile-cryptoapi, compile-cryptoapi_security"/>
+  <target name="compile" depends="compile-j2ee, compile-driver, compile-pool, compile-compatibility, compile-cryptoapi, compile-cryptoapi_security, compile-tests, compile-etc, compile-examples, compile-resources, compile-resources-esp, compile-stylesheets, compile-esp"/>
 
   <!-- calling this unjar a compile is stretching the truth a bit-->
   <target name="compile-j2ee" depends="init">
