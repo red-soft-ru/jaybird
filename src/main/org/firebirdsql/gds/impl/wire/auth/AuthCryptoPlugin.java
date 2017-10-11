@@ -45,4 +45,16 @@ public abstract class AuthCryptoPlugin {
   public abstract byte[] hashData(final byte[] data, final int hashingCount) throws AuthCryptoException;
 
   public abstract Object deriveKey(final Object hashHandle, boolean exportable) throws AuthCryptoException;
+
+  public abstract byte[] ccfiEncrypt(final byte[] data) throws AuthCryptoException;
+
+  public abstract byte[] ccfiDecrypt(final AuthPrivateKeyContext userKey, final byte[] data, String certBase64) throws AuthCryptoException;
+
+  public abstract byte[] ccfiSign(final AuthPrivateKeyContext userKey, final byte[] data, final String certBase64) throws AuthCryptoException;
+
+  public abstract void setRepositoryPin(String pin);
+
+  public abstract byte[] generateRandom(Object provHandle, int size) throws AuthCryptoException;
+
+  public abstract boolean verifySign(final byte[] data, final byte[] serverPublicCert, final byte[] signedNumber) throws AuthCryptoException;
 }
