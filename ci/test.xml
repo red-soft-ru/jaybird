@@ -17,6 +17,7 @@
 
         <classpath>
           <pathelement location="${bindir}/bin/jaybird-full-jdk${jdk}-${version}.jar" />
+          <pathelement location="${bindir}/bin/jaybird-cryptoapi-jdk${jdk}-${version}.jar" />
           <pathelement location="${bindir}/test/jaybird-test-jdk${jdk}-${version}.jar" />
           <pathelement location="${srcdir}/lib/junit.jar" />
           <pathelement location="${srcdir}/src/lib/antlr-runtime-3.4.jar" />
