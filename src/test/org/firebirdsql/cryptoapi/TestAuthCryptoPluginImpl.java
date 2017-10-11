@@ -10,13 +10,13 @@ public class TestAuthCryptoPluginImpl extends TestCase {
         super(name);
     }
 
+    public static void initLogger() {
+        BasicConfigurator.configure();
+    }
+
     public void testAuthCryptoPlugin_register() throws Exception {
         initLogger();
         AuthCryptoPlugin.register(new AuthCryptoPluginImpl());
-    }
-
-    public static void initLogger() {
-        BasicConfigurator.configure();
     }
 
 }
