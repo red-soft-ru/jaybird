@@ -84,7 +84,7 @@ sudo /tmp/installer.bin --DBAPasswd masterkey --mode unattended --architecture $
 sudo rm -f /tmp/installer.bin
 sudo rm -rf $TEST_DIR
 mkdir -p $TEST_DIR
-mkdir -p $WORKSPACE/results
+mkdir -p $WORKSPACE/results/jdk${JDK_VERSION}
 sudo chmod 777 $TEST_DIR
 
 rdb_control restart
@@ -92,6 +92,6 @@ sleep 5
 
 export JAVA_HOME
 ant -Dtest.report.dir=$TEST_DIR -Dtest.db.dir=$TEST_DIR -Djdk=${JDK_VERSION} -Dversion=$JAYBIRD_VERSION -Dbindir=${BINDIR} -Dsrcdir=${SRCDIR} -f test.xml
-cp ${TEST_DIR}/*.xml $WORKSPACE/results
+cp ${TEST_DIR}/*.xml $WORKSPACE/results/jdk${JDK_VERSION}
 
 uninstallrdb
