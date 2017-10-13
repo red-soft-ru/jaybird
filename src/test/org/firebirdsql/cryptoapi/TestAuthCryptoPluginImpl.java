@@ -46,4 +46,11 @@ public class TestAuthCryptoPluginImpl extends FBJUnit4TestBase {
         byte[] bytes = plugin.hashData(testbuf, 200000);
         assertNotNull(bytes);
     }
+
+    @Test
+    public void testAuthCryptoPluginImpl_generateRandom() throws Exception {
+        AuthCryptoPlugin plugin = AuthCryptoPlugin.getPlugin();
+        byte[] bytes = plugin.generateRandom(null, 32);
+        assertNotNull(bytes);
+    }
 }
