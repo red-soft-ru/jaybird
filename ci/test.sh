@@ -74,6 +74,10 @@ ARCHITECTURE=classic
 
 uninstallrdb
 
+echo "Download fbt"
+(git clone --depth 1 git@git.red-soft.biz:red-database/fbt-repository) || die "Unable to checkout tests"
+sudo cp fbt-repository/files/testuser.cer "${BINDIR}"
+
 echo Will use build $RDB_VERSION for testing
 
 echo "Downloading RedDatabase $RDB_BUILD_ID"
