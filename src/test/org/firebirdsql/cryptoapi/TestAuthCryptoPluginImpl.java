@@ -5,6 +5,8 @@ import org.apache.log4j.BasicConfigurator;
 import org.firebirdsql.gds.impl.wire.auth.AuthCryptoPlugin;
 import org.firebirdsql.cryptoapi.AuthCryptoPluginImpl;
 
+import static org.junit.Assert.assertNotNull;
+
 public class TestAuthCryptoPluginImpl extends TestCase {
 
     private byte[] testbuf = "xxThis is a test of the crypto plugin".getBytes();
@@ -35,5 +37,11 @@ public class TestAuthCryptoPluginImpl extends TestCase {
         AuthCryptoPlugin plugin = AuthCryptoPlugin.getPlugin();
         boolean res = plugin.destroyHash(hash);
         assertTrue(res);
+    }
+
+    public void testAuthCryptoPluginImpl_hashData() throws Exception {
+        AuthCryptoPlugin plugin = AuthCryptoPlugin.getPlugin();
+        byte[] bytes = plugin.hashData(testbuf, 200000);
+        assertNotNull(bytes);
     }
 }
