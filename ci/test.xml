@@ -20,6 +20,9 @@
           <pathelement location="${bindir}/bin/jaybird-cryptoapi-${version}.jar" />
           <pathelement location="${bindir}/test/jaybird-test-${version}.jar" />
           <pathelement location="${srcdir}/lib/junit.jar" />
+          <pathelement location="${srcdir}/lib/jna-4.5.0.jar" />
+          <pathelement location="${srcdir}/lib/log4j-1.2.17.jar" />
+          <pathelement location="${srcdir}/lib/platform-4.5.0.jar" />
           <pathelement location="${srcdir}/src/lib/antlr-runtime-4.7.jar" />
           <fileset dir="${srcdir}/lib/test/" includes="*.jar" />
         </classpath>
