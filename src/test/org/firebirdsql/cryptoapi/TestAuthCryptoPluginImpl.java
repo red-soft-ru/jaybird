@@ -2,9 +2,14 @@ package org.firebirdsql.cryptoapi;
 
 import org.apache.log4j.BasicConfigurator;
 import org.firebirdsql.common.FBJUnit4TestBase;
+import org.firebirdsql.gds.GDSException;
 import org.firebirdsql.gds.impl.wire.auth.AuthCryptoPlugin;
-import org.firebirdsql.cryptoapi.AuthCryptoPluginImpl;
+import org.firebirdsql.gds.impl.wire.auth.AuthPrivateKeyContext;
 import org.junit.Test;
+
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertNotNull;
@@ -13,6 +18,28 @@ public class TestAuthCryptoPluginImpl extends FBJUnit4TestBase {
 
     private byte[] testbuf = "xxThis is a test of the crypto plugin".getBytes();
     private Object hash = null;
+
+    public String loadCertFromFile(String filePath) throws Exception {
+        final byte buf[] = new byte[4096];
+        final StringBuilder res = new StringBuilder();
+        try {
+            final InputStream is = new FileInputStream(filePath);
+            try {
+                int c;
+                while ((c = is.read(buf)) > 0) {
+                    res.append(new String(buf, 0, c));
+                }
+                return res.toString();
+            } finally {
+                try {
+                    is.close();
+                } catch (IOException ignored) {
+                }
+            }
+        } catch (IOException e) {
+            throw new Exception("Error reading certificate from file " + filePath + ": " + e.getMessage());
+        }
+    }
 
     public static void initLogger() {
         BasicConfigurator.configure();
@@ -52,5 +79,14 @@ public class TestAuthCryptoPluginImpl extends FBJUnit4TestBase {
         AuthCryptoPlugin plugin = AuthCryptoPlugin.getPlugin();
         byte[] bytes = plugin.generateRandom(null, 32);
         assertNotNull(bytes);
+    }
+
+    @Test
+    public void testAuthCryptoPluginImpl_getUserKey() throws Exception {
+        String cert = loadCertFromFile("testuser.cer");
+
+        AuthCryptoPlugin plugin = AuthCryptoPlugin.getPlugin();
+        AuthPrivateKeyContext userKey = plugin.getUserKey(cert);
+        assertNotNull(userKey);
     }
 }
