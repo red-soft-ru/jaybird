@@ -78,13 +78,18 @@ echo "Download fbt"
 (git clone --depth 1 git@git.red-soft.biz:red-database/fbt-repository) || die "Unable to checkout tests"
 sudo cp fbt-repository/files/cert/Смирнов.cer ./testuser.cer
 
+CPROCSP_ARCH=amd64
+if [ "$ARCH" == "x86" ]; then
+	CPROCSP_ARCH=ia32
+fi
+
 KEYS_DIR=/var/opt/cprocsp/keys
-sudo mkdir -p $KEYS_DIR/firebird
-sudo chmod 700 $KEYS_DIR/firebird
-sudo cp fbt-repository/files/cert/RaUser-d.000/ $KEYS_DIR/firebird -rfv
-sudo chown firebird:firebird $KEYS_DIR/firebird/RaUser-d.000 -R
-sudo chmod 700 $KEYS_DIR/firebird/RaUser-d.000
-sudo -u firebird /opt/cprocsp/bin/$CPROCSP_ARCH/certmgr -inst -cont '\\.\HDIMAGE\RaUser-de9e345e-157d-4d82-80d1-2098c0f28992'
+sudo mkdir -p $KEYS_DIR/jenkins
+sudo chmod 700 $KEYS_DIR/jenkins
+sudo cp fbt-repository/files/cert/RaUser-d.000/ $KEYS_DIR/jenkins -rfv
+sudo chown jenkins:jenkins $KEYS_DIR/jenkins/RaUser-d.000 -R
+sudo chmod 700 $KEYS_DIR/jenkins/RaUser-d.000
+sudo -u jenkins /opt/cprocsp/bin/$CPROCSP_ARCH/certmgr -inst -cont '\\.\HDIMAGE\RaUser-de9e345e-157d-4d82-80d1-2098c0f28992'
 
 echo Will use build $RDB_VERSION for testing
 
