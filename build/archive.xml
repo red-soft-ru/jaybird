@@ -97,13 +97,13 @@
   <target name="jar-sources" depends="set-driver-sources,set-pool-sources">
   	<mkdir dir="${build.lib}"/>
   	<jar jarfile="${build.lib}/${archive.name.sources}" update="true">
-      	<fileset dir="${source.java}">
-      		<include name="**/*.java"/>
-      	</fileset>
-      	<fileset dir="${source.pool}">
-      		<include name="**/*.java"/>
-      	</fileset>
-      	<fileset dir="${toString:source.java.openoffice}">
+	      	<fileset dir="${source.java}">
+	      		<include name="**/*.java"/>
+	      	</fileset>
+	      	<fileset dir="${source.pool}">
+	      		<include name="**/*.java"/>
+	      	</fileset>
+      		<fileset dir="${toString:source.java.openoffice}">
 	  		<include name="**/*.java"/>
 	  	</fileset>
   		<fileset dir="${toString:source.java.additional}">
@@ -125,6 +125,63 @@
 		<zipfileset dir="${source.resources}/META-INF" prefix="META-INF">
 			<include name="services/**/*"/>
 		</zipfileset>
+  	</jar>
+
+  	<jar jarfile="${build.lib}/${archive.name.esp.sources}" update="true">
+       		<fileset dir="${source.esp}">
+         		<include name="org/firebirdsql/**"/>
+       		</fileset>
+       		<fileset dir="${source.resources.esp}">
+         		<include name="**/*.*"/>
+       		</fileset>
+  	</jar>
+
+  	<jar jarfile="${build.lib}/${archive.name.test.sources}" update="true">
+       		<fileset dir="${source.test}">
+         		<include name="org/firebirdsql/**"/>
+       		</fileset>
+  	</jar>
+
+  	<jar jarfile="${build.lib}/${archive.name.esp.examples.sources}" update="true">
+       		<fileset dir="${source.esp}">
+         		<include name="firebird/**"/>
+       		</fileset>
+  	</jar>
+
+  	<jar jarfile="${build.lib}/${archive.name.cryptoapi.sources}" update="true">
+       		<fileset dir="${source.cryptoapi}">
+         		<include name="org/firebirdsql/**"/>
+       		</fileset>
+  	</jar>
+
+  	<jar jarfile="${build.lib}/${archive.name.cryptoapi_security.sources}" update="true">
+       		<fileset dir="${source.cryptoapi_security}">
+         		<include name="org/firebirdsql/**"/>
+       		</fileset>
+       		<fileset dir="${source.cryptoapi}">
+         		<include name="org/firebirdsql/**"/>
+         		<exclude name="org/firebirdsql/cryptoapi/windows/advapi/Advapi.java"/>
+         		<exclude name="org/firebirdsql/cryptoapi/windows/advapi/AdvapiLib.java"/>
+       		</fileset>
+  	</jar>
+
+  	<jar jarfile="${build.lib}/${archive.name.full.sources}" update="true">
+       		<fileset dir="${source.java}">
+         		<include name="org/firebirdsql/**"/>
+       		</fileset>
+       		<fileset dir="${source.pool}">
+         		<include name="org/firebirdsql/**"/>
+       		</fileset>
+       		<fileset dir="${source.compatibility}">
+         		<include name="org/firebirdsql/**"/>
+       		</fileset>
+       		<fileset dir="${source.resources}">
+         		<exclude name="log4j.properties"/>
+         		<include name="**/*.properties"/>
+       		</fileset>
+       		<fileset dir="${module.thirdparty}">
+         		<include name="connector-api-1.5.jar"/>
+       		</fileset>
   	</jar>
   </target>
   

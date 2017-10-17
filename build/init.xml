@@ -170,12 +170,18 @@
 
     <property name="archive.name.rar" value="${archive.name.main}-${version.maven}.rar"/>
     <property name="archive.name.esp" value="${name}-esp-${maven.jdkversion}-${version.maven}.jar"/>
+    <property name="archive.name.esp.sources" value="${name}-esp-${maven.jdkversion}-${version.maven}-sources.jar"/>
     <property name="archive.name.esp.examples" value="${name}-esp-example-${maven.jdkversion}-${version.maven}.jar"/>
+    <property name="archive.name.esp.examples.sources" value="${name}-esp-example-${maven.jdkversion}-${version.maven}-sources.jar"/>
     <property name="archive.name.cryptoapi" value="${name}-cryptoapi-${maven.jdkversion}-${version.maven}.jar"/>
+    <property name="archive.name.cryptoapi.sources" value="${name}-cryptoapi-${maven.jdkversion}-${version.maven}-sources.jar"/>
     <property name="archive.name.cryptoapi_security" value="${name}-cryptoapi-security-${maven.jdkversion}-${version.maven}.jar"/>
+    <property name="archive.name.cryptoapi_security.sources" value="${name}-cryptoapi-security-${maven.jdkversion}-${version.maven}-sources.jar"/>
     <property name="archive.name.full" value="${name}-full-${maven.jdkversion}-${version.maven}.jar"/>
+    <property name="archive.name.full.sources" value="${name}-full-${maven.jdkversion}-${version.maven}-sources.jar"/>
     <property name="archive.name.simple" value="${archive.name.main}-${version.maven}.jar"/>
     <property name="archive.name.test" value="${name}-test-${maven.jdkversion}-${version.maven}.jar"/>
+    <property name="archive.name.test.sources" value="${name}-test-${maven.jdkversion}-${version.maven}-sources.jar"/>
     <property name="archive.name.sources" value="${archive.name.main}-${version.maven}-sources.jar"/>
     <property name="archive.name.javadoc" value="${archive.name.main}-${version.maven}-javadoc.jar"/>
 
