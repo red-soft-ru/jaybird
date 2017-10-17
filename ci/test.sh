@@ -82,8 +82,6 @@ if [ "$ARCH" == "x86" ]; then
 	CPROCSP_ARCH=ia32
 fi
 
-sudo /opt/cprocsp/bin/$CPROCSP_ARCH/certmgr -decode -src fbt-repository/files/cert/Смирнов.cer -dest ./testuser.cer -base64
-
 KEYS_DIR=/var/opt/cprocsp/keys
 sudo mkdir -p $KEYS_DIR/jenkins
 sudo chmod 700 $KEYS_DIR/jenkins
@@ -91,6 +89,8 @@ sudo cp fbt-repository/files/cert/RaUser-d.000/ $KEYS_DIR/jenkins -rfv
 sudo chown jenkins:jenkins $KEYS_DIR/jenkins/RaUser-d.000 -R
 sudo chmod 700 $KEYS_DIR/jenkins/RaUser-d.000
 sudo -u jenkins /opt/cprocsp/bin/$CPROCSP_ARCH/certmgr -inst -cont '\\.\HDIMAGE\RaUser-de9e345e-157d-4d82-80d1-2098c0f28992'
+
+sudo /opt/cprocsp/bin/$CPROCSP_ARCH/certmgr -decode -src fbt-repository/files/cert/Смирнов.cer -dest ./testuser.cer -base64
 
 echo Will use build $RDB_VERSION for testing
 
