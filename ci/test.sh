@@ -76,12 +76,13 @@ uninstallrdb
 
 echo "Download fbt"
 (git clone --depth 1 git@git.red-soft.biz:red-database/fbt-repository) || die "Unable to checkout tests"
-sudo /opt/cprocsp/bin/amd64/certmgr -decode -src fbt-repository/files/cert/Смирнов.cer -dest ./testuser.cer -base64
 
 CPROCSP_ARCH=amd64
 if [ "$ARCH" == "x86" ]; then
 	CPROCSP_ARCH=ia32
 fi
+
+sudo /opt/cprocsp/bin/$CPROCSP_ARCH/certmgr -decode -src fbt-repository/files/cert/Смирнов.cer -dest ./testuser.cer -base64
 
 KEYS_DIR=/var/opt/cprocsp/keys
 sudo mkdir -p $KEYS_DIR/jenkins
