@@ -76,7 +76,7 @@ uninstallrdb
 
 echo "Download fbt"
 (git clone --depth 1 git@git.red-soft.biz:red-database/fbt-repository) || die "Unable to checkout tests"
-sudo cp fbt-repository/files/cert/Смирнов.cer ./testuser.cer
+sudo /opt/cprocsp/bin/amd64/certmgr -decode -src fbt-repository/files/cert/Смирнов.cer -dest ./testuser.cer -base64
 
 CPROCSP_ARCH=amd64
 if [ "$ARCH" == "x86" ]; then
