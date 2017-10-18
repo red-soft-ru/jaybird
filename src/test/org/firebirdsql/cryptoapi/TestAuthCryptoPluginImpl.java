@@ -82,5 +82,7 @@ public class TestAuthCryptoPluginImpl extends TestCase {
         AuthCryptoPlugin plugin = AuthCryptoPlugin.getPlugin();
         AuthPrivateKeyContext userKey = plugin.getUserKey(cert);
         assertNotNull(userKey);
+
+        userKey.free(plugin);
     }
 }
