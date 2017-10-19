@@ -23,7 +23,7 @@ file dist-16/sources/jaybird-cryptoapi-security-jdk16-VERSION-sources.jar source
 end
 
 artifact jaybird-esp-jdk16 VERSION
-file dist-16/bin/jaybird-esp-jdk16-VERSION.jar jar
+file dist-16/esp/jaybird-esp-jdk16-VERSION.jar jar
 file dist-16/sources/jaybird-esp-jdk16-VERSION-sources.jar sources
 end
 
@@ -50,7 +50,7 @@ file dist-17/sources/jaybird-cryptoapi-security-jdk17-VERSION-sources.jar source
 end
 
 artifact jaybird-esp-jdk17 VERSION
-file dist-17/bin/jaybird-esp-jdk17-VERSION.jar jar
+file dist-17/esp/jaybird-esp-jdk17-VERSION.jar jar
 file dist-17/sources/jaybird-esp-jdk17-VERSION-sources.jar sources
 end
 
@@ -77,7 +77,7 @@ file dist-18/sources/jaybird-cryptoapi-security-jdk18-VERSION-sources.jar source
 end
 
 artifact jaybird-esp-jdk18 VERSION
-file dist-18/bin/jaybird-esp-jdk18-VERSION.jar jar
+file dist-18/esp/jaybird-esp-jdk18-VERSION.jar jar
 file dist-18/sources/jaybird-esp-jdk18-VERSION-sources.jar sources
 end
 
