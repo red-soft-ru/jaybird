@@ -82,22 +82,12 @@ node('master')
             unstash "test-${jdk}"
         }
 
-        sh "echo artifact jaybird-src ${version} > artifacts"
-        sh "echo file dist-src/${archive_prefix}.tar.gz tar.gz src >> artifacts"
-        sh "echo file dist-src/${archive_prefix}.zip zip src >> artifacts"
-        sh "echo end >> artifacts"
-        for (jdk in ['16', '17', '18'])
-        {
-            sh "echo artifact jaybird-jdk${jdk} ${version} >> artifacts"
-            sh "echo file dist-${jdk}/bin/jaybird-jdk${jdk}-${version}.jar jar >> artifacts"
-            sh "echo file dist-${jdk}/bin/jaybird-full-jdk${jdk}-${version}.jar jar full >> artifacts"
-            sh "echo file dist-${jdk}/bin/jaybird-cryptoapi-jdk${jdk}-${version}.jar jar cryptoapi >> artifacts"
-            sh "echo file dist-${jdk}/bin/jaybird-cryptoapi-security-jdk${jdk}-${version}.jar jar cryptoapi-security >> artifacts"
-            sh "echo file dist-${jdk}/esp/jaybird-esp-jdk${jdk}-${version}.jar jar esp >> artifacts"
-            sh "echo file dist-${jdk}/test/jaybird-test-jdk${jdk}-${version}.jar jar test >> artifacts"
-            sh "echo file dist-${jdk}/sources/jaybird-jdk${jdk}-${version}-sources.jar jar sources >> artifacts"
-            sh "echo file dist-${jdk}/javadoc/jaybird-jdk${jdk}-${version}-javadoc.jar jar javadoc >> artifacts"
-            sh "echo end >> artifacts"
+        withEnv(["archive_prefix=${archive_prefix}", "version=${version}"]) {
+            sh """#!/bin/bash
+                set -e
+                tar xf dist-src/${archive_prefix}.tar.gz
+                m4 -DVERSION=$version ${archive_prefix}/ci/artifacts.m4 > artifacts
+            """
         }
         
         ReleaseHub.deployToReleaseHub(release_hub_project, version, env.BUILD_URL, rev, wd+'/artifacts', wd, maven_group, '', '', branch) 
