@@ -14,22 +14,22 @@ end
 
 artifact jaybird-cryptoapi-jdk16 VERSION
 file dist-16/bin/jaybird-cryptoapi-jdk16-VERSION.jar jar
-file dist-16/sources/jaybird-cryptoapi-jdk16-VERSION-sources.jar sources
+file dist-16/sources/jaybird-cryptoapi-jdk16-VERSION-sources.jar jar sources
 end
 
 artifact jaybird-cryptoapi-security-jdk16 VERSION
 file dist-16/bin/jaybird-cryptoapi-security-jdk16-VERSION.jar jar
-file dist-16/sources/jaybird-cryptoapi-security-jdk16-VERSION-sources.jar sources
+file dist-16/sources/jaybird-cryptoapi-security-jdk16-VERSION-sources.jar jar sources
 end
 
 artifact jaybird-esp-jdk16 VERSION
 file dist-16/esp/jaybird-esp-jdk16-VERSION.jar jar
-file dist-16/sources/jaybird-esp-jdk16-VERSION-sources.jar sources
+file dist-16/sources/jaybird-esp-jdk16-VERSION-sources.jar jar sources
 end
 
 artifact jaybird-full-jdk16 VERSION
 file dist-16/bin/jaybird-full-jdk16-VERSION.jar jar
-file dist-16/sources/jaybird-full-jdk16-VERSION-sources.jar sources
+file dist-16/sources/jaybird-full-jdk16-VERSION-sources.jar jar sources
 end
 
 artifact jaybird-jdk17 VERSION
@@ -41,22 +41,22 @@ end
 
 artifact jaybird-cryptoapi-jdk17 VERSION
 file dist-17/bin/jaybird-cryptoapi-jdk17-VERSION.jar jar
-file dist-17/sources/jaybird-cryptoapi-jdk17-VERSION-sources.jar sources
+file dist-17/sources/jaybird-cryptoapi-jdk17-VERSION-sources.jar jar sources
 end
 
 artifact jaybird-cryptoapi-security-jdk17 VERSION
 file dist-17/bin/jaybird-cryptoapi-security-jdk17-VERSION.jar jar
-file dist-17/sources/jaybird-cryptoapi-security-jdk17-VERSION-sources.jar sources
+file dist-17/sources/jaybird-cryptoapi-security-jdk17-VERSION-sources.jar jar sources
 end
 
 artifact jaybird-esp-jdk17 VERSION
 file dist-17/esp/jaybird-esp-jdk17-VERSION.jar jar
-file dist-17/sources/jaybird-esp-jdk17-VERSION-sources.jar sources
+file dist-17/sources/jaybird-esp-jdk17-VERSION-sources.jar jar sources
 end
 
 artifact jaybird-full-jdk17 VERSION
 file dist-17/bin/jaybird-full-jdk17-VERSION.jar jar
-file dist-17/sources/jaybird-full-jdk17-VERSION-sources.jar sources
+file dist-17/sources/jaybird-full-jdk17-VERSION-sources.jar jar sources
 end
 
 artifact jaybird-jdk18 VERSION
@@ -68,20 +68,20 @@ end
 
 artifact jaybird-cryptoapi-jdk18 VERSION
 file dist-18/bin/jaybird-cryptoapi-jdk18-VERSION.jar jar
-file dist-18/sources/jaybird-cryptoapi-jdk18-VERSION-sources.jar sources
+file dist-18/sources/jaybird-cryptoapi-jdk18-VERSION-sources.jar jar sources
 end
 
 artifact jaybird-cryptoapi-security-jdk18 VERSION
 file dist-18/bin/jaybird-cryptoapi-security-jdk18-VERSION.jar jar
-file dist-18/sources/jaybird-cryptoapi-security-jdk18-VERSION-sources.jar sources
+file dist-18/sources/jaybird-cryptoapi-security-jdk18-VERSION-sources.jar jar sources
 end
 
 artifact jaybird-esp-jdk18 VERSION
 file dist-18/esp/jaybird-esp-jdk18-VERSION.jar jar
-file dist-18/sources/jaybird-esp-jdk18-VERSION-sources.jar sources
+file dist-18/sources/jaybird-esp-jdk18-VERSION-sources.jar jar sources
 end
 
 artifact jaybird-full-jdk18 VERSION
 file dist-18/bin/jaybird-full-jdk18-VERSION.jar jar
-file dist-18/sources/jaybird-full-jdk18-VERSION-sources.jar sources
+file dist-18/sources/jaybird-full-jdk18-VERSION-sources.jar jar sources
 end
