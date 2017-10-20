@@ -17,6 +17,8 @@ import org.firebirdsql.logging.LoggerFactory;
 
 import java.io.File;
 import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Statement;
 
 /**
  * @author vasiliy
@@ -81,7 +83,7 @@ public class TestAuthSspi extends SimpleFBTestBase {
             db.delete();
     }// hide superclass teardown.
 
-    public void testMultifactorAuth() throws Exception {
+    public void testMultifactorAuthCertificateOnly() throws Exception {
         initLogger();
 
         File db = new File(DB_PATH + "/" + dbName);
@@ -98,8 +100,16 @@ public class TestAuthSspi extends SimpleFBTestBase {
         fbDataSource.setNonStandardProperty("isc_dpb_trusted_auth", "1");
         fbDataSource.setNonStandardProperty("isc_dpb_multi_factor_auth", "1");
         fbDataSource.setNonStandardProperty("isc_dpb_certificate", "testuser.cer");
+        fbDataSource.setNonStandardProperty("isc_dpb_repository_pin", "12345678");
 
         final Connection conn = fbDataSource.getConnection();
 
+        Statement statement = conn.createStatement();
+        ResultSet resultSet = statement.executeQuery("select current_user from rdb$database");
+        resultSet.next();
+        System.out.println("Current user is " + resultSet.getString(1));
+        resultSet.close();
+        statement.close();
+        conn.close();
     }
 }
