@@ -106,9 +106,12 @@ mkdir -p $WORKSPACE/results
 sudo chmod 777 $TEST_DIR
 
 sudo sed -i 's/#VerifyCertChain = 1/VerifyCertChain = 0/g' /opt/RedDatabase/firebird.conf
+sudo sed -i 's/#CertUsernameDN = CN/CertUsernameDN = E' /opt/RedDatabase/firebird.conf
 
 rdb_control restart
 sleep 5
+
+sudo /opt/RedDatabase/bin/gsec -user SYSDBA -password masterkey -add artyom.smirnov@red-soft.ru -pw q3rgu7Ah
 
 export JAVA_HOME
 ant -Dtest.report.dir=$TEST_DIR -Dtest.db.dir=$TEST_DIR -Djdk=${JDK_VERSION} -Dversion=$JAYBIRD_VERSION -Dbindir=${BINDIR} -Dsrcdir=${SRCDIR} -f test.xml
