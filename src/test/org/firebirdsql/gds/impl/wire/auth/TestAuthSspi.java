@@ -112,4 +112,34 @@ public class TestAuthSspi extends SimpleFBTestBase {
         statement.close();
         conn.close();
     }
+
+    public void testMultifactorAuthPasswordOnly() throws Exception {
+        initLogger();
+
+        File db = new File(DB_PATH + "/" + dbName);
+        if (db.exists())
+            db.delete();
+        createDatabase(dbName);
+
+        AuthCryptoPlugin.register(new AuthCryptoPluginImpl());
+
+        final FBSADataSource fbDataSource = new FBSADataSource(GDSType.getType("PURE_JAVA"));
+
+        final String databaseURL = getdbpath(dbName);
+        fbDataSource.setDatabase(databaseURL);
+        fbDataSource.setNonStandardProperty("isc_dpb_user_name", "artyom.smirnov@red-soft.ru");
+        fbDataSource.setNonStandardProperty("isc_dpb_password", "q3rgu7Ah");
+        fbDataSource.setNonStandardProperty("isc_dpb_trusted_auth", "1");
+        fbDataSource.setNonStandardProperty("isc_dpb_multi_factor_auth", "1");
+
+        final Connection conn = fbDataSource.getConnection();
+
+        Statement statement = conn.createStatement();
+        ResultSet resultSet = statement.executeQuery("select current_user from rdb$database");
+        resultSet.next();
+        System.out.println("Current user is " + resultSet.getString(1));
+        resultSet.close();
+        statement.close();
+        conn.close();
+    }
 }
