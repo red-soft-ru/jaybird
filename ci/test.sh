@@ -106,7 +106,7 @@ mkdir -p $WORKSPACE/results
 sudo chmod 777 $TEST_DIR
 
 sudo sed -i 's/#VerifyCertChain = 1/VerifyCertChain = 0/g' /opt/RedDatabase/firebird.conf
-sudo sed -i 's/#CertUsernameDN = CN/CertUsernameDN = E' /opt/RedDatabase/firebird.conf
+sudo sed -i 's/#CertUsernameDN = CN/CertUsernameDN = E/g' /opt/RedDatabase/firebird.conf
 
 rdb_control restart
 sleep 5
