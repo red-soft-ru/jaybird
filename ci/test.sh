@@ -90,7 +90,7 @@ sudo chown jenkins:jenkins $KEYS_DIR/jenkins/RaUser-d.000 -R
 sudo chmod 700 $KEYS_DIR/jenkins/RaUser-d.000
 sudo -u jenkins /opt/cprocsp/bin/$CPROCSP_ARCH/certmgr -inst -cont '\\.\HDIMAGE\RaUser-de9e345e-157d-4d82-80d1-2098c0f28992'
 
-sudo /opt/cprocsp/bin/$CPROCSP_ARCH/certmgr -decode -src fbt-repository/files/cert/Смирнов.cer -dest ./testuser.cer -base64
+sudo openssl x509 -in fbt-repository/files/cert/Смирнов.cer -inform der -outform pem -out ./testuser.cer
 
 echo Will use build $RDB_VERSION for testing
 
