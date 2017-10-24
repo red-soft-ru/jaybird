@@ -414,4 +414,15 @@ public interface FirebirdConnectionProperties {
      *         {@code true} Use Firebird autocommit
      */
     void setUseFirebirdAutocommit(boolean useFirebirdAutocommit);
+
+    /**
+     * @return path to the certificate that will be used when connecting to the database.
+     */
+    String getCertificate();
+
+    /**
+     * @param certificate
+     *         path to the certificate that will be used when connecting to the database.
+     */
+    void setCertificate(String certificate);
 }

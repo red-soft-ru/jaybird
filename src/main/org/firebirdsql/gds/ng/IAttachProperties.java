@@ -242,4 +242,15 @@ public interface IAttachProperties<T extends IAttachProperties> {
      * @return A new, mutable, instance as an implementation of {@link IAttachProperties} with all properties copied.
      */
     T asNewMutable();
+
+    /**
+     * @return Path to the certificate to authenticate to the server.
+     */
+    String getCertificate();
+
+    /**
+     * @param user
+     *         Path to the certificate to authenticate to the server.
+     */
+    void setCertificate(String user);
 }

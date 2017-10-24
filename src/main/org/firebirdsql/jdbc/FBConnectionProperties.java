@@ -59,6 +59,7 @@ public class FBConnectionProperties implements FirebirdConnectionProperties, Ser
     public static final String SO_TIMEOUT = "soTimeout";
     public static final String CONNECT_TIMEOUT = "connectTimeout";
     public static final String USE_FIREBIRD_AUTOCOMMIT = "useFirebirdAutocommit";
+    public static final String CERTIFICATE = "certificate";
 
     private Map<String, Object> properties = new HashMap<>();
     private String type;
@@ -358,6 +359,16 @@ public class FBConnectionProperties implements FirebirdConnectionProperties, Ser
     @Override
     public void setUseFirebirdAutocommit(boolean useFirebirdAutocommit) {
         setBooleanProperty(USE_FIREBIRD_AUTOCOMMIT, useFirebirdAutocommit);
+    }
+
+    @Override
+    public String getCertificate() {
+        return getStringProperty(CERTIFICATE);
+    }
+
+    @Override
+    public void setCertificate(String certificate) {
+        setStringProperty(CERTIFICATE, certificate);
     }
 
     public void setNonStandardProperty(String propertyMapping) {

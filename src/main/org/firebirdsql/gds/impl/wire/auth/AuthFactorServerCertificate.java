@@ -12,7 +12,7 @@ public class AuthFactorServerCertificate extends AuthFactor {
   private static int numberSize = 32;
   private byte[] number;
 
-  protected AuthFactorServerCertificate(AuthSspi sspi) {
+  public AuthFactorServerCertificate(AuthSspi sspi) {
     super(AuthFactor.TYPE_SERVER_CERT, sspi);
     setStage(CHALLENGE);
   }

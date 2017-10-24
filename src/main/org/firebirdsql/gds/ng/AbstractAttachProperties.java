@@ -33,6 +33,7 @@ public abstract class AbstractAttachProperties<T extends IAttachProperties> impl
     private String roleName;
     private String charSet;
     private String encoding;
+    private String certificate;
     private int socketBufferSize = IAttachProperties.DEFAULT_SOCKET_BUFFER_SIZE;
     private int soTimeout = IAttachProperties.DEFAULT_SO_TIMEOUT;
     private int connectTimeout = IAttachProperties.DEFAULT_CONNECT_TIMEOUT;
@@ -58,6 +59,7 @@ public abstract class AbstractAttachProperties<T extends IAttachProperties> impl
             socketBufferSize = src.getSocketBufferSize();
             soTimeout = src.getSoTimeout();
             connectTimeout = src.getConnectTimeout();
+            certificate = src.getCertificate();
         }
     }
 
@@ -174,6 +176,17 @@ public abstract class AbstractAttachProperties<T extends IAttachProperties> impl
     @Override
     public void setConnectTimeout(int connectTimeout) {
         this.connectTimeout = connectTimeout;
+        dirtied();
+    }
+
+    @Override
+    public String getCertificate() {
+        return certificate;
+    }
+
+    @Override
+    public void setCertificate(String certificate) {
+        this.certificate = certificate;
         dirtied();
     }
 

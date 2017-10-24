@@ -94,7 +94,7 @@ public class AuthFactorCertificate extends AuthFactor {
     }
   };
 
-  protected AuthFactorCertificate(AuthSspi sspi) {
+  public AuthFactorCertificate(AuthSspi sspi) {
     super(AuthFactor.TYPE_CERT_X509, sspi);
     setStage(CHALLENGE);
   }

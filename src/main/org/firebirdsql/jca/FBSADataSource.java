@@ -612,6 +612,16 @@ public class FBSADataSource implements DataSource, Serializable, Referenceable, 
         mcf.setUseFirebirdAutocommit(useFirebirdAutocommit);
     }
 
+    @Override
+    public String getCertificate() {
+        return mcf.getCertificate();
+    }
+
+    @Override
+    public void setCertificate(String certificate) {
+        mcf.setCertificate(certificate);
+    }
+
     public int getSoTimeout() {
         return mcf.getSoTimeout();
     }

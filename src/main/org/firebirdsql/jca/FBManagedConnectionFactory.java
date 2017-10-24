@@ -415,6 +415,16 @@ public class FBManagedConnectionFactory implements ManagedConnectionFactory, Fir
         connectionProperties.setUseFirebirdAutocommit(useFirebirdAutocommit);
     }
 
+    @Override
+    public String getCertificate() {
+        return connectionProperties.getCertificate();
+    }
+
+    @Override
+    public void setCertificate(String certificate) {
+        connectionProperties.setCertificate(certificate);
+    }
+
     public int hashCode() {
         if (hashCode != 0) 
             return hashCode;

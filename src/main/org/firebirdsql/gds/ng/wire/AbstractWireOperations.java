@@ -167,33 +167,7 @@ public abstract class AbstractWireOperations implements FbWireOperations {
 
     @Override
     public final Response readSingleResponse(WarningMessageCallback warningCallback) throws SQLException, IOException {
-        AuthSspi sspi = connection.getClientAuthBlock().getSspi();
-        int operation = readNextOperation();
-        if (sspi != null) try {
-            final ByteBuffer authData = new ByteBuffer(256);
-            while (operation == op_trusted_auth) {
-                receiveAuthResponse(authData);
-                if (!sspi.request(authData)) {
-                    throw new FbExceptionBuilder()
-                            .nonTransientConnectionException(ISCConstants.isc_unavailable).toFlatSQLException();
-                }
-                writeAuthData(authData);
-                operation = readNextOperation();
-            }
-        } catch (GDSAuthException e) {
-            throw new SQLException(e.getMessage());
-        } catch (GDSException e) {
-            throw new SQLException(e.getMessage());
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                sspi.free();
-            } catch (GDSAuthException e) {
-                throw new SQLException(e.getMessage());
-            }
-        }
-        Response response = processOperation(operation/*readNextOperation()*/);
+        Response response = processOperation(readNextOperation());
         processResponseWarnings(response, warningCallback);
         return response;
     }

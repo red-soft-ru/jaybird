@@ -60,20 +60,9 @@ public final class ClientAuthBlock {
     private boolean authComplete;
     private boolean firstTime = true;
 
-    private AuthSspi sspi = null;
-
     public ClientAuthBlock(IAttachProperties<?> attachProperties) throws SQLException {
         this.attachProperties = attachProperties;
         resetClient(null);
-    }
-
-
-    public AuthSspi getSspi() {
-        return sspi;
-    }
-
-    public void setSspi(AuthSspi sspi) {
-        this.sspi = sspi;
     }
 
     public String getLogin() {
@@ -249,7 +238,8 @@ public final class ClientAuthBlock {
     private static List<AuthenticationPluginSpi> getSupportedPluginProviders() {
         // TODO Create from service provider interface; use properties?
         return Collections.unmodifiableList(
-                Arrays.<AuthenticationPluginSpi>asList(new SrpAuthenticationPluginSpi(), new LegacyAuthenticationPluginSpi()));
+                Arrays.<AuthenticationPluginSpi>asList(new SrpAuthenticationPluginSpi(), new LegacyAuthenticationPluginSpi(),
+                        new MultifactorAuthenticationPluginSpi()));
     }
 
     public boolean switchPlugin(String pluginName) {
@@ -332,4 +322,9 @@ public final class ClientAuthBlock {
         pb.removeArgument(tagMapping.getEncryptedPasswordTag());
         pb.removeArgument(tagMapping.getTrustedAuthTag());
     }
+
+    public String getCertificate() {
+        return attachProperties.getCertificate();
+    }
+
 }

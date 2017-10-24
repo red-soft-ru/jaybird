@@ -27,7 +27,7 @@ public class AuthFactorPassword extends AuthFactor {
   private String password;
   private String passwordEnc;
 
-  protected AuthFactorPassword(AuthSspi sspi) {
+  public AuthFactorPassword(AuthSspi sspi) {
     super(TYPE_PASSWORD, sspi);
     setStage(CHALLENGE);
   }
