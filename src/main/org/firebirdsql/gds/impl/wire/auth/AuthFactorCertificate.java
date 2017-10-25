@@ -3,6 +3,7 @@ package org.firebirdsql.gds.impl.wire.auth;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 
 import org.firebirdsql.gds.GDSException;
 import org.firebirdsql.gds.ISCConstants;
@@ -60,9 +61,14 @@ public class AuthFactorCertificate extends AuthFactor {
   private final Stage TRANSFER = new Stage() {
     @Override
     public boolean stage(final ByteBuffer data) throws GDSAuthException {
-      final TaggedClumpletReader serverData = new TaggedClumpletReader(data.getData(), data.getLength());
-      if (!serverData.find(sdRandomNumber))
-        throw new GDSAuthException("No random number found in server data");
+      final byte[] encryptMessage = data.getData();
+      int numberLenght = (encryptMessage[3] & 0xFF) << 24
+              | (encryptMessage[2] & 0xFF) << 16
+              | (encryptMessage[1] & 0xFF) << 8
+              | (encryptMessage[0] & 0xFF);
+      final byte[] encryptNumber = Arrays.copyOfRange(encryptMessage, 4, data.getLength());
+      if (numberLenght != encryptNumber.length)
+        throw new GDSAuthException("The random number length is not equal to the message length");
 
       final AuthCryptoPlugin p = AuthCryptoPlugin.getPlugin();
       final AuthPrivateKeyContext userKey; // cache the user key context to avoid password dialog appearing 2 times
@@ -73,7 +79,7 @@ public class AuthFactorCertificate extends AuthFactor {
       }
       final byte[] signData;
       try {
-        final byte[] number = AuthMethods.ccfiDecrypt(userKey, serverData.getBytes().bytes(), certBase64);
+        final byte[] number = AuthMethods.ccfiDecrypt(userKey, encryptNumber, certBase64);
         signData = AuthMethods.ccfiSign(userKey, number, certBase64);
       } finally {
         userKey.free(p);
