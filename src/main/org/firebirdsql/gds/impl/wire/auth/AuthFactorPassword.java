@@ -1,10 +1,15 @@
 package org.firebirdsql.gds.impl.wire.auth;
 
+import org.firebirdsql.encodings.Encoding;
 import org.firebirdsql.gds.impl.wire.ByteBuffer;
 import org.firebirdsql.gds.impl.wire.Bytes;
 import org.firebirdsql.gds.impl.wire.TaggedClumpletReader;
 import org.firebirdsql.gds.ng.wire.auth.UnixCrypt;
 import sun.misc.BASE64Encoder;
+
+import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Array;
+import java.util.Arrays;
 
 /**
  * @author roman.kisluhin
@@ -136,9 +141,10 @@ public class AuthFactorPassword extends AuthFactor {
         throw new GDSAuthException("Can't find data (salt) in server response");
 
       final Bytes saltData = cr.getBytes();
-      final String salt = new String(saltData.getData(), saltData.getOffset(), saltData.getLength());
-
-      final String hash = hashMf(userName, password, salt);
+      byte[] bytesSalt = Arrays.copyOfRange(saltData.getData(), saltData.getOffset(), saltData.getOffset() + saltData.getLength());
+      ByteBuffer saltBuffer = new ByteBuffer(0);
+      saltBuffer.add(bytesSalt);
+      final byte[] hash = hashMf(userName, password, saltBuffer);
 
       final Object sessionKey = AuthMethods.createSessionKey(hash);
       final byte[] randomData;
@@ -158,25 +164,46 @@ public class AuthFactorPassword extends AuthFactor {
       }
 
       // hashOfSum
-      final int sumDataLen = hash.length() + randomData.length;
+      final int sumDataLen = hash.length + randomData.length;
       final byte[] sumData = new byte[sumDataLen];
       System.arraycopy(randomData, 0, sumData, 0, randomData.length);
-      final byte[] hashData = hash.getBytes();
+      byte[] hashData = hash;
       System.arraycopy(hashData, 0, sumData, randomData.length, hashData.length);
 
+      AuthMethods.hashData(sumData, 1);
       final byte[] hash2 = AuthMethods.hashData(sumData, 1);
       data.clear();
-      data.add(toHexString(hash2).getBytes());
+
+      // rdb3.0 adds 1 to string length
+      // need add end of string to hex
+      String hex = toHexString(hash2) + "\0";
+      byte[] bytes = hex.getBytes();
+      data.add(bytes);
     }
 
-    private String hashMf(final String userName, final String password, String salt) throws GDSAuthException {
-      for (int i = salt.length(); i < SALT_LENGTH; i++) {
-        salt += "=";
+    private byte[] hashMf(final String userName, final String password, ByteBuffer salt) throws GDSAuthException {
+      for (int i = salt.getLength(); i < SALT_LENGTH; i++) {
+        salt.add((byte)'=');
       }
 
+      ByteBuffer oldSalt = new ByteBuffer(0);
+      oldSalt.add(salt.getData());
       final String allData = salt + userName + password;
-      final byte[] data = AuthMethods.hashData(allData.getBytes(), HASHING_COUNT);
-      return salt + new BASE64Encoder().encode(data);
+      salt.add(userName.getBytes());
+      salt.add(password.getBytes());
+      byte[] data = salt.getData();
+      for (int i = 0; i < HASHING_COUNT; i++) {
+        data = AuthMethods.hashData(data, 1);
+      }
+
+      byte[] enc64 = null;
+      try {
+        enc64 = new BASE64Encoder().encode(data).getBytes("ASCII");
+      } catch (UnsupportedEncodingException e) {
+        e.printStackTrace();
+      }
+      oldSalt.add(enc64);
+      return oldSalt.getData();
     }
 
     @Override
