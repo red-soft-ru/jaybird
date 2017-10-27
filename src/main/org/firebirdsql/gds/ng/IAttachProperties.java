@@ -249,10 +249,10 @@ public interface IAttachProperties<T extends IAttachProperties> {
     String getCertificate();
 
     /**
-     * @param user
+     * @param certificate
      *         Path to the certificate to authenticate to the server.
      */
-    void setCertificate(String user);
+    void setCertificate(String certificate);
 
     /**
      * @return Pin-code for the cryptopro container.
