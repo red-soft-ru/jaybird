@@ -196,12 +196,7 @@ public class AuthFactorPassword extends AuthFactor {
         data = AuthMethods.hashData(data, 1);
       }
 
-      byte[] enc64 = null;
-      try {
-        enc64 = new BASE64Encoder().encode(data).getBytes("ASCII");
-      } catch (UnsupportedEncodingException e) {
-        e.printStackTrace();
-      }
+      final byte[] enc64 = new BASE64Encoder().encode(data).getBytes();
       oldSalt.add(enc64);
       return oldSalt.getData();
     }
