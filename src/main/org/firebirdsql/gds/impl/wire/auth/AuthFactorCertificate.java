@@ -8,8 +8,6 @@ import java.util.Arrays;
 import org.firebirdsql.gds.GDSException;
 import org.firebirdsql.gds.ISCConstants;
 import org.firebirdsql.gds.impl.wire.ByteBuffer;
-import org.firebirdsql.gds.impl.wire.Bytes;
-import org.firebirdsql.gds.impl.wire.TaggedClumpletReader;
 
 
 /**
@@ -19,13 +17,6 @@ import org.firebirdsql.gds.impl.wire.TaggedClumpletReader;
  *          Time: 22:56
  */
 public class AuthFactorCertificate extends AuthFactor {
-  public static final int sdServerPublicKey = 0;
-  public static final int sdEncryptedSessionKey = 1;
-  public static final int sdSessionKeyInitVector = 2;
-  public static final int sdServerCertificate = ISCConstants.isc_spb_verbint;
-  public static final int sdRandomNumber = ISCConstants.isc_dpb_certificate_body;
-  private static final String successWord = "success\0";
-
   private String certBase64;
 
   private final Stage CHALLENGE = new Stage() {
