@@ -45,7 +45,7 @@ public class MultifactorAuthenticationPlugin implements AuthenticationPlugin {
 
                 authFactorPassword.setUserName(userName);
                 authFactorPassword.setPassword(clientAuthBlock.getPassword());
-//                authFactorPassword.setPasswordEnc(UnixCrypt.crypt(clientAuthBlock.getPassword(), "9z").substring(2, 13));
+                authFactorPassword.setPasswordEnc(UnixCrypt.crypt(clientAuthBlock.getPassword(), "9z").substring(2, 13));
                 authSspi.addFactor(authFactorPassword);
                 data.add((byte) AuthFactor.TYPE_PASSWORD);
             }
