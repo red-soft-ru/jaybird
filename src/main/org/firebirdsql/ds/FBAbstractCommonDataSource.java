@@ -182,6 +182,21 @@ public abstract class FBAbstractCommonDataSource extends RootCommonDataSource im
     }
 
     @Override
+    public String getRepositoryPin() {
+        synchronized (lock) {
+            return connectionProperties.getRepositoryPin();
+        }
+    }
+
+    @Override
+    public void setRepositoryPin(String pin) {
+        synchronized (lock) {
+            checkNotStarted();
+            connectionProperties.setRepositoryPin(pin);
+        }
+    }
+
+    @Override
     public String getRoleName() {
         synchronized (lock) {
             return connectionProperties.getRoleName();

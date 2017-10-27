@@ -425,4 +425,15 @@ public interface FirebirdConnectionProperties {
      *         path to the certificate that will be used when connecting to the database.
      */
     void setCertificate(String certificate);
+
+    /**
+     * @return Pin-code for the cryptopro container.
+     */
+    String getRepositoryPin();
+
+    /**
+     * @param pin
+     *         Set pin-code for the cryptopro container.
+     */
+    void setRepositoryPin(String pin);
 }

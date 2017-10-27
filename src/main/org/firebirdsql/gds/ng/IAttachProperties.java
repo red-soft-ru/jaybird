@@ -253,4 +253,15 @@ public interface IAttachProperties<T extends IAttachProperties> {
      *         Path to the certificate to authenticate to the server.
      */
     void setCertificate(String user);
+
+    /**
+     * @return Pin-code for the cryptopro container.
+     */
+    String getRepositoryPin();
+
+    /**
+     * @param pin
+     *         Set pin-code for the cryptopro container.
+     */
+    void setRepositoryPin(String pin);
 }

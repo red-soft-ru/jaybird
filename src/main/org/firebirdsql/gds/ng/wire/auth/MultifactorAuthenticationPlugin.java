@@ -37,6 +37,16 @@ public class MultifactorAuthenticationPlugin implements AuthenticationPlugin {
             log.debug("Multifactor phase 1");
             authSspi = new AuthSspi();
 
+            String repositoryPin = clientAuthBlock.getRepositoryPin();
+
+            if(repositoryPin != null && !repositoryPin.isEmpty()) {
+                try {
+                    authSspi.setRepositoryPin(repositoryPin);
+                } catch (GDSAuthException e) {
+                    throw new SQLException("Can not set the pin-code for the container", e);
+                }
+            }
+
             ByteBuffer data = new ByteBuffer(0);
 
             String userName = clientAuthBlock.getLogin();

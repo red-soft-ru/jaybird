@@ -400,6 +400,16 @@ public class FBSimpleDataSource extends RootCommonDataSource implements DataSour
     public void setCertificate(String certificate) {
         mcf.setCertificate(certificate);
     }
+
+    @Override
+    public String getRepositoryPin() {
+        return mcf.getRepositoryPin();
+    }
+
+    @Override
+    public void setRepositoryPin(String pin) {
+        mcf.setRepositoryPin(pin);
+    }
     
     /*
      * INTERFACES IMPLEMENTATION

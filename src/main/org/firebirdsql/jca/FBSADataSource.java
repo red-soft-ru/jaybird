@@ -622,6 +622,16 @@ public class FBSADataSource implements DataSource, Serializable, Referenceable, 
         mcf.setCertificate(certificate);
     }
 
+    @Override
+    public String getRepositoryPin() {
+        return mcf.getRepositoryPin();
+    }
+
+    @Override
+    public void setRepositoryPin(String pin) {
+        mcf.setRepositoryPin(pin);
+    }
+
     public int getSoTimeout() {
         return mcf.getSoTimeout();
     }
