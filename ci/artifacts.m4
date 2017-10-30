@@ -33,22 +33,22 @@ file dist-18/sources/jaybird-full-VERSION-sources.jar jar sources
 file dist-18/javadoc/jaybird-VERSION-javadoc.jar jar javadoc
 end
 
-artifact jaybird-cryproapi-jdk17 VERSION
-file dist-17/bin/jaybird-cryproapi-VERSION.jar jar
-file dist-17/sources/jaybird-cryproapi-VERSION-sources.jar jar sources
+artifact jaybird-cryptoapi-jdk17 VERSION
+file dist-17/bin/jaybird-cryptoapi-VERSION.jar jar
+file dist-17/sources/jaybird-cryptoapi-VERSION-sources.jar jar sources
 end
 
-artifact jaybird-cryproapi-jdk18 VERSION
-file dist-18/bin/jaybird-cryproapi-VERSION.jar jar
-file dist-18/sources/jaybird-cryproapi-VERSION-sources.jar jar sources
+artifact jaybird-cryptoapi-jdk18 VERSION
+file dist-18/bin/jaybird-cryptoapi-VERSION.jar jar
+file dist-18/sources/jaybird-cryptoapi-VERSION-sources.jar jar sources
 end
 
-artifact jaybird-cryproapi-security-jdk17 VERSION
-file dist-17/bin/jaybird-cryproapi-security-VERSION.jar jar
-file dist-17/sources/jaybird-cryproapi-security-VERSION-sources.jar jar sources
+artifact jaybird-cryptoapi-security-jdk17 VERSION
+file dist-17/bin/jaybird-cryptoapi-security-VERSION.jar jar
+file dist-17/sources/jaybird-cryptoapi-security-VERSION-sources.jar jar sources
 end
 
-artifact jaybird-cryproapi-security-jdk18 VERSION
-file dist-18/bin/jaybird-cryproapi-security-VERSION.jar jar
-file dist-18/sources/jaybird-cryproapi-security-VERSION-sources.jar jar sources
+artifact jaybird-cryptoapi-security-jdk18 VERSION
+file dist-18/bin/jaybird-cryptoapi-security-VERSION.jar jar
+file dist-18/sources/jaybird-cryptoapi-security-VERSION-sources.jar jar sources
 end
