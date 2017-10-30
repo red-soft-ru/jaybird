@@ -18,3 +18,17 @@ file dist-18/test/jaybird-test-VERSION.jar jar test
 file dist-18/sources/jaybird-VERSION-sources.jar jar sources
 file dist-18/javadoc/jaybird-VERSION-javadoc.jar jar javadoc
 end
+
+artifact jaybird-full-jdk17 VERSION
+file dist-17/bin/jaybird-full-VERSION.jar jar
+file dist-17/test/jaybird-test-VERSION.jar jar test
+file dist-17/sources/jaybird-VERSION-sources.jar jar sources
+file dist-17/javadoc/jaybird-VERSION-javadoc.jar jar javadoc
+end
+
+artifact jaybird-full-jdk18 VERSION
+file dist-18/bin/jaybird-full-VERSION.jar jar
+file dist-18/test/jaybird-test-VERSION.jar jar test
+file dist-18/sources/jaybird-VERSION-sources.jar jar sources
+file dist-18/javadoc/jaybird-VERSION-javadoc.jar jar javadoc
+end
