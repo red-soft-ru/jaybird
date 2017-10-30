@@ -115,6 +115,7 @@ def build(String jdk, archive_prefix, version_tag)
             deleteDir()
             unstash 'src'
             
+            def java_home = ''
             if (jdk == '17')
             {
                 java_home = env.JAVA_HOME_1_7
@@ -166,6 +167,7 @@ def test(jdk, archive_prefix, version)
             unstash "test-${jdk}"
             unstash 'src'
             
+            def java_home = ''
             if (jdk == '16')
             {
                 java_home = env.JAVA_HOME_1_6
