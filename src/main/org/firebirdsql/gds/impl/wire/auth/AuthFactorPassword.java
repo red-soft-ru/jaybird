@@ -174,9 +174,7 @@ public class AuthFactorPassword extends AuthFactor {
       final byte[] hash2 = AuthMethods.hashData(sumData, 1);
       data.clear();
 
-      // rdb3.0 adds 1 to string length
-      // need add end of string to hex
-      String hex = toHexString(hash2) + "\0";
+      String hex = toHexString(hash2);
       byte[] bytes = hex.getBytes();
       data.add(bytes);
     }
