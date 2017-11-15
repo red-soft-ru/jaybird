@@ -8,6 +8,7 @@ import java.util.Arrays;
 import org.firebirdsql.gds.GDSException;
 import org.firebirdsql.gds.ISCConstants;
 import org.firebirdsql.gds.impl.wire.ByteBuffer;
+import org.firebirdsql.gds.impl.wire.TaggedClumpletReader;
 
 
 /**
@@ -17,6 +18,7 @@ import org.firebirdsql.gds.impl.wire.ByteBuffer;
  *          Time: 22:56
  */
 public class AuthFactorCertificate extends AuthFactor {
+  public static final int sdRandomNumber = ISCConstants.isc_dpb_certificate_body;
   private String certBase64;
 
   private final Stage CHALLENGE = new Stage() {
@@ -52,14 +54,10 @@ public class AuthFactorCertificate extends AuthFactor {
   private final Stage TRANSFER = new Stage() {
     @Override
     public boolean stage(final ByteBuffer data) throws GDSAuthException {
-      final byte[] encryptMessage = data.getData();
-      int numberLenght = (encryptMessage[3] & 0xFF) << 24
-              | (encryptMessage[2] & 0xFF) << 16
-              | (encryptMessage[1] & 0xFF) << 8
-              | (encryptMessage[0] & 0xFF);
-      final byte[] encryptNumber = Arrays.copyOfRange(encryptMessage, 4, data.getLength());
-      if (numberLenght != encryptNumber.length)
-        throw new GDSAuthException("The random number length is not equal to the message length");
+      final TaggedClumpletReader serverData = new TaggedClumpletReader(data.getData(), data.getLength());
+      if (!serverData.find(sdRandomNumber))
+        throw new GDSAuthException("No random number found in server data");
+      final byte[] encryptNumber = serverData.getBytes().bytes();
 
       final AuthCryptoPlugin p = AuthCryptoPlugin.getPlugin();
       final AuthPrivateKeyContext userKey; // cache the user key context to avoid password dialog appearing 2 times
