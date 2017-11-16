@@ -59,6 +59,7 @@ public final class ClientAuthBlock {
     private AuthenticationPlugin currentPlugin;
     private boolean authComplete;
     private boolean firstTime = true;
+    private AuthSspi sspi = null;
 
     public ClientAuthBlock(IAttachProperties<?> attachProperties) throws SQLException {
         this.attachProperties = attachProperties;
@@ -331,4 +332,11 @@ public final class ClientAuthBlock {
         return attachProperties.getRepositoryPin();
     }
 
+    public AuthSspi getSspi() {
+        return sspi;
+    }
+
+    public void setSspi(AuthSspi sspi) {
+        this.sspi = sspi;
+    }
 }
