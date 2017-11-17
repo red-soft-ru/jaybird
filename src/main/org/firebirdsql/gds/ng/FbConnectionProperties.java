@@ -221,6 +221,7 @@ public final class FbConnectionProperties extends AbstractAttachProperties<IConn
                 break;
             case isc_dpb_trusted_auth:
             case isc_dpb_multi_factor_auth:
+            case isc_dpb_verify_server:
                 parameter.copyTo(getExtraDatabaseParameters(), null);
                 break;
             default:
