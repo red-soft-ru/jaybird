@@ -219,6 +219,10 @@ public final class FbConnectionProperties extends AbstractAttachProperties<IConn
             case isc_dpb_repository_pin:
                 setRepositoryPin(parameter.getValueAsString());
                 break;
+            case isc_dpb_trusted_auth:
+            case isc_dpb_multi_factor_auth:
+                parameter.copyTo(getExtraDatabaseParameters(), null);
+                break;
             default:
                 log.warn(String.format("Unknown or unsupported parameter with type %d added to extra database parameters", parameter.getType()));
                 parameter.copyTo(getExtraDatabaseParameters(), null);
