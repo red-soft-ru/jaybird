@@ -54,6 +54,9 @@ public class V10ParameterConverter extends AbstractParameterConverter<WireDataba
         if (props.getCertificate() != null) {
             pb.addArgument(ISCConstants.isc_dpb_certificate, props.getCertificate());
         }
+        if (props.getRepositoryPin() != null) {
+            pb.addArgument(ISCConstants.isc_dpb_repository_pin, props.getRepositoryPin());
+        }
     }
 
 }

@@ -160,6 +160,8 @@ public class V10Database extends AbstractFbWireDatabase implements FbWireDatabas
                 newDpb.addArgument(ISCConstants.isc_dpb_password, connection.getAttachProperties().getPassword());
             sspi = new AuthSspi();
             try {
+                if (newDpb.hasArgument(ISCConstants.isc_dpb_repository_pin))
+                    sspi.setRepositoryPin(connection.getAttachProperties().getRepositoryPin());
                 sspi.fillFactors(newDpb);
             } catch (GDSException e) {
                 throw new SQLException(e.getMessage());
