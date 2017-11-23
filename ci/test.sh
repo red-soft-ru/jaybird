@@ -63,7 +63,7 @@ check_variable JAVA_HOME
 check_variable WORKSPACE
 
 OS=linux
-RDB_VERSION=2.6.0.13002
+RDB_VERSION=2.6.0.13191
 TEST_DIR=/tmp/jaybird_test
 ARCH=`arch`
 if [ "$ARCH" == "i686" ]; then
@@ -74,9 +74,23 @@ ARCHITECTURE=classic
 
 uninstallrdb
 
-echo "Download fbt" 
-(git clone --depth 1 git@git.red-soft.biz:red-database/fbt-repository) || die "Unable to checkout tests" 
-sudo cp fbt-repository/files/testuser.cer ./
+echo "Download fbt"
+(git clone --depth 1 git@git.red-soft.biz:red-database/fbt-repository) || die "Unable to checkout tests"
+
+CPROCSP_ARCH=amd64
+if [ "$ARCH" == "x86" ]; then
+	CPROCSP_ARCH=ia32
+fi
+
+KEYS_DIR=/var/opt/cprocsp/keys
+sudo mkdir -p $KEYS_DIR/jenkins
+sudo chmod 700 $KEYS_DIR/jenkins
+sudo cp fbt-repository/files/cert/RaUser-d.000/ $KEYS_DIR/jenkins -rfv
+sudo chown jenkins:jenkins $KEYS_DIR/jenkins -R
+sudo chmod 700 $KEYS_DIR/jenkins/RaUser-d.000
+sudo -u jenkins /opt/cprocsp/bin/$CPROCSP_ARCH/certmgr -inst -cont '\\.\HDIMAGE\RaUser-de9e345e-157d-4d82-80d1-2098c0f28992'
+
+sudo openssl x509 -in fbt-repository/files/cert/Смирнов.cer -inform der -outform pem -out ./testuser.cer
 
 echo Will use build $RDB_VERSION for testing
 
@@ -91,8 +105,13 @@ mkdir -p $TEST_DIR
 mkdir -p $WORKSPACE/results/jdk${JDK_VERSION}
 sudo chmod 777 $TEST_DIR
 
+sudo sed -i 's/#VerifyCertChain = 1/VerifyCertChain = 0/g' /opt/RedDatabase/firebird.conf
+sudo sed -i 's/#CertUsernameDN = CN/CertUsernameDN = E/g' /opt/RedDatabase/firebird.conf
+
 rdb_control restart
 sleep 5
+
+sudo /opt/RedDatabase/bin/gsec -user SYSDBA -password masterkey -add artyom.smirnov@red-soft.ru -pw q3rgu7Ah
 
 export JAVA_HOME
 ant -Dtest.report.dir=$TEST_DIR -Dtest.db.dir=$TEST_DIR -Djdk=${JDK_VERSION} -Dversion=$JAYBIRD_VERSION -Dbindir=${BINDIR} -Dsrcdir=${SRCDIR} -f test.xml
