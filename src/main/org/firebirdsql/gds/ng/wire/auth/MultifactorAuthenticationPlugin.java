@@ -78,7 +78,8 @@ public class MultifactorAuthenticationPlugin implements AuthenticationPlugin {
 
         log.debug("Multifactor phase 2");
         ByteBuffer data = new ByteBuffer(0);
-        data.add(serverData);
+        if (serverData != null)
+            data.add(serverData);
         try {
             authSspi.request(data);
         } catch (GDSAuthException e) {
