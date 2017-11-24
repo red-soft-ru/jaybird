@@ -31,11 +31,9 @@ import org.firebirdsql.gds.impl.wire.XdrOutputStream;
 import org.firebirdsql.gds.ng.*;
 import org.firebirdsql.gds.ng.fields.RowValue;
 import org.firebirdsql.gds.ng.wire.*;
-import org.junit.After;
-import org.junit.ClassRule;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.rules.ExpectedException;
+import org.junit.runners.MethodSorters;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -50,6 +48,7 @@ import static org.junit.Assert.*;
  * @author <a href="mailto:mrotteveel@users.sourceforge.net">Mark Rotteveel</a>
  * @since 3.0
  */
+@FixMethodOrder(MethodSorters.NAME_ASCENDING )
 public class TestV10EventHandling extends FBJUnit4TestBase {
 
     @ClassRule
@@ -108,6 +107,7 @@ public class TestV10EventHandling extends FBJUnit4TestBase {
         if (db != null && db.isAttached()) {
             try {
                 db.close();
+                db.dropDatabase();
             } catch (SQLException ex) {
                 log.debug("Exception on detach", ex);
             }
@@ -200,7 +200,7 @@ public class TestV10EventHandling extends FBJUnit4TestBase {
             out.writeInt(7);
             out.flush();
 
-            Thread.sleep(500);
+            Thread.sleep(20000);
 
             List<AsynchronousChannelListener.Event> receivedEvents = listener.getReceivedEvents();
             assertEquals("Unexpected number of events", 1, receivedEvents.size());
@@ -278,6 +278,7 @@ public class TestV10EventHandling extends FBJUnit4TestBase {
             establishChannel.start();
             simpleServer.acceptConnection();
             AsynchronousProcessor.getInstance().registerAsynchronousChannel(channel);
+            establishChannel.join();
 
             assertTrue("Expected connected channel", channel.isConnected());
 
@@ -295,7 +296,7 @@ public class TestV10EventHandling extends FBJUnit4TestBase {
             out.flush();
 
             // Need to sleep for thread to process all events, might still fail on slower computers
-            Thread.sleep(500);
+            Thread.sleep(10000);
 
             List<AsynchronousChannelListener.Event> receivedEvents = listener.getReceivedEvents();
             assertEquals("Unexpected number of events", testEventCount, receivedEvents.size());
