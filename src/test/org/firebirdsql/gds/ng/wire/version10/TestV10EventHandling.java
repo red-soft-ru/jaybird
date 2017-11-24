@@ -189,7 +189,7 @@ public class TestV10EventHandling extends FBJUnit4TestBase {
             establishChannel.start();
             simpleServer.acceptConnection();
             AsynchronousProcessor.getInstance().registerAsynchronousChannel(channel);
-            establishChannel.join(500);
+            establishChannel.join(/*500*/);
             assertTrue("Expected connected channel", channel.isConnected());
 
             final XdrOutputStream out = new XdrOutputStream(simpleServer.getOutputStream());
@@ -229,7 +229,7 @@ public class TestV10EventHandling extends FBJUnit4TestBase {
             establishChannel.start();
             simpleServer.acceptConnection();
             AsynchronousProcessor.getInstance().registerAsynchronousChannel(channel);
-            establishChannel.join(500);
+            establishChannel.join(/*500*/);
             assertTrue("Expected connected channel", channel.isConnected());
 
             final XdrOutputStream out = new XdrOutputStream(simpleServer.getOutputStream());
@@ -375,7 +375,7 @@ public class TestV10EventHandling extends FBJUnit4TestBase {
             establishChannel.start();
             simpleServer.acceptConnection();
             AsynchronousProcessor.getInstance().registerAsynchronousChannel(channel);
-            establishChannel.join(500);
+            establishChannel.join(/*500*/);
             assertTrue("Expected connected channel", channel.isConnected());
 
             final XdrOutputStream out = new XdrOutputStream(simpleServer.getOutputStream());
