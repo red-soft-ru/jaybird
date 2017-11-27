@@ -105,6 +105,7 @@ public class TestV10EventHandling extends FBJUnit4TestBase {
         if (db != null && db.isAttached()) {
             try {
                 db.close();
+                db.dropDatabase();
             } catch (SQLException ex) {
                 log.debug("Exception on detach", ex);
             }
