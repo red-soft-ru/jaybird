@@ -739,7 +739,7 @@ public class TestFBPreparedStatement extends FBJUnit4TestBase {
             Thread cancelThread = new Thread(new Runnable() {
                 public void run() {
                     try {
-                        Thread.sleep(5);
+                        Thread.sleep(5000);
                         stmt.cancel();
                     } catch (SQLException ex) {
                         cancelFailed.set(true);
