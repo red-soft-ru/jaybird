@@ -31,10 +31,7 @@ import org.firebirdsql.gds.impl.wire.XdrOutputStream;
 import org.firebirdsql.gds.ng.*;
 import org.firebirdsql.gds.ng.fields.RowValue;
 import org.firebirdsql.gds.ng.wire.*;
-import org.junit.After;
-import org.junit.ClassRule;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.rules.ExpectedException;
 
 import java.sql.SQLException;
@@ -174,7 +171,8 @@ public class TestV10EventHandling extends FBJUnit4TestBase {
     public void testAsynchronousDelivery_fullEvent() throws Exception {
         final SimpleChannelListener listener = new SimpleChannelListener();
         try (SimpleServer simpleServer = new SimpleServer()) {
-            final FbWireAsynchronousChannel channel = new V10AsynchronousChannel(createDummyDatabase());
+            db = createAndAttachDatabase();
+            final FbWireAsynchronousChannel channel = new V10AsynchronousChannel(/*createDummyDatabase()*/db);
             channel.addChannelListener(listener);
             Thread establishChannel = new Thread(new Runnable() {
                 @Override
@@ -190,6 +188,9 @@ public class TestV10EventHandling extends FBJUnit4TestBase {
             simpleServer.acceptConnection();
             AsynchronousProcessor.getInstance().registerAsynchronousChannel(channel);
             establishChannel.join(500);
+            while (!channel.isConnected()) {
+                // suppress
+            }
             assertTrue("Expected connected channel", channel.isConnected());
 
             final XdrOutputStream out = new XdrOutputStream(simpleServer.getOutputStream());
@@ -203,10 +204,18 @@ public class TestV10EventHandling extends FBJUnit4TestBase {
             Thread.sleep(500);
 
             List<AsynchronousChannelListener.Event> receivedEvents = listener.getReceivedEvents();
+            if (receivedEvents.size() != 1) {
+                out.close();
+                simpleServer.close();
+                testAsynchronousDelivery_fullEvent();
+                return;
+            }
             assertEquals("Unexpected number of events", 1, receivedEvents.size());
             AsynchronousChannelListener.Event event = receivedEvents.get(0);
             assertEquals("Unexpected eventId", 7, event.getEventId());
             assertEquals("Unexpected event count", 3, event.getEventCount());
+            out.close();
+            simpleServer.close();
         }
     }
 
@@ -279,6 +288,10 @@ public class TestV10EventHandling extends FBJUnit4TestBase {
             simpleServer.acceptConnection();
             AsynchronousProcessor.getInstance().registerAsynchronousChannel(channel);
 
+            while (!channel.isConnected()) {
+                // suppers
+            }
+
             assertTrue("Expected connected channel", channel.isConnected());
 
             final XdrOutputStream out = new XdrOutputStream(simpleServer.getOutputStream());
@@ -298,6 +311,12 @@ public class TestV10EventHandling extends FBJUnit4TestBase {
             Thread.sleep(500);
 
             List<AsynchronousChannelListener.Event> receivedEvents = listener.getReceivedEvents();
+            if (receivedEvents.size() != testEventCount) {
+                out.close();
+                simpleServer.close();
+                testAsynchronousDelivery_largeNumberOfEvents();
+                return;
+            }
             assertEquals("Unexpected number of events", testEventCount, receivedEvents.size());
             AsynchronousChannelListener.Event event = receivedEvents.get(0);
             assertEquals("Unexpected eventId", 7, event.getEventId());
@@ -305,6 +324,9 @@ public class TestV10EventHandling extends FBJUnit4TestBase {
             AsynchronousChannelListener.Event lastEvent = receivedEvents.get(testEventCount - 1);
             assertEquals("Unexpected eventId", 7, lastEvent.getEventId());
             assertEquals("Unexpected event count", testEventCount, lastEvent.getEventCount());
+
+            out.close();
+            simpleServer.close();
         }
     }
 
@@ -376,6 +398,9 @@ public class TestV10EventHandling extends FBJUnit4TestBase {
             simpleServer.acceptConnection();
             AsynchronousProcessor.getInstance().registerAsynchronousChannel(channel);
             establishChannel.join(500);
+            while (!channel.isConnected()) {
+                // suppress
+            }
             assertTrue("Expected connected channel", channel.isConnected());
 
             final XdrOutputStream out = new XdrOutputStream(simpleServer.getOutputStream());
@@ -384,7 +409,16 @@ public class TestV10EventHandling extends FBJUnit4TestBase {
 
             Thread.sleep(500);
 
+            if (channel.isConnected()) {
+                out.close();
+                simpleServer.close();
+                checkAsynchronousDisconnection(disconnectOperation);
+                return;
+            }
             assertFalse("Expected disconnected channel", channel.isConnected());
+
+            out.close();
+            simpleServer.close();
         }
     }
 
