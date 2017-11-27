@@ -105,7 +105,6 @@ public class TestV10EventHandling extends FBJUnit4TestBase {
         if (db != null && db.isAttached()) {
             try {
                 db.close();
-                db.dropDatabase();
             } catch (SQLException ex) {
                 log.debug("Exception on detach", ex);
             }
@@ -172,8 +171,7 @@ public class TestV10EventHandling extends FBJUnit4TestBase {
     public void testAsynchronousDelivery_fullEvent() throws Exception {
         final SimpleChannelListener listener = new SimpleChannelListener();
         try (SimpleServer simpleServer = new SimpleServer()) {
-            db = createAndAttachDatabase();
-            final FbWireAsynchronousChannel channel = new V10AsynchronousChannel(/*createDummyDatabase()*/db);
+            final FbWireAsynchronousChannel channel = new V10AsynchronousChannel(createDummyDatabase());
             channel.addChannelListener(listener);
             Thread establishChannel = new Thread(new Runnable() {
                 @Override
