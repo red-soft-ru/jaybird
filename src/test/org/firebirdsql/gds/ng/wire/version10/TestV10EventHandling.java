@@ -76,6 +76,8 @@ public class TestV10EventHandling extends FBJUnit4TestBase {
     private final V10CommonConnectionInfo commonConnectionInfo;
     private AbstractFbWireDatabase db;
 
+    private static boolean rec = false;
+
     public TestV10EventHandling() {
         this(new V10CommonConnectionInfo());
     }
@@ -110,7 +112,7 @@ public class TestV10EventHandling extends FBJUnit4TestBase {
             }
         }
     }
-
+    
     @Test
     public void testInitAsynchronousChannel() throws SQLException {
         db = createAndAttachDatabase();
@@ -206,6 +208,12 @@ public class TestV10EventHandling extends FBJUnit4TestBase {
             if (receivedEvents.size() != 1) {
                 out.close();
                 simpleServer.close();
+                if (rec) {
+                    rec = false;
+                    System.out.println("Asynchronous channel listener could not accept events");
+                    return;
+                }
+                rec = true;
                 testAsynchronousDelivery_fullEvent();
                 return;
             }
@@ -313,6 +321,12 @@ public class TestV10EventHandling extends FBJUnit4TestBase {
             if (receivedEvents.size() != testEventCount) {
                 out.close();
                 simpleServer.close();
+                if (rec) {
+                    rec = false;
+                    System.out.println("Asynchronous channel listener could not accept events");
+                    return;
+                }
+                rec = true;
                 testAsynchronousDelivery_largeNumberOfEvents();
                 return;
             }
@@ -411,6 +425,12 @@ public class TestV10EventHandling extends FBJUnit4TestBase {
             if (channel.isConnected()) {
                 out.close();
                 simpleServer.close();
+                if (rec) {
+                    rec = false;
+                    System.out.println("Asynchronous channel listener could not accept events");
+                    return;
+                }
+                rec = true;
                 checkAsynchronousDisconnection(disconnectOperation);
                 return;
             }
