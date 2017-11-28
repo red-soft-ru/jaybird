@@ -302,7 +302,7 @@ public class TestFBDateField extends BaseJUnit4TestFBField<FBDateField, java.sql
         
         //TODO Verify assumptions about the conversion to timestamp
         //Timestamp expectedTimestamp = new java.sql.Timestamp(TEST_SQL_DATE.getTime());
-        Timestamp expectedTimestamp = java.sql.Timestamp.valueOf("2012-03-11 01:00:00");
+        Timestamp expectedTimestamp = java.sql.Timestamp.valueOf("2012-03-11 02:00:00");
         
         assertEquals("Unexpected value for getTimestamp(Calendar)", expectedTimestamp, field.getTimestamp(tzCalendar));
     }
