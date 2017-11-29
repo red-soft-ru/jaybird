@@ -4,7 +4,6 @@ import org.firebirdsql.logging.Logger;
 import org.firebirdsql.logging.LoggerFactory;
 import org.ietf.jgss.GSSException;
 
-import java.net.UnknownHostException;
 import java.sql.SQLException;
 
 /**
@@ -38,8 +37,6 @@ public class GssAuthenticationPlugin implements AuthenticationPlugin {
     gssClient = new GSSClient(serverData);
     try {
       clientData = gssClient.getToken();
-    } catch (UnknownHostException e) {
-      throw new SQLException(e);
     } catch (GSSException e) {
       throw new SQLException(e);
     }
