@@ -68,6 +68,8 @@ public class TestBackupManager {
     @Before
     public void setUp() throws Exception {
         tempFolder = temporaryFolder.newFolder();
+        tempFolder.setWritable(true);
+        tempFolder.getParentFile().setWritable(true);
         System.out.println(tempFolder);
         backupManager = new FBBackupManager(getGdsType());
         if (getGdsType() == GDSType.getType("PURE_JAVA") || getGdsType() == GDSType.getType("NATIVE")) {
