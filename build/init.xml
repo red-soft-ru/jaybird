@@ -152,6 +152,7 @@
 
         <property name="archive.name.rar" value="${archive.name.main}-${version.maven}.rar"/>
         <property name="archive.name.full" value="${archive.name.main}-full-${version.maven}.jar"/>
+        <property name="archive.name.full.sources" value="${archive.name.main}-full-${version.maven}-sources.jar"/>
         <property name="archive.name.simple" value="${archive.name.main}-${version.maven}.jar"/>
         <property name="archive.name.test" value="${archive.name.main}-test-${version.maven}.jar"/>
         <property name="archive.name.sources" value="${archive.name.main}-${version.maven}-sources.jar"/>
