@@ -22,76 +22,76 @@ try
 
 node('master')
 {
-    stage 'Prepare'
     def wd = pwd()
-
-    checkout scm
-
-    rev = Git.getGitRevision(wd)
-
-    def matcher = (new File(wd + '/build.properties').text =~ /(?sm).*version\.major=(?<major>\d+).*version\.minor=(?<minor>\d+).*version\.revision=(?<revision>\d+).*/)
-    if (!matcher.matches())
+    stage('Prepare')
     {
-        throw new Exception("Unable obtain version")
+        deleteDir()
+        checkout scm
+
+        rev = Git.getGitRevision(wd)
+
+        def matcher = (new File(wd + '/build.properties').text =~ /(?sm).*version\.major=(?<major>\d+).*version\.minor=(?<minor>\d+).*version\.revision=(?<revision>\d+).*/)
+        if (!matcher.matches())
+        {
+            throw new Exception("Unable obtain version")
+        }
+        version_major = matcher.group('major')
+        version_minor = matcher.group('minor')
+        version_revision = matcher.group('revision')
+        version = version_major + '.' + version_minor + '.' + version_revision
+        version_tag = ReleaseHub.getBuildNo(release_hub_project, version)
+        version += "." + version_tag
+        matcher = null    
+        
+        vcs_url = "http://git.red-soft.biz/red-database/jaybird/commit/" + rev
     }
-    version_major = matcher.group('major')
-    version_minor = matcher.group('minor')
-    version_revision = matcher.group('revision')
-    version = version_major + '.' + version_minor + '.' + version_revision
-    version_tag = ReleaseHub.getBuildNo(release_hub_project, version)
-    version += "." + version_tag
-    matcher = null    
     
-    vcs_url = "http://git.red-soft.biz/red-database/jaybird/commit/" + rev
-    
-    stage 'Source dist'
-
-    archive_prefix="jaybird-${version}"
-    sh 'rm -rf dist-src && mkdir dist-src'
-    sh "git archive --prefix=${archive_prefix}/ -o dist-src/${archive_prefix}.tar.gz HEAD"
-    sh "git archive --prefix=${archive_prefix}/ -o dist-src/${archive_prefix}.zip HEAD"
-    stash includes: 'dist-src/**', name: 'src'
+    stage('Source dist')
+    {
+        archive_prefix="jaybird-${version}"
+        sh 'rm -rf dist-src && mkdir dist-src'
+        sh "git archive --prefix=${archive_prefix}/ -o dist-src/${archive_prefix}.tar.gz HEAD"
+        sh "git archive --prefix=${archive_prefix}/ -o dist-src/${archive_prefix}.zip HEAD"
+        stash includes: 'dist-src/**', name: 'src'
+    }
 }
 
-for (j in ['17', '18'])
-{
-    jdk = j
-    build(jdk, archive_prefix, version_tag)
-}
+def buildTasks = [:]
+buildTasks['build-jdk17'] = { build('17', archive_prefix, version_tag) }
+buildTasks['build-jdk18'] = { build('18', archive_prefix, version_tag) }
+parallel buildTasks
+
+test('18', archive_prefix, version)
 
 node('master')
 {
-    stage 'Deploy'
-    deleteDir()
-    def wd = pwd()
-    
-    unstash 'src'
-    for (jdk in ['17', '18'])
+    stage('Deploy')
     {
-        unstash "bin-${jdk}"
-        unstash "javadoc-${jdk}"
-        unstash "sources-${jdk}"
-        unstash "test-${jdk}"
-    }
+        deleteDir()
+        def wd = pwd()
+        
+        unstash 'src'
+        for (jdk in ['17', '18'])
+        {
+            unstash "bin-${jdk}"
+            unstash "javadoc-${jdk}"
+            unstash "sources-${jdk}"
+            unstash "test-${jdk}"
+        }
+        unstash "results-jdk18"
 
-    sh "echo artifact jaybird-src ${version} > artifacts"
-    sh "echo file dist-src/${archive_prefix}.tar.gz tar.gz src >> artifacts"
-    sh "echo file dist-src/${archive_prefix}.zip zip src >> artifacts"
-    sh "echo end >> artifacts"
-    for (jdk in ['17', '18'])
-    {
-        sh "echo artifact jaybird-jdk${jdk} ${version} >> artifacts"
-        sh "echo file dist-${jdk}/bin/jaybird-${version}.jar jar >> artifacts"
-        sh "echo file dist-${jdk}/bin/jaybird-full-${version}.jar jar full >> artifacts"
-        sh "echo file dist-${jdk}/test/jaybird-test-${version}.jar jar test >> artifacts"
-        sh "echo file dist-${jdk}/sources/jaybird-${version}-sources.jar jar sources >> artifacts"
-        sh "echo file dist-${jdk}/javadoc/jaybird-${version}-javadoc.jar jar javadoc >> artifacts"
-        sh "echo end >> artifacts"
-    }
-    
-    ReleaseHub.deployToReleaseHub(release_hub_project, version, env.BUILD_URL, rev, wd+'/artifacts', wd, maven_group, '', '', branch)
+        withEnv(["archive_prefix=${archive_prefix}", "version=${version}"]) {
+            sh """#!/bin/bash
+                set -e
+                tar xf dist-src/${archive_prefix}.tar.gz
+                m4 -DVERSION=$version ${archive_prefix}/ci/artifacts.m4 > artifacts
+            """
+        }
 
-    Pipeline.defaultSuccessActions(currentBuild)
+        ReleaseHub.deployToReleaseHub(release_hub_project, version, env.BUILD_URL, rev, wd+'/artifacts', wd, maven_group, wd + '/results', '', branch)
+
+        Pipeline.defaultSuccessActions(currentBuild)
+    }
 }
 
 } // try
@@ -110,41 +110,47 @@ def build(String jdk, archive_prefix, version_tag)
 {
     node('jdk' + jdk + '&&builder&&linux')
     {
-        stage 'Build JDK' + jdk
-        
-        deleteDir()
-        unstash 'src'
-
-        def java_home = ''
-        if (jdk == '17')
+        stage('Build on JDK' + jdk)
         {
-            java_home = env.JAVA_HOME_1_7
-        }
-        else if (jdk == '18')
-        {
-            java_home = env.JAVA_HOME_1_8
-        }
-        
-        if (version_tag)
-        	version_tag = "-Dversion.tag=.${version_tag}"
+            deleteDir()
+            unstash 'src'
 
-        sh "tar xf dist-src/${archive_prefix}.tar.gz"
-        withEnv(["JAVA_HOME=${java_home}", "archive_prefix=${archive_prefix}", "version_tag=${version_tag}", "jdk=${jdk}"]) {
-            sh """#!/bin/bash
-                pushd ${archive_prefix}
-                ./build.sh ${version_tag} jars
-                popd
-                mkdir -p dist-${jdk}/{bin,sources,javadoc,test}
-                mv ${archive_prefix}/output/lib/jaybird-*javadoc* dist-${jdk}/javadoc
-                mv ${archive_prefix}/output/lib/jaybird-*sources* dist-${jdk}/sources
-                mv ${archive_prefix}/output/lib/jaybird-*test* dist-${jdk}/test
-                mv ${archive_prefix}/output/lib/* dist-${jdk}/bin
-            """
+            def java_home = ''
+            if (jdk == '17')
+            {
+                java_home = env.JAVA_HOME_1_7
+            }
+            else if (jdk == '18')
+            {
+                java_home = env.JAVA_HOME_1_8
+            }
+            else
+            {
+                throw new Exception("Unsupported JDK version " + jdk)
+            }
+
+            if (version_tag)
+            	version_tag = "-Dversion.tag=.${version_tag}"
+
+            sh "tar xf dist-src/${archive_prefix}.tar.gz"
+            withEnv(["JAVA_HOME=${java_home}", "archive_prefix=${archive_prefix}", "version_tag=${version_tag}", "jdk=${jdk}"]) {
+                sh """#!/bin/bash
+                    set -e
+                    pushd ${archive_prefix}
+                    ./build.sh ${version_tag} jars
+                    popd
+                    mkdir -p dist-${jdk}/{bin,sources,javadoc,test}
+                    mv ${archive_prefix}/output/lib/jaybird-*javadoc* dist-${jdk}/javadoc
+                    mv ${archive_prefix}/output/lib/jaybird-*sources* dist-${jdk}/sources
+                    mv ${archive_prefix}/output/lib/jaybird-*test* dist-${jdk}/test
+                    mv ${archive_prefix}/output/lib/* dist-${jdk}/bin
+                """
+            }
+            
+            stash includes: "dist-${jdk}/bin/**", name: "bin-${jdk}"
+            stash includes: "dist-${jdk}/javadoc/**", name: "javadoc-${jdk}"
+            stash includes: "dist-${jdk}/sources/**", name: "sources-${jdk}"
+            stash includes: "dist-${jdk}/test/**", name: "test-${jdk}"
         }
-        
-        stash includes: "dist-${jdk}/bin/**", name: "bin-${jdk}"
-        stash includes: "dist-${jdk}/javadoc/**", name: "javadoc-${jdk}"
-        stash includes: "dist-${jdk}/sources/**", name: "sources-${jdk}"
-        stash includes: "dist-${jdk}/test/**", name: "test-${jdk}"
     }    
 }
