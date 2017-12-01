@@ -94,7 +94,8 @@ sudo sed -i 's/#KrbHostName =/KrbHostName = localhost/g' /opt/RedDatabase/firebi
 rdb_control restart
 sleep 5
 
-echo jenkins | kinit jenkins/localhost
+echo rdb_server | kinit rdb_server/localhost
+klist
 
 export JAVA_HOME
 ant -Dtest.report.dir=$TEST_DIR -Dtest.db.dir=$TEST_DIR -Djdk=${JDK_VERSION} -Dversion=$JAYBIRD_VERSION -Dbindir=${BINDIR} -Dsrcdir=${SRCDIR} -f test.xml
