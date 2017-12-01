@@ -13,6 +13,7 @@ import java.sql.Statement;
 import java.util.Properties;
 
 import static org.firebirdsql.common.FBTestProperties.getUrl;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 /**
@@ -50,12 +51,21 @@ public class TestGSSClient extends FBJUnit4TestBase {
         Properties props = new Properties();
         props.put("lc_ctype", "WIN1251");
         props.put("useGSSAuth", "true");
-        try (FBConnection connection = (FBConnection) DriverManager.getConnection(getUrl(), props)) {
-            Statement statement = connection.createStatement();
+        FBConnection connection = null;
+        Statement statement = null;
+        try {
+            connection = (FBConnection) DriverManager.getConnection(getUrl(), props);
+            statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery("select current_user from rdb$database");
             resultSet.next();
             String currentUser = resultSet.getString(1);
-            System.out.println(currentUser);
+            System.out.println("GSS auth. Current database user: " + currentUser);
+            assertEquals("RDB_SERVER/LOCALHOST", currentUser);
+            statement.close();
+            connection.close();
+        } finally {
+            statement.close();
+            connection.close();
         }
     }
 }
