@@ -12,7 +12,7 @@ import static org.junit.Assert.assertNotNull;
  *
  * @author <a href="mailto:vasiliy.yashkov@red-soft.ru">Vasiliy Yashkov</a>
  */
-public class GSSClientTest {
+public class TestGSSClient {
     @Test
     public void testGetToken() throws Exception {
         System.setProperty("javax.security.auth.useSubjectCredsOnly", "false");
