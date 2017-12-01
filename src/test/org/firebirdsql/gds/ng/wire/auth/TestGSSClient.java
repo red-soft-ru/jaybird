@@ -1,10 +1,18 @@
 package org.firebirdsql.gds.ng.wire.auth;
 
+import org.firebirdsql.common.FBJUnit4TestBase;
+import org.firebirdsql.jdbc.FBConnection;
 import org.ietf.jgss.GSSContext;
 import org.ietf.jgss.GSSManager;
 import org.ietf.jgss.GSSName;
 import org.junit.Test;
 
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.util.Properties;
+
+import static org.firebirdsql.common.FBTestProperties.getUrl;
 import static org.junit.Assert.assertNotNull;
 
 /**
@@ -12,7 +20,8 @@ import static org.junit.Assert.assertNotNull;
  *
  * @author <a href="mailto:vasiliy.yashkov@red-soft.ru">Vasiliy Yashkov</a>
  */
-public class TestGSSClient {
+public class TestGSSClient extends FBJUnit4TestBase {
+
     @Test
     public void testGetToken() throws Exception {
         System.setProperty("javax.security.auth.useSubjectCredsOnly", "false");
@@ -34,5 +43,19 @@ public class TestGSSClient {
         token = context.initSecContext(token, 0, token.length);
 
         assertNotNull(token);
+    }
+
+    @Test
+    public void testGssAuthentication() throws Exception {
+        Properties props = new Properties();
+        props.put("lc_ctype", "WIN1251");
+        props.put("useGSSAuth", "true");
+        try (FBConnection connection = (FBConnection) DriverManager.getConnection(getUrl(), props)) {
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery("select current_user from rdb$database");
+            resultSet.next();
+            String currentUser = resultSet.getString(1);
+            System.out.println(currentUser);
+        }
     }
 }
