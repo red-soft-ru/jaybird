@@ -87,7 +87,7 @@ mkdir -p $TEST_DIR
 mkdir -p $WORKSPACE/results/jdk${JDK_VERSION}
 sudo chmod 777 $TEST_DIR
 
-sudo sed -i 's/#KrbServerKeyfile = /etc/krb5.keytab/KrbServerKeyfile = /etc/krb5.keytab/g' /opt/RedDatabase/firebird.conf
+sudo sed -i 's/#KrbServerKeyfile/KrbServerKeyfile/g' /opt/RedDatabase/firebird.conf
 sudo sed -i 's/#KrbServiceName = rdb_server/KrbServiceName = rdb_server/g' /opt/RedDatabase/firebird.conf
 sudo sed -i 's/#KrbHostName =/KrbHostName = localhost/g' /opt/RedDatabase/firebird.conf
 
