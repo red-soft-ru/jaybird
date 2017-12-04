@@ -144,6 +144,9 @@ public class TestFBDatabaseMetaData extends FBJUnit4TestBase {
                 count++;
             }
 
+            String databaseProductName = dmd.getDatabaseProductName();
+            boolean redDatabase = databaseProductName.contains("RedDatabase");
+
             int sysTableCount;
             final int databaseMajorVersion = dmd.getDatabaseMajorVersion();
             final int databaseMinorVersion = dmd.getDatabaseMinorVersion();
@@ -158,7 +161,10 @@ public class TestFBDatabaseMetaData extends FBJUnit4TestBase {
             } else if (databaseMajorVersion == 2 && databaseMinorVersion == 6) { // Red Database 2.6
                 sysTableCount = 43;
             } else if (databaseMajorVersion == 3 && databaseMinorVersion == 0) {
-                sysTableCount = 50;
+                if (redDatabase)
+                    sysTableCount = 51; // Red Database 3.0
+                else
+                    sysTableCount = 50;
             } else if (databaseMajorVersion == 4 && databaseMinorVersion == 0) {
                 sysTableCount = 50;
             } else {
