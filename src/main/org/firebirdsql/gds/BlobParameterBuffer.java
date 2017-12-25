@@ -56,6 +56,7 @@ public interface BlobParameterBuffer extends ParameterBuffer {
     int TYPE                    =  ISCConstants.isc_bpb_type;
     int TYPE_SEGMENTED          =  ISCConstants.isc_bpb_type_segmented;
     int TYPE_STREAM             =  ISCConstants.isc_bpb_type_stream;
+    int TYPE_TEMPORARY          =  ISCConstants.isc_bpb_storage_temp;
 
     /**
      * Set a void (valueless) parameter on this {@code BlobParameterBuffer}.

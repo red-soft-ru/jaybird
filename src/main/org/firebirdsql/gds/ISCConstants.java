@@ -768,6 +768,8 @@ public interface ISCConstants {
 
     int isc_bpb_type_segmented          =  0;
     int isc_bpb_type_stream             =  1;
+    int isc_bpb_storage_main            =  0;
+    int isc_bpb_storage_temp            =  2;
 
     int RBL_eof              = 1;
     int RBL_segment          = 2;
