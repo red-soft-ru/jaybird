@@ -64,6 +64,10 @@ class FBBlobField extends FBField implements FBFlushableField {
         }
     }
 
+    public boolean isNeedClose() {
+        return true;
+    }
+
     @Override
     public Blob getBlob() throws SQLException {
         if (blob != null) return blob;
