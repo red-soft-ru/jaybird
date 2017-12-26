@@ -68,6 +68,7 @@ public abstract class AbstractResultSet implements ResultSet, FirebirdResultSet,
     private SQLWarning firstWarning;
 
     private final FBField[] fields;
+    private List<FBField> closeableFields = null;
     private final Map<String, Integer> colNames;
 
     private final String cursorName;
@@ -126,6 +127,7 @@ public abstract class AbstractResultSet implements ResultSet, FirebirdResultSet,
         cached = cached
                 || rsType != ResultSet.TYPE_FORWARD_ONLY
                 || metaDataQuery;
+        closeableFields = null;
         prepareVars(cached);
         if (cached) {
             fbFetcher = new FBCachedFetcher(gdsHelper, fbStatement.fetchSize, fbStatement.maxRows, stmt, this,
@@ -180,6 +182,7 @@ public abstract class AbstractResultSet implements ResultSet, FirebirdResultSet,
         this.rowDescriptor = rowDescriptor;
         fields = new FBField[rowDescriptor.getCount()];
         colNames = new HashMap<>(rowDescriptor.getCount(), 1);
+        closeableFields = null;
         prepareVars(true);
         // TODO Set specific types (see also previous todo)
         rsType = ResultSet.TYPE_FORWARD_ONLY;
@@ -231,6 +234,7 @@ public abstract class AbstractResultSet implements ResultSet, FirebirdResultSet,
         this.rowDescriptor = rowDescriptor;
         fields = new FBField[rowDescriptor.getCount()];
         colNames = new HashMap<>(rowDescriptor.getCount(), 1);
+        closeableFields = null;
         prepareVars(true);
         rsType = ResultSet.TYPE_FORWARD_ONLY;
         rsConcurrency = ResultSet.CONCUR_READ_ONLY;
@@ -252,7 +256,15 @@ public abstract class AbstractResultSet implements ResultSet, FirebirdResultSet,
                 }
             };
 
-            fields[i] = FBField.createField(rowDescriptor.getFieldDescriptor(i), dataProvider, gdsHelper, cached);
+            final FBField field = FBField.createField(rowDescriptor.getFieldDescriptor(i), dataProvider, gdsHelper, cached);
+
+            if (field.isNeedClose()) {
+                if (closeableFields == null)
+                    closeableFields = new LinkedList();
+                closeableFields.add(field);
+            }
+
+            fields[i] = field;
         }
     }
 
@@ -312,11 +324,14 @@ public abstract class AbstractResultSet implements ResultSet, FirebirdResultSet,
 
         SQLExceptionChainBuilder<SQLException> chain = new SQLExceptionChainBuilder<>();
         // close current fields, so that resources are freed.
-        for (FBField field : fields) {
-            try {
-                field.close();
-            } catch (SQLException ex) {
-                chain.append(ex);
+        if (closeableFields != null) {
+            for (Iterator i = closeableFields.iterator(); i.hasNext(); ) {
+                final FBField field = (FBField) i.next();
+                try {
+                    field.close();
+                } catch (SQLException ex) {
+                    chain.append(ex);
+                }
             }
         }
 

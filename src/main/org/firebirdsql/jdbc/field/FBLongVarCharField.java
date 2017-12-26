@@ -74,6 +74,10 @@ public class FBLongVarCharField extends FBStringField implements FBFlushableFiel
         }
     }
 
+    public boolean isNeedClose() {
+        return true;
+    }
+
     @Override
     public Blob getBlob() throws SQLException {
         if (blob != null) return blob;
