@@ -209,6 +209,28 @@ No known gotcha's at this time. If you find a problem: please report it on
 Jaybird 3.0.x changelog
 =======================
 
+Changes in Jaybird 3.0.3
+------------------------
+
+The following has been changed or fixed since Jaybird 3.0.2
+
+-   Fixed: Some older versions of JBoss would throw an `java.lang.IllegalStateException: 
+    Can't overwrite cause` when `FBResourceException` initialised its exception 
+    cause. ([JDBC-512](http://tracker.firebirdsql.org/browse/JDBC-512))
+-   Improved: Added explicit `Automatic-Module-Name: org.firebirdsql.jaybird` to 
+    manifest for forwards compatibility with Java 9 modularization. ([JDBC-511](http://tracker.firebirdsql.org/browse/JDBC-511))
+
+### Known issues in Jaybird 3.0.3
+
+-   When using native or embedded, the default JNA 4.4.0 dependency may not work
+    on some versions of Linux as it requires glibc 2.14. Upgrading the 
+    dependency to JNA 4.5.x will solve this, as it requires glibc 2.7. See 
+    [JDBC-509](http://tracker.firebirdsql.org/browse/JDBC-509).  
+    We decided not to upgrade the dependency in a point release. JNA 4.5.x can
+    be specified as a Maven dependency or can be downloaded from 
+    <https://github.com/java-native-access/jna#download>
+    or from [Maven Central](http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22net.java.dev.jna%22%20AND%20a%3A%22jna%22)
+
 Changes in Jaybird 3.0.2
 ------------------------
 
@@ -372,15 +394,19 @@ The improved support includes
 
 Jaybird currently does not formally support Java 9 (JDBC 4.3), although most of
 the JDBC 4.3 features have been implemented (in as far as they are supported by 
-Firebird). 
+Firebird).
+
+For compatibility with Java 9 modules, versions 2.2.14 and 3.0.3 introduced the 
+automatic module name `org.firebirdsql.jaybird`. This guarantees a stable module 
+name for Jaybird, and allows for future modularization of Jaybird.  
 
 You can use the Java 8 driver under Java 9, contrary to earlier Jaybird 3.0 test 
-releases, it is no longer necessary to add the `java.xml.bind` module using 
-`--add-modules java.xml.bind`.
+releases, it is not necessary to add the `java.xml.bind` module using 
+`--add-modules java.xml.bind`, as we removed its use.
 
-Jaybird cannot be fully tested under Java 9 at this moment, as some of our tests
-fail due to recent changes, that prevent JMock (or specifically cglib) from
-dynamically generating classes.
+Jaybird 3.x cannot be fully tested under Java 9 at this moment, as some of our 
+tests fail due to recent changes, that prevent JMock (or specifically cglib) 
+from dynamically generating classes, this has been fixed on master (Jaybird 4).
 
 Firebird support
 ----------------

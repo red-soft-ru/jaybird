@@ -12,7 +12,7 @@ Jaybird 3.0 is available from Maven central:
 
 Groupid: `org.firebirdsql.jdbc`,  
 Artifactid: `jaybird-jdkXX` (where `XX` is `17` or `18`)  
-Version: `3.0.2`
+Version: `3.0.3`
 
 For example, for Java 8:
 
@@ -20,7 +20,7 @@ For example, for Java 8:
 <dependency>
     <groupId>org.firebirdsql.jdbc</groupId>
     <artifactId>jaybird-jdk18</artifactId>
-    <version>3.0.2</version>
+    <version>3.0.3</version>
 </dependency>
 ~~~
 
@@ -32,7 +32,7 @@ dependency:
 <dependency>
     <groupId>org.firebirdsql.jdbc</groupId>
     <artifactId>jaybird-jdk18</artifactId>
-    <version>3.0.2</version>
+    <version>3.0.3</version>
     <exclusions>
         <exclusion>
             <groupId>javax.resource</groupId>
@@ -59,6 +59,8 @@ explicitly include JNA 4.5.0 as a dependency:
 </dependency>
 ~~~
 
+The version can be excluded, as it is already specified in the Jaybird pom.
+
 #### Jaybird 2.2 ####
 
 Jaybird 2.2 is available on maven, with a separate artifact
@@ -66,7 +68,7 @@ for each supported Java version.
 
 Groupid: `org.firebirdsql.jdbc`,  
 Artifactid: `jaybird-jdkXX` (where `XX` is `16`, `17` or `18`)  
-Version: `2.2.13`
+Version: `2.2.14`
 
 For example:
 
@@ -74,7 +76,7 @@ For example:
 <dependency>
     <groupId>org.firebirdsql.jdbc</groupId>
     <artifactId>jaybird-jdk18</artifactId>
-    <version>2.2.13</version>
+    <version>2.2.14</version>
 </dependency>
 ~~~
 
@@ -138,8 +140,14 @@ JDBC 4.2 features are supported or fully implemented.
 Jaybird 2.2.7 is the last version to support Java 5, support has been dropped
 with Jaybird 2.2.8.
 
-Jaybird 2.2 is the last version to support Java 6, support will be dropped with
+Jaybird 2.2 is the last version to support Java 6, support has been dropped with
 Jaybird 3.0.
+
+### What is the Java 9 module name for Jaybird?
+
+Jaybird itself is not (yet) modularized. To ensure a stable module name, 
+Jaybird, since 2.2.14 and 3.0.3, declares the automatic module name 
+`org.firebirdsql.jaybird`.
 
 Which Firebird versions are supported?
 --------------------------------------
@@ -416,7 +424,7 @@ one of the following options:
     Use `-Dorg.firebirdsql.jdbc.defaultConnectionEncoding=NONE` to revert to the
     default behavior (with some caveats, see [How does character set `NONE` work?]).
     With Jaybird 3.0.2 or higher, it is better to just not set system property 
-    `org.firebirdsql.jdbc.requireConnectionEncoding`.
+    `org.firebirdsql.jdbc.requireConnectionEncoding` if you want to apply `NONE`.
     
 How can I enable the Windows "TCP Loopback Fast Path" introduced in Firebird 3.0.2?
 -----------------------------------------------------------------------------------
@@ -436,6 +444,71 @@ Fast Path", so Jaybird cannot enable this for you: you must specify this
 property on JVM startup. On the other hand, this has the benefit that this works 
 for all Jaybird versions, as long as you use Java 8 update 60 or higher (and 
 Firebird 3.0.2 or higher).
+
+Common connection errors
+------------------------
+
+### Your user name and password are not defined. Ask your database administrator to set up a Firebird login. (335544472) ###
+
+This error means that the user does not exist, or that the specified password is
+not correct.
+
+When connecting to Firebird 3 and higher, this error can also mean that the user
+does exist (with that password), but not for the authentication plugins tried 
+for this connection.
+
+For example, Jaybird 2.2.x and earlier only support legacy authentication, if
+you try to login as a user created for SRP authentication, you will get the same
+error.
+
+### Incompatible wire encryption levels requested on client and server (335545064) ###  
+
+With Jaybird 3.0.x connecting to Firebird 3 or higher, this usually means that 
+the setting `WireCrypt` is set to its (default) value of `Required`.
+
+Relax this setting (in `firebird.conf`) to `WireCrypt = Enabled`.
+
+See also [Jaybird Wiki - Jaybird and Firebird 3](https://github.com/FirebirdSQL/jaybird/wiki/Jaybird-and-Firebird-3)
+
+With Jaybird 4, this error means that you have requested a connection with a
+mismatch in encryption settings. For example, you specified connection property 
+`wireCrypt=required` while Firebird is set to `WireCrypt = Disabled` (or vice 
+versa).
+
+### connection rejected by remote interface (335544421) ###
+
+In general this error means that Jaybird requested a connection with properties 
+not supported by Firebird. It can have other causes than described below.
+
+With Jaybird 2.2.x connecting to Firebird 3 or higher, this usually means that 
+the setting `WireCrypt` is set to its (default) value of `Required`.
+
+Relax this setting (in `firebird.conf`) to `WireCrypt = Enabled`.
+
+See also [Jaybird Wiki - Jaybird and Firebird 3](https://github.com/FirebirdSQL/jaybird/wiki/Jaybird-and-Firebird-3)
+
+Make sure you check the other settings mentioned in that article, otherwise 
+you'll get the next error.
+
+### Error occurred during login, please check server firebird.log for details (335545106) ###
+
+If the logging contains something like
+
+```
+SERVER	Sat Oct 28 10:07:26 2017
+	Authentication error
+	No matching plugins on server
+```
+
+with Jaybird 2.2.x connecting to Firebird 3 or higher, this means that the 
+setting `AuthServer` does not include the `Legacy_Auth` plugin.
+
+Enable `Legacy_Auth` (in `firebird.conf`) by adding this value to the property 
+`AuthServer`, for example: `AuthServer = Srp, Legacy_Auth`.
+
+You also need to make sure your user is created with the legacy user manager,
+see [Jaybird Wiki - Jaybird and Firebird 3](https://github.com/FirebirdSQL/jaybird/wiki/Jaybird-and-Firebird-3) 
+for details.
 
 JDBC Support
 ============
