@@ -19,8 +19,13 @@
 package org.firebirdsql.gds.ng;
 
 import org.firebirdsql.encodings.Encoding;
+import org.firebirdsql.encodings.EncodingDefinition;
 import org.firebirdsql.encodings.IEncodingFactory;
 
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.Reader;
+import java.io.Writer;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.sql.Time;
@@ -132,35 +137,69 @@ public interface DatatypeCoder {
      */
     double decodeDouble(byte[] byte_int);
 
-// TODO String encoding/decoding might need to be done differently
-
     /**
      * Encode a {@code String} value into a {@code byte} array using a given encoding.
      *
      * @param value The {@code String} to be encoded
-     * @param javaEncoding The java encoding to use in the encoding process
-     * @param mappingPath The character mapping path to be used in the encoding
+     * @param encoding The encoding to use in the encoding process
      * @return The value of {@code value} as a {@code byte} array
      * @throws java.sql.SQLException if the given encoding cannot be found, or an error
      *         occurs during the encoding
+     * @deprecated To be removed
      */
-    byte[] encodeString(String value, String javaEncoding, String mappingPath) throws SQLException;
+    @Deprecated
+    byte[] encodeString(String value, Encoding encoding) throws SQLException;
 
-    byte[] encodeString(String value, Encoding encoding, String mappingPath) throws SQLException;
+    /**
+     * Encode a {@code String} value into a {@code byte} array using the encoding of this datatype coder.
+     *
+     * @param value The {@code String} to be encoded
+     * @return The value of {@code value} as a {@code byte} array
+     * @since 4.0
+     */
+    byte[] encodeString(String value);
+
+    /**
+     * Creates a writer wrapping an input stream.
+     *
+     * @param outputStream
+     *         Input stream
+     * @return Writer applying the encoding of this datatype when writing
+     * @since 4.0
+     */
+    Writer createWriter(OutputStream outputStream);
 
     /**
      * Decode an encoded {@code byte} array into a {@code String} using a given encoding.
      *
      * @param value The value to be decoded
-     * @param javaEncoding The java encoding to be used in the decoding process
-     * @param mappingPath The character mapping path to be used in the decoding
+     * @param encoding The encoding to be used in the decoding process
      * @return The decoded {@code String}
      * @throws java.sql.SQLException if the given encoding cannot be found, or an
      *         error occurs during the decoding
+     * @deprecated To be removed
      */
-    String decodeString(byte[] value, String javaEncoding, String mappingPath) throws SQLException;
+    @Deprecated
+    String decodeString(byte[] value, Encoding encoding) throws SQLException;
 
-    String decodeString(byte[] value, Encoding encoding, String mappingPath) throws SQLException;
+    /**
+     * Decode an encoded {@code byte} array into a {@code String} using the encoding of this datatype coder.
+     *
+     * @param value The value to be decoded
+     * @return The decoded {@code String}
+     * @since 4.0
+     */
+    String decodeString(byte[] value);
+
+    /**
+     * Creates a reader wrapping an input stream.
+     *
+     * @param inputStream
+     *         Input stream
+     * @return Reader applying the encoding of this datatype coder when reading
+     * @since 4.0
+     */
+    Reader createReader(InputStream inputStream);
 
     /**
      * Encode a {@code Timestamp} using a given {@code Calendar}.
@@ -405,6 +444,44 @@ public interface DatatypeCoder {
      * @return The encoding factory.
      */
     IEncodingFactory getEncodingFactory();
+
+    /**
+     * @return The encoding definition used by this datatype coder for string conversions.
+     */
+    EncodingDefinition getEncodingDefinition();
+
+    /**
+     * @return The encoding used by this datatype coder for string conversions.
+     */
+    Encoding getEncoding();
+
+    /**
+     * Return a derived datatype coder that applies the supplied encoding definition for string conversions.
+     *
+     * @param encodingDefinition Encoding definition
+     * @return Derived datatype coder (may be this instance if encoding definition is the same)
+     * @since 4.0
+     */
+    DatatypeCoder forEncodingDefinition(EncodingDefinition encodingDefinition);
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Equality: same basic type (ie: wire protocol/JNA type + endianness) and same encoding definition.
+     * </p>
+     * <p>
+     * This does not need to take into account the encoding factory, as usage should be limited to datatype coders
+     * derived from the same connection.
+     * </p>
+     *
+     * @param other Object to compare to
+     * @return {@code true} if other is an equivalent datatype coder.
+     */
+    @Override
+    boolean equals(Object other);
+
+    @Override
+    int hashCode();
 
     /**
      * Raw date/time value.

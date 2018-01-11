@@ -20,6 +20,7 @@ package org.firebirdsql.jdbc;
 
 import org.firebirdsql.gds.DatabaseParameterBuffer;
 import org.firebirdsql.gds.TransactionParameterBuffer;
+import org.firebirdsql.gds.ng.WireCrypt;
 
 import java.sql.SQLException;
 
@@ -115,17 +116,6 @@ public interface FirebirdConnectionProperties {
      *         SQL dialect of the client.
      */
     void setSqlDialect(String sqlDialect);
-
-    /**
-     * @return path to the character translation table.
-     */
-    String getUseTranslation();
-
-    /**
-     * @param translationPath
-     *         path to the character translation table.
-     */
-    void setUseTranslation(String translationPath);
 
     /**
      * @return <code>true</code> if stream blobs should be created, otherwise
@@ -399,7 +389,7 @@ public interface FirebirdConnectionProperties {
     /**
      * Get whether to use Firebird autocommit (experimental).
      *
-     * @return {@code} use Firebird autocommit
+     * @return {@code true} use Firebird autocommit
      */
     boolean isUseFirebirdAutocommit();
 
@@ -414,4 +404,22 @@ public interface FirebirdConnectionProperties {
     boolean isUseGSSAuth();
 
     void setUseGSSAuth(boolean useGSSAuth);
+
+    /**
+     * Get the wire encryption level value.
+     *
+     * @return Wire encryption level ({@code null} implies {@code DEFAULT})
+     */
+    String getWireCrypt();
+
+    /**
+     * Sets the wire encryption level.
+     * <p>
+     * Values are defined by {@link WireCrypt}, values are handled case insensitive.
+     * Invalid values are accepted, but will cause an error when a connection is established.
+     * </p>
+     *
+     * @param wireCrypt Wire encryption level
+     */
+    void setWireCrypt(String wireCrypt);
 }

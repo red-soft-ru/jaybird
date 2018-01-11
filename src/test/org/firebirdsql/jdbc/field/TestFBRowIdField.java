@@ -27,12 +27,9 @@ import java.io.*;
 import java.sql.RowId;
 import java.sql.SQLException;
 import java.sql.Types;
-import java.util.Random;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.*;
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertNotSame;
 
 /**
  * @author <a href="mailto:mrotteveel@users.sourceforge.net">Mark Rotteveel</a>
@@ -42,7 +39,6 @@ public class TestFBRowIdField extends BaseJUnit4TestFBField<FBRowIdField, RowId>
     // Note some of the tests were copied from FBBinaryField to check if the field is (largely) backwards compatible
 
     private static final int FIELD_LENGTH = 8;
-    private final Random rnd = new Random();
 
     @Before
     @Override
@@ -54,6 +50,7 @@ public class TestFBRowIdField extends BaseJUnit4TestFBField<FBRowIdField, RowId>
         rowDescriptorBuilder.setLength(FIELD_LENGTH);
         fieldDescriptor = rowDescriptorBuilder.toFieldDescriptor();
         field = new FBRowIdField(fieldDescriptor, fieldData, Types.ROWID);
+        datatypeCoder = fieldDescriptor.getDatatypeCoder();
     }
 
     @Test
@@ -131,7 +128,7 @@ public class TestFBRowIdField extends BaseJUnit4TestFBField<FBRowIdField, RowId>
     @Override
     public void getCharacterStreamNonNull() throws Exception {
         final byte[] bytes = getRandomBytes();
-        final String expectedString = datatypeCoder.getEncodingFactory().getDefaultEncoding().decodeFromCharset(bytes);
+        final String expectedString = datatypeCoder.decodeString(bytes);
         toReturnValueExpectations(bytes);
 
         Reader reader = field.getCharacterStream();
@@ -148,7 +145,7 @@ public class TestFBRowIdField extends BaseJUnit4TestFBField<FBRowIdField, RowId>
     @Override
     public void getObject_Reader() throws Exception {
         final byte[] bytes = getRandomBytes();
-        final String expectedString = datatypeCoder.getEncodingFactory().getDefaultEncoding().decodeFromCharset(bytes);
+        final String expectedString = datatypeCoder.decodeString(bytes);
         toReturnValueExpectations(bytes);
 
         Reader reader = field.getObject(Reader.class);
@@ -165,7 +162,7 @@ public class TestFBRowIdField extends BaseJUnit4TestFBField<FBRowIdField, RowId>
     @Override
     public void getStringNonNull() throws SQLException {
         final byte[] bytes = getRandomBytes();
-        final String expectedString = datatypeCoder.getEncodingFactory().getDefaultEncoding().decodeFromCharset(bytes);
+        final String expectedString = datatypeCoder.decodeString(bytes);
         toReturnValueExpectations(bytes);
 
         String value = field.getString();
@@ -177,7 +174,7 @@ public class TestFBRowIdField extends BaseJUnit4TestFBField<FBRowIdField, RowId>
     @Override
     public void getObject_String() throws SQLException {
         final byte[] bytes = getRandomBytes();
-        final String expectedString = datatypeCoder.getEncodingFactory().getDefaultEncoding().decodeFromCharset(bytes);
+        final String expectedString = datatypeCoder.decodeString(bytes);
         toReturnValueExpectations(bytes);
 
         String value = field.getObject(String.class);
@@ -300,12 +297,6 @@ public class TestFBRowIdField extends BaseJUnit4TestFBField<FBRowIdField, RowId>
 
     private byte[] getRandomBytes() {
         return getRandomBytes(FIELD_LENGTH);
-    }
-
-    private byte[] getRandomBytes(int length) {
-        final byte[] bytes = new byte[length];
-        rnd.nextBytes(bytes);
-        return bytes;
     }
 
     private byte[] streamToBytes(InputStream stream) throws IOException {

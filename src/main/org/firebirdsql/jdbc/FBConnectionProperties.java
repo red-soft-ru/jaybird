@@ -47,7 +47,6 @@ public class FBConnectionProperties implements FirebirdConnectionProperties, Ser
     public static final String ENCODING_PROPERTY = "encoding";
     public static final String ROLE_NAME_PROPERTY = "roleName";
     public static final String SQL_DIALECT_PROPERTY = "sqlDialect";
-    public static final String USE_TRANSLATION_PROPERTY = "useTranslation";
     public static final String USE_STREAM_BLOBS_PROPERTY = "useStreamBlobs";
     public static final String USE_STANDARD_UDF_PROPERTY = "useStandardUdf";
     public static final String SOCKET_BUFFER_SIZE_PROPERTY = "socketBufferSize";
@@ -60,6 +59,7 @@ public class FBConnectionProperties implements FirebirdConnectionProperties, Ser
     public static final String CONNECT_TIMEOUT = "connectTimeout";
     public static final String USE_FIREBIRD_AUTOCOMMIT = "useFirebirdAutocommit";
     public static final String USE_GSS_AUTH = "useGSSAuth";
+    public static final String WIRE_CRYPT_LEVEL = "wireCrypt";
 
     private Map<String, Object> properties = new HashMap<>();
     private String type;
@@ -247,16 +247,6 @@ public class FBConnectionProperties implements FirebirdConnectionProperties, Ser
         }
     }
 
-    public String getUseTranslation() {
-        return getStringProperty(USE_TRANSLATION_PROPERTY);
-    }
-
-    public void setUseTranslation(String translationPath) {
-        if (translationPath != null) {
-            setStringProperty(USE_TRANSLATION_PROPERTY, translationPath);
-        }
-    }
-
     public boolean isUseStreamBlobs() {
         return getBooleanProperty(USE_STREAM_BLOBS_PROPERTY);
     }
@@ -367,6 +357,16 @@ public class FBConnectionProperties implements FirebirdConnectionProperties, Ser
     @Override
     public void setUseFirebirdAutocommit(boolean useFirebirdAutocommit) {
         setBooleanProperty(USE_FIREBIRD_AUTOCOMMIT, useFirebirdAutocommit);
+    }
+
+    @Override
+    public String getWireCrypt() {
+        return getStringProperty(WIRE_CRYPT_LEVEL);
+    }
+
+    @Override
+    public void setWireCrypt(String wireCrypt) {
+        setStringProperty(WIRE_CRYPT_LEVEL, wireCrypt);
     }
 
     public void setNonStandardProperty(String propertyMapping) {

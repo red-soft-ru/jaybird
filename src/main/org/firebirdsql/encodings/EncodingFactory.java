@@ -19,13 +19,17 @@
 package org.firebirdsql.encodings;
 
 import org.firebirdsql.gds.ISCConstants;
+import org.firebirdsql.gds.ng.DatatypeCoder;
+import org.firebirdsql.gds.ng.DefaultDatatypeCoder;
+import org.firebirdsql.gds.ng.jna.BigEndianDatatypeCoder;
+import org.firebirdsql.gds.ng.jna.LittleEndianDatatypeCoder;
 import org.firebirdsql.logging.Logger;
 import org.firebirdsql.logging.LoggerFactory;
 
+import java.lang.reflect.Constructor;
 import java.nio.charset.Charset;
 import java.nio.charset.IllegalCharsetNameException;
 import java.nio.charset.UnsupportedCharsetException;
-import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -76,7 +80,8 @@ public final class EncodingFactory implements IEncodingFactory {
     private final Map<String, EncodingDefinition> javaAliasesToDefinition = new ConcurrentHashMap<>();
     private final Encoding defaultEncoding;
     private final EncodingDefinition defaultEncodingDefinition;
-    private final ConcurrentMap<String, CharacterTranslator> translations = new ConcurrentHashMap<>();
+    private final ConcurrentMap<Class<? extends DatatypeCoder>, DatatypeCoder> datatypeCoderCache
+            = new ConcurrentHashMap<>(3);
 
     /**
      * Initializes EncodingFactory by processing the encodingSets using the provided iterator.
@@ -241,20 +246,6 @@ public final class EncodingFactory implements IEncodingFactory {
     }
 
     @Override
-    public CharacterTranslator getCharacterTranslator(String mappingPath) throws SQLException {
-        if (mappingPath == null) return null;
-        CharacterTranslator translator = translations.get(mappingPath);
-        if (translator != null) {
-            return translator;
-        }
-
-        translator = CharacterTranslator.create(mappingPath);
-        translations.putIfAbsent(mappingPath, translator);
-
-        return translations.get(mappingPath);
-    }
-
-    @Override
     public EncodingDefinition getEncodingDefinition(final String firebirdEncodingName, final String javaCharsetAlias) {
         try {
             EncodingDefinition encodingDefinition = null;
@@ -308,10 +299,12 @@ public final class EncodingFactory implements IEncodingFactory {
      */
     @Override
     public IEncodingFactory withDefaultEncodingDefinition(EncodingDefinition encodingDefinition) {
-        return new ConnectionEncodingFactory(this,
+        EncodingDefinition resolvedEncodingDefinition =
                 encodingDefinition != null && !encodingDefinition.isInformationOnly()
                         ? encodingDefinition
-                        : getDefaultEncodingDefinition());
+                        : getDefaultEncodingDefinition();
+        // TODO Add (weak?) cache for encoding factory instances?
+        return new ConnectionEncodingFactory(this, resolvedEncodingDefinition);
     }
 
     /**
@@ -322,7 +315,43 @@ public final class EncodingFactory implements IEncodingFactory {
      */
     @Override
     public IEncodingFactory withDefaultEncodingDefinition(Charset charset) {
-        return new ConnectionEncodingFactory(this, getEncodingDefinitionByCharset(charset));
+        // TODO This might misbehave if there is no EncodingDefinition for charset (it will then revert to the default)
+        return withDefaultEncodingDefinition(getEncodingDefinitionByCharset(charset));
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T extends DatatypeCoder> T getOrCreateDatatypeCoder(Class<T> datatypeCoderClass) {
+        DatatypeCoder coder = datatypeCoderCache.get(datatypeCoderClass);
+        if (coder == null) {
+            T newCoder = createNewDatatypeCoder(datatypeCoderClass, this);
+            coder = datatypeCoderCache.putIfAbsent(datatypeCoderClass, newCoder);
+            if (coder == null) {
+                return newCoder;
+            }
+        }
+        return (T) coder;
+    }
+
+    @SuppressWarnings({ "unchecked", "JavaReflectionMemberAccess" })
+    protected static <T extends DatatypeCoder> T createNewDatatypeCoder(Class<T> datatypeCoderClass,
+            IEncodingFactory encodingFactory) {
+        // Avoid reflection if we can:
+        if (datatypeCoderClass == DefaultDatatypeCoder.class) {
+            return (T) new DefaultDatatypeCoder(encodingFactory);
+        } else if (datatypeCoderClass == LittleEndianDatatypeCoder.class) {
+            return (T) new LittleEndianDatatypeCoder(encodingFactory);
+        } else if (datatypeCoderClass == BigEndianDatatypeCoder.class) {
+            return (T) new BigEndianDatatypeCoder(encodingFactory);
+        } else {
+            try {
+                Constructor<T> datatypeCoderConstructor = datatypeCoderClass.getConstructor(IEncodingFactory.class);
+                return datatypeCoderConstructor.newInstance(encodingFactory);
+            } catch (ReflectiveOperationException e) {
+                throw new IllegalArgumentException("Type " + datatypeCoderClass +
+                        " has no single arg constructor accepting an IEncodingFactory");
+            }
+        }
     }
 
     /**
@@ -588,53 +617,6 @@ public final class EncodingFactory implements IEncodingFactory {
     }
 
     /**
-     * Gets an {@link Encoding} instance for the supplied java Charset name and
-     * alternative character mapping.
-     *
-     * @param encoding
-     *         Java Charset name
-     * @param mappingPath
-     *         Resource file with alternative character mapping
-     * @return Instance of {@link Encoding}
-     * @deprecated Use {@link #getEncodingForCharsetAlias(String, Encoding)} and {@link
-     *             Encoding#withTranslation(CharacterTranslator)}
-     */
-    @Deprecated
-    @SuppressWarnings("deprecation")
-    public static Encoding getEncoding(String encoding, String mappingPath) throws SQLException {
-        EncodingDefinition encodingDefinition = getRootEncodingFactory().getEncodingDefinitionByCharsetAlias(encoding);
-        // TODO Express this in terms of other methods of this factory?
-
-        Charset charset = null;
-        if (encodingDefinition != null) {
-            charset = encodingDefinition.getJavaCharset();
-        }
-        if (charset == null) {
-            charset = DEFAULT_CHARSET;
-        }
-        return getEncoding(charset, mappingPath);
-    }
-
-    /**
-     * Gets an {@link Encoding} instance for the supplied java Charset and
-     * alternative character mapping.
-     *
-     * @param charset
-     *         Java Charset
-     * @param mappingPath
-     *         Resource file with alternative character mapping
-     * @return Instance of {@link Encoding}
-     * @deprecated Use {@link #getEncodingForCharset(java.nio.charset.Charset, Encoding)} and {@link
-     *             Encoding#withTranslation(CharacterTranslator)}
-     */
-    @Deprecated
-    @SuppressWarnings("deprecation")
-    public static Encoding getEncoding(Charset charset, String mappingPath) throws SQLException {
-        final Encoding encoding = getEncoding(charset);
-        return mappingPath == null ? encoding : encoding.withTranslation(getTranslator(mappingPath));
-    }
-
-    /**
      * Get Firebird encoding for given Java language encoding.
      *
      * @param javaCharsetAlias
@@ -734,19 +716,6 @@ public final class EncodingFactory implements IEncodingFactory {
             return null;
         }
         return encodingDefinition.getJavaEncodingName();
-    }
-
-    /**
-     * Gets the {@link CharacterTranslator} for the specified mappingPath, or <code>null</code> if there is no such
-     * mappingPath
-     *
-     * @param mappingPath
-     *         Path of the mapping definition file
-     * @return CharacterTranslator or <code>null</code>
-     * @throws SQLException
-     */
-    public static CharacterTranslator getTranslator(String mappingPath) throws SQLException {
-        return getRootEncodingFactory().getCharacterTranslator(mappingPath);
     }
 
     /**

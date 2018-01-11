@@ -18,22 +18,8 @@
  */
 package org.firebirdsql.jca;
 
-import java.io.ByteArrayInputStream;
-import java.io.PrintWriter;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
-import java.sql.*;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
-
-import javax.resource.ResourceException;
-import javax.resource.spi.*;
-import javax.resource.spi.security.PasswordCredential;
-import javax.security.auth.Subject;
-import javax.transaction.xa.*;
-
 import org.firebirdsql.gds.*;
+import org.firebirdsql.gds.impl.DatabaseParameterBufferExtension;
 import org.firebirdsql.gds.impl.DbAttachInfo;
 import org.firebirdsql.gds.impl.GDSHelper;
 import org.firebirdsql.gds.impl.jni.EmbeddedGDSFactoryPlugin;
@@ -43,12 +29,31 @@ import org.firebirdsql.gds.ng.fields.RowValue;
 import org.firebirdsql.gds.ng.listeners.DefaultDatabaseListener;
 import org.firebirdsql.gds.ng.listeners.DefaultStatementListener;
 import org.firebirdsql.gds.ng.listeners.ExceptionListener;
-import org.firebirdsql.jdbc.*;
+import org.firebirdsql.jdbc.FBConnection;
+import org.firebirdsql.jdbc.SQLStateConstants;
+import org.firebirdsql.jdbc.Synchronizable;
 import org.firebirdsql.jdbc.field.FBField;
 import org.firebirdsql.jdbc.field.FieldDataProvider;
 import org.firebirdsql.logging.Logger;
 import org.firebirdsql.logging.LoggerFactory;
 import org.firebirdsql.util.SQLExceptionChainBuilder;
+
+import javax.resource.ResourceException;
+import javax.resource.spi.*;
+import javax.resource.spi.security.PasswordCredential;
+import javax.security.auth.Subject;
+import javax.transaction.xa.XAException;
+import javax.transaction.xa.XAResource;
+import javax.transaction.xa.Xid;
+import java.io.ByteArrayInputStream;
+import java.io.PrintWriter;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.SQLNonTransientConnectionException;
+import java.sql.SQLWarning;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * The class <code>FBManagedConnection</code> implements both the
@@ -103,7 +108,8 @@ public class FBManagedConnection implements ManagedConnection, XAResource, Excep
         try {
             DatabaseParameterBuffer dpb = this.cri.getDpb();
 
-            if (dpb.getArgumentAsString(DatabaseParameterBuffer.LC_CTYPE) == null) {
+            if (dpb.getArgumentAsString(DatabaseParameterBuffer.LC_CTYPE) == null
+                    && dpb.getArgumentAsString(DatabaseParameterBufferExtension.LOCAL_ENCODING) == null) {
                 String defaultEncoding = getDefaultConnectionEncoding();
                 if (defaultEncoding == null) {
                     throw new SQLNonTransientConnectionException(ERROR_NO_CHARSET,
@@ -1443,19 +1449,18 @@ public class FBManagedConnection implements ManagedConnection, XAResource, Excep
 
     private static String getDefaultConnectionEncoding() {
         try {
-            return getSystemPropertyPrivileged("org.firebirdsql.jdbc.defaultConnectionEncoding");
+            String defaultConnectionEncoding = JaybirdSystemProperties.getDefaultConnectionEncoding();
+            if (defaultConnectionEncoding == null) {
+                if (JaybirdSystemProperties.isRequireConnectionEncoding()) {
+                    return null;
+                }
+                return "NONE";
+            }
+            return defaultConnectionEncoding;
         } catch (Exception e) {
             log.error("Exception obtaining default connection encoding", e);
         }
-        return null;
-    }
-
-    private static String getSystemPropertyPrivileged(final String propertyName) {
-        return AccessController.doPrivileged(new PrivilegedAction<String>() {
-            public String run() {
-                return System.getProperty(propertyName);
-            }
-        });
+        return "NONE";
     }
 
     /**

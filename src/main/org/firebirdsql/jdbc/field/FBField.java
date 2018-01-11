@@ -97,7 +97,6 @@ public abstract class FBField {
     protected final FieldDescriptor fieldDescriptor;
     private final FieldDataProvider dataProvider;
     protected GDSHelper gdsHelper;
-    protected String mappingPath;
     protected int requiredType;
     protected int scale = -1;
 
@@ -129,9 +128,7 @@ public abstract class FBField {
     }
 
     /**
-     * @return <code>true</code> if the corresponding <code>field</code> is
-     *         <code>null</code>, otherwise <code>false</code>.
-     * @throws SQLException
+     * @return {@code true} if the corresponding field is {@code null}, otherwise {@code false}
      */
     public final boolean isNull() throws SQLException {
         return getFieldData() == null;
@@ -143,10 +140,6 @@ public abstract class FBField {
 
     public void setConnection(GDSHelper gdsHelper) {
         this.gdsHelper = gdsHelper;
-
-        if (gdsHelper != null) {
-            mappingPath = gdsHelper.getMappingPath();
-        }
     }
 
     /**
@@ -180,7 +173,7 @@ public abstract class FBField {
             if (subType < 0) {
                 return jdbcType == Types.BLOB;
             }
-            if (subType == 1) {
+            if (subType == ISCConstants.BLOB_SUB_TYPE_TEXT) {
                 return jdbcType == Types.LONGVARCHAR;
             } else {
                 return jdbcType == Types.LONGVARBINARY
@@ -344,6 +337,14 @@ public abstract class FBField {
         // default behaviour is to do nothing.
     }
 
+    /**
+     * We need close or not? (Only optimization trick).
+     * @return
+     */
+    public boolean isNeedClose() {
+        return false;
+    }
+
     /*
      * All these methods simply throw an exception when invoked. All subclasses
      * should implement relevant methods with conversions.
@@ -392,7 +393,6 @@ public abstract class FBField {
     }
 
     public Object getObject() throws SQLException {
-
         if (isNull()) {
             return null;
         }
@@ -532,12 +532,11 @@ public abstract class FBField {
     }
 
     public Reader getCharacterStream() throws SQLException {
-        // TODO Needs to be moved higher, or FBStringField needs to get specific version that handles encoding.
         final InputStream is = getBinaryStream();
         if (is == null) {
             return null;
         } else {
-            return TranslatingReader.getInstance(is, getDatatypeCoder().getEncodingFactory().getDefaultEncoding().getCharsetName(), mappingPath);
+            return getDatatypeCoder().createReader(is);
         }
     }
 

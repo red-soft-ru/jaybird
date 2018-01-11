@@ -43,10 +43,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.sql.*;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.SimpleTimeZone;
-import java.util.TimeZone;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.*;
@@ -73,11 +70,13 @@ import static org.junit.Assert.*;
  * @author <a href="mailto:mrotteveel@users.sourceforge.net">Mark Rotteveel</a>
  */
 public abstract class BaseJUnit4TestFBField<T extends FBField, O> {
+
+    private static final Random rnd = new Random();
     protected static final String ALIAS_VALUE = "aliasvalue";
     protected static final String NAME_VALUE = "namevalue";
     protected static final String RELATION_NAME_VALUE = "relationnamevalue";
-    protected static final DatatypeCoder datatypeCoder =
-            new DefaultDatatypeCoder(EncodingFactory.createInstance(StandardCharsets.UTF_8));
+    protected DatatypeCoder datatypeCoder =
+            DefaultDatatypeCoder.forEncodingFactory(EncodingFactory.createInstance(StandardCharsets.UTF_8));
 
     @Rule
     public final JUnitRuleMockery context = new JUnitRuleMockery();
@@ -836,7 +835,7 @@ public abstract class BaseJUnit4TestFBField<T extends FBField, O> {
      * @param encoding Encoding to use
      */
     protected final void toReturnStringExpectations(final String value, Encoding encoding) throws SQLException {
-        toReturnValueExpectations(fieldDescriptor.getDatatypeCoder().encodeString(value, encoding, null));
+        toReturnValueExpectations(fieldDescriptor.getDatatypeCoder().encodeString(value, encoding));
     }
 
     /**
@@ -845,7 +844,7 @@ public abstract class BaseJUnit4TestFBField<T extends FBField, O> {
      * @param encoding Encoding to use
      */
     protected final void setStringExpectations(final String value, Encoding encoding) throws SQLException {
-        setValueExpectations(fieldDescriptor.getDatatypeCoder().encodeString(value, encoding, null));
+        setValueExpectations(fieldDescriptor.getDatatypeCoder().encodeString(value, encoding));
     }
 
     protected void ignoringFieldData() {
@@ -861,4 +860,26 @@ public abstract class BaseJUnit4TestFBField<T extends FBField, O> {
 
         return new SimpleTimeZone(oneHourbehind, "JAYBIRD_TEST");
     }
+
+    private static final byte[] BASIC_ALPHA_NUM = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+            .getBytes(StandardCharsets.US_ASCII);
+
+    /**
+     * Generates random bytes that correspond with ASCII values 0-9, A-Z, a-z.
+     * <p>
+     * The limit to alphanumerics is to avoid edge cases in string conversion (especially stream vs non-stream),
+     * especially with UTF-8 conversion.
+     * </p>
+     *
+     * @param length Number of bytes
+     * @return Random populated array
+     */
+    protected static byte[] getRandomBytes(int length) {
+        final byte[] bytes = new byte[length];
+        for (int idx = 0; idx < length; idx++) {
+            bytes[idx] = BASIC_ALPHA_NUM[rnd.nextInt(BASIC_ALPHA_NUM.length)];
+        }
+        return bytes;
+    }
+
 }

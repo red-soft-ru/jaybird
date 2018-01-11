@@ -273,10 +273,6 @@ public class FBManagedConnectionFactory implements ManagedConnectionFactory, Fir
         return connectionProperties.getUserName();
     }
 
-    public String getUseTranslation() {
-        return connectionProperties.getUseTranslation();
-    }
-
     public boolean isTimestampUsesLocalTimezone() {
         return connectionProperties.isTimestampUsesLocalTimezone();
     }
@@ -373,10 +369,6 @@ public class FBManagedConnectionFactory implements ManagedConnectionFactory, Fir
         connectionProperties.setUseStreamBlobs(useStreamBlobs);        
     }
 
-    public void setUseTranslation(String translationPath) {
-        connectionProperties.setUseTranslation(translationPath);        
-    }
-
     public boolean isDefaultResultSetHoldable() {
         return connectionProperties.isDefaultResultSetHoldable();
     }
@@ -423,6 +415,16 @@ public class FBManagedConnectionFactory implements ManagedConnectionFactory, Fir
     @Override
     public void setUseGSSAuth(boolean useGSSAuth) {
         connectionProperties.setUseGSSAuth(useGSSAuth);
+    }
+
+    @Override
+    public String getWireCrypt() {
+        return connectionProperties.getWireCrypt();
+    }
+
+    @Override
+    public void setWireCrypt(String wireCrypt) {
+        connectionProperties.setWireCrypt(wireCrypt);
     }
 
     public int hashCode() {

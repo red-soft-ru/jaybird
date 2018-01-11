@@ -306,21 +306,6 @@ public abstract class FBAbstractCommonDataSource extends RootCommonDataSource im
     }
 
     @Override
-    public String getUseTranslation() {
-        synchronized(lock) {
-            return connectionProperties.getUseTranslation();
-        }
-    }
-
-    @Override
-    public void setUseTranslation(String translationPath) {
-        synchronized(lock) {
-            checkNotStarted();
-            connectionProperties.setUseTranslation(translationPath);
-        }
-    }
-
-    @Override
     public boolean isUseStreamBlobs() {
         synchronized (lock) {
             return connectionProperties.isUseStreamBlobs();
@@ -531,6 +516,21 @@ public abstract class FBAbstractCommonDataSource extends RootCommonDataSource im
         synchronized (lock) {
             checkNotStarted();
             connectionProperties.setUseGSSAuth(useGSSAuth);
+        }
+    }
+
+    @Override
+    public String getWireCrypt() {
+        synchronized (lock) {
+            return connectionProperties.getWireCrypt();
+        }
+    }
+
+    @Override
+    public void setWireCrypt(String wireCrypt) {
+        synchronized (lock) {
+            checkNotStarted();
+            connectionProperties.setWireCrypt(wireCrypt);
         }
     }
     

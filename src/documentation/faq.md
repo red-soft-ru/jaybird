@@ -1,11 +1,3 @@
-Documentation crowd-funding{-}
-==============================
-
-The Firebird Project is currently holding a crowd-funding for the Firebird 
-Developer Guide. Your donation is much appreciated!
-
-See <https://www.firebirdsql.org/en/doc-funding-2017/> for details.
-
 Jaybird
 =======
 
@@ -20,7 +12,7 @@ Jaybird 3.0 is available from Maven central:
 
 Groupid: `org.firebirdsql.jdbc`,  
 Artifactid: `jaybird-jdkXX` (where `XX` is `17` or `18`)  
-Version: `3.0.1`
+Version: `3.0.3`
 
 For example, for Java 8:
 
@@ -28,7 +20,7 @@ For example, for Java 8:
 <dependency>
     <groupId>org.firebirdsql.jdbc</groupId>
     <artifactId>jaybird-jdk18</artifactId>
-    <version>3.0.1</version>
+    <version>3.0.3</version>
 </dependency>
 ~~~
 
@@ -40,7 +32,7 @@ dependency:
 <dependency>
     <groupId>org.firebirdsql.jdbc</groupId>
     <artifactId>jaybird-jdk18</artifactId>
-    <version>3.0.1</version>
+    <version>3.0.3</version>
     <exclusions>
         <exclusion>
             <groupId>javax.resource</groupId>
@@ -57,15 +49,17 @@ dependency:
 ~~~
 
 If you want to use Type 2 support (native, local or embedded), you need to 
-explicitly include JNA 4.2.2 as a dependency:
+explicitly include JNA 4.5.0 as a dependency:
 
 ~~~ {.xml}
 <dependency>
     <groupId>net.java.dev.jna</groupId>
     <artifactId>jna</artifactId>
-    <version>4.2.2</version>
+    <version>4.5.0</version>
 </dependency>
 ~~~
+
+The version can be excluded, as it is already specified in the Jaybird pom.
 
 #### Jaybird 2.2 ####
 
@@ -74,7 +68,7 @@ for each supported Java version.
 
 Groupid: `org.firebirdsql.jdbc`,  
 Artifactid: `jaybird-jdkXX` (where `XX` is `16`, `17` or `18`)  
-Version: `2.2.13`
+Version: `2.2.14`
 
 For example:
 
@@ -82,7 +76,7 @@ For example:
 <dependency>
     <groupId>org.firebirdsql.jdbc</groupId>
     <artifactId>jaybird-jdk18</artifactId>
-    <version>2.2.12</version>
+    <version>2.2.14</version>
 </dependency>
 ~~~
 
@@ -146,8 +140,14 @@ JDBC 4.2 features are supported or fully implemented.
 Jaybird 2.2.7 is the last version to support Java 5, support has been dropped
 with Jaybird 2.2.8.
 
-Jaybird 2.2 is the last version to support Java 6, support will be dropped with
+Jaybird 2.2 is the last version to support Java 6, support has been dropped with
 Jaybird 3.0.
+
+### What is the Java 9 module name for Jaybird?
+
+Jaybird itself is not (yet) modularized. To ensure a stable module name, 
+Jaybird, since 2.2.14 and 3.0.3, declares the automatic module name 
+`org.firebirdsql.jaybird`.
 
 Which Firebird versions are supported?
 --------------------------------------
@@ -345,6 +345,9 @@ The Firebird character set `NONE` is a special case, it essentially means "no
 character set". You can store anything in it, but conversions to or from this
 character set are not defined.
 
+Using character set `NONE` can result in incorrect character set handling when 
+the database is used from different locales.
+
 When used as a connection character set, Jaybird handles `NONE` as follows:
 
 #### Jaybird 3.0 {#none-jaybird3}
@@ -364,30 +367,44 @@ When used as a connection character set, Jaybird handles `NONE` as follows:
 -   `encoding=NONE&charSet=ISO-8859-1` the same, but instead of the JVM default, 
     use `ISO-8859-1`
 
+### What happens if no connection character set is specified?
+
+When no character set has been specified explicitly, Jaybird 2.2 and earlier, 
+and Jaybird 3.0.2 and higher default to connection character set `NONE`. See 
+[How does character set `NONE` work?] for details on character set `NONE`.
+ 
+Jaybird 3.0.0 and 3.0.1, however, will reject the connection, see
+[How can I solve the error "Connection rejected: No connection character set specified"].
+
+In Jaybird 3 it is possible to override the default connection character set by
+specifying system property `org.firebirdsql.jdbc.defaultConnectionEncoding` with
+a valid Firebird character set name. 
+
+Jaybird 3.0.2 introduces the system property `org.firebirdsql.jdbc.requireConnectionEncoding`,
+which - when set to `true` - will reject connections without a character set (which 
+was the default behavior in Jaybird 3.0.0 and 3.0.1).
+
 ### How can I solve the error "Connection rejected: No connection character set specified"
 
-If no explicit character set has been set, Jaybird 3.0 will reject the 
-connection with an `SQLNonTransientConnectionException` with message 
+If no character set has been set, Jaybird 3.0 will reject the connection with 
+an `SQLNonTransientConnectionException` with message 
 _"Connection rejected: No connection character set specified (property lc_ctype,
 encoding, charSet or localEncoding). Please specify a connection character set 
 (eg property charSet=utf-8) or consult the Jaybird documentation for more 
-information."_ (see [JDBC-446](http://tracker.firebirdsql.org/browse/JDBC-446))
+information."_
 
-In Jaybird 2.2 and earlier, Jaybird would default to connection character set 
-`NONE` if no character set had been specified (through `encoding` 
-and/or `charSet`). This can result in incorrect character set
-handling when the database is used from different locales.
+In Jaybird 3.0.0 and 3.0.1 this error will be thrown if the character set has 
+not been set explicitly. In Jaybird 3.0.2 and higher this error will only be 
+thrown if system property `org.firebirdsql.jdbc.requireConnectionEncoding` has
+been set to `true`. 
 
-To prevent potential data-corruption, we no longer allow connecting without an
-explicit connection character set.
-
-To address this change, explicitly set the connection character set using
+To address this error, you can set the default connection character set using
 one of the following options:
 
 *   Use connection property `encoding` (alias: `lc_ctype`) with a Firebird character
     set name. 
     
-    Use `encoding=NONE` for the old default behavior (with some caveats, see 
+    Use `encoding=NONE` for the default behavior (with some caveats, see 
     [How does character set `NONE` work?]).
 
 *   Use connection property `charSet` (alias: `localEncoding`) with a Java character
@@ -405,7 +422,9 @@ one of the following options:
     This property only supports Firebird character set names.
 
     Use `-Dorg.firebirdsql.jdbc.defaultConnectionEncoding=NONE` to revert to the
-    old behavior (with some caveats, see [How does character set `NONE` work?]).
+    default behavior (with some caveats, see [How does character set `NONE` work?]).
+    With Jaybird 3.0.2 or higher, it is better to just not set system property 
+    `org.firebirdsql.jdbc.requireConnectionEncoding` if you want to apply `NONE`.
     
 How can I enable the Windows "TCP Loopback Fast Path" introduced in Firebird 3.0.2?
 -----------------------------------------------------------------------------------
@@ -425,6 +444,71 @@ Fast Path", so Jaybird cannot enable this for you: you must specify this
 property on JVM startup. On the other hand, this has the benefit that this works 
 for all Jaybird versions, as long as you use Java 8 update 60 or higher (and 
 Firebird 3.0.2 or higher).
+
+Common connection errors
+------------------------
+
+### Your user name and password are not defined. Ask your database administrator to set up a Firebird login. (335544472) ###
+
+This error means that the user does not exist, or that the specified password is
+not correct.
+
+When connecting to Firebird 3 and higher, this error can also mean that the user
+does exist (with that password), but not for the authentication plugins tried 
+for this connection.
+
+For example, Jaybird 2.2.x and earlier only support legacy authentication, if
+you try to login as a user created for SRP authentication, you will get the same
+error.
+
+### Incompatible wire encryption levels requested on client and server (335545064) ###  
+
+With Jaybird 3.0.x connecting to Firebird 3 or higher, this usually means that 
+the setting `WireCrypt` is set to its (default) value of `Required`.
+
+Relax this setting (in `firebird.conf`) to `WireCrypt = Enabled`.
+
+See also [Jaybird Wiki - Jaybird and Firebird 3](https://github.com/FirebirdSQL/jaybird/wiki/Jaybird-and-Firebird-3)
+
+With Jaybird 4, this error means that you have requested a connection with a
+mismatch in encryption settings. For example, you specified connection property 
+`wireCrypt=required` while Firebird is set to `WireCrypt = Disabled` (or vice 
+versa).
+
+### connection rejected by remote interface (335544421) ###
+
+In general this error means that Jaybird requested a connection with properties 
+not supported by Firebird. It can have other causes than described below.
+
+With Jaybird 2.2.x connecting to Firebird 3 or higher, this usually means that 
+the setting `WireCrypt` is set to its (default) value of `Required`.
+
+Relax this setting (in `firebird.conf`) to `WireCrypt = Enabled`.
+
+See also [Jaybird Wiki - Jaybird and Firebird 3](https://github.com/FirebirdSQL/jaybird/wiki/Jaybird-and-Firebird-3)
+
+Make sure you check the other settings mentioned in that article, otherwise 
+you'll get the next error.
+
+### Error occurred during login, please check server firebird.log for details (335545106) ###
+
+If the logging contains something like
+
+```
+SERVER	Sat Oct 28 10:07:26 2017
+	Authentication error
+	No matching plugins on server
+```
+
+with Jaybird 2.2.x connecting to Firebird 3 or higher, this means that the 
+setting `AuthServer` does not include the `Legacy_Auth` plugin.
+
+Enable `Legacy_Auth` (in `firebird.conf`) by adding this value to the property 
+`AuthServer`, for example: `AuthServer = Srp, Legacy_Auth`.
+
+You also need to make sure your user is created with the legacy user manager,
+see [Jaybird Wiki - Jaybird and Firebird 3](https://github.com/FirebirdSQL/jaybird/wiki/Jaybird-and-Firebird-3) 
+for details.
 
 JDBC Support
 ============

@@ -1,7 +1,7 @@
 WARNING {-}
 =======
 
-Jaybird 3.1 is still in development. This version is provided for testing
+Jaybird 4 is still in development. This version is provided for testing
 purposes only. We'd appreciate your feedback, but we'd like to emphasize that
 this version is **not intended for production**.
 
@@ -35,7 +35,7 @@ be sent to the Firebird-java mailing list or reported on the issue tracker
 Supported Firebird versions
 ---------------------------
 
-Jaybird 3.1 was tested against Firebird 2.5.7, and 3.0.2, but should also 
+Jaybird @VERSION@ was tested against Firebird 2.5.7, and 3.0.2, but should also 
 support other Firebird versions from 2.5 and up.
 
 Formal support for Firebird 2.0 and 2.1 has been dropped (although in general we 
@@ -47,27 +47,18 @@ in the protocol and database attachment parameters that are sent to the server.
 
 ### Notes on Firebird 3 support
 
-Jaybird 3.1 does not (yet) support the Firebird 3 wire encryption nor zlib compression.
-
-To be able to connect to Firebird 3, it is necessary to change the `WireCrypt` 
-setting from its default `Required` to `Enabled` in `firebird.conf`:
-                                     
-    WireCrypt = Enabled
-    
-This configuration option can also be set to `Disabled`, but that is not 
-advisable as that will also disable it for clients that do support wire 
-encryption.
+Jaybird 4 does not (yet) support the Firebird 3 zlib compression.
 
 Supported Java versions
 -----------------------
 
-Jaybird 3.1 supports Java 7 (JDBC 4.1) and Java 8 (JDBC 4.2). Support for 
+Jaybird 4 supports Java 7 (JDBC 4.1) and Java 8 (JDBC 4.2). Support for 
 earlier Java versions has been dropped.
 
 Rudimentary support for Java 9 (JDBC 4.3) is available using the Java 8 version,
-but real module support will not be available until Jaybird 3.1 (or later).
+but real module support will not be available until Jaybird 4 (or later).
 
-Jaybird 3.1 will probably drop support Java 7 later in the development cycle.
+Jaybird 4 will probably drop support Java 7 later in the development cycle.
 
 Specification support
 ---------------------
@@ -152,7 +143,7 @@ See also [Type 2 (native) and embedded driver].
 
 You can download the latest versions from <https://www.firebirdsql.org/en/jdbc-driver/>
 
-At minimum Jaybird 3.1 requires `jaybird-@VERSION@.jar` and 
+At minimum Jaybird 4 requires `jaybird-@VERSION@.jar` and 
 `connector-api-1.5.jar`. You can also use `jaybird-full-@VERSION@.jar` which
 includes the connector-api files.
 
@@ -167,8 +158,8 @@ For `getGeneratedKeys` support you will need to include
 For native, local or embedded support, you will need to include `jna-4.4.0.jar` 
 on your classpath. See also [Type 2 (native) and embedded driver].
 
-Upgrading from Jaybird 3.0 to Jaybird 3.1
-=========================================
+Upgrading from Jaybird 3 to Jaybird 4
+=====================================
 
 Maven
 -----
@@ -177,14 +168,14 @@ Upgrade the version of the dependency to @VERSION@. If you use native or
 embedded.
 
 For more detailed instructions, see also the information on Maven in
-[Getting Jaybird 3.1]. 
+[Getting Jaybird 4]. 
 
 Manual install
 --------------
 
 If you manage your dependencies manually, you need to do the following:
 
-1.  Replace the Jaybird library 3.0 with the 3.1
+1.  Replace the Jaybird 3 library with the Jaybird 4 version
     - `jaybird-3.0.x.jar` with `jaybird-@VERSION@.jar` 
     - `jaybird-full-3.0.x.jar` with `jaybird-full-@VERSION@.jar`
     
@@ -194,15 +185,15 @@ Gotcha's
 No known gotcha's at this time. If you find a problem: please report it on
 http://tracker.firebirdsql.org/brows/JDBC
 
-Jaybird 3.1.x changelog
+Jaybird 4.0.x changelog
 =======================
 
 ...
 
-What's new in Jaybird 3.1
-=========================
+What's new in Jaybird 4
+=======================
 
-For a full list of changes, see [Firebird tracker for Jaybird 3.1.0](http://tracker.firebirdsql.org/secure/ReleaseNote.jspa?projectId=10002&styleName=Text&version=10441).
+For a full list of changes, see [Firebird tracker for Jaybird 4](http://tracker.firebirdsql.org/secure/ReleaseNote.jspa?projectId=10002&styleName=Text&version=10441).
 
 Java support
 ------------
@@ -211,7 +202,7 @@ Java support
 
 The driver supports Java 7 for now.
 
-Jaybird 3.1 will very likely drop support for Java 7 (this decision is not final yet).
+Jaybird 4 will very likely drop support for Java 7 (this decision is not final yet).
 
 ### Java 8 ###
 
@@ -221,15 +212,11 @@ The driver supports Java 8.
 
 Jaybird currently does not formally support Java 9 (JDBC 4.3), although most of
 the JDBC 4.3 features have been implemented (in as far as they are supported by 
-Firebird). 
+Firebird).
 
-You can use the Java 8 driver under Java 9, contrary to earlier Jaybird 3 test 
-releases, it is no longer necessary to add the `java.xml.bind` module using 
-`--add-modules java.xml.bind`.
-
-Jaybird cannot be fully tested under Java 9 at this moment, as some of our tests
-fail due to recent changes, that prevent JMock (or specifically cglib) from
-dynamically generating classes.
+For compatibility with Java 9 modules, versions 2.2.14 and 3.0.3 introduced the 
+automatic module name `org.firebirdsql.jaybird`. This guarantees a stable module 
+name for Jaybird, and allows for future modularization of Jaybird.  
 
 Firebird support
 ----------------
@@ -237,8 +224,7 @@ Firebird support
 Support for Firebird 2.0 and 2.1 has been dropped. See [Firebird 2.0 and 2.1 no
 longer supported] for details.
 
-See also [Jaybird and Firebird 3](https://github.com/FirebirdSQL/jaybird/wiki/Jaybird-and-Firebird-3)
-on the wiki.
+Firebird versions 2.5, 3.0 and (upcoming) 4.0 are supported.
 
 JDBC RowId support
 ------------------
@@ -270,10 +256,56 @@ Support has also been added to `DatabaseMetaData`:
 Other database metadata (eg `getColumns`) will **not** list the `RDB$DB_KEY` 
 column, as it is a pseudo-column.
 
+Wire encryption support
+-----------------------
+
+Jaybird 4 adds support for the Firebird 3 ARC4 wire encryption. The encryption
+is configured using the connection property `wireCrypt`, with the following
+(case-insensitive) values:
+
+ -  `DEFAULT`: default (value used when `wireCrypt` is not specified; you'd 
+    normally not specify this explicitly)
+ -  `ENABLED`: enable, but not require, wire encryption
+ -  `REQUIRED`: require wire encryption (only if Firebird version is 3.0 or higher)
+ -  `DISABLED`: disable wire encryption 
+ 
+The default value acts as `ENABLED` for pure Java connections, for JNA (native) 
+connections this wil use the fbclient default (either `Enabled` or the 
+configured value of `WireCrypt` from a `firebird.conf` read by the native 
+library).
+
+Connection property `wireCrypt=REQUIRED` will **not** reject unencrypted 
+connections when connecting to Firebird 2.5 or lower. This behavior matches the 
+Firebird 3 client library behavior. The value will also be ignored when using
+native connections with a Firebird 2.5 client library.
+
+Using `wireCrypt=DISABLED` when Firebird 3 or higher uses setting 
+`WireCrypt = Required` (or vice versa) will yield error _"Incompatible wire 
+encryption levels requested on client and server"_ (error: 
+_isc_wirecrypt_incompatible / 335545064_).
+
+The same error is raised when connecting to Firebird 3 and higher with a legacy
+authentication user with connection property `wireCrypt=REQUIRED`. 
+
+Alternative wire encryption plugins are currently not supported, although we 
+made some preparations to support this. If you want to develop such a plugin, 
+contact us on the Firebird-Java mailing list so we can work out the details of 
+adding plugin support.
+
+**WARNING**
+
+The implementation comes with a number of caveats:
+ 
+ -   we cannot guarantee that the session key cannot be obtained by someone with 
+     access to your application or the machine hosting your application
+     (although that in itself would already imply a severe security breach)
+ -   the ARC4 encryption - the default provided by Firebird - is considered to 
+     be a weak (maybe even broken) cipher these days
+
 Potentially breaking changes
 ----------------------------
 
-Jaybird 3.1 contains a number of changes that might break existing applications.
+Jaybird 4 contains a number of changes that might break existing applications.
 
 See also [Compatibility changes] for details.
 
@@ -301,7 +333,7 @@ Known Issues
 Compatibility changes
 =====================
 
-Jaybird 3.1 introduces some changes in compatibility and announces future
+Jaybird 4 introduces some changes in compatibility and announces future
 breaking changes.
 
 **The list might not be complete, if you notice a difference in behavior that is
@@ -311,7 +343,7 @@ document, but it could just as well be an implementation bug.
 Firebird 2.0 and 2.1 no longer supported
 ----------------------------------------
 
-Support for Firebird 2.0 and 2.1 has been dropped in Jaybird 3.1. In general we
+Support for Firebird 2.0 and 2.1 has been dropped in Jaybird 4. In general we
 expect the driver to remain functional, but chances are certain metadata (eg 
 `DatabaseMetaData`) will break if we use features introduced in newer versions.
 
@@ -331,18 +363,47 @@ Unfortunately this does not apply to parameters, see also [JDBC RowId support].
 Due to the method of identification, real columns of type `char character set 
 octets` with the name `DB_KEY` will also be identified as a `ROWID` column.
 
+Removal of character mapping
+----------------------------
+
+Character mapping has been removed. Character mapping (also known as
+translation) was a feature that allowed to remap certain characters when 
+encoding/decoding strings. This could be used to address incompatibilities or
+incorrect mappings in the character set implementation of certain platforms 
+(apparently HPUX was affected).
+
+If you do need this feature, then you will need to use a custom encoding 
+implementation.
+
+Connection property `useTranslation` (and it's alias `mapping_path`) will no 
+longer be available. As part of this change the following parts of the 
+implementation have been removed (note that most are internal to Jaybird):
+
+-   `org.firebirdsql.encodings.CharacterTranslator` will be removed entirely
+-   `DatatypeCoder#encodeString(String value, String javaEncoding, String mappingPath)`
+-   `DatatypeCoder#encodeString(String value, Encoding encoding, String mappingPath)`
+-   `DatatypeCoder#decodeString(byte[] value, String javaEncoding, String mappingPath)`
+-   `DatatypeCoder#decodeString(byte[] value, Encoding encoding, String mappingPath)`
+-   `Encoding#withTranslation(CharacterTranslator translator)`
+-   `EncodingFactory#getEncoding(String encoding, String mappingPath)`
+-   `EncodingFactory#getEncoding(Charset charset, String mappingPath)`
+-   `FirebirdConnectionProperties#setUseTranslation(String translationPath)` (and on data sources)
+-   `FirebirdConnectionProperties#getUseTranslation` (and on data sources)
+-   `IEncodingFactory#getCharacterTranslator(String mappingPath)`
+    
 Removal of deprecated classes, packages and methods
 ---------------------------------------------------
 
-The following deprecated methods have been removed in Jaybird 3.1:
+The following connection properties (and equivalent data source properties) have
+been removed:
 
--   `CharacterTranslator.getMapping()`, use `CharacterTranslator.getMapping(char)`
-    instead.
-    
-    Complete removal of the character translation support is also being
-    considered, as similar effects can be achieved by a custom encoding 
-    implementation.
-    
+-   `useTranslation`: See previous item
+-   `octetsAsBytes`: Since Jaybird 3 octets is always handled as `BINARY`
+-   `noResultSetTracking`: Option does nothing since Jaybird 3
+-   `paranoia_mode`: Option does nothing since Jaybird 2.2 (maybe earlier)
+
+The following deprecated methods have been removed in Jaybird 4:
+
 -   `GDSHelper.iscVaxInteger(byte[] buffer, int pos, int length)` use
     `VaxEncoding.iscVaxInteger(byte[] buffer, int startPosition, int length)`
     instead.
@@ -353,35 +414,45 @@ The following deprecated methods have been removed in Jaybird 3.1:
     `MaintenanceManager.commitTransaction(long transactionId)` instead.
 -   `MaintenanceManager.rollbackTransaction(int transactionId)`, use
     `MaintenanceManager.rollbackTransaction(long transactionId)` instead.
+-   `ServiceRequestBufferImp#ServiceRequestBufferImp()`
+-   `ServiceRequestBufferImp#ServiceRequestBufferImp(int taskIdentifier)`
+-   `FBBlob#copyCharacterStream(Reader reader, long length, String encoding)`
+-   `FBBlob#copyCharacterStream(Reader reader, String encoding)` 
+-   See also [Removal of character mapping] for a number of removed methods
+    
+The following classes have been removed in Jaybird 4:
+
+-   `org.firebirdsql.gds.ExceptionListener`, use `org.firebirdsql.gds.ng.listeners.ExceptionListener`
+-   `org.firebirdsql.pool.FBSimpleDataSource`, use `org.firebirdsql.ds.FBSimpleDataSource` 
 
 ### Removal of deprecated constants ###
 
-The following constants have been removed in Jaybird 3.1:
+The following constants have been removed in Jaybird 4:
 
 -   All `SQL_STATE_*` constants in `FBSQLException`,
     `FBResourceTransactionException`, `FBResourceException`, and
     `FBDriverNotCapableException` will be removed. Use equivalent constants in
     `org.firebirdsql.jdbc.SQLStateConstants`.
 
-Breaking changes for Jaybird 3.1
---------------------------------
-
-*TODO: Section to be removed*
-
-With Jaybird 3.1 the following breaking changes will be introduced.
-
-### Dropping support for Java 7 ###
-
-Jaybird 3.1 will very likely drop support for Java 7 (this decision is not final yet).
-
 Breaking changes for Jaybird 4
 ------------------------------
 
+*TODO: Section to be removed*
+
 With Jaybird 4 the following breaking changes will be introduced.
+
+### Dropping support for Java 7 ###
+
+Jaybird 4 will very likely drop support for Java 7 (this decision is not final yet).
+
+Breaking changes for Jaybird 5
+------------------------------
+
+With Jaybird 5 the following breaking changes will be introduced.
 
 ### Removal of deprecated methods ###
 
-The following methods will be removed in Jaybird 4:
+The following methods will be removed in Jaybird 5:
 
 -   `MaintenanceManager.listLimboTransactions()`, use
     `MaintenanceManager.limboTransactionsAsList()` or 

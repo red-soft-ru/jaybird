@@ -18,19 +18,26 @@
  */
 package org.firebirdsql.jdbc;
 
-import org.firebirdsql.common.FBJUnit4TestBase;
 import org.firebirdsql.common.FBTestProperties;
+import org.firebirdsql.common.rules.DatabaseUserRule;
+import org.firebirdsql.common.rules.UsesDatabase;
 import org.firebirdsql.gds.ISCConstants;
+import org.firebirdsql.gds.JaybirdErrorCodes;
 import org.firebirdsql.gds.TransactionParameterBuffer;
+import org.firebirdsql.gds.impl.GDSServerVersion;
 import org.firebirdsql.gds.impl.jni.NativeGDSFactoryPlugin;
 import org.firebirdsql.gds.impl.oo.OOGDSFactoryPlugin;
 import org.firebirdsql.gds.impl.wire.WireGDSFactoryPlugin;
 import org.firebirdsql.gds.ng.FbDatabase;
 import org.firebirdsql.gds.ng.IConnectionProperties;
+import org.firebirdsql.gds.ng.WireCrypt;
+import org.firebirdsql.gds.ng.wire.crypt.FBSQLEncryptException;
 import org.firebirdsql.jca.FBManagedConnection;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.junit.rules.RuleChain;
+import org.junit.rules.TestRule;
 
 import java.sql.*;
 import java.util.Arrays;
@@ -39,12 +46,13 @@ import java.util.Properties;
 import static org.firebirdsql.common.DdlHelper.executeCreateTable;
 import static org.firebirdsql.common.FBTestProperties.*;
 import static org.firebirdsql.common.matchers.SQLExceptionMatchers.errorCodeEquals;
+import static org.firebirdsql.common.matchers.SQLExceptionMatchers.fbMessageStartsWith;
 import static org.firebirdsql.util.FirebirdSupportInfo.supportInfoFor;
+import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.Matchers.isIn;
 import static org.junit.Assert.*;
-import static org.junit.Assume.assumeThat;
-import static org.junit.Assume.assumeTrue;
+import static org.junit.Assume.*;
 
 /**
  * Test cases for FirebirdConnection interface.
@@ -52,10 +60,17 @@ import static org.junit.Assume.assumeTrue;
  * @author <a href="mailto:rrokytskyy@users.sourceforge.net">Roman Rokytskyy</a>
  * @author <a href="mailto:mrotteveel@users.sourceforge.net">Mark Rotteveel</a>
  */
-public class TestFBConnection extends FBJUnit4TestBase {
+public class FBConnectionTest {
+
+    private final ExpectedException expectedException = ExpectedException.none();
+    private final DatabaseUserRule databaseUserRule = DatabaseUserRule.withDatabaseUser();
+    private final UsesDatabase usesDatabase = UsesDatabase.usesDatabase();
 
     @Rule
-    public final ExpectedException expectedException = ExpectedException.none();
+    public final TestRule ruleChain = RuleChain
+            .outerRule(usesDatabase)
+            .around(databaseUserRule)
+            .around(expectedException);
 
     //@formatter:off
     private static final String CREATE_TABLE =
@@ -315,8 +330,6 @@ public class TestFBConnection extends FBJUnit4TestBase {
     /**
      * Test if not explicitly specifying a connection character set results in a warning on the connection when
      * system property {@code org.firebirdsql.jdbc.defaultConnectionEncoding} has been set.
-     *
-     * @see #testNoCharacterSetExceptionWithoutDefaultConnectionEncoding()
      */
     @Test
     public void testNoCharacterSetWarningWithDefaultConnectionEncoding() throws Exception {
@@ -343,13 +356,40 @@ public class TestFBConnection extends FBJUnit4TestBase {
     }
 
     /**
-     * Test if not explicitly specifying a connection character set results in an exception on the connection when
-     * system property {@code org.firebirdsql.jdbc.defaultConnectionEncoding} has not been set.
-     *
-     * @see #testNoCharacterSetWarningWithDefaultConnectionEncoding()
+     * Test if not explicitly specifying a connection character set does not result in an exception on the connection
+     * and sets encoding to NONE when system properties {@code org.firebirdsql.jdbc.defaultConnectionEncoding} and
+     * {@code org.firebirdsql.jdbc.requireConnectionEncoding} have not been set.
      */
     @Test
-    public void testNoCharacterSetExceptionWithoutDefaultConnectionEncoding() throws Exception {
+    public void testNoCharacterSetWithoutDefaultConnectionEncodingDefaultsToNONEIfEncodingNotRequired() throws Exception {
+        String defaultConnectionEncoding = System.getProperty("org.firebirdsql.jdbc.defaultConnectionEncoding");
+        assumeThat("Test only works if org.firebirdsql.jdbc.defaultConnectionEncoding has not been specified",
+                defaultConnectionEncoding, nullValue());
+        String requireConnectionEncoding = System.getProperty("org.firebirdsql.jdbc.requireConnectionEncoding");
+        assumeThat("Test only works if org.firebirdsql.jdbc.requireConnectionEncoding has not been specified",
+                requireConnectionEncoding, nullValue());
+        Properties props = getDefaultPropertiesForConnection();
+        props.remove("lc_ctype");
+
+        //noinspection EmptyTryBlock
+        try (Connection connection = DriverManager.getConnection(getUrl(), props)) {
+            SQLWarning warnings = connection.getWarnings();
+            assertNotNull("Expected a warning for not specifying connection character set", warnings);
+            assertEquals("Unexpected warning message for not specifying connection character set",
+                    FBManagedConnection.WARNING_NO_CHARSET + "NONE", warnings.getMessage());
+            IConnectionProperties connectionProperties =
+                    connection.unwrap(FirebirdConnection.class).getFbDatabase().getConnectionProperties();
+            assertEquals("Unexpected connection encoding", "NONE", connectionProperties.getEncoding());
+        }
+    }
+
+    /**
+     * Test if not explicitly specifying a connection character set results in an exception on the connection when
+     * system property {@code org.firebirdsql.jdbc.defaultConnectionEncoding} has not been set and
+     * {@code org.firebirdsql.jdbc.requireConnectionEncoding} has been set to {@code true}
+     */
+    @Test
+    public void testNoCharacterSetExceptionWithoutDefaultConnectionEncodingAndEncodingRequired() throws Exception {
         String defaultConnectionEncoding = System.getProperty("org.firebirdsql.jdbc.defaultConnectionEncoding");
         assumeThat("Test only works if org.firebirdsql.jdbc.defaultConnectionEncoding has not been specified",
                 defaultConnectionEncoding, nullValue());
@@ -358,7 +398,15 @@ public class TestFBConnection extends FBJUnit4TestBase {
         expectedException.expect(SQLNonTransientConnectionException.class);
         expectedException.expectMessage(FBManagedConnection.ERROR_NO_CHARSET);
 
-        DriverManager.getConnection(getUrl(), props);
+        try {
+            System.setProperty("org.firebirdsql.jdbc.requireConnectionEncoding", "true");
+            //noinspection EmptyTryBlock
+            try (Connection connection = DriverManager.getConnection(getUrl(), props)) {
+                // Using try-with-resources just in case connection is created
+            }
+        } finally {
+            System.clearProperty("org.firebirdsql.jdbc.requireConnectionEncoding");
+        }
     }
 
     /**
@@ -496,6 +544,169 @@ public class TestFBConnection extends FBJUnit4TestBase {
         assumeTrue("Test only works for native", NativeGDSFactoryPlugin.NATIVE_TYPE_NAME.equals(FBTestProperties.GDS_TYPE));
         try (Connection connection = DriverManager.getConnection("jdbc:firebirdsql:native://[::1]/" + getDatabasePath() + "?charSet=utf-8", DB_USER, DB_PASSWORD)) {
             assertTrue(connection.isValid(0));
+        }
+    }
+
+    @Test
+    public void testWireCrypt_DISABLED_FB2_5_and_earlier() throws Exception {
+        testWireCrypt_FB2_5_and_earlier(WireCrypt.DISABLED);
+    }
+
+    @Test
+    public void testWireCrypt_ENABLED_FB2_5_and_earlier() throws Exception {
+        testWireCrypt_FB2_5_and_earlier(WireCrypt.ENABLED);
+    }
+
+    @Test
+    public void testWireCrypt_DEFAULT_FB2_5_and_earlier() throws Exception {
+        testWireCrypt_FB2_5_and_earlier(WireCrypt.DEFAULT);
+    }
+
+    @Test
+    public void testWireCrypt_REQUIRED_FB2_5_and_earlier() throws Exception {
+        testWireCrypt_FB2_5_and_earlier(WireCrypt.REQUIRED);
+    }
+
+    private void testWireCrypt_FB2_5_and_earlier(WireCrypt wireCrypt) throws Exception {
+        assumeFalse("Test for Firebird versions without wire encryption support",
+                getDefaultSupportInfo().supportsWireEncryption());
+        Properties props = getDefaultPropertiesForConnection();
+        props.setProperty("wireCrypt", wireCrypt.name());
+        try (Connection connection = DriverManager.getConnection(getUrl(), props)) {
+            assertTrue(connection.isValid(0));
+        }
+    }
+
+    @Test
+    public void testWireCrypt_DISABLED_FB3_0_and_later() throws Exception {
+        testWireCrypt_FB3_0_and_later(WireCrypt.DISABLED);
+    }
+
+    @Test
+    public void testWireCrypt_ENABLED_FB3_0_and_later() throws Exception {
+        testWireCrypt_FB3_0_and_later(WireCrypt.ENABLED);
+    }
+
+    @Test
+    public void testWireCrypt_DEFAULT_FB3_0_and_later() throws Exception {
+        testWireCrypt_FB3_0_and_later(WireCrypt.DEFAULT);
+    }
+
+    @Test
+    public void testWireCrypt_REQUIRED_FB3_0_and_later() throws Exception {
+        testWireCrypt_FB3_0_and_later(WireCrypt.REQUIRED);
+    }
+
+    private void testWireCrypt_FB3_0_and_later(WireCrypt wireCrypt) throws Exception {
+        assumeTrue("Test for Firebird versions with wire encryption support",
+                getDefaultSupportInfo().supportsWireEncryption());
+        Properties props = getDefaultPropertiesForConnection();
+        props.setProperty("wireCrypt", wireCrypt.name());
+        try (Connection connection = DriverManager.getConnection(getUrl(), props)) {
+            assertTrue(connection.isValid(0));
+            GDSServerVersion serverVersion =
+                    connection.unwrap(FirebirdConnection.class).getFbDatabase().getServerVersion();
+            boolean encryptionUsed = serverVersion.isWireEncryptionUsed();
+            switch (wireCrypt) {
+            case DEFAULT:
+            case ENABLED:
+                if (!encryptionUsed) {
+                    System.err.println("WARNING: wire encryption level " + wireCrypt + " requested, but no encryption "
+                            + "used. Consider re-running the test with a WireCrypt=Enabled in firebird.conf");
+                }
+                // intentional fall-through
+            case REQUIRED:
+                assertTrue("Expected wire encryption to be used for wireCrypt=" + wireCrypt, encryptionUsed);
+                break;
+            case DISABLED:
+                assertFalse("Expected wire encryption not to be used for wireCrypt=" + wireCrypt, encryptionUsed);
+            }
+        } catch (SQLException e) {
+            if (e.getErrorCode() == ISCConstants.isc_wirecrypt_incompatible) {
+                System.err.println("WARNING: wire encryption level " + wireCrypt + " requested, but rejected by server."
+                        + " Consider re-running the test with a WireCrypt=Enabled in firebird.conf");
+            }
+        }
+    }
+
+    @Test
+    public void legacyAuthUserWithWireCrypt_ENABLED_canCreateConnection() throws Exception {
+        assumeTrue("Test for Firebird versions with wire encryption support",
+                getDefaultSupportInfo().supportsWireEncryption());
+        final String user = "legacy_auth";
+        final String password = "leg_auth";
+        databaseUserRule.createUser(user, password, "Legacy_UserManager");
+        Properties props = getDefaultPropertiesForConnection();
+        props.setProperty("user", user);
+        props.setProperty("password", password);
+        props.setProperty("wireCrypt", "ENABLED");
+
+        try (Connection connection = DriverManager.getConnection(getUrl(), props)) {
+            assertTrue(connection.isValid(0));
+            GDSServerVersion serverVersion =
+                    connection.unwrap(FirebirdConnection.class).getFbDatabase().getServerVersion();
+            assertFalse("Expected wire encryption not to be used when connecting with legacy auth user",
+                    serverVersion.isWireEncryptionUsed());
+        }
+    }
+
+    @Test
+    public void legacyAuthUserWithWireCrypt_REQUIRED_hasConnectionRejected() throws Exception {
+        assumeTrue("Test for Firebird versions with wire encryption support",
+                getDefaultSupportInfo().supportsWireEncryption());
+        final String user = "legacy_auth";
+        final String password = "leg_auth";
+        databaseUserRule.createUser(user, password, "Legacy_UserManager");
+        Properties props = getDefaultPropertiesForConnection();
+        props.setProperty("user", user);
+        props.setProperty("password", password);
+        props.setProperty("wireCrypt", "REQUIRED");
+
+        expectedException.expect(FBSQLEncryptException.class);
+        expectedException.expect(errorCodeEquals(ISCConstants.isc_wirecrypt_incompatible));
+
+        DriverManager.getConnection(getUrl(), props);
+    }
+
+    @Test
+    public void invalidValueForWireCrypt() throws Exception {
+        Properties props = getDefaultPropertiesForConnection();
+        props.setProperty("wireCrypt", "NOT_A_VALID_VALUE");
+
+        expectedException.expect(SQLException.class);
+        expectedException.expect(allOf(
+                errorCodeEquals(JaybirdErrorCodes.jb_invalidConnectionPropertyValue),
+                fbMessageStartsWith(JaybirdErrorCodes.jb_invalidConnectionPropertyValue, "NOT_A_VALID_VALUE", "wireCrypt")));
+
+        DriverManager.getConnection(getUrl(), props);
+    }
+
+    @Test
+    public void connectingWithUnknownFirebirdCharacterSetName() throws Exception {
+        Properties props = getDefaultPropertiesForConnection();
+        props.setProperty("lc_ctype", "DOES_NOT_EXIST");
+
+        expectedException.expect(SQLNonTransientConnectionException.class);
+        expectedException.expectMessage("No valid encoding definition for Firebird encoding DOES_NOT_EXIST and/or Java charset null");
+
+        //noinspection EmptyTryBlock
+        try (Connection connection = DriverManager.getConnection(getUrl(), props)) {
+            // Using try-with-resources just in case connection is created
+        }
+    }
+
+    @Test
+    public void connectingWithUnknownJavaCharacterSetName() throws Exception {
+        Properties props = getDefaultPropertiesForConnection();
+        props.remove("lc_ctype");
+        props.setProperty("charSet", "DOES_NOT_EXIST");
+
+        expectedException.expect(SQLNonTransientConnectionException.class);
+        expectedException.expectMessage("No valid encoding definition for Firebird encoding null and/or Java charset DOES_NOT_EXIST");
+
+        //noinspection EmptyTryBlock
+        try (Connection connection = DriverManager.getConnection(getUrl(), props)) {
+            // Using try-with-resources just in case connection is created
         }
     }
 }

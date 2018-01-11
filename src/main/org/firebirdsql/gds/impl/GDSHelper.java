@@ -41,16 +41,10 @@ public final class GDSHelper implements Synchronizable {
     private final Object syncObject;
     private FbTransaction transaction;
 
-    private boolean registerResultSets;
-
     /**
      * Create instance of this class.
      */
     public GDSHelper(FbDatabase database) {
-        // TODO Make explicit property
-        this.registerResultSets = !database.getConnectionProperties().getExtraDatabaseParameters()
-                .hasArgument(DatabaseParameterBufferExtension.NO_RESULT_SET_TRACKING);
-
         this.database = database;
         syncObject = database.getSynchronizationObject();
     }
@@ -155,12 +149,16 @@ public final class GDSHelper implements Synchronizable {
      * @throws SQLException
      *         if a Firebird-specific database error occurs
      */
-    public FbBlob createBlob(boolean segmented) throws SQLException {
+    public FbBlob createBlob(boolean segmented, boolean temporary) throws SQLException {
         BlobParameterBuffer blobParameterBuffer = database.createBlobParameterBuffer();
 
-        blobParameterBuffer.addArgument(BlobParameterBuffer.TYPE,
-                segmented ? BlobParameterBuffer.TYPE_SEGMENTED
-                        : BlobParameterBuffer.TYPE_STREAM);
+        int blobType = segmented ? BlobParameterBuffer.TYPE_SEGMENTED
+                : BlobParameterBuffer.TYPE_STREAM;
+
+        if (temporary)
+            blobType |= BlobParameterBuffer.TYPE_TEMPORARY;
+
+        blobParameterBuffer.addArgument(BlobParameterBuffer.TYPE, blobType);
 
         FbBlob blob = database.createBlobForOutput(getCurrentTransaction(), blobParameterBuffer);
         blob.open();
@@ -282,12 +280,6 @@ public final class GDSHelper implements Synchronizable {
 
     public String getJavaEncoding() {
         return database.getEncodingFactory().getDefaultEncodingDefinition().getJavaEncodingName();
-    }
-
-    public String getMappingPath() {
-        // TODO Add as explicit property on IConnectionProperties
-        DatabaseParameterBuffer dpb = database.getConnectionProperties().getExtraDatabaseParameters();
-        return dpb.getArgumentAsString(DatabaseParameterBufferExtension.MAPPING_PATH);
     }
 
     @Override

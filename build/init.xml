@@ -39,7 +39,7 @@
 
         <!-- Java 9 specific properties -->
         <condition property="jdk9" value="true">
-            <equals arg1="${ant.java.version}" arg2="1.9"/>
+            <equals arg1="${ant.java.version}" arg2="9"/>
         </condition>
         <condition property="maven.jdkversion" value="jdk9">
             <istrue value="${jdk9}"/>
@@ -163,7 +163,7 @@
         <property name="archive.maven.simple" value="${maven.artifactId}-${version.maven}.jar"/>
         <property name="archive.maven.sources" value="${maven.artifactId}-${version.maven}-sources.jar"/>
         <property name="archive.maven.javadoc" value="${maven.artifactId}-${version.maven}-javadoc.jar"/>
-        <property name="maven.pom.template" value="${module.root}/build/maven-release/jaybird-example.pom"/>
+        <property name="maven.pom.template" value="${module.root}/build/maven-release/jaybird-template.pom"/>
         <property name="maven.pom.target" value="${maven.artifactId}-${version.maven}.pom"/>
 
         <property name="junit.timeout" value="600000"/>
@@ -210,7 +210,7 @@
             <path refid="javac.j2ee.classpath"/>
             <pathelement location="${build.j2ee}"/>
             <pathelement location="${module.thirdparty}/antlr-runtime-4.7.jar"/>
-            <pathelement location="${module.thirdparty}/jna-4.2.2.jar"/>
+            <pathelement location="${module.thirdparty}/jna-4.5.0.jar"/>
         </path>
 
         <path id="javac.test.classpath">

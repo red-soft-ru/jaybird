@@ -47,7 +47,7 @@ public final class FBBlobOutputStream extends OutputStream implements FirebirdBl
         synchronized (owner.getSynchronizationObject()) {
             DatabaseParameterBuffer dpb = owner.getGdsHelper().getDatabaseParameterBuffer();
             boolean useStreamBlobs = dpb.hasArgument(DatabaseParameterBufferExtension.USE_STREAM_BLOBS);
-            blobHandle = owner.getGdsHelper().createBlob(!useStreamBlobs);
+            blobHandle = owner.getGdsHelper().createBlob(!useStreamBlobs, owner.isTemporary());
         }
 
         if (owner.isNew()) {

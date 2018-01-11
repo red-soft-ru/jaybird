@@ -46,8 +46,7 @@ class FBBinaryField extends FBField {
     @Override
     public String getString() throws SQLException {
         if (isNull()) return null;
-        return getDatatypeCoder().decodeString(getFieldData(),
-                getDatatypeCoder().getEncodingFactory().getDefaultEncoding(), mappingPath);
+        return getDatatypeCoder().decodeString(getFieldData());
     }
 
     @Override
@@ -57,8 +56,7 @@ class FBBinaryField extends FBField {
             return;
         }
 
-        setBytes(getDatatypeCoder().encodeString(value, getDatatypeCoder().getEncodingFactory().getDefaultEncoding(),
-                mappingPath));
+        setBytes(getDatatypeCoder().encodeString(value));
     }
 
     @Override

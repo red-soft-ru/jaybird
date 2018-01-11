@@ -19,14 +19,29 @@
 package org.firebirdsql.gds.ng;
 
 import org.firebirdsql.encodings.Encoding;
+import org.firebirdsql.encodings.EncodingDefinition;
 import org.firebirdsql.encodings.IEncodingFactory;
+import org.firebirdsql.gds.JaybirdSystemProperties;
+import org.firebirdsql.logging.Logger;
+import org.firebirdsql.logging.LoggerFactory;
 
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.Reader;
+import java.io.Writer;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
+import static java.util.Objects.hash;
+import static java.util.Objects.requireNonNull;
 
 /**
  * The default datatype coder.
@@ -43,13 +58,41 @@ import java.util.GregorianCalendar;
  */
 public class DefaultDatatypeCoder implements DatatypeCoder {
 
-    private final IEncodingFactory encodingFactory;
+    private static final Logger logger = LoggerFactory.getLogger(DefaultDatatypeCoder.class);
+    private static final int DEFAULT_DATATYPE_CODER_CACHE_SIZE = 10;
+    private static final int DATATYPE_CODER_CACHE_SIZE = Math.max(1,
+            JaybirdSystemProperties.getDatatypeCoderCacheSize(DEFAULT_DATATYPE_CODER_CACHE_SIZE));
+    private static final int LOG_CACHE_MAINTENANCE_WARNING = 10;
 
+    private final IEncodingFactory encodingFactory;
+    private final Encoding encoding;
+
+    private final ConcurrentMap<EncodingDefinition, DatatypeCoder> encodingSpecificDatatypeCoders =
+            new ConcurrentHashMap<>(DATATYPE_CODER_CACHE_SIZE);
+    private final Lock cacheMaintenanceLock = new ReentrantLock();
+    private int cacheMaintenanceCount = 0;
+
+    /**
+     * Returns an instance of {@code DefaultDatatypeCoder} for an encoding factory.
+     *
+     * @param encodingFactory Encoding factory
+     * @return Datatype coder, this might be a cached instance
+     */
+    public static DefaultDatatypeCoder forEncodingFactory(IEncodingFactory encodingFactory) {
+        return encodingFactory.getOrCreateDatatypeCoder(DefaultDatatypeCoder.class);
+    }
+
+    /**
+     * Creates a default datatype coder for the wire protocol.
+     * <p>
+     * In almost all cases, it is better to use {@link #forEncodingFactory(IEncodingFactory)}.
+     * </p>
+     *
+     * @param encodingFactory Encoding factory
+     */
     public DefaultDatatypeCoder(IEncodingFactory encodingFactory) {
-        if (encodingFactory == null) {
-            throw new NullPointerException("encodingFactory should not be null");
-        }
-        this.encodingFactory = encodingFactory;
+        this.encodingFactory = requireNonNull(encodingFactory, "encodingFactory");
+        encoding = encodingFactory.getDefaultEncoding();
     }
 
     @Override
@@ -147,34 +190,33 @@ public class DefaultDatatypeCoder implements DatatypeCoder {
     }
 
     @Override
-    public byte[] encodeString(String value, String javaEncoding, String mappingPath) throws SQLException {
-        // TODO mappingPath (or translator) might need to be property of DefaultDataTypeCoder itself, and not handed over at each invocation
-        return encodingFactory
-                .getEncodingForCharsetAlias(javaEncoding)
-                .withTranslation(encodingFactory.getCharacterTranslator(mappingPath))
-                .encodeToCharset(value);
+    public byte[] encodeString(String value, Encoding encoding) throws SQLException {
+        return encoding.encodeToCharset(value);
     }
 
     @Override
-    public byte[] encodeString(String value, Encoding encoding, String mappingPath) throws SQLException {
-        // TODO mappingPath (or translator) might need to be property of DefaultDataTypeCoder itself, and not handed over at each invocation
-        return encoding
-                .withTranslation(encodingFactory.getCharacterTranslator(mappingPath))
-                .encodeToCharset(value);
+    public final byte[] encodeString(String value) {
+        return encoding.encodeToCharset(value);
     }
 
     @Override
-    public String decodeString(byte[] value, String javaEncoding, String mappingPath) throws SQLException {
-        // TODO mappingPath (or translator) might need to be property of DefaultDataTypeCoder itself, and not handed over at each invocation
-        return decodeString(value, encodingFactory.getEncodingForCharsetAlias(javaEncoding), mappingPath);
+    public final Writer createWriter(OutputStream outputStream) {
+        return encoding.createWriter(outputStream);
     }
 
     @Override
-    public String decodeString(byte[] value, Encoding encoding, String mappingPath) throws SQLException {
-        // TODO mappingPath (or translator) might need to be property of DefaultDataTypeCoder itself, and not handed over at each invocation
-        return encoding
-                .withTranslation(encodingFactory.getCharacterTranslator(mappingPath))
-                .decodeFromCharset(value);
+    public String decodeString(byte[] value, Encoding encoding) throws SQLException {
+        return encoding.decodeFromCharset(value);
+    }
+
+    @Override
+    public final String decodeString(byte[] value) {
+        return encoding.decodeFromCharset(value);
+    }
+
+    @Override
+    public final Reader createReader(InputStream inputStream) {
+        return encoding.createReader(inputStream);
     }
 
     // times,dates...
@@ -397,8 +439,93 @@ public class DefaultDatatypeCoder implements DatatypeCoder {
     }
 
     @Override
-    public IEncodingFactory getEncodingFactory() {
+    public final IEncodingFactory getEncodingFactory() {
         return encodingFactory;
+    }
+
+    @Override
+    public final EncodingDefinition getEncodingDefinition() {
+        return encodingFactory.getDefaultEncodingDefinition();
+    }
+
+    @Override
+    public final Encoding getEncoding() {
+        return encoding;
+    }
+
+    @Override
+    public final DatatypeCoder forEncodingDefinition(final EncodingDefinition encodingDefinition) {
+        if (getEncodingDefinition().equals(encodingDefinition)) {
+            return this;
+        }
+        return getOrCreateForEncodingDefinition(encodingDefinition);
+    }
+
+    private DatatypeCoder getOrCreateForEncodingDefinition(final EncodingDefinition encodingDefinition) {
+        final DatatypeCoder coder = encodingSpecificDatatypeCoders.get(encodingDefinition);
+        if (coder != null) {
+            // existing instance in cache
+            return coder;
+        }
+        return createForEncodingDefinition(encodingDefinition);
+    }
+
+    private DatatypeCoder createForEncodingDefinition(final EncodingDefinition encodingDefinition) {
+        final DatatypeCoder newCoder = new EncodingSpecificDatatypeCoder(this, encodingDefinition);
+        final DatatypeCoder coder = encodingSpecificDatatypeCoders.putIfAbsent(encodingDefinition, newCoder);
+        if (coder != null) {
+            // Other thread already created and added an instance; return that
+            return coder;
+        }
+        try {
+            return newCoder;
+        } finally {
+            if (encodingSpecificDatatypeCoders.size() > DATATYPE_CODER_CACHE_SIZE) {
+                performCacheMaintenance();
+            }
+        }
+    }
+
+    private void performCacheMaintenance() {
+        if (cacheMaintenanceLock.tryLock()) {
+            try {
+                // Simple but brute force maintenance: clear entire cache
+                encodingSpecificDatatypeCoders.clear();
+                cacheMaintenanceCount++;
+            } finally {
+                cacheMaintenanceLock.unlock();
+            }
+
+            if (cacheMaintenanceCount % LOG_CACHE_MAINTENANCE_WARNING == 1 && logger.isWarnEnabled()) {
+                logger.warn("Cleared encoding specific datatype coder cache (current reset count: "
+                        + cacheMaintenanceCount + "). Consider setting system property "
+                        + JaybirdSystemProperties.DATATYPE_CODER_CACHE_SIZE
+                        + " to a value higher than the current maximum size of " + DATATYPE_CODER_CACHE_SIZE);
+            }
+        }
+    }
+
+    @Override
+    public final boolean equals(Object o) {
+        if (!(o instanceof DatatypeCoder)) {
+            return false;
+        }
+        if (o == this) {
+            return true;
+        }
+        DatatypeCoder other = (DatatypeCoder) o;
+        if (o instanceof EncodingSpecificDatatypeCoder) {
+            return getEncodingDefinition().equals(other.getEncodingDefinition())
+                    && getClass() == ((EncodingSpecificDatatypeCoder) other).unwrap().getClass();
+        } else {
+            return getEncodingDefinition().equals(other.getEncodingDefinition())
+                    && getClass() == other.getClass();
+        }
+    }
+
+    @Override
+    public final int hashCode() {
+        return hash(getClass(), getEncodingDefinition());
     }
 
     private datetime fromLongBytes(byte[] byte_long) {
