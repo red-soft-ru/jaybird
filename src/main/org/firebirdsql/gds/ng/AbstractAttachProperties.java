@@ -38,6 +38,7 @@ public abstract class AbstractAttachProperties<T extends IAttachProperties> impl
     private int socketBufferSize = IAttachProperties.DEFAULT_SOCKET_BUFFER_SIZE;
     private int soTimeout = IAttachProperties.DEFAULT_SO_TIMEOUT;
     private int connectTimeout = IAttachProperties.DEFAULT_CONNECT_TIMEOUT;
+    private boolean useGSSAuth = IAttachProperties.DEFAULT_GSS_AUTH;
     private WireCrypt wireCrypt = WireCrypt.DEFAULT;
 
     /**
@@ -61,6 +62,7 @@ public abstract class AbstractAttachProperties<T extends IAttachProperties> impl
             socketBufferSize = src.getSocketBufferSize();
             soTimeout = src.getSoTimeout();
             connectTimeout = src.getConnectTimeout();
+            useGSSAuth = src.isUseGSSAuth();
             wireCrypt = src.getWireCrypt();
         }
     }
@@ -180,6 +182,18 @@ public abstract class AbstractAttachProperties<T extends IAttachProperties> impl
         this.connectTimeout = connectTimeout;
         dirtied();
     }
+
+    @Override
+    public boolean isUseGSSAuth() {
+        return useGSSAuth;
+    }
+
+    @Override
+    public void setUseGSSAuth(boolean useGSSAuth) {
+        this.useGSSAuth = useGSSAuth;
+        dirtied();
+    }
+
 
     @Override
     public WireCrypt getWireCrypt() {

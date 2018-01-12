@@ -36,6 +36,7 @@ public interface IAttachProperties<T extends IAttachProperties> {
     int DEFAULT_SOCKET_BUFFER_SIZE = -1;
     int DEFAULT_SO_TIMEOUT = -1;
     int DEFAULT_CONNECT_TIMEOUT = -1;
+    boolean DEFAULT_GSS_AUTH = false;
 
     /**
      * @return The name of the object to attach to (either a database or service name).
@@ -232,6 +233,10 @@ public interface IAttachProperties<T extends IAttachProperties> {
      *         specific timeout)
      */
     void setConnectTimeout(int connectTimeout);
+
+    boolean isUseGSSAuth();
+
+    void setUseGSSAuth(boolean useGSSAuth);
 
     /**
      * Get the wire encryption level.

@@ -18,6 +18,7 @@
  */
 package org.firebirdsql.gds.ng.wire.version10;
 
+import com.sun.security.jgss.GSSUtil;
 import org.firebirdsql.encodings.Encoding;
 import org.firebirdsql.gds.*;
 import org.firebirdsql.gds.impl.DatabaseParameterBufferExtension;
@@ -28,13 +29,22 @@ import org.firebirdsql.gds.ng.FbTransaction;
 import org.firebirdsql.gds.ng.TransactionState;
 import org.firebirdsql.gds.ng.fields.BlrCalculator;
 import org.firebirdsql.gds.ng.wire.*;
+import org.firebirdsql.gds.ng.wire.auth.GSSClient;
 import org.firebirdsql.jdbc.SQLStateConstants;
 import org.firebirdsql.logging.Logger;
 import org.firebirdsql.logging.LoggerFactory;
+import org.ietf.jgss.*;
+import sun.misc.BASE64Encoder;
+import sun.security.jgss.GSSCredentialImpl;
+import sun.security.jgss.GSSToken;
+import sun.security.jgss.spi.GSSNameSpi;
 
+import javax.security.auth.Subject;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.nio.charset.Charset;
+import java.security.PrivilegedAction;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.sql.SQLNonTransientConnectionException;
@@ -107,6 +117,8 @@ public class V10Database extends AbstractFbWireDatabase implements FbWireDatabas
                     throw new FbExceptionBuilder().exception(ISCConstants.isc_net_write_err).cause(e).toSQLException();
                 }
                 try {
+                    if (dpb.hasArgument(ISCConstants.isc_dpb_gss))
+                        gssReceiveResponse();
                     authReceiveResponse(null);
                 } catch (IOException e) {
                     throw new FbExceptionBuilder().exception(ISCConstants.isc_net_read_err).cause(e).toSQLException();
@@ -569,5 +581,38 @@ public class V10Database extends AbstractFbWireDatabase implements FbWireDatabas
                 processAttachOrCreateResponse(response);
             }
         });
+    }
+
+    final void gssReceiveResponse() throws IOException, SQLException {
+
+        Response response = wireOperations.readResponse(null);
+        if (response instanceof CryptResponse) {
+            CryptResponse cryptResponse = (CryptResponse) response;
+
+            GSSClient client = new GSSClient(cryptResponse.getData());
+
+            byte[] token = new byte[0];
+            try {
+                token = client.getToken();
+            } catch (GSSException e) {
+                throw new SQLException(e);
+            }
+
+            final XdrOutputStream xdrOut = getXdrOut();
+
+            // send to server token
+            xdrOut.writeInt(op_crypt);
+            xdrOut.writeBuffer(token);
+
+            xdrOut.flush();
+        } else {
+            GenericResponse genericResponse = (GenericResponse) response;
+            SQLException exception = genericResponse.getException();
+            if (exception != null) {
+                throw exception;
+            } else {
+                throw new FbExceptionBuilder().exception(ISCConstants.isc_login).toSQLException();
+            }
+        }
     }
 }

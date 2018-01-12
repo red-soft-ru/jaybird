@@ -408,6 +408,16 @@ public class FBManagedConnectionFactory implements ManagedConnectionFactory, Fir
     }
 
     @Override
+    public boolean isUseGSSAuth() {
+        return connectionProperties.isUseGSSAuth();
+    }
+
+    @Override
+    public void setUseGSSAuth(boolean useGSSAuth) {
+        connectionProperties.setUseGSSAuth(useGSSAuth);
+    }
+
+    @Override
     public String getWireCrypt() {
         return connectionProperties.getWireCrypt();
     }

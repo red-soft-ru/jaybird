@@ -29,6 +29,7 @@ public final class FbImmutableServiceProperties extends AbstractImmutableAttachP
         implements IServiceProperties {
 
     private final String serviceName;
+    private final boolean useGSSAuth;
 
     /**
      * Copy constructor for FbServiceProperties.
@@ -42,6 +43,7 @@ public final class FbImmutableServiceProperties extends AbstractImmutableAttachP
     public FbImmutableServiceProperties(IServiceProperties src) {
         super(src);
         serviceName = src.getServiceName();
+        useGSSAuth = src.isUseGSSAuth();
     }
 
     @Override
@@ -57,6 +59,16 @@ public final class FbImmutableServiceProperties extends AbstractImmutableAttachP
     @Override
     public String getAttachObjectName() {
         return getServiceName();
+    }
+
+    @Override
+    public boolean isUseGSSAuth() {
+        return useGSSAuth;
+    }
+
+    @Override
+    public void setUseGSSAuth(boolean useGSSAuth) {
+        immutable();
     }
 
     @Override

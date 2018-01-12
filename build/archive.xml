@@ -85,6 +85,25 @@
                 <include name="services/**/*"/>
             </zipfileset>
         </jar>
+        <jar jarfile="${build.lib}/${archive.name.full.sources}" update="true">
+            <fileset dir="${source.java}">
+                <include name="**/*.java"/>
+            </fileset>
+            <fileset dir="${toString:source.java.openoffice}">
+                <include name="**/*.java"/>
+            </fileset>
+            <fileset dir="${toString:source.java.additional}">
+                <include name="**/*.java"/>
+            </fileset>
+            <fileset dir="${source.resources}">
+                <exclude name="log4j.properties"/>
+                <include name="**/*.properties"/>
+                <include name="**/*.xml"/>
+            </fileset>
+            <fileset dir="${module.thirdparty}">
+                <include name="connector-api-1.5.jar"/>
+            </fileset>
+        </jar>
     </target>
 
     <target name="jar-javadoc" depends="javadocs">

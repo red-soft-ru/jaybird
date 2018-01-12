@@ -237,7 +237,8 @@ public final class ClientAuthBlock {
     private static List<AuthenticationPluginSpi> getSupportedPluginProviders() {
         // TODO Create from service provider interface; use properties?
         return Collections.unmodifiableList(
-                Arrays.<AuthenticationPluginSpi>asList(new SrpAuthenticationPluginSpi(), new LegacyAuthenticationPluginSpi()));
+                Arrays.<AuthenticationPluginSpi>asList(new SrpAuthenticationPluginSpi(), new LegacyAuthenticationPluginSpi(),
+                    new GssAuthenticationPluginSpi()));
     }
 
     public boolean switchPlugin(String pluginName) {
@@ -342,6 +343,7 @@ public final class ClientAuthBlock {
         pb.removeArgument(tagMapping.getPasswordTag());
         pb.removeArgument(tagMapping.getEncryptedPasswordTag());
         pb.removeArgument(tagMapping.getTrustedAuthTag());
+        pb.removeArgument(tagMapping.getGSSAuthTag());
     }
 
 }

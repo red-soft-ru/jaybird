@@ -104,7 +104,7 @@ public class TestFBTimestampField extends BaseJUnit4TestFBField<FBTimestampField
     @Override
     public void setDateCalendarNonNull() throws SQLException {
         // TODO Conversion seems wrong
-        setTimestampExpectations(java.sql.Timestamp.valueOf("2016-05-04 22:00:00"));
+        setTimestampExpectations(java.sql.Timestamp.valueOf("2016-05-04 23:00:00"));
         Calendar calendar = Calendar.getInstance(getOneHourBehindTimeZone());
 
         field.setDate(java.sql.Date.valueOf(TEST_DATE), calendar);
@@ -208,7 +208,7 @@ public class TestFBTimestampField extends BaseJUnit4TestFBField<FBTimestampField
 //        assertEquals("Unexpected value for getTime(Calendar)",
 //                java.sql.Time.valueOf("14:37:59"), field.getTime(calendar));
         assertEquals("Unexpected value for getTime(Calendar)",
-                java.sql.Time.valueOf("15:37:59").toString(), field.getTime(calendar).toString());
+                java.sql.Time.valueOf("14:37:59").toString(), field.getTime(calendar).toString());
     }
 
     @Test
@@ -279,14 +279,14 @@ public class TestFBTimestampField extends BaseJUnit4TestFBField<FBTimestampField
 
         //TODO Conversion doesn't seem to correctly handle time zone
         assertEquals("Unexpected value for getTimestamp(Calendar)",
-                java.sql.Timestamp.valueOf(TEST_DATE + " 15:37:59"), field.getTimestamp(calendar));
+                java.sql.Timestamp.valueOf(TEST_DATE + " 14:37:59"), field.getTimestamp(calendar));
     }
 
     @Test
     @Override
     public void setTimestampCalendarNonNull() throws SQLException {
         //TODO Conversion doesn't seem to correctly handle time zone (looks like timezone is inverted)
-        setTimestampExpectations(java.sql.Timestamp.valueOf(TEST_DATE + " 11:37:59"));
+        setTimestampExpectations(java.sql.Timestamp.valueOf(TEST_DATE + " 12:37:59"));
         Calendar calendar = Calendar.getInstance(getOneHourBehindTimeZone());
 
         field.setTimestamp(java.sql.Timestamp.valueOf(TEST_TIMESTAMP), calendar);

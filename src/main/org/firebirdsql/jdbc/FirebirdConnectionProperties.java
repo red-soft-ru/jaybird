@@ -401,6 +401,10 @@ public interface FirebirdConnectionProperties {
      */
     void setUseFirebirdAutocommit(boolean useFirebirdAutocommit);
 
+    boolean isUseGSSAuth();
+
+    void setUseGSSAuth(boolean useGSSAuth);
+
     /**
      * Get the wire encryption level value.
      *
