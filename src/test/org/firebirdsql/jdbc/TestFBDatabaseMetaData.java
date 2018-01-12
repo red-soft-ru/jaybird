@@ -155,6 +155,8 @@ public class TestFBDatabaseMetaData extends FBJUnit4TestBase {
                 sysTableCount = 40;
             } else if (databaseMajorVersion == 2 && databaseMinorVersion == 5) {
                 sysTableCount = 42;
+            } else if (databaseMajorVersion == 2 && databaseMinorVersion == 6) { // Red Database 2.6
+                sysTableCount = 43;
             } else if (databaseMajorVersion == 3 && databaseMinorVersion == 0) {
                 sysTableCount = 50;
             } else if (databaseMajorVersion == 4 && databaseMinorVersion == 0) {

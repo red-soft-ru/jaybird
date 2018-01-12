@@ -158,12 +158,21 @@ public class TestFBStatisticsManager extends FBJUnit4TestBase {
             stmt.execute("select * from rdb$database");
             FBStatisticsManager.DatabaseTransactionInfo databaseTransactionInfo =
                     statManager.getDatabaseTransactionInfo();
+            int databaseMajorVersion = conn.getMetaData().getDatabaseMajorVersion();
             // The transaction values checked here might be implementation dependent
-            assertEquals("oldest", 1, databaseTransactionInfo.getOldestTransaction());
-            assertEquals("oldest active", 2, databaseTransactionInfo.getOldestActiveTransaction());
-            assertEquals("oldest snapshot", 2, databaseTransactionInfo.getOldestSnapshotTransaction());
-            assertEquals("next", 2, databaseTransactionInfo.getNextTransaction());
-            assertEquals("active", 1, databaseTransactionInfo.getActiveTransactionCount());
+            if (databaseMajorVersion == 3) {
+                assertEquals("oldest", 1, databaseTransactionInfo.getOldestTransaction());
+                assertEquals("oldest active", 2, databaseTransactionInfo.getOldestActiveTransaction());
+                assertEquals("oldest snapshot", 2, databaseTransactionInfo.getOldestSnapshotTransaction());
+                assertEquals("next", 2, databaseTransactionInfo.getNextTransaction());
+                assertEquals("active", 1, databaseTransactionInfo.getActiveTransactionCount());
+            } else {
+                assertEquals("oldest", 1, databaseTransactionInfo.getOldestTransaction());
+                assertEquals("oldest active", 1, databaseTransactionInfo.getOldestActiveTransaction());
+                assertEquals("oldest snapshot", 1, databaseTransactionInfo.getOldestSnapshotTransaction());
+                assertEquals("next", 2, databaseTransactionInfo.getNextTransaction());
+                assertEquals("active", 1, databaseTransactionInfo.getActiveTransactionCount());
+            }
         }
     }
 

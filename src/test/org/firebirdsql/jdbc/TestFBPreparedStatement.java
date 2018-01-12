@@ -467,9 +467,17 @@ public class TestFBPreparedStatement extends FBJUnit4TestBase {
                         Math.abs(ts2.getTime() - ts3.getTime()));
                 String ts2ToStr = ts2.toString();
                 ts2ToStr = ts2ToStr.substring(0, Math.min(ts2ToStr.length(), maxLength));
+                if (ts2AsStr.length() == 21)
+                    ts2AsStr += "0";
+                if (ts2ToStr.length() == 21)
+                    ts2ToStr += "0";
                 assertEquals("Server should see the same timestamp", ts2AsStr, ts2ToStr);
                 String ts3ToStr = ts3.toString();
                 ts3ToStr = ts3ToStr.substring(0, Math.min(ts3ToStr.length(), maxLength));
+                if (ts3AsStr.length() == 21)
+                    ts3AsStr += "0";
+                if (ts3ToStr.length() == 21)
+                    ts3ToStr += "0";
                 assertEquals("Server should see the same timestamp", ts3AsStr, ts3ToStr);
             }
         }
@@ -739,7 +747,7 @@ public class TestFBPreparedStatement extends FBJUnit4TestBase {
             Thread cancelThread = new Thread(new Runnable() {
                 public void run() {
                     try {
-                        Thread.sleep(5);
+                        Thread.sleep(5000);
                         stmt.cancel();
                     } catch (SQLException ex) {
                         cancelFailed.set(true);
