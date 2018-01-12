@@ -9,6 +9,7 @@ import org.junit.Test;
 
 import java.sql.DriverManager;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Properties;
 
@@ -63,6 +64,8 @@ public class TestGSSClient extends FBJUnit4TestBase {
             assertEquals("RDB_SERVER/LOCALHOST", currentUser);
             statement.close();
             connection.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
         } finally {
             statement.close();
             connection.close();
