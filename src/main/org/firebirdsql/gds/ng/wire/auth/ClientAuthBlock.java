@@ -22,6 +22,7 @@ import org.firebirdsql.gds.ClumpletReader;
 import org.firebirdsql.gds.ConnectionParameterBuffer;
 import org.firebirdsql.gds.ISCConstants;
 import org.firebirdsql.gds.ParameterTagMapping;
+import org.firebirdsql.gds.impl.wire.auth.AuthSspi;
 import org.firebirdsql.gds.ng.FbExceptionBuilder;
 import org.firebirdsql.gds.ng.IAttachProperties;
 import org.firebirdsql.logging.Logger;
@@ -58,6 +59,7 @@ public final class ClientAuthBlock {
     private AuthenticationPlugin currentPlugin;
     private boolean authComplete;
     private boolean firstTime = true;
+    private AuthSspi sspi = null;
 
     public ClientAuthBlock(IAttachProperties<?> attachProperties) throws SQLException {
         this.attachProperties = attachProperties;
@@ -238,7 +240,7 @@ public final class ClientAuthBlock {
         // TODO Create from service provider interface; use properties?
         return Collections.unmodifiableList(
                 Arrays.<AuthenticationPluginSpi>asList(new SrpAuthenticationPluginSpi(), new LegacyAuthenticationPluginSpi(),
-                    new GssAuthenticationPluginSpi()));
+                    new GssAuthenticationPluginSpi(), new MultifactorAuthenticationPluginSpi()));
     }
 
     public boolean switchPlugin(String pluginName) {
@@ -321,5 +323,21 @@ public final class ClientAuthBlock {
         pb.removeArgument(tagMapping.getEncryptedPasswordTag());
         pb.removeArgument(tagMapping.getTrustedAuthTag());
         pb.removeArgument(tagMapping.getGSSAuthTag());
+    }
+
+    public String getCertificate() {
+        return attachProperties.getCertificate();
+    }
+
+    public String getRepositoryPin() {
+        return attachProperties.getRepositoryPin();
+    }
+
+    public AuthSspi getSspi() {
+        return sspi;
+    }
+
+    public void setSspi(AuthSspi sspi) {
+        this.sspi = sspi;
     }
 }

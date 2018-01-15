@@ -32,7 +32,7 @@ import java.util.*;
 /**
  * Manager of the DPB properties.
  */
-class FBDriverPropertyManager {
+public class FBDriverPropertyManager {
 
     private static final Logger log = LoggerFactory.getLogger(FBDriverPropertyManager.class);
     private static final String RES = "driver_property_info";

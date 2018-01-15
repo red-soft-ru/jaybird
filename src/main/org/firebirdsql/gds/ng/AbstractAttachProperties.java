@@ -33,6 +33,8 @@ public abstract class AbstractAttachProperties<T extends IAttachProperties> impl
     private String roleName;
     private String charSet;
     private String encoding;
+    private String certificate;
+    private String repositoryPin;
     private int socketBufferSize = IAttachProperties.DEFAULT_SOCKET_BUFFER_SIZE;
     private int soTimeout = IAttachProperties.DEFAULT_SO_TIMEOUT;
     private int connectTimeout = IAttachProperties.DEFAULT_CONNECT_TIMEOUT;
@@ -60,6 +62,8 @@ public abstract class AbstractAttachProperties<T extends IAttachProperties> impl
             soTimeout = src.getSoTimeout();
             connectTimeout = src.getConnectTimeout();
             useGSSAuth = src.isUseGSSAuth();
+            certificate = src.getCertificate();
+            repositoryPin = src.getRepositoryPin();
         }
     }
 
@@ -190,6 +194,28 @@ public abstract class AbstractAttachProperties<T extends IAttachProperties> impl
         dirtied();
     }
 
+
+    @Override
+    public String getCertificate() {
+        return certificate;
+    }
+
+    @Override
+    public void setCertificate(String certificate) {
+        this.certificate = certificate;
+        dirtied();
+    }
+
+    @Override
+    public String getRepositoryPin() {
+        return repositoryPin;
+    }
+
+    @Override
+    public void setRepositoryPin(String pin) {
+        this.repositoryPin = pin;
+        dirtied();
+    }
 
     /**
      * Called by setters if they have been called.

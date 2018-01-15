@@ -425,6 +425,26 @@ public class FBManagedConnectionFactory implements ManagedConnectionFactory, Fir
         connectionProperties.setUseGSSAuth(useGSSAuth);
     }
 
+    @Override
+    public String getCertificate() {
+        return connectionProperties.getCertificate();
+    }
+
+    @Override
+    public void setCertificate(String certificate) {
+        connectionProperties.setCertificate(certificate);
+    }
+
+    @Override
+    public String getRepositoryPin() {
+        return connectionProperties.getRepositoryPin();
+    }
+
+    @Override
+    public void setRepositoryPin(String pin) {
+        connectionProperties.setRepositoryPin(pin);
+    }
+
     public int hashCode() {
         if (hashCode != 0) 
             return hashCode;

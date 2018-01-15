@@ -122,6 +122,8 @@
         <property name="source.resources" value="${module.source}/resources"/>
         <property name="source.stylesheets" value="${module.source}/stylesheets"/>
         <property name="source.test" value="${module.source}/test"/>
+        <property name="source.cryptoapi" value="${module.source}/cryptoapi"/>
+        <property name="source.cryptoapi_security" value="${module.source}/cryptoapi_sec"/>
         <property name="source.test.42" value="${module.source}/test_42"/>
         <property name="source.test.jna" value="${module.source}/jna-test"/>
         <property name="source.documentation" value="${module.source}/documentation"/>
@@ -139,6 +141,8 @@
         <property name="build.bin" value="${module.output}/bin"/>
         <property name="build.docs" value="${module.output}/docs"/>
         <property name="build.resources" value="${module.output}/resources"/>
+        <property name="build.cryptoapi" value="${module.output}/cryptoapi"/>
+        <property name="build.cryptoapi_security" value="${module.output}/cryptoapi_security"/>
         <property name="build.stylesheets" value="${module.output}/stylesheets"/>
         <property name="build.reports.pure_java" value="${module.output}/reports/pure_java"/>
         <property name="build.reports.native" value="${module.output}/reports/native"/>
@@ -152,6 +156,11 @@
 
         <property name="archive.name.rar" value="${archive.name.main}-${version.maven}.rar"/>
         <property name="archive.name.full" value="${archive.name.main}-full-${version.maven}.jar"/>
+        <property name="archive.name.full.sources" value="${archive.name.main}-full-${version.maven}-sources.jar"/>
+        <property name="archive.name.cryptoapi" value="${archive.name.main}-cryptoapi-${version.maven}.jar"/>
+        <property name="archive.name.cryptoapi.sources" value="${archive.name.main}-cryptoapi-${version.maven}-sources.jar"/>
+        <property name="archive.name.cryptoapi_security" value="${archive.name.main}-cryptoapi-security-${version.maven}.jar"/>
+        <property name="archive.name.cryptoapi_security.sources" value="${archive.name.main}-cryptoapi-security-${version.maven}-sources.jar"/>
         <property name="archive.name.simple" value="${archive.name.main}-${version.maven}.jar"/>
         <property name="archive.name.test" value="${archive.name.main}-test-${version.maven}.jar"/>
         <property name="archive.name.sources" value="${archive.name.main}-${version.maven}-sources.jar"/>
@@ -215,10 +224,31 @@
         <path id="javac.test.classpath">
             <path refid="javac.driver.classpath"/>
             <pathelement location="${build.classes}"/>
+            <pathelement location="${build.cryptoapi}"/>
             <pathelement location="${lib.dir}/junit.jar"/>
             <pathelement location="${module.thirdparty}/fscontext.jar"/>
             <pathelement location="${module.thirdparty}/providerutil.jar"/>
+            <pathelement location="${module.thirdparty}/log4j-1.2.17.jar"/>
+            <pathelement location="${module.thirdparty}/platform-4.5.0.jar"/>
+            <pathelement location="${module.thirdparty}/jna-4.5.0.jar"/>
             <fileset dir="${lib_test.dir}" includes="*.jar"/>
+        </path>
+
+        <path id="javac.cryptoapi.classpath">
+            <pathelement location="${build.classes}"/>
+            <pathelement location="${build.cryptoapi}"/>
+            <pathelement location="${module.thirdparty}/log4j-1.2.17.jar"/>
+            <pathelement location="${module.thirdparty}/platform-4.5.0.jar"/>
+            <pathelement location="${module.thirdparty}/jna-4.5.0.jar"/>
+        </path>
+
+        <path id="javac.cryptoapi_security.classpath">
+            <pathelement location="${build.classes}"/>
+            <pathelement location="${build.cryptoapi}"/>
+            <pathelement location="${build.cryptoapi_security}"/>
+            <pathelement location="${module.thirdparty}/log4j-1.2.17.jar"/>
+            <pathelement location="${module.thirdparty}/platform-4.5.0.jar"/>
+            <pathelement location="${module.thirdparty}/jna-4.5.0.jar"/>
         </path>
 
         <!--

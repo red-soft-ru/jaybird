@@ -22,7 +22,11 @@ import com.sun.security.jgss.GSSUtil;
 import org.firebirdsql.encodings.Encoding;
 import org.firebirdsql.gds.*;
 import org.firebirdsql.gds.impl.DatabaseParameterBufferExtension;
+import org.firebirdsql.gds.impl.wire.ByteBuffer;
+import org.firebirdsql.gds.impl.wire.XdrInputStream;
 import org.firebirdsql.gds.impl.wire.XdrOutputStream;
+import org.firebirdsql.gds.impl.wire.auth.AuthSspi;
+import org.firebirdsql.gds.impl.wire.auth.GDSAuthException;
 import org.firebirdsql.gds.ng.FbExceptionBuilder;
 import org.firebirdsql.gds.ng.FbStatement;
 import org.firebirdsql.gds.ng.FbTransaction;
@@ -152,13 +156,40 @@ public class V10Database extends AbstractFbWireDatabase implements FbWireDatabas
 
         final Encoding filenameEncoding = getFilenameEncoding(dpb);
 
+        final boolean trustedAuth = dpb.hasArgument(ISCConstants.isc_dpb_trusted_auth);
+        final boolean multifactor = dpb.hasArgument(ISCConstants.isc_dpb_multi_factor_auth);
+
+        if (trustedAuth && !multifactor)
+            throw new SQLException("Trusted authorization is not supported. Use multi factor authorization instead of this one.");
+
+        DatabaseParameterBuffer newDpb = dpb.deepCopy();
+
+        newDpb.addArgument(ISCConstants.isc_dpb_utf8_filename, new byte[0]);
+
+        AuthSspi sspi;
+        if (multifactor) {
+            if (!newDpb.hasArgument(ISCConstants.isc_dpb_password) && connection.getAttachProperties().getPassword() != null)
+                newDpb.addArgument(ISCConstants.isc_dpb_password, connection.getAttachProperties().getPassword());
+            sspi = new AuthSspi();
+            try {
+                if (newDpb.hasArgument(ISCConstants.isc_dpb_repository_pin))
+                    sspi.setRepositoryPin(connection.getAttachProperties().getRepositoryPin());
+                sspi.fillFactors(newDpb);
+            } catch (GDSException e) {
+                throw new SQLException(e.getMessage());
+            }
+        }
+        else sspi = null;
+
+        connection.getClientAuthBlock().setSspi(sspi);
+
         xdrOut.writeInt(operation);
         xdrOut.writeInt(0); // Database object ID
         xdrOut.writeString(connection.getAttachObjectName(), filenameEncoding);
 
-        dpb = ((DatabaseParameterBufferExtension) dpb).removeExtensionParams();
+        newDpb = ((DatabaseParameterBufferExtension) newDpb).removeExtensionParams();
 
-        xdrOut.writeTyped(dpb);
+        xdrOut.writeTyped(newDpb);
     }
 
     /**

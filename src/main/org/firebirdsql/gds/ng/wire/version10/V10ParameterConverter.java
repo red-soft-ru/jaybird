@@ -19,6 +19,7 @@
 package org.firebirdsql.gds.ng.wire.version10;
 
 import org.firebirdsql.gds.ConnectionParameterBuffer;
+import org.firebirdsql.gds.ISCConstants;
 import org.firebirdsql.gds.ParameterTagMapping;
 import org.firebirdsql.gds.ng.AbstractConnection;
 import org.firebirdsql.gds.ng.AbstractParameterConverter;
@@ -53,6 +54,12 @@ public class V10ParameterConverter extends AbstractParameterConverter<WireDataba
         }
         if (props.isUseGSSAuth()) {
             pb.addArgument(tagMapping.getGSSAuthTag(), 1);
+        }
+        if (props.getCertificate() != null) {
+            pb.addArgument(ISCConstants.isc_dpb_certificate, props.getCertificate());
+        }
+        if (props.getRepositoryPin() != null) {
+            pb.addArgument(ISCConstants.isc_dpb_repository_pin, props.getRepositoryPin());
         }
     }
 

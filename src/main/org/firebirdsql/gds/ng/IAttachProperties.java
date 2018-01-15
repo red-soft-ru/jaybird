@@ -247,4 +247,26 @@ public interface IAttachProperties<T extends IAttachProperties> {
      * @return A new, mutable, instance as an implementation of {@link IAttachProperties} with all properties copied.
      */
     T asNewMutable();
+
+    /**
+     * @return Path to the certificate to authenticate to the server.
+     */
+    String getCertificate();
+
+    /**
+     * @param certificate
+     *         Path to the certificate to authenticate to the server.
+     */
+    void setCertificate(String certificate);
+
+    /**
+     * @return Pin-code for the cryptopro container.
+     */
+    String getRepositoryPin();
+
+    /**
+     * @param pin
+     *         Set pin-code for the cryptopro container.
+     */
+    void setRepositoryPin(String pin);
 }

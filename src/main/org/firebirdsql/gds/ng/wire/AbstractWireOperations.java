@@ -20,11 +20,15 @@ package org.firebirdsql.gds.ng.wire;
 
 import org.firebirdsql.encodings.Encoding;
 import org.firebirdsql.gds.DatabaseParameterBuffer;
+import org.firebirdsql.gds.GDSException;
 import org.firebirdsql.gds.ISCConstants;
 import org.firebirdsql.gds.JaybirdErrorCodes;
 import org.firebirdsql.gds.impl.DatabaseParameterBufferImp;
+import org.firebirdsql.gds.impl.wire.ByteBuffer;
 import org.firebirdsql.gds.impl.wire.XdrInputStream;
 import org.firebirdsql.gds.impl.wire.XdrOutputStream;
+import org.firebirdsql.gds.impl.wire.auth.AuthSspi;
+import org.firebirdsql.gds.impl.wire.auth.GDSAuthException;
 import org.firebirdsql.gds.ng.FbExceptionBuilder;
 import org.firebirdsql.gds.ng.WarningMessageCallback;
 import org.firebirdsql.gds.ng.wire.auth.ClientAuthBlock;
@@ -165,7 +169,36 @@ public abstract class AbstractWireOperations implements FbWireOperations {
 
     @Override
     public final Response readSingleResponse(WarningMessageCallback warningCallback) throws SQLException, IOException {
-        Response response = processOperation(readNextOperation());
+        AuthSspi sspi = connection.getClientAuthBlock().getSspi();
+        int operation = readNextOperation();
+        if (sspi != null) {
+            try {
+                final ByteBuffer authData = new ByteBuffer(256);
+                while (operation == op_trusted_auth) {
+                    receiveAuthResponse(authData);
+                    if (!sspi.request(authData)) {
+                        throw new FbExceptionBuilder()
+                            .nonTransientConnectionException(ISCConstants.isc_unavailable).toFlatSQLException();
+                    }
+                    writeAuthData(authData);
+                    operation = readNextOperation();
+                }
+            } catch (GDSAuthException e) {
+                throw new SQLException(e.getMessage());
+            } catch (GDSException e) {
+                throw new SQLException(e.getMessage());
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    sspi.free();
+                    connection.getClientAuthBlock().setSspi(null);
+                } catch (GDSAuthException e) {
+                    throw new SQLException(e.getMessage());
+                }
+            }
+        }
+        Response response = processOperation(operation/*readNextOperation()*/);
         processResponseWarnings(response, warningCallback);
         return response;
     }
@@ -230,6 +263,38 @@ public abstract class AbstractWireOperations implements FbWireOperations {
                 throw exception;
             }
         }
+    }
+
+    private void receiveAuthResponse(ByteBuffer data) throws GDSException, SQLException {
+        final XdrInputStream xdrIn = getXdrIn();
+        final boolean debug = log != null && log.isDebugEnabled();
+        try {
+            if (debug)
+                log.debug("op_auth_response ");
+            final int size = xdrIn.readInt();
+            if (debug)
+                log.debug("received");
+            data.clear();
+            data.read(xdrIn, size);
+        } catch (IOException ex) {
+            if (debug)
+                log.warn("IOException in receiveAuthResponse", ex);
+            // ex.getMessage() makes little sense here, it will not be displayed
+            // because error message for isc_net_read_err does not accept params
+            throw new GDSException(ISCConstants.isc_arg_gds,
+                    ISCConstants.isc_net_read_err, ex.getMessage());
+        }
+    }
+
+    protected void writeAuthData(final ByteBuffer authData) throws IOException, SQLException {
+        boolean debug = log != null && log.isDebugEnabled();
+        final XdrOutputStream xdrOut = getXdrOut();
+        xdrOut.writeInt(op_trusted_auth);
+//      db.out.writeInt(0); // packet->p_atch->p_atch_database
+        authData.write(xdrOut);
+        xdrOut.flush();
+        if (debug)
+            log.debug("auth data");
     }
 
     /**

@@ -31,10 +31,7 @@ import org.firebirdsql.gds.impl.wire.XdrOutputStream;
 import org.firebirdsql.gds.ng.*;
 import org.firebirdsql.gds.ng.fields.RowValue;
 import org.firebirdsql.gds.ng.wire.*;
-import org.junit.After;
-import org.junit.ClassRule;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.rules.ExpectedException;
 
 import java.sql.SQLException;
@@ -115,7 +112,7 @@ public class TestV10EventHandling extends FBJUnit4TestBase {
             }
         }
     }
-
+  
     @Test
     public void testInitAsynchronousChannel() throws SQLException {
         db = createAndAttachDatabase();

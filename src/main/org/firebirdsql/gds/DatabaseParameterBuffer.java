@@ -116,6 +116,7 @@ public interface DatabaseParameterBuffer extends ConnectionParameterBuffer {
     int PROCESS_NAME            = ISCConstants.isc_dpb_process_name;
 
     int GSS_AUTH           = ISCConstants.isc_dpb_gss;
+    int MULTI_FACTOR_AUTH       = ISCConstants.isc_dpb_multi_factor_auth;
     //@formatter:on
 
     /**

@@ -48,6 +48,23 @@
                 <include name="services/**/*"/>
             </zipfileset>
         </jar>
+
+        <jar jarfile="${build.lib}/${archive.name.cryptoapi}" manifest="${build.etc}/default.mf">
+            <fileset dir="${build.cryptoapi}">
+                <include name="**"/>
+            </fileset>
+        </jar>
+
+        <jar jarfile="${build.lib}/${archive.name.cryptoapi_security}" manifest="${build.etc}/default.mf">
+            <fileset dir="${build.cryptoapi_security}">
+                <include name="**"/>
+            </fileset>
+            <fileset dir="${build.cryptoapi}">
+                <include name="**"/>
+                <exclude name="org/firebirdsql/cryptoapi/windows/advapi/Advapi.class"/>
+                <exclude name="org/firebirdsql/cryptoapi/windows/advapi/AdvapiLib.class"/>
+            </fileset>
+        </jar>
     </target>
 
     <target name="jar-test" depends="compile">
@@ -84,6 +101,40 @@
             <zipfileset dir="${source.resources}/META-INF" prefix="META-INF">
                 <include name="services/**/*"/>
             </zipfileset>
+        </jar>
+        <jar jarfile="${build.lib}/${archive.name.cryptoapi.sources}" update="true">
+            <fileset dir="${source.cryptoapi}">
+                <include name="org/firebirdsql/**"/>
+            </fileset>
+        </jar>
+        <jar jarfile="${build.lib}/${archive.name.cryptoapi_security.sources}" update="true">
+            <fileset dir="${source.cryptoapi_security}">
+                <include name="org/firebirdsql/**"/>
+            </fileset>
+            <fileset dir="${source.cryptoapi}">
+                <include name="org/firebirdsql/**"/>
+                <exclude name="org/firebirdsql/cryptoapi/windows/advapi/Advapi.java"/>
+                <exclude name="org/firebirdsql/cryptoapi/windows/advapi/AdvapiLib.java"/>
+            </fileset>
+        </jar>
+        <jar jarfile="${build.lib}/${archive.name.full.sources}" update="true">
+            <fileset dir="${source.java}">
+                <include name="**/*.java"/>
+            </fileset>
+            <fileset dir="${toString:source.java.openoffice}">
+                <include name="**/*.java"/>
+            </fileset>
+            <fileset dir="${toString:source.java.additional}">
+                <include name="**/*.java"/>
+            </fileset>
+            <fileset dir="${source.resources}">
+                <exclude name="log4j.properties"/>
+                <include name="**/*.properties"/>
+                <include name="**/*.xml"/>
+            </fileset>
+            <fileset dir="${module.thirdparty}">
+                <include name="connector-api-1.5.jar"/>
+            </fileset>
         </jar>
     </target>
 

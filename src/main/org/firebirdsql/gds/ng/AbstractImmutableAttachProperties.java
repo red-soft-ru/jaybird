@@ -36,6 +36,8 @@ public abstract class AbstractImmutableAttachProperties<T extends IAttachPropert
     private final int socketBufferSize;
     private final int soTimeout;
     private final int connectTimeout;
+    private final String certificate;
+    private final String repositoryPin;
 
     /**
      * Copy constructor for IAttachProperties.
@@ -58,6 +60,8 @@ public abstract class AbstractImmutableAttachProperties<T extends IAttachPropert
         socketBufferSize = src.getSocketBufferSize();
         soTimeout = src.getSoTimeout();
         connectTimeout = src.getConnectTimeout();
+        certificate = src.getCertificate();
+        repositoryPin = src.getRepositoryPin();
     }
 
     @Override
@@ -157,6 +161,26 @@ public abstract class AbstractImmutableAttachProperties<T extends IAttachPropert
 
     @Override
     public void setConnectTimeout(final int connectTimeout) {
+        immutable();
+    }
+
+    @Override
+    public String getCertificate() {
+        return certificate;
+    }
+
+    @Override
+    public void setCertificate(final String certificate) {
+        immutable();
+    }
+
+    @Override
+    public String getRepositoryPin() {
+        return repositoryPin;
+    }
+
+    @Override
+    public void setRepositoryPin(final String pin) {
         immutable();
     }
 
