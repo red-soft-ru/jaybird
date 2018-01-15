@@ -613,6 +613,16 @@ public class FBSADataSource implements DataSource, Serializable, Referenceable, 
     }
 
     @Override
+    public boolean isUseGSSAuth() {
+        return mcf.isUseGSSAuth();
+    }
+
+    @Override
+    public void setUseGSSAuth(boolean useGSSAuth) {
+        mcf.setUseGSSAuth(useGSSAuth);
+    }
+
+    @Override
     public String getCertificate() {
         return mcf.getCertificate();
     }
