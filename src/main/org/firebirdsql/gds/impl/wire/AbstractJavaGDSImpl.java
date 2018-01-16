@@ -3359,7 +3359,7 @@ public abstract class AbstractJavaGDSImpl extends AbstractGDS implements GDS {
         boolean debug = log != null && log.isDebugEnabled();
         isc_db_handle_impl db = validateHandle(dbHandle);
 
-        //synchronized (db) {
+        synchronized (db) {
         // TODO: Isn't this going to go wrong when this method and other method interleave?
             try {
                 if (debug)
@@ -3374,7 +3374,7 @@ public abstract class AbstractJavaGDSImpl extends AbstractGDS implements GDS {
             } catch (IOException ex) {
                 throw new GDSException(ISCConstants.isc_network_error, ex);
             } 
-        //}
+        }
     }
     
     protected byte[] getDescribeSelectInfo(IscStmtHandle stmtHandle) {
