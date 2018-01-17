@@ -915,7 +915,7 @@ public interface GDS {
      * 
      * @throws GDSException If a database communication error happens.
      */
-    void fbCancelOperation(IscDbHandle dbHandle, IscStmtHandle stmt, int kind)
+    void fbCancelOperation(IscDbHandle dbHandle, int kind) 
         throws GDSException;
     
     /**

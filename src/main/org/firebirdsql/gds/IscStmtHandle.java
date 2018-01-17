@@ -96,6 +96,5 @@ public interface IscStmtHandle {
      * when no statement type was received from the server.
      */
     int getStatementType();
-
-    boolean isCanceled();
+    
 }

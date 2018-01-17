@@ -163,8 +163,8 @@ class FBStatementFetcher implements FBFetcher {
 
             if (maxRows != 0 && fetchSize > maxRows) fetchSize = maxRows;
 
-            if ((!stmt.isAllRowsFetched()
-                    && (rowsArray == null || size == rowPosition)) || stmt.isCanceled()) {
+            if (!stmt.isAllRowsFetched()
+                    && (rowsArray == null || size == rowPosition)) {
                 try {
                     gdsHelper.fetch(stmt, fetchSize);
                     rowPosition = 0;

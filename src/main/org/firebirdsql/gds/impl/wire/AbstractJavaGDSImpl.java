@@ -3353,7 +3353,7 @@ public abstract class AbstractJavaGDSImpl extends AbstractGDS implements GDS {
         }
     }
 
-    public void fbCancelOperation(IscDbHandle dbHandle, IscStmtHandle stmt, int kind)
+    public void fbCancelOperation(IscDbHandle dbHandle, int kind)
             throws GDSException {
         
         boolean debug = log != null && log.isDebugEnabled();
@@ -3371,8 +3371,6 @@ public abstract class AbstractJavaGDSImpl extends AbstractGDS implements GDS {
                     log.debug("sent");
                 // receiveResponse(db, -1);
 
-                isc_stmt_handle_impl st = validateHandle(stmt);
-                st.setCanceled(true);
             } catch (IOException ex) {
                 throw new GDSException(ISCConstants.isc_network_error, ex);
             } 

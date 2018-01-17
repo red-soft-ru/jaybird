@@ -1,7 +1,6 @@
 package org.firebirdsql.gds.impl;
 
 import org.firebirdsql.gds.GDSException;
-import org.firebirdsql.gds.IscStmtHandle;
 import org.firebirdsql.gds.Operation;
 
 /**
@@ -18,7 +17,7 @@ public class GDSHelperOperation implements Operation {
   }
 
   @Override
-  public void cancelOperation(IscStmtHandle stmt) throws GDSException {
-    helper.cancelOperation(stmt);
+  public void cancelOperation() throws GDSException {
+    helper.cancelOperation();
   }
 }

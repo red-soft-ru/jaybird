@@ -1109,7 +1109,7 @@ public abstract class BaseGDSImpl extends AbstractGDS {
     public abstract void native_isc_cancel_events(IscDbHandle db_handle,
             EventHandleImp eventHandle) throws GDSException;
     
-    public abstract void native_fb_cancel_operation(IscDbHandle dbHanle, IscStmtHandle stmt,
+    public abstract void native_fb_cancel_operation(IscDbHandle dbHanle, 
             int kind) throws GDSException;
 
 
@@ -1364,11 +1364,11 @@ public abstract class BaseGDSImpl extends AbstractGDS {
         return new EventHandleImp(eventName);
     }
     
-    public void fbCancelOperation(IscDbHandle dbHandle, IscStmtHandle stmt, int kind)
+    public void fbCancelOperation(IscDbHandle dbHandle, int kind)
             throws GDSException {
         validateHandle(dbHandle);
 
-        native_fb_cancel_operation(dbHandle, stmt, kind);
+        native_fb_cancel_operation(dbHandle, kind);
     }
 
     /**
