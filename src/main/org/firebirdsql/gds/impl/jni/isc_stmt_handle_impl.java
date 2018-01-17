@@ -50,6 +50,7 @@ public final class isc_stmt_handle_impl extends AbstractIscStmtHandle {
     private boolean allRowsFetched = false;
     private boolean isSingletonResult = false;
     private boolean hasOpenResultSet = false;
+    private boolean canceled = false;
 
     //private int statementType;
     private int insertCount;
@@ -216,5 +217,9 @@ public final class isc_stmt_handle_impl extends AbstractIscStmtHandle {
 
     public void unregisterTransaction() {
         this.trHandle = null;
+    }
+
+    public boolean isCanceled() {
+        return this.canceled;
     }
 }

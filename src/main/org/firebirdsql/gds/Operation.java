@@ -7,5 +7,5 @@ package org.firebirdsql.gds;
  *          Time: 14:22
  */
 public interface Operation {
-  public void cancelOperation() throws GDSException;
+  public void cancelOperation(IscStmtHandle stmt) throws GDSException;
 }

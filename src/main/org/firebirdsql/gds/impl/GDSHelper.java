@@ -27,6 +27,7 @@ package org.firebirdsql.gds.impl;
 import org.firebirdsql.encodings.Encoding;
 import org.firebirdsql.encodings.EncodingFactory;
 import org.firebirdsql.gds.*;
+import org.firebirdsql.jdbc.AbstractStatement;
 import org.firebirdsql.jdbc.Synchronizable;
 import org.firebirdsql.logging.Logger;
 import org.firebirdsql.logging.LoggerFactory;
@@ -702,9 +703,9 @@ public class GDSHelper implements Synchronizable {
     /**
      * Cancel the currently running operation.
      */
-    public void cancelOperation() throws GDSException {
+    public void cancelOperation(IscStmtHandle stmt) throws GDSException {
         try {
-            gds.fbCancelOperation(currentDbHandle, ISCConstants.fb_cancel_raise);
+            gds.fbCancelOperation(currentDbHandle, stmt, ISCConstants.fb_cancel_raise);
         } catch (GDSException ex) {
             notifyListeners(ex);
             throw ex;

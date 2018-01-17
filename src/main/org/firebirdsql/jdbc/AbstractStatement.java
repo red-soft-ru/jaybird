@@ -735,7 +735,7 @@ public abstract class AbstractStatement implements FirebirdStatement, Synchroniz
      */
     public void cancel() throws  SQLException {
         try {
-            gdsHelper.cancelOperation();
+            gdsHelper.cancelOperation(this.fixedStmt);
         } catch(GDSException ex) {
             throw new FBSQLException(ex);
         }

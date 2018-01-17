@@ -51,6 +51,7 @@ public final class isc_stmt_handle_impl extends AbstractIscStmtHandle {
     private int size;
     private boolean allRowsFetched = false;
     private boolean isSingletonResult = false;
+    private boolean canceled = false;
 
     private boolean hasOpenResultSet;
     
@@ -241,5 +242,11 @@ public final class isc_stmt_handle_impl extends AbstractIscStmtHandle {
         this.trHandle = null;
     }
     
-    
+    public void setCanceled(boolean canceled) {
+        this.canceled = canceled;
+    }
+
+    public boolean isCanceled() {
+        return this.canceled;
+    }
 }
