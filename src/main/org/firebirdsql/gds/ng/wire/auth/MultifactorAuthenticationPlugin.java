@@ -22,7 +22,7 @@ public class MultifactorAuthenticationPlugin implements AuthenticationPlugin {
 
     public static final String MULTIFACTOR_AUTH_NAME = "Multifactor";
 
-    private static AuthSspi authSspi = null;
+    private AuthSspi authSspi = null;
     private byte[] clientData;
     private byte[] serverData;
 
