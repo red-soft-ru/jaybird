@@ -12,11 +12,12 @@
                  doctitle="${Name}"
                  additionalparam="${javadoc.additionalparam}"
                  excludepackagenames="${excludedPackages}"
-                 bottom="Copyright &amp;copy; 2001-2017 Jaybird (Firebird JDBC/JCA) team. All rights reserved.">
+                 bottom="Copyright &amp;copy; 2001-${YEAR} Jaybird (Firebird JDBC/JCA) team. All rights reserved.">
             <arg line="${java.module.arg}"/>
             <classpath refid="javac.driver.classpath"/>
             <sourcepath>
                 <pathelement path="${source.java}"/>
+                <pathelement path="${source.extern}"/>
                 <pathelement path="${source.jna-client}"/>
             </sourcepath>
             <sourcepath refid="source.java.openoffice"/>
