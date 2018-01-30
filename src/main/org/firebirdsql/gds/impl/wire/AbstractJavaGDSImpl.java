@@ -3358,23 +3358,27 @@ public abstract class AbstractJavaGDSImpl extends AbstractGDS implements GDS {
         
         boolean debug = log != null && log.isDebugEnabled();
         isc_db_handle_impl db = validateHandle(dbHandle);
+        XdrOutputStream xdrOutputStream = null;
 
-        synchronized (db) {
+        //synchronized (db) {
         // TODO: Isn't this going to go wrong when this method and other method interleave?
             try {
+                xdrOutputStream = new XdrOutputStream(db.socket.getOutputStream());
                 if (debug)
                     log.debug("op_cancel ");
-                db.out.writeInt(op_cancel);
-                db.out.writeInt(kind);
-                db.out.flush();
+                xdrOutputStream.writeInt(op_cancel);
+                xdrOutputStream.writeInt(kind);
+                xdrOutputStream.flush();
                 if (debug)
                     log.debug("sent");
                 // receiveResponse(db, -1);
 
             } catch (IOException ex) {
                 throw new GDSException(ISCConstants.isc_network_error, ex);
-            } 
-        }
+            } finally {
+                xdrOutputStream = null;
+            }
+        //}
     }
     
     protected byte[] getDescribeSelectInfo(IscStmtHandle stmtHandle) {
