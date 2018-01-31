@@ -171,7 +171,8 @@ def test(jdk, archive_prefix, version)
             unstash "bin-${jdk}"
             unstash "test-${jdk}"
             unstash 'src'
-            
+
+            def java_home = ''
             if (jdk == '16')
             {
                 java_home = env.JAVA_HOME_1_6
@@ -193,7 +194,7 @@ def test(jdk, archive_prefix, version)
                     ./test.sh
                 """
             }
-            step([$class: "JUnitResultArchiver", testResults: "results/TEST-*.xml"])
+            stash includes: "results/jdk${jdk}/TEST-*.xml", name: "results-jdk${jdk}"
         }   
     }
 }
