@@ -81,6 +81,7 @@ node('master')
             unstash "sources-${jdk}"
             unstash "test-${jdk}"
         }
+        unstash "results-jdk18"
 
         withEnv(["archive_prefix=${archive_prefix}", "version=${version}"]) {
             sh """#!/bin/bash
