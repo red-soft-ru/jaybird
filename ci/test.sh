@@ -86,9 +86,17 @@ KEYS_DIR=/var/opt/cprocsp/keys
 sudo mkdir -p $KEYS_DIR/jenkins
 sudo chmod 700 $KEYS_DIR/jenkins
 sudo cp fbt-repository/files/cert/RaUser-d.000/ $KEYS_DIR/jenkins -rfv
-sudo chown jenkins:jenkins $KEYS_DIR/jenkins -R
+if [ "$USER" == "jenkins" ]; then
+	sudo chown jenkins:jenkins $KEYS_DIR/jenkins -R
+fi	
 sudo chmod 700 $KEYS_DIR/jenkins/RaUser-d.000
-sudo -u jenkins /opt/cprocsp/bin/$CPROCSP_ARCH/certmgr -inst -cont '\\.\HDIMAGE\RaUser-de9e345e-157d-4d82-80d1-2098c0f28992'
+
+if [ "$USER" == "jenkins" ]; then
+	sudo chown jenkins:jenkins $KEYS_DIR/jenkins -R
+	sudo -u jenkins /opt/cprocsp/bin/$CPROCSP_ARCH/certmgr -inst -cont '\\.\HDIMAGE\RaUser-de9e345e-157d-4d82-80d1-2098c0f28992'
+else
+	sudo /opt/cprocsp/bin/$CPROCSP_ARCH/certmgr -inst -cont '\\.\HDIMAGE\RaUser-de9e345e-157d-4d82-80d1-2098c0f28992'
+fi	
 
 sudo openssl x509 -in fbt-repository/files/cert/Смирнов.cer -inform der -outform pem -out ./testuser.cer
 
