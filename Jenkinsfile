@@ -89,8 +89,8 @@ node('master')
                 m4 -DVERSION=$version ${archive_prefix}/ci/artifacts.m4 > artifacts
             """
         }
-        
-        ReleaseHub.deployToReleaseHub(release_hub_project, version, env.BUILD_URL, rev, wd+'/artifacts', wd, maven_group, '', '', branch) 
+
+        ReleaseHub.deployToReleaseHub(release_hub_project, version, env.BUILD_URL, rev, wd+'/artifacts', wd, maven_group, wd + '/results', '', branch)
 
         Pipeline.defaultSuccessActions(currentBuild)
     }
