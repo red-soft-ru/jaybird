@@ -102,7 +102,7 @@ sudo /tmp/installer.bin --DBAPasswd masterkey --mode unattended --architecture $
 sudo rm -f /tmp/installer.bin
 sudo rm -rf $TEST_DIR
 mkdir -p $TEST_DIR
-mkdir -p $WORKSPACE/results
+mkdir -p $WORKSPACE/results/jdk${JDK_VERSION}
 sudo chmod 777 $TEST_DIR
 
 sudo sed -i 's/#VerifyCertChain = 1/VerifyCertChain = 0/g' /opt/RedDatabase/firebird.conf
