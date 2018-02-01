@@ -75,7 +75,7 @@ ARCHITECTURE=classic
 uninstallrdb
 
 echo "Download fbt"
-(git clone --depth 1 git@git.red-soft.biz:red-database/fbt-repository) || die "Unable to checkout tests"
+(git clone --depth 1 http://git.red-soft.biz/red-database/fbt-repository.git) || die "Unable to checkout tests"
 
 CPROCSP_ARCH=amd64
 if [ "$ARCH" == "x86" ]; then
