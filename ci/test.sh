@@ -115,6 +115,6 @@ sudo /opt/RedDatabase/bin/gsec -user SYSDBA -password masterkey -add artyom.smir
 
 export JAVA_HOME
 ant -Dtest.report.dir=$TEST_DIR -Dtest.db.dir=$TEST_DIR -Djdk=${JDK_VERSION} -Dversion=$JAYBIRD_VERSION -Dbindir=${BINDIR} -Dsrcdir=${SRCDIR} -f test.xml
-cp ${TEST_DIR}/*.xml $WORKSPACE/results
+cp ${TEST_DIR}/*.xml $WORKSPACE/results/jdk${JDK_VERSION}
 
 uninstallrdb
