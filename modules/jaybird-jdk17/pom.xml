@@ -6,8 +6,8 @@
 		<version>3.0.4</version>
 		<relativePath>../../pom.xml</relativePath>
 	</parent>
-	<artifactId>jaybird-jdk18</artifactId>
-	<name>jaybird-jdk18</name>
+	<artifactId>jaybird-jdk17</artifactId>
+	<name>jaybird-jdk17</name>
 	<packaging>jar</packaging>
 	<dependencies>
 		<dependency>
@@ -55,11 +55,11 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>${maven-compiler-plugin.version}</version>
 				<configuration>
-					<source>1.8</source>
-					<target>1.8</target>
+					<source>1.7</source>
+					<target>1.7</target>
 					<includes>
 						<include>main/**/*.java</include>
-						<include>jdbc_42/**/*.java</include>
+						<include>jdbc_41/**/*.java</include>
 						<include>jna-client/**/*.java</include>
 						<include>openoffice/**/*.java</include>
 					</includes>
