@@ -71,6 +71,13 @@ public class MultifactorAuthenticationPlugin implements AuthenticationPlugin {
                 authSspi.addFactor(authFactorCertificate);
                 data.add((byte) AuthFactor.TYPE_CERT_X509);
             }
+
+            if (clientAuthBlock.getVerifyServerCertificate()) {
+                AuthFactorServerCertificate authFactorServerCertificate = new AuthFactorServerCertificate(authSspi);
+                authSspi.addFactor(authFactorServerCertificate);
+                data.add((byte) AuthFactor.TYPE_SERVER_CERT);
+            }
+
             clientData = Arrays.copyOf(data.getData(), data.getLength());
 
             return AuthStatus.AUTH_MORE_DATA;

@@ -39,6 +39,7 @@ public abstract class AbstractAttachProperties<T extends IAttachProperties> impl
     private int soTimeout = IAttachProperties.DEFAULT_SO_TIMEOUT;
     private int connectTimeout = IAttachProperties.DEFAULT_CONNECT_TIMEOUT;
     private boolean useGSSAuth = IAttachProperties.DEFAULT_GSS_AUTH;
+    private boolean verifyServerCertificate = IAttachProperties.DEFAULT_SERVER_CERTIFICATE;
 
     /**
      * Copy constructor for IAttachProperties.
@@ -64,6 +65,7 @@ public abstract class AbstractAttachProperties<T extends IAttachProperties> impl
             useGSSAuth = src.isUseGSSAuth();
             certificate = src.getCertificate();
             repositoryPin = src.getRepositoryPin();
+            verifyServerCertificate = src.getVerifyServerCertificate();
         }
     }
 
@@ -214,6 +216,17 @@ public abstract class AbstractAttachProperties<T extends IAttachProperties> impl
     @Override
     public void setRepositoryPin(String pin) {
         this.repositoryPin = pin;
+        dirtied();
+    }
+
+    @Override
+    public boolean getVerifyServerCertificate() {
+        return verifyServerCertificate;
+    }
+
+    @Override
+    public void setVerifyServerCertificate(boolean verify) {
+        this.verifyServerCertificate = verify;
         dirtied();
     }
 

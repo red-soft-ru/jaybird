@@ -37,6 +37,7 @@ public interface IAttachProperties<T extends IAttachProperties> {
     int DEFAULT_SO_TIMEOUT = -1;
     int DEFAULT_CONNECT_TIMEOUT = -1;
     boolean DEFAULT_GSS_AUTH = false;
+    boolean DEFAULT_SERVER_CERTIFICATE = false;
 
     /**
      * @return The name of the object to attach to (either a database or service name).
@@ -269,4 +270,15 @@ public interface IAttachProperties<T extends IAttachProperties> {
      *         Set pin-code for the cryptopro container.
      */
     void setRepositoryPin(String pin);
+
+    /**
+     * Get the server certificate verification.
+     */
+    boolean getVerifyServerCertificate();
+
+    /**
+     * @param verify
+     *         Set server certificate verification.
+     */
+    void setVerifyServerCertificate(boolean verify);
 }

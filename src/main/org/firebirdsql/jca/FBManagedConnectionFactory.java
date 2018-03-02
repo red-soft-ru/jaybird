@@ -445,6 +445,16 @@ public class FBManagedConnectionFactory implements ManagedConnectionFactory, Fir
         connectionProperties.setRepositoryPin(pin);
     }
 
+    @Override
+    public boolean getVerifyServerCertificate() {
+        return connectionProperties.getVerifyServerCertificate();
+    }
+
+    @Override
+    public void setVerifyServerCertificate(boolean verify) {
+        connectionProperties.setVerifyServerCertificate(verify);
+    }
+
     public int hashCode() {
         if (hashCode != 0) 
             return hashCode;

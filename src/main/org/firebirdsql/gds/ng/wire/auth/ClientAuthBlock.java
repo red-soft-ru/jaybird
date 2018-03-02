@@ -333,6 +333,10 @@ public final class ClientAuthBlock {
         return attachProperties.getRepositoryPin();
     }
 
+    public boolean getVerifyServerCertificate() {
+        return attachProperties.getVerifyServerCertificate();
+    }
+
     public AuthSspi getSspi() {
         return sspi;
     }

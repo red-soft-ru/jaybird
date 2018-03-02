@@ -440,4 +440,15 @@ public interface FirebirdConnectionProperties {
      *         Set pin-code for the cryptopro container.
      */
     void setRepositoryPin(String pin);
+
+    /**
+     * Get the server certificate verification.
+     */
+    boolean getVerifyServerCertificate();
+
+    /**
+     * @param verify
+     *         Set server certificate verification.
+     */
+    void setVerifyServerCertificate(boolean verify);
 }
