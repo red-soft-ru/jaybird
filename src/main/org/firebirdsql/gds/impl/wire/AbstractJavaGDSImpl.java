@@ -3363,6 +3363,9 @@ public abstract class AbstractJavaGDSImpl extends AbstractGDS implements GDS {
         //synchronized (db) {
         // TODO: Isn't this going to go wrong when this method and other method interleave?
             try {
+                // Adding a top-level stream allows to create a not broken package
+                // about operation cancelling, otherwise the lack of synchronization
+                // on the database object creates a broken package (see #70).
                 xdrOutputStream = new XdrOutputStream(db.socket.getOutputStream());
                 if (debug)
                     log.debug("op_cancel ");
