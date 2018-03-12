@@ -103,7 +103,7 @@ else
 	sudo /opt/cprocsp/bin/$CPROCSP_ARCH/certmgr -inst -cont '\\.\HDIMAGE\RaUser-de9e345e-157d-4d82-80d1-2098c0f28992'
 fi	
 
-sudo openssl x509 -in fbt-repository/files/cert/Смирнов.cer -inform der -outform pem -out ./testuser.cer
+sudo openssl x509 -in fbt-repository/files/cert/РЎРјРёСЂРЅРѕРІ.cer -inform der -outform pem -out ./testuser.cer
 
 echo Will use build $RDB_VERSION for testing
 
