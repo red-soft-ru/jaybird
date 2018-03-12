@@ -402,6 +402,36 @@ public class FBSimpleDataSource extends RootCommonDataSource implements DataSour
     public void setWireCrypt(String wireCrypt) {
         mcf.setWireCrypt(wireCrypt);
     }
+	
+	@Override
+    public String getCertificate() {
+        return mcf.getCertificate();
+    }
+
+    @Override
+    public void setCertificate(String certificate) {
+        mcf.setCertificate(certificate);
+    }
+
+    @Override
+    public String getRepositoryPin() {
+        return mcf.getRepositoryPin();
+    }
+
+    @Override
+    public void setRepositoryPin(String pin) {
+        mcf.setRepositoryPin(pin);
+    }
+
+    @Override
+    public boolean getVerifyServerCertificate() {
+        return mcf.getVerifyServerCertificate();
+    }
+
+    @Override
+    public void setVerifyServerCertificate(boolean verify) {
+        mcf.setVerifyServerCertificate(verify);
+    }
     
     /*
      * INTERFACES IMPLEMENTATION

@@ -422,4 +422,37 @@ public interface FirebirdConnectionProperties {
      * @param wireCrypt Wire encryption level
      */
     void setWireCrypt(String wireCrypt);
+	
+	    /**
+     * @return path to the certificate that will be used when connecting to the database.
+     */
+    String getCertificate();
+
+    /**
+     * @param certificate
+     *         path to the certificate that will be used when connecting to the database.
+     */
+    void setCertificate(String certificate);
+
+    /**
+     * @return Pin-code for the cryptopro container.
+     */
+    String getRepositoryPin();
+
+    /**
+     * @param pin
+     *         Set pin-code for the cryptopro container.
+     */
+    void setRepositoryPin(String pin);
+
+    /**
+     * Get the server certificate verification.
+     */
+    boolean getVerifyServerCertificate();
+
+    /**
+     * @param verify
+     *         Set server certificate verification.
+     */
+    void setVerifyServerCertificate(boolean verify);
 }

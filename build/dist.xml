@@ -60,6 +60,8 @@
                 <include name="${archive.name.simple}"/>
                 <include name="${archive.name.sources}"/>
                 <include name="${archive.name.javadoc}"/>
+                <include name="${archive.name.cryptoapi}"/>
+                <include name="${archive.name.cryptoapi_security}"/>
             </fileset>
             <fileset dir="${build.documentation}">
                 <include name="release_notes.html"/>

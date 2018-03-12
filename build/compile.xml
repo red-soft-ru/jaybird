@@ -4,7 +4,7 @@
     <!-- Compiles the source code                                            -->
     <!-- =================================================================== -->
     <target name="compile"
-            depends="compile-j2ee, compile-driver, compile-tests, compile-etc, compile-resources, compile-stylesheets"/>
+            depends="compile-j2ee, compile-driver, compile-cryptoapi, compile-cryptoapi_security, compile-tests, compile-etc, compile-resources, compile-stylesheets"/>
 
     <!-- calling this unjar a compile is stretching the truth a bit-->
     <target name="compile-j2ee" depends="init">
@@ -164,6 +164,35 @@
         </copy>
     </target>
 
+    <target name="compile-cryptoapi" depends="init">
+        <mkdir dir="${build.cryptoapi}"/>
+        <javac srcdir="${source.cryptoapi}"
+            destdir="${build.cryptoapi}"
+            target="${ant.java.version}"
+            debug="on"
+            deprecation="on"
+            optimize="on"
+            includes="**"
+            excludes="**/temp*"
+        >
+        <classpath refid="javac.cryptoapi.classpath"/>
+        </javac>
+    </target>
+
+    <target name="compile-cryptoapi_security" depends="init">
+        <mkdir dir="${build.cryptoapi_security}"/>
+        <javac srcdir="${source.cryptoapi_security}"
+            destdir="${build.cryptoapi_security}"
+            target="${ant.java.version}"
+            debug="on"
+            deprecation="on"
+            optimize="on"
+            includes="**"
+            excludes="**/temp*"
+        >
+        <classpath refid="javac.cryptoapi_security.classpath"/>
+        </javac>
+    </target>
     <!-- Compile stylesheets -->
     <target name="compile-stylesheets" depends="init">
         <mkdir dir="${build.stylesheets}"/>

@@ -37,6 +37,7 @@ public final class FbImmutableConnectionProperties extends AbstractImmutableAtta
     private final boolean columnLabelForName;
     private final DatabaseParameterBuffer extraDatabaseParameters;
     private final boolean useGSSAuth;
+    private final boolean verifyServerCertificate;
 
     /**
      * Copy constructor for FbConnectionProperties.
@@ -57,7 +58,7 @@ public final class FbImmutableConnectionProperties extends AbstractImmutableAtta
         columnLabelForName = src.isColumnLabelForName();
         extraDatabaseParameters = src.getExtraDatabaseParameters().deepCopy();
         useGSSAuth = src.isUseGSSAuth();
-
+        verifyServerCertificate = src.getVerifyServerCertificate();
     }
 
     @Override
@@ -82,6 +83,16 @@ public final class FbImmutableConnectionProperties extends AbstractImmutableAtta
 
     @Override
     public void setUseGSSAuth(boolean useGSSAuth) {
+        immutable();
+    }
+
+    @Override
+    public boolean getVerifyServerCertificate() {
+        return verifyServerCertificate;
+    }
+
+    @Override
+    public void setVerifyServerCertificate(boolean verify) {
         immutable();
     }
 

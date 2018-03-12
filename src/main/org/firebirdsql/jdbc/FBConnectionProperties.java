@@ -60,6 +60,9 @@ public class FBConnectionProperties implements FirebirdConnectionProperties, Ser
     public static final String USE_FIREBIRD_AUTOCOMMIT = "useFirebirdAutocommit";
     public static final String USE_GSS_AUTH = "useGSSAuth";
     public static final String WIRE_CRYPT_LEVEL = "wireCrypt";
+	public static final String CERTIFICATE = "certificate";
+    public static final String REPOSITORY_PIN = "repository_pin";
+    public static final String SERVER_CERTIFICATE = "serverCertificate";
 
     private Map<String, Object> properties = new HashMap<>();
     private String type;
@@ -367,6 +370,36 @@ public class FBConnectionProperties implements FirebirdConnectionProperties, Ser
     @Override
     public void setWireCrypt(String wireCrypt) {
         setStringProperty(WIRE_CRYPT_LEVEL, wireCrypt);
+    }
+	
+	@Override
+    public String getCertificate() {
+        return getStringProperty(CERTIFICATE);
+    }
+
+    @Override
+    public void setCertificate(String certificate) {
+        setStringProperty(CERTIFICATE, certificate);
+    }
+
+    @Override
+    public String getRepositoryPin() {
+        return getStringProperty(REPOSITORY_PIN);
+    }
+
+    @Override
+    public void setRepositoryPin(String pin) {
+        setStringProperty(REPOSITORY_PIN, pin);
+    }
+
+    @Override
+    public boolean getVerifyServerCertificate() {
+        return getBooleanProperty(SERVER_CERTIFICATE);
+    }
+
+    @Override
+    public void setVerifyServerCertificate(boolean verify) {
+        setBooleanProperty(SERVER_CERTIFICATE, verify);
     }
 
     public void setNonStandardProperty(String propertyMapping) {

@@ -426,6 +426,36 @@ public class FBManagedConnectionFactory implements ManagedConnectionFactory, Fir
     public void setWireCrypt(String wireCrypt) {
         connectionProperties.setWireCrypt(wireCrypt);
     }
+	
+	@Override
+    public String getCertificate() {
+        return connectionProperties.getCertificate();
+    }
+
+    @Override
+    public void setCertificate(String certificate) {
+        connectionProperties.setCertificate(certificate);
+    }
+
+    @Override
+    public String getRepositoryPin() {
+        return connectionProperties.getRepositoryPin();
+    }
+
+    @Override
+    public void setRepositoryPin(String pin) {
+        connectionProperties.setRepositoryPin(pin);
+    }
+
+    @Override
+    public boolean getVerifyServerCertificate() {
+        return connectionProperties.getVerifyServerCertificate();
+    }
+
+    @Override
+    public void setVerifyServerCertificate(boolean verify) {
+        connectionProperties.setVerifyServerCertificate(verify);
+    }
 
     public int hashCode() {
         if (hashCode != 0) 

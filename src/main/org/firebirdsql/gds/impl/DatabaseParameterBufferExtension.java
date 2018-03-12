@@ -55,6 +55,7 @@ public interface DatabaseParameterBufferExtension extends DatabaseParameterBuffe
     int NO_RESULT_SET_TRACKING          = ISCConstants.isc_dpb_no_result_set_tracking;
     int RESULT_SET_HOLDABLE             = ISCConstants.isc_dpb_result_set_holdable;
     int FILENAME_CHARSET                = ISCConstants.isc_dpb_filename_charset;
+	int CERTIFICATE_BASE64              = ISCConstants.isc_dpb_certificate_base64;
     @SuppressWarnings("DeprecatedIsStillUsed")
     @Deprecated
     int OCTETS_AS_BYTES                 = ISCConstants.isc_dpb_octets_as_bytes;
@@ -85,7 +86,8 @@ public interface DatabaseParameterBufferExtension extends DatabaseParameterBuffe
         SO_TIMEOUT,
         COLUMN_LABEL_FOR_NAME,
         USE_FIREBIRD_AUTOCOMMIT,
-        WIRE_CRYPT_LEVEL
+        WIRE_CRYPT_LEVEL,
+		CERTIFICATE_BASE64
     };
 
     /**

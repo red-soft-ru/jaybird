@@ -167,6 +167,51 @@ public abstract class FBAbstractCommonDataSource extends RootCommonDataSource im
     }
 
     @Override
+    public String getCertificate() {
+        synchronized (lock) {
+            return connectionProperties.getCertificate();
+        }
+    }
+
+    @Override
+    public void setCertificate(String certificate) {
+        synchronized (lock) {
+            checkNotStarted();
+            connectionProperties.setCertificate(certificate);
+        }
+    }
+
+    @Override
+    public String getRepositoryPin() {
+        synchronized (lock) {
+            return connectionProperties.getRepositoryPin();
+        }
+    }
+
+    @Override
+    public void setRepositoryPin(String pin) {
+        synchronized (lock) {
+            checkNotStarted();
+            connectionProperties.setRepositoryPin(pin);
+        }
+    }
+
+    @Override
+    public boolean getVerifyServerCertificate() {
+        synchronized (lock) {
+            return connectionProperties.getVerifyServerCertificate();
+        }
+    }
+
+    @Override
+    public void setVerifyServerCertificate(boolean verify) {
+        synchronized (lock) {
+            checkNotStarted();
+            connectionProperties.setVerifyServerCertificate(verify);
+        }
+    }
+
+    @Override
     public String getRoleName() {
         synchronized (lock) {
             return connectionProperties.getRoleName();

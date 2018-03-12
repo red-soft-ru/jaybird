@@ -74,6 +74,37 @@ ARCHITECTURE=classic
 
 uninstallrdb
 
+echo "Download fbt"
+(git clone --depth 1 http://git.red-soft.biz/red-database/fbt-repository.git) || die "Unable to checkout tests" 
+
+CPROCSP_ARCH=amd64
+if [ "$ARCH" == "x86" ]; then
+	CPROCSP_ARCH=ia32
+fi
+
+KEYS_DIR=/var/opt/cprocsp/keys
+if [ "$USER" == "jenkins" ]; then
+    sudo mkdir -p $KEYS_DIR/jenkins
+    sudo chmod 700 $KEYS_DIR/jenkins
+    sudo cp fbt-repository/files/cert/RaUser-d.000/ $KEYS_DIR/jenkins -rfv
+	sudo chown jenkins:jenkins $KEYS_DIR/jenkins -R
+	chmod 700 $KEYS_DIR/jenkins/RaUser-d.000
+else
+    mkdir -p $KEYS_DIR/root
+    chmod 700 $KEYS_DIR/root
+    cp fbt-repository/files/cert/RaUser-d.000/ $KEYS_DIR/root -rfv
+    chmod 700 $KEYS_DIR/root/RaUser-d.000
+fi
+
+if [ "$USER" == "jenkins" ]; then
+	sudo chown jenkins:jenkins $KEYS_DIR/jenkins -R
+	sudo -u jenkins /opt/cprocsp/bin/$CPROCSP_ARCH/certmgr -inst -cont '\\.\HDIMAGE\RaUser-de9e345e-157d-4d82-80d1-2098c0f28992'
+else
+	sudo /opt/cprocsp/bin/$CPROCSP_ARCH/certmgr -inst -cont '\\.\HDIMAGE\RaUser-de9e345e-157d-4d82-80d1-2098c0f28992'
+fi	
+
+sudo openssl x509 -in fbt-repository/files/cert/Смирнов.cer -inform der -outform pem -out ./testuser.cer
+
 echo Will use build $RDB_VERSION for testing
 
 echo "Downloading RedDatabase $RDB_BUILD_ID"
@@ -91,11 +122,16 @@ sudo sed -i 's/#KrbServerKeyfile/KrbServerKeyfile/g' /opt/RedDatabase/firebird.c
 sudo sed -i 's/#KrbServiceName = rdb_server/KrbServiceName = rdb_server/g' /opt/RedDatabase/firebird.conf
 sudo sed -i 's/#KrbHostName =/KrbHostName = localhost/g' /opt/RedDatabase/firebird.conf
 
+sudo sed -i 's/#VerifyCertChain = 1/VerifyCertChain = 0/g' /opt/RedDatabase/firebird.conf
+sudo sed -i 's/#CertUsernameDN = CN/CertUsernameDN = E/g' /opt/RedDatabase/firebird.conf
+
 rdb_control restart
 sleep 5
 
 echo rdb_server | kinit rdb_server/localhost
 klist
+
+sudo /opt/RedDatabase/bin/gsec -user SYSDBA -password masterkey -add artyom.smirnov@red-soft.ru -pw q3rgu7Ah
 
 export JAVA_HOME
 ant -Dtest.report.dir=$TEST_DIR -Dtest.db.dir=$TEST_DIR -Djdk=${JDK_VERSION} -Dversion=$JAYBIRD_VERSION -Dbindir=${BINDIR} -Dsrcdir=${SRCDIR} -f test.xml

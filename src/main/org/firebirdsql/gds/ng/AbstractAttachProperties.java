@@ -35,11 +35,14 @@ public abstract class AbstractAttachProperties<T extends IAttachProperties> impl
     private String roleName;
     private String charSet;
     private String encoding;
+    private String certificate;
+    private String repositoryPin;
     private int socketBufferSize = IAttachProperties.DEFAULT_SOCKET_BUFFER_SIZE;
     private int soTimeout = IAttachProperties.DEFAULT_SO_TIMEOUT;
     private int connectTimeout = IAttachProperties.DEFAULT_CONNECT_TIMEOUT;
     private boolean useGSSAuth = IAttachProperties.DEFAULT_GSS_AUTH;
     private WireCrypt wireCrypt = WireCrypt.DEFAULT;
+	private boolean verifyServerCertificate = IAttachProperties.DEFAULT_SERVER_CERTIFICATE;
 
     /**
      * Copy constructor for IAttachProperties.
@@ -64,6 +67,9 @@ public abstract class AbstractAttachProperties<T extends IAttachProperties> impl
             connectTimeout = src.getConnectTimeout();
             useGSSAuth = src.isUseGSSAuth();
             wireCrypt = src.getWireCrypt();
+			certificate = src.getCertificate();
+            repositoryPin = src.getRepositoryPin();
+            verifyServerCertificate = src.getVerifyServerCertificate();
         }
     }
 
@@ -203,6 +209,39 @@ public abstract class AbstractAttachProperties<T extends IAttachProperties> impl
     @Override
     public void setWireCrypt(WireCrypt wireCrypt) {
         this.wireCrypt = requireNonNull(wireCrypt, "wireCrypt");
+        dirtied();
+    }
+	
+	@Override
+    public String getCertificate() {
+        return certificate;
+    }
+
+    @Override
+    public void setCertificate(String certificate) {
+        this.certificate = certificate;
+        dirtied();
+    }
+
+    @Override
+    public String getRepositoryPin() {
+        return repositoryPin;
+    }
+
+    @Override
+    public void setRepositoryPin(String pin) {
+        this.repositoryPin = pin;
+        dirtied();
+    }
+
+    @Override
+    public boolean getVerifyServerCertificate() {
+        return verifyServerCertificate;
+    }
+
+    @Override
+    public void setVerifyServerCertificate(boolean verify) {
+        this.verifyServerCertificate = verify;
         dirtied();
     }
 
