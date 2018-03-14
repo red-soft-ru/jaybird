@@ -110,9 +110,9 @@ mkdir -p $TEST_DIR
 mkdir -p $WORKSPACE/results/jdk${JDK_VERSION}
 sudo chmod 777 $TEST_DIR
 
-sudo sed -i 's/#AuthServer = Srp/AuthServer = Multifactor/g' /opt/RedDatabase/firebird.conf
-sudo sed -i 's/#AuthClient = Srp, Win_Sspi, Legacy_Auth, Gss, Multifactor/AuthClient = Multifactor/g' /opt/RedDatabase/firebird.conf
-sudo sed -i 's/#UserManager = Srp/UserManager = Multifactor_Manager/g' /opt/RedDatabase/firebird.conf
+sudo sed -i 's/#AuthServer = /AuthServer = Legacy_Auth, Multifactor/g' /opt/RedDatabase/firebird.conf
+sudo sed -i 's/#AuthClient = /AuthClient = Legacy_Auth, Gss, Multifactor/g' /opt/RedDatabase/firebird.conf
+sudo sed -i 's/#UserManager =/UserManager = Srp, Multifactor_Manager /g' /opt/RedDatabase/firebird.conf
 sudo sed -i 's/#WireCrypt = Enabled (for client) \/ Required (for server)/WireCrypt = Enabled/g' /opt/RedDatabase/firebird.conf
 
 sudo sed -i 's/#KrbServerKeyfile/KrbServerKeyfile/g' /opt/RedDatabase/firebird.conf
