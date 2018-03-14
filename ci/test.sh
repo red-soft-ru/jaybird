@@ -63,13 +63,14 @@ check_variable JAVA_HOME
 check_variable WORKSPACE
 
 OS=linux
-RDB_VERSION=2.6.0.13191
+RDB_VERSION=3.0.0.917
 TEST_DIR=/tmp/jaybird_test
 ARCH=`arch`
 if [ "$ARCH" == "i686" ]; then
 	ARCH="x86"
 fi
-RDB_URL=http://artifactory.red-soft.biz/list/red-database-rc/red-database/linux-${ARCH}/${RDB_VERSION}/linux-${ARCH}-${RDB_VERSION}-installer.bin
+
+RDB_URL=http://artifactory.red-soft.biz/list/red-database-rc/red-database/linux-${ARCH}/${RDB_VERSION}/linux-${ARCH}-${RDB_VERSION}.bin
 ARCHITECTURE=classic
 
 uninstallrdb
@@ -111,27 +112,32 @@ echo "Downloading RedDatabase $RDB_BUILD_ID"
 (wget -q "$RDB_URL" -O /tmp/installer.bin && chmod +x /tmp/installer.bin) || die "Unable to download RedDatabase"
 
 echo "Installing RedDatabase"
-sudo /tmp/installer.bin --DBAPasswd masterkey --mode unattended --architecture $ARCHITECTURE || die "Unable to install RedDatabase"
+sudo /tmp/installer.bin --mode unattended --sysdba_password masterkey --architecture $ARCHITECTURE --debuglevel 4 || die "Unable to install RedDatabase"
 sudo rm -f /tmp/installer.bin
 sudo rm -rf $TEST_DIR
 mkdir -p $TEST_DIR
 mkdir -p $WORKSPACE/results/jdk${JDK_VERSION}
 sudo chmod 777 $TEST_DIR
 
+sudo sed -i 's/#AuthServer = Srp/AuthServer = Multifactor/g' /opt/RedDatabase/firebird.conf
+sudo sed -i 's/#AuthClient = Srp, Win_Sspi, Legacy_Auth, Gss, Multifactor/AuthClient = Multifactor/g' /opt/RedDatabase/firebird.conf
+sudo sed -i 's/#UserManager = Srp/UserManager = Multifactor_Manager/g' /opt/RedDatabase/firebird.conf
+sudo sed -i 's/#WireCrypt = Enabled (for client) \/ Required (for server)/WireCrypt = Enabled/g' /opt/RedDatabase/firebird.conf
+
 sudo sed -i 's/#KrbServerKeyfile/KrbServerKeyfile/g' /opt/RedDatabase/firebird.conf
 sudo sed -i 's/#KrbServiceName = rdb_server/KrbServiceName = rdb_server/g' /opt/RedDatabase/firebird.conf
-sudo sed -i 's/#KrbHostName =/KrbHostName = localhost/g' /opt/RedDatabase/firebird.conf
+sudo sed -i 's/#GssServiceName =/GssServiceName = localhost/g' /opt/RedDatabase/firebird.conf
 
-sudo sed -i 's/#VerifyCertChain = 1/VerifyCertChain = 0/g' /opt/RedDatabase/firebird.conf
+sudo sed -i 's/#CertVerifyChain = 1/CertVerifyChain = 0/g' /opt/RedDatabase/firebird.conf
 sudo sed -i 's/#CertUsernameDN = CN/CertUsernameDN = E/g' /opt/RedDatabase/firebird.conf
+
+sudo /opt/RedDatabase/bin/isql -user SYSDBA -password masterkey /opt/RedDatabase/security3.fdb -i user.sql
 
 rdb_control restart
 sleep 5
 
 echo rdb_server | kinit rdb_server/localhost
 klist
-
-sudo /opt/RedDatabase/bin/gsec -user SYSDBA -password masterkey -add artyom.smirnov@red-soft.ru -pw q3rgu7Ah
 
 export JAVA_HOME
 ant -Dtest.report.dir=$TEST_DIR -Dtest.db.dir=$TEST_DIR -Djdk=${JDK_VERSION} -Dversion=$JAYBIRD_VERSION -Dbindir=${BINDIR} -Dsrcdir=${SRCDIR} -f test.xml
