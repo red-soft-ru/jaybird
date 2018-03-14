@@ -157,7 +157,7 @@ def build(String jdk, archive_prefix, version_tag)
 
 def test(jdk, archive_prefix, version)
 {
-    node('jdk' + jdk + '&&tester&&linux')
+    node('jdk' + jdk + '&&tester&&linux&&x86_64')
     {
         stage('Test on JDK' + jdk)
         {
