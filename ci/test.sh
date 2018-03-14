@@ -34,14 +34,14 @@ function fail()
 
 function rdb_control()
 {
-	if [ "${ARCHITECTURE}" == "super" -o "${ARCHITECTURE}" == "superclassic" ]; then
+	if [ "${ARCHITECTURE}" == "Super" -o "${ARCHITECTURE}" == "SuperClassic" ]; then
 		if [ "${SYSTEMCTL}" == "1" ]; then
 			sudo systemctl reset-failed
 			sudo systemctl $1 firebird-super || true
 		else
 			sudo service firebird $1 || true
 		fi
-	elif [ "${ARCHITECTURE}" == "classic" ]; then
+	elif [ "${ARCHITECTURE}" == "Classic" ]; then
 		if [ "${SYSTEMCTL}" == "1" ]; then
 			sudo systemctl reset-failed
 			sudo systemctl $1 firebird-classic.socket || true
