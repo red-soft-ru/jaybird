@@ -122,8 +122,6 @@ sudo sed -i 's/#GssServiceName =/GssServiceName = localhost/g' /opt/RedDatabase/
 sudo sed -i 's/#CertVerifyChain = 1/CertVerifyChain = 0/g' /opt/RedDatabase/firebird.conf
 sudo sed -i 's/#CertUsernameDN = CN/CertUsernameDN = E/g' /opt/RedDatabase/firebird.conf
 
-sudo /opt/RedDatabase/bin/isql -user SYSDBA -password masterkey /opt/RedDatabase/security3.fdb -i user.sql
-
 echo "Restart RDB..."
 echo "Stopping RDB..."
 ps aux|grep rdb||true
@@ -133,6 +131,7 @@ echo "Killing all RDB processes..."
 sudo pkill -9 rdb.\* || true
 ps aux|grep rdb||true
 sleep 5
+sudo /opt/RedDatabase/bin/isql -user SYSDBA -password masterkey /opt/RedDatabase/security3.fdb -i user.sql
 echo "Start RDB..."
 rdb_control start
 ps aux|grep rdb||true
