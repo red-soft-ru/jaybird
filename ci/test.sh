@@ -34,21 +34,12 @@ function fail()
 
 function rdb_control()
 {
-	if [ "${ARCHITECTURE}" == "super" -o "${ARCHITECTURE}" == "superclassic" ]; then
-		if [ "${SYSTEMCTL}" == "1" ]; then
-			sudo systemctl reset-failed
-			sudo systemctl $1 firebird-super || true
-		else
-			sudo service firebird $1 || true
-		fi
-	elif [ "${ARCHITECTURE}" == "classic" ]; then
-		if [ "${SYSTEMCTL}" == "1" ]; then
-			sudo systemctl reset-failed
-			sudo systemctl $1 firebird-classic.socket || true
-		else
-			sudo service xinetd $1 || true
-		fi
-	fi
+    if [ "${SYSTEMCTL}" == "1" ]; then
+        sudo systemctl reset-failed
+        sudo systemctl $1 firebird || true
+    else
+        sudo service firebird $1 || true
+    fi
 }
 
 command -v systemctl >/dev/null 2>&1 && SYSTEMCTL=1 || SYSTEMCTL=0
@@ -133,8 +124,18 @@ sudo sed -i 's/#CertUsernameDN = CN/CertUsernameDN = E/g' /opt/RedDatabase/fireb
 
 sudo /opt/RedDatabase/bin/isql -user SYSDBA -password masterkey /opt/RedDatabase/security3.fdb -i user.sql
 
-rdb_control restart
+echo "Restart RDB..."
+echo "Stopping RDB..."
+ps aux|grep rdb||true
+rdb_control stop
 sleep 5
+echo "Killing all RDB processes..."
+sudo pkill -9 rdb.\* || true
+ps aux|grep rdb||true
+sleep 5
+echo "Start RDB..."
+rdb_control start
+ps aux|grep rdb||true
 
 echo rdb_server | kinit rdb_server/localhost
 klist
