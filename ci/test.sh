@@ -136,6 +136,18 @@ echo "Start RDB..."
 rdb_control start
 ps aux|grep rdb||true
 
+(nc -h 2>&1|grep -q 'Zero-I/O mode') && NC="nc -z" || NC="nc --send-only"
+
+echo "Waiting until port 3050 opened..."
+try=10
+while ! $NC localhost 3050 </dev/null; do
+    sleep 5
+    try=$((try-1))
+    if [ $try = 0 ]; then
+        die "Unable to connect to RDB..."
+    fi
+done
+
 echo rdb_server | kinit rdb_server/localhost
 klist
 
