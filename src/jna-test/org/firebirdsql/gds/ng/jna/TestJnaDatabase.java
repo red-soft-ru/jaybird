@@ -82,7 +82,7 @@ public class TestJnaDatabase {
     public void testBasicAttach() throws Exception {
         FBManager fbManager = createFBManager();
         defaultDatabaseSetUp(fbManager);
-        try (JnaDatabase db = factory.connect(connectionInfo)) {
+        try (JnaDatabase db = (JnaDatabase) factory.connect(connectionInfo)) {
             db.attach();
 
             assertTrue("Expected isAttached() to return true", db.isAttached());
@@ -102,7 +102,7 @@ public class TestJnaDatabase {
         FBManager fbManager = createFBManager();
         defaultDatabaseSetUp(fbManager);
 
-        try (JnaDatabase db = factory.connect(connectionInfo)) {
+        try (JnaDatabase db = (JnaDatabase) factory.connect(connectionInfo)) {
             db.attach();
 
             //Second attach should throw exception
@@ -118,7 +118,7 @@ public class TestJnaDatabase {
                 FBTestProperties.GDS_TYPE, is(not(EmbeddedGDSFactoryPlugin.EMBEDDED_TYPE_NAME)));
         // set invalid password
         connectionInfo.setPassword("abcd");
-        try (JnaDatabase db = factory.connect(connectionInfo)) {
+        try (JnaDatabase db = (JnaDatabase) factory.connect(connectionInfo)) {
 
             expectedException.expect(allOf(
                     isA(SQLException.class),
@@ -135,7 +135,7 @@ public class TestJnaDatabase {
         // set invalid database
         final String invalidDatabaseName = FBTestProperties.getDatabasePath() + "doesnotexist";
         connectionInfo.setDatabaseName(invalidDatabaseName);
-        try (JnaDatabase db = factory.connect(connectionInfo)) {
+        try (JnaDatabase db = (JnaDatabase) factory.connect(connectionInfo)) {
 
             expectedException.expect(allOf(
                     isA(SQLException.class),
@@ -164,7 +164,7 @@ public class TestJnaDatabase {
     public void testBasicCreateAndDrop() throws Exception {
         connectionInfo.getExtraDatabaseParameters()
                 .addArgument(ISCConstants.isc_dpb_sql_dialect, 3);
-        JnaDatabase db = factory.connect(connectionInfo);
+        JnaDatabase db = (JnaDatabase) factory.connect(connectionInfo);
         File dbFile = new File(connectionInfo.getDatabaseName());
         try {
             db.createDatabase();
@@ -192,7 +192,7 @@ public class TestJnaDatabase {
         FBManager fbManager = createFBManager();
         defaultDatabaseSetUp(fbManager);
         try {
-            JnaDatabase db = factory.connect(connectionInfo);
+            JnaDatabase db = (JnaDatabase) factory.connect(connectionInfo);
             db.dropDatabase();
         } finally {
             defaultDatabaseTearDown(fbManager);
@@ -201,7 +201,7 @@ public class TestJnaDatabase {
 
     @Test
     public void testDetach_NotConnected() throws Exception {
-        JnaDatabase db = factory.connect(connectionInfo);
+        JnaDatabase db = (JnaDatabase) factory.connect(connectionInfo);
 
         // Note: the error is different from the one in the pure java implementation as we cannot discern between
         // not connected and not attached
@@ -217,7 +217,7 @@ public class TestJnaDatabase {
         FBManager fbManager = createFBManager();
         defaultDatabaseSetUp(fbManager);
         try {
-            JnaDatabase db = factory.connect(connectionInfo);
+            JnaDatabase db = (JnaDatabase) factory.connect(connectionInfo);
             try {
                 db.attach();
 
@@ -238,7 +238,7 @@ public class TestJnaDatabase {
         defaultDatabaseSetUp(fbManager);
 
         try {
-            JnaDatabase db = factory.connect(connectionInfo);
+            JnaDatabase db = (JnaDatabase) factory.connect(connectionInfo);
             FbTransaction transaction = null;
             try {
                 db.attach();
@@ -273,7 +273,7 @@ public class TestJnaDatabase {
         FBManager fbManager = createFBManager();
         defaultDatabaseSetUp(fbManager);
         try {
-            JnaDatabase db = factory.connect(connectionInfo);
+            JnaDatabase db = (JnaDatabase) factory.connect(connectionInfo);
             try {
                 db.attach();
                 assumeTrue("expected database attached", db.isAttached());
@@ -292,7 +292,7 @@ public class TestJnaDatabase {
 
     @Test
     public void testExecuteImmediate_createDatabase() throws Exception {
-        JnaDatabase db = factory.connect(connectionInfo);
+        JnaDatabase db = (JnaDatabase) factory.connect(connectionInfo);
         try {
             String createDb = String.format("CREATE DATABASE '%s' USER '%s' PASSWORD '%s'",
                     getDatabasePath(), DB_USER, DB_PASSWORD);

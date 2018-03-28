@@ -18,13 +18,13 @@
  */
 package org.firebirdsql.gds.ng.jna;
 
-import org.firebirdsql.gds.ng.FbDatabaseFactory;
-import org.firebirdsql.gds.ng.IAttachProperties;
-import org.firebirdsql.gds.ng.IConnectionProperties;
-import org.firebirdsql.gds.ng.IServiceProperties;
+import org.firebirdsql.gds.ng.*;
 import org.firebirdsql.jna.fbclient.FbClientLibrary;
 
+import java.nio.ByteBuffer;
 import java.sql.SQLException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Common implementation for client library and embedded database factory.
@@ -35,10 +35,27 @@ import java.sql.SQLException;
 public abstract class AbstractNativeDatabaseFactory implements FbDatabaseFactory {
 
     @Override
-    public JnaDatabase connect(IConnectionProperties connectionProperties) throws SQLException {
-        final JnaDatabaseConnection jnaDatabaseConnection = new JnaDatabaseConnection(getClientLibrary(),
-                filterProperties(connectionProperties));
-        return jnaDatabaseConnection.identify();
+    public FbDatabase connect(IConnectionProperties connectionProperties) throws SQLException {
+
+        // TODO check the correctness of the required interface
+        FbClientLibrary clientLibrary = getClientLibrary();
+        ByteBuffer byteBuffer = ByteBuffer.allocate(256);
+        clientLibrary.isc_get_client_version(byteBuffer);
+        String clientVersion = new String(byteBuffer.array()).trim();
+        Pattern p = Pattern.compile("\\s([\\d]+[.][\\d]+)\\b");
+        Matcher m = p.matcher(clientVersion);
+        m.find();
+        String version = m.group(1);
+        int majorVersion = version.charAt(0) - '0';
+        if (majorVersion >= 3) {
+            final IDatabaseConnectionImpl databaseConnection = new IDatabaseConnectionImpl(clientLibrary,
+                    filterProperties(connectionProperties));
+            return databaseConnection.identify();
+        } else {
+            final JnaDatabaseConnection jnaDatabaseConnection = new JnaDatabaseConnection(clientLibrary,
+                    filterProperties(connectionProperties));
+            return jnaDatabaseConnection.identify();
+        }
     }
 
     @Override
