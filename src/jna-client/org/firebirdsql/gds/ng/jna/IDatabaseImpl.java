@@ -15,6 +15,11 @@ import java.sql.SQLException;
 
 import static org.firebirdsql.gds.ISCConstants.fb_cancel_abort;
 
+/**
+ *
+ * @author <a href="mailto:vasiliy.yashkov@red-soft.ru">Vasiliy Yashkov</a>
+ * @since 4.0
+ */
 public class IDatabaseImpl extends AbstractFbDatabase<IDatabaseConnectionImpl>
         implements JnaAttachment, TransactionListener {
 
@@ -251,6 +256,16 @@ public class IDatabaseImpl extends AbstractFbDatabase<IDatabaseConnectionImpl>
     @Override
     public void cancelEvent(EventHandle eventHandle) throws SQLException {
 
+    }
+
+    @Override
+    public FbBatch createBatch(FbTransaction transaction, String statement, FbMessageMetadata metadata, BatchParameterBuffer parameters) throws SQLException {
+        return new IBatchImpl(this, transaction, statement, metadata, parameters);
+    }
+
+    @Override
+    public FbMetadataBuilder getMetadataBuilder(int fieldCount) throws SQLException  {
+        return new IMetadataBuilderImpl(this, fieldCount);
     }
 
 

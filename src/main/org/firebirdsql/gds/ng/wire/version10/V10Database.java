@@ -27,10 +27,7 @@ import org.firebirdsql.gds.impl.wire.XdrInputStream;
 import org.firebirdsql.gds.impl.wire.XdrOutputStream;
 import org.firebirdsql.gds.impl.wire.auth.AuthSspi;
 import org.firebirdsql.gds.impl.wire.auth.GDSAuthException;
-import org.firebirdsql.gds.ng.FbExceptionBuilder;
-import org.firebirdsql.gds.ng.FbStatement;
-import org.firebirdsql.gds.ng.FbTransaction;
-import org.firebirdsql.gds.ng.TransactionState;
+import org.firebirdsql.gds.ng.*;
 import org.firebirdsql.gds.ng.fields.BlrCalculator;
 import org.firebirdsql.gds.ng.wire.*;
 import org.firebirdsql.gds.ng.wire.auth.GSSClient;
@@ -85,6 +82,16 @@ public class V10Database extends AbstractFbWireDatabase implements FbWireDatabas
     @Override
     public final int getHandle() {
         return handle;
+    }
+
+    @Override
+    public FbBatch createBatch(FbTransaction transaction, String statement, FbMessageMetadata metadata, BatchParameterBuffer parameters) throws SQLException {
+        throw new SQLException("Not implemented");
+    }
+
+    @Override
+    public FbMetadataBuilder getMetadataBuilder(int fieldCount) throws SQLException {
+        throw new SQLException("Not implemented");
     }
 
     @Override

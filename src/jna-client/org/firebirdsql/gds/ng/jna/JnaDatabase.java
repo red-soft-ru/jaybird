@@ -471,6 +471,16 @@ public class JnaDatabase extends AbstractFbDatabase<JnaDatabaseConnection>
         }
     }
 
+    @Override
+    public FbBatch createBatch(FbTransaction transaction, String statement, FbMessageMetadata metadata, BatchParameterBuffer parameters) throws SQLException {
+        throw new SQLException("Not implemented");
+    }
+
+    @Override
+    public FbMetadataBuilder getMetadataBuilder(int fieldCount) throws SQLException  {
+        throw new SQLException("Not implemented");
+    }
+
     private void processStatusVector() throws SQLException {
         processStatusVector(statusVector, getDatabaseWarningCallback());
     }
