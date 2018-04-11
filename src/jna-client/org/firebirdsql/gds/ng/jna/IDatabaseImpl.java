@@ -2,18 +2,19 @@ package org.firebirdsql.gds.ng.jna;
 
 import org.firebirdsql.gds.*;
 import org.firebirdsql.gds.impl.DatabaseParameterBufferExtension;
-import org.firebirdsql.gds.impl.GDSServerVersion;
 import org.firebirdsql.gds.ng.*;
 import org.firebirdsql.gds.ng.listeners.TransactionListener;
+import org.firebirdsql.jdbc.SQLStateConstants;
 import org.firebirdsql.jna.fbclient.FbClientLibrary;
 import org.firebirdsql.jna.fbclient.FbInterface.*;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.sql.SQLException;
+import java.sql.SQLNonTransientException;
 
 import static org.firebirdsql.gds.ISCConstants.fb_cancel_abort;
+import static org.firebirdsql.gds.ng.TransactionHelper.checkTransactionActive;
 
 /**
  *
@@ -230,7 +231,40 @@ public class IDatabaseImpl extends AbstractFbDatabase<IDatabaseConnectionImpl>
 
     @Override
     public void executeImmediate(String statementText, FbTransaction transaction) throws SQLException {
+        try {
+            if (isAttached()) {
+                if (transaction == null) {
+                    throw FbExceptionBuilder
+                            .forException(JaybirdErrorCodes.jb_executeImmediateRequiresTransactionAttached)
+                            .toFlatSQLException();
+                } else if (!(transaction instanceof ITransactionImpl)) {
+                    throw new SQLNonTransientException(
+                            String.format("Invalid transaction handle type: %s, expected: %s",
+                                    transaction.getClass(), ITransactionImpl.class),
+                            SQLStateConstants.SQL_STATE_GENERAL_ERROR);
+                }
+                checkTransactionActive(transaction);
+            } else if (transaction != null) {
+                throw FbExceptionBuilder
+                        .forException(JaybirdErrorCodes.jb_executeImmediateRequiresNoTransactionDetached)
+                        .toFlatSQLException();
+            }
 
+            synchronized (getSynchronizationObject()) {
+
+                attachment.execute(status, ((ITransactionImpl)transaction).getTransaction(), statementText.length(),
+                        statementText, getConnectionDialect(),null, null,
+                        null, null);
+
+                if (!isAttached()) {
+                    setAttached();
+                    afterAttachActions();
+                }
+            }
+        } catch (SQLException e) {
+            exceptionListenerDispatcher.errorOccurred(e);
+            throw e;
+        }
     }
 
     @Override
