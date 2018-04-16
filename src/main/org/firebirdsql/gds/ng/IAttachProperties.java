@@ -240,6 +240,30 @@ public interface IAttachProperties<T extends IAttachProperties> {
     void setUseGSSAuth(boolean useGSSAuth);
 
     /**
+     * Get the wire encryption level.
+     * <p>
+     * NOTE: Implementer should take care to return {@link WireCrypt#DEFAULT} if
+     * the value hasn't been set yet.
+     * </p>
+     *
+     * @return Wire encryption level
+     * @since 3.0.4
+     */
+    WireCrypt getWireCrypt();
+
+    /**
+     * Set the wire encryption level.
+     * <p>
+     * NOTE: Implementer should take care to use {@link WireCrypt#DEFAULT} if
+     * the value hasn't been set yet.
+     * </p>
+     *
+     * @param wireCrypt Wire encryption level ({@code null} not allowed)
+     * @since 3.0.4
+     */
+    void setWireCrypt(WireCrypt wireCrypt);
+
+    /**
      * @return An immutable version of this instance as an implementation of {@link IAttachProperties}
      */
     T asImmutable();

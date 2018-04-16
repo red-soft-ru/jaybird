@@ -32,7 +32,7 @@ package org.firebirdsql.gds;
  */
 public enum ParameterTagMapping {
 
-    DPB() {
+    DPB {
         @Override
         public int getUserNameTag() {
             return ISCConstants.isc_dpb_user_name;
@@ -69,11 +69,16 @@ public enum ParameterTagMapping {
         }
 
         @Override
+        public int getConfigTag() {
+            return ISCConstants.isc_dpb_config;
+        }
+
+        @Override
         public int getGSSAuthTag() {
             return ISCConstants.isc_dpb_gss;
         }
     },
-    SPB() {
+    SPB {
 
         @Override
         public int getUserNameTag() {
@@ -111,6 +116,11 @@ public enum ParameterTagMapping {
         }
 
         @Override
+        public int getConfigTag() {
+            return ISCConstants.isc_spb_config;
+        }
+
+        @Override
         public int getGSSAuthTag() {
             return ISCConstants.isc_dpb_gss;
         }
@@ -123,5 +133,6 @@ public enum ParameterTagMapping {
     public abstract int getAuthPluginNameTag();
     public abstract int getAuthPluginListTag();
     public abstract int getSpecificAuthDataTag();
+    public abstract int getConfigTag();
     public abstract int getGSSAuthTag();
 }
