@@ -613,6 +613,16 @@ public class FBSADataSource implements DataSource, Serializable, Referenceable, 
     }
 
     @Override
+    public String getWireCrypt() {
+        return mcf.getWireCrypt();
+    }
+
+    @Override
+    public void setWireCrypt(String wireCrypt) {
+        mcf.setWireCrypt(wireCrypt);
+    }
+
+    @Override
     public boolean isUseGSSAuth() {
         return mcf.isUseGSSAuth();
     }
