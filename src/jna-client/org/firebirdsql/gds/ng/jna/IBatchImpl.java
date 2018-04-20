@@ -1,6 +1,9 @@
 package org.firebirdsql.gds.ng.jna;
 
+import com.sun.jna.Pointer;
+import com.sun.jna.ptr.LongByReference;
 import org.firebirdsql.gds.BatchParameterBuffer;
+import org.firebirdsql.gds.BlobParameterBuffer;
 import org.firebirdsql.gds.ng.*;
 import org.firebirdsql.jna.fbclient.FbInterface.*;
 import org.firebirdsql.jna.fbclient.ISC_QUAD;
@@ -16,16 +19,17 @@ public class IBatchImpl extends AbstractFbBatch {
 
     private IDatabaseImpl database = null;
     private IAttachment attachment = null;
-    private ITransaction transaction = null;
+    private FbTransaction transaction = null;
     private String statement = null;
     private IMessageMetadataImpl metadata = null;
     private BatchParameterBuffer parameterBuffer;
     private IBatch batch = null;
+    private IStatus status = null;
 
     public IBatchImpl(FbDatabase database, FbTransaction transaction, String statement, FbMessageMetadata metadata, BatchParameterBuffer parameters) throws FbException {
         super(database, transaction, statement, metadata, parameters);
 
-        this.transaction = ((ITransactionImpl)transaction).getTransaction();
+        this.transaction = transaction;
         this.database = (IDatabaseImpl)database;
         this.attachment = this.database.getAttachment();
         this.statement = statement;
@@ -35,12 +39,35 @@ public class IBatchImpl extends AbstractFbBatch {
         init();
     }
 
+    public IBatchImpl(FbDatabase database, FbTransaction transaction, String statement, BatchParameterBuffer parameters) throws FbException {
+        super(database, transaction, statement, parameters);
+
+        this.transaction = transaction;
+        this.database = (IDatabaseImpl)database;
+        this.attachment = this.database.getAttachment();
+        this.statement = statement;
+        this.parameterBuffer = parameters;
+
+        init();
+    }
+
     private void init() throws FbException {
         IMaster master = database.getMaster();
-        IStatus status = master.getStatus();
+        status = master.getStatus();
 
-        batch = attachment.createBatch(status, transaction, statement.length(), statement, database.getDatabaseDialect(),
-                metadata.getMetadata(), parameterBuffer.size(), parameterBuffer.toBytesWithType());
+        if (metadata == null) {
+            IStatementImpl statementImpl = new IStatementImpl(database);
+            try {
+                statementImpl.setTransaction(transaction);
+                statementImpl.prepare(statement);
+                metadata = (IMessageMetadataImpl) statementImpl.getInputMetadata();
+            } catch (SQLException e) {
+                throw new FbException(e);
+            }
+        }
+
+        batch = attachment.createBatch(status, ((ITransactionImpl)transaction).getTransaction(), statement.length(), statement, database.getDatabaseDialect(),
+                metadata.getMetadata(), parameterBuffer.toBytesWithType().length, parameterBuffer.toBytesWithType());
     }
 
     @Override
@@ -61,51 +88,76 @@ public class IBatchImpl extends AbstractFbBatch {
     }
 
     @Override
-    public void addBlob(int length, byte[] inBuffer, ISC_QUAD blobId, int parLength, byte[] par) throws SQLException {
+    public FbBlob addBlob(byte[] inBuffer, long blobId, BlobParameterBuffer buffer) throws SQLException {
+        CloseableMemory memory = new CloseableMemory(inBuffer.length);
+        memory.write(0, inBuffer, 0, inBuffer.length);
+        ISC_QUAD isc_quad = new ISC_QUAD();
+        LongByReference longByReference = new LongByReference(blobId);
+        longByReference.setPointer(isc_quad.getPointer());
+        longByReference.setValue(blobId);
 
+        if (buffer == null)
+            batch.addBlob(status, inBuffer.length, memory, isc_quad, 0, null);
+        else
+            batch.addBlob(status, inBuffer.length, memory, isc_quad, buffer.toBytesWithType().length, buffer.toBytesWithType());
+
+        return new IBlobImpl(database, (ITransactionImpl) transaction, buffer);
     }
 
     @Override
-    public void appendBlobData(int length, byte[] inBuffer) throws SQLException {
-
+    public void appendBlobData(byte[] inBuffer) throws SQLException {
+        CloseableMemory memory = new CloseableMemory(inBuffer.length);
+        memory.write(0, inBuffer, 0, inBuffer.length);
+        batch.appendBlobData(status, inBuffer.length, memory);
     }
 
     @Override
-    public void addBlobStream(int length, byte[] inBuffer) throws SQLException {
-
+    public void addBlobStream(byte[] inBuffer) throws SQLException {
+        CloseableMemory memory = new CloseableMemory(inBuffer.length);
+        memory.write(0, inBuffer, 0, inBuffer.length);
+        batch.addBlobStream(status, inBuffer.length, memory);
     }
 
     @Override
-    public void registerBlob(ISC_QUAD existingBlob, ISC_QUAD blobId) throws SQLException {
+    public void registerBlob(long existingBlob, long blobId) throws SQLException {
 
+        ISC_QUAD isc_quad = new ISC_QUAD();
+        LongByReference longByReference = new LongByReference(blobId);
+        longByReference.setPointer(isc_quad.getPointer());
+        longByReference.setValue(blobId);
+
+        ISC_QUAD exist_isc_quad = new ISC_QUAD();
+        LongByReference existLong = new LongByReference(existingBlob);
+        existLong.setPointer(exist_isc_quad.getPointer());
+        existLong.setValue(existingBlob);
+
+        batch.registerBlob(status, exist_isc_quad, isc_quad);
     }
 
     @Override
     public FbBatchCompletionState execute() throws SQLException {
-        IStatus status = database.getStatus();
+        IBatchCompletionState execute = batch.execute(status, ((ITransactionImpl)transaction).getTransaction());
 
-        IBatchCompletionState execute = batch.execute(status, transaction);
-
-        return new IBatchCompletionStateImpl(database, execute);
+        return new IBatchCompletionStateImpl(database, execute, status);
     }
 
     @Override
     public void cancel() throws SQLException {
-
+        batch.cancel(status);
     }
 
     @Override
     public int getBlobAlignment() throws SQLException {
-        return 0;
+        return batch.getBlobAlignment(status);
     }
 
     @Override
     public FbMessageMetadata getMetadata() throws SQLException {
-        return null;
+        return metadata;
     }
 
     @Override
     public void setDefaultBpb(int parLength, byte[] par) throws SQLException {
-
+        batch.setDefaultBpb(status, parLength, par);
     }
 }

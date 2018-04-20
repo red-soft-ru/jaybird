@@ -95,10 +95,11 @@ public class IStatementImpl extends AbstractFbStatement {
 
                 IStatus status = db.getStatus();
                 ITransactionImpl transaction = (ITransactionImpl) getTransaction();
-                statement = db.getAttachment().prepare(status, transaction.getTransaction(), (short) statementText.length(), statementText,
+                statement = db.getAttachment().prepare(status, transaction.getTransaction(), statementText.length(), statementText,
                         db.getConnectionDialect(), IStatement.PREPARE_PREFETCH_METADATA);
 
                 outMeta = statement.getOutputMetadata(status);
+                inMeta = statement.getInputMetadata(status);
 
                 final byte[] statementInfoRequestItems = getStatementInfoRequestItems();
                 final int responseLength = getDefaultSqlInfoSize();
@@ -194,11 +195,11 @@ public class IStatementImpl extends AbstractFbStatement {
                 final FieldDescriptor fieldDescriptor = rowDescriptor.getFieldDescriptor(idx);
                 if (fieldDescriptor.isVarying()) {
                     // Only send the data we need
-                    metadataBuilder.setLength(status, idx, (short) Math.min(fieldDescriptor.getLength(), fieldData.length));
+                    metadataBuilder.setLength(status, idx, Math.min(fieldDescriptor.getLength(), fieldData.length));
                     metadataBuilder.setType(status, idx, ISCConstants.SQL_VARYING);
                 } else if (fieldDescriptor.isFbType(ISCConstants.SQL_TEXT)) {
                     // Only send the data we need
-                    metadataBuilder.setLength(status, idx, (short) Math.min(fieldDescriptor.getLength(), fieldData.length));
+                    metadataBuilder.setLength(status, idx, Math.min(fieldDescriptor.getLength(), fieldData.length));
                     metadataBuilder.setType(status, idx, ISCConstants.SQL_TEXT);
                     metadataBuilder.setSubType(status, idx, fieldDescriptor.getSubType());
                 }
@@ -283,8 +284,8 @@ public class IStatementImpl extends AbstractFbStatement {
 
             synchronized (getSynchronizationObject()) {
                 checkStatementValid();
-                statement.getInfo(status, (short) requestItems.length, requestItems,
-                        (short) bufferLength, responseArr);
+                statement.getInfo(status, requestItems.length, requestItems,
+                        bufferLength, responseArr);
             }
 
             return responseArr;
@@ -324,5 +325,9 @@ public class IStatementImpl extends AbstractFbStatement {
     @Override
     public RowDescriptor emptyRowDescriptor() {
         return database.emptyRowDescriptor();
+    }
+
+    public FbMessageMetadata getInputMetadata() throws FbException {
+        return new IMessageMetadataImpl(database, inMeta);
     }
 }

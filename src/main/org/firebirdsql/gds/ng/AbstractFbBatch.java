@@ -38,6 +38,14 @@ public abstract class AbstractFbBatch implements FbBatch {
         this.metadata = metadata;
     }
 
+    protected AbstractFbBatch(FbDatabase database, FbTransaction transaction, String statement, BatchParameterBuffer batchParameterBuffer) {
+        this.syncObject = database.getSynchronizationObject();
+        this.database = database;
+        this.transaction = transaction;
+        this.batchParameterBuffer = batchParameterBuffer;
+        this.statement = statement;
+    }
+
     @Override
     public void addExceptionListener(ExceptionListener listener) {
         exceptionListenerDispatcher.addListener(listener);

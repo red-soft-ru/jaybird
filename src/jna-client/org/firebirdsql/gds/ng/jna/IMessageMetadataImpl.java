@@ -25,6 +25,11 @@ public class IMessageMetadataImpl implements FbMessageMetadata {
         this.metadata = this.metadataBuilder.getMetadata(database.getStatus());
     }
 
+    public IMessageMetadataImpl(IDatabaseImpl database, IMessageMetadata metadata) throws FbException {
+        this.database = database;
+        this.metadata = metadata;
+    }
+
     public IMessageMetadata getMetadata() {
         return metadata;
     }

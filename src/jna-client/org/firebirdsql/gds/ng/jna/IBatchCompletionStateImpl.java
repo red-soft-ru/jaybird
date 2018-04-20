@@ -15,10 +15,10 @@ public class IBatchCompletionStateImpl implements FbBatchCompletionState {
     private IUtil util;
     private IStatus status;
 
-    public IBatchCompletionStateImpl(IDatabaseImpl database, IBatchCompletionState state) {
+    public IBatchCompletionStateImpl(IDatabaseImpl database, IBatchCompletionState state, IStatus status) {
         this.database = database;
         this.state = state;
-        this.status = this.database.getStatus();
+        this.status = status;
     }
 
     @Override
@@ -44,7 +44,7 @@ public class IBatchCompletionStateImpl implements FbBatchCompletionState {
                         builder.append(String.format("Message Status\n", p));
                         print1 = true;
                     }
-                    builder.append(String.format("%5d   Execute failed\n", p));
+                    builder.append(String.format("%5d Execute failed\n", p));
                     break;
 
                 case FbBatchCompletionState.SUCCESS_NO_INFO:

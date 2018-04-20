@@ -1,8 +1,8 @@
 package org.firebirdsql.gds.ng;
 
 
+import org.firebirdsql.gds.BlobParameterBuffer;
 import org.firebirdsql.gds.ng.listeners.ExceptionListenable;
-import org.firebirdsql.jna.fbclient.ISC_QUAD;
 
 import java.sql.SQLException;
 
@@ -36,22 +36,22 @@ public interface FbBatch extends ExceptionListenable {
     /**
      * Add blob in this batch.
      */
-    void addBlob(int length, byte[] inBuffer, ISC_QUAD blobId, int parLength, byte[] par) throws SQLException;
+    FbBlob addBlob(byte[] inBuffer, long blobId, BlobParameterBuffer buffer) throws SQLException;
 
     /**
      * Append blob data.
      */
-    void appendBlobData(int length, byte[] inBuffer) throws SQLException;
+    void appendBlobData(byte[] inBuffer) throws SQLException;
 
     /**
      * Add blob stream.
      */
-    void addBlobStream(int length, byte[] inBuffer) throws SQLException;
+    void addBlobStream(byte[] inBuffer) throws SQLException;
 
     /**
      * Register existing blob.
      */
-    void registerBlob(ISC_QUAD existingBlob, ISC_QUAD blobId) throws SQLException;
+    void registerBlob(long existingBlob, long blobId) throws SQLException;
 
     /**
      * Execute tis batch and

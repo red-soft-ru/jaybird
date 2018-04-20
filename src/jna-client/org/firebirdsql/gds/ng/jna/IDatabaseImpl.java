@@ -298,6 +298,11 @@ public class IDatabaseImpl extends AbstractFbDatabase<IDatabaseConnectionImpl>
     }
 
     @Override
+    public FbBatch createBatch(FbTransaction transaction, String statement,BatchParameterBuffer parameters) throws SQLException {
+        return new IBatchImpl(this, transaction, statement, parameters);
+    }
+
+    @Override
     public FbMetadataBuilder getMetadataBuilder(int fieldCount) throws SQLException  {
         return new IMetadataBuilderImpl(this, fieldCount);
     }

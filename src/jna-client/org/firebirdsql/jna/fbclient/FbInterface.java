@@ -304,10 +304,10 @@ public interface FbInterface extends FbClientLibrary {
         public static int BLOB_SEGHDR_ALIGN = 2;
 
         public void add(IStatus status, int count, com.sun.jna.Pointer inBuffer) throws FbException;
-        public void addBlob(IStatus status, int length, com.sun.jna.Pointer inBuffer, ISC_QUAD[] blobId, int parLength, byte[] par) throws FbException;
+        public void addBlob(IStatus status, int length, com.sun.jna.Pointer inBuffer, ISC_QUAD blobId, int parLength, byte[] par) throws FbException;
         public void appendBlobData(IStatus status, int length, com.sun.jna.Pointer inBuffer) throws FbException;
         public void addBlobStream(IStatus status, int length, com.sun.jna.Pointer inBuffer) throws FbException;
-        public void registerBlob(IStatus status, ISC_QUAD[] existingBlob, ISC_QUAD[] blobId) throws FbException;
+        public void registerBlob(IStatus status, ISC_QUAD existingBlob, ISC_QUAD blobId) throws FbException;
         public IBatchCompletionState execute(IStatus status, ITransaction transaction) throws FbException;
         public void cancel(IStatus status) throws FbException;
         public int getBlobAlignment(IStatus status) throws FbException;
@@ -5719,7 +5719,7 @@ public interface FbInterface extends FbClientLibrary {
 
             public static interface Callback_addBlob extends com.sun.jna.Callback
             {
-                public void invoke(IBatch self, IStatus status, int length, com.sun.jna.Pointer inBuffer, ISC_QUAD[] blobId, int parLength, byte[] par);
+                public void invoke(IBatch self, IStatus status, int length, com.sun.jna.Pointer inBuffer, ISC_QUAD blobId, int parLength, byte[] par);
             }
 
             public static interface Callback_appendBlobData extends com.sun.jna.Callback
@@ -5734,7 +5734,7 @@ public interface FbInterface extends FbClientLibrary {
 
             public static interface Callback_registerBlob extends com.sun.jna.Callback
             {
-                public void invoke(IBatch self, IStatus status, ISC_QUAD[] existingBlob, ISC_QUAD[] blobId);
+                public void invoke(IBatch self, IStatus status, ISC_QUAD existingBlob, ISC_QUAD blobId);
             }
 
             public static interface Callback_execute extends com.sun.jna.Callback
@@ -5788,7 +5788,7 @@ public interface FbInterface extends FbClientLibrary {
 
                 addBlob = new Callback_addBlob() {
                     @Override
-                    public void invoke(IBatch self, IStatus status, int length, com.sun.jna.Pointer inBuffer, ISC_QUAD[] blobId, int parLength, byte[] par)
+                    public void invoke(IBatch self, IStatus status, int length, com.sun.jna.Pointer inBuffer, ISC_QUAD blobId, int parLength, byte[] par)
                     {
                         try
                         {
@@ -5833,7 +5833,7 @@ public interface FbInterface extends FbClientLibrary {
 
                 registerBlob = new Callback_registerBlob() {
                     @Override
-                    public void invoke(IBatch self, IStatus status, ISC_QUAD[] existingBlob, ISC_QUAD[] blobId)
+                    public void invoke(IBatch self, IStatus status, ISC_QUAD existingBlob, ISC_QUAD blobId)
                     {
                         try
                         {
@@ -5974,7 +5974,7 @@ public interface FbInterface extends FbClientLibrary {
             FbException.checkException(status);
         }
 
-        public void addBlob(IStatus status, int length, com.sun.jna.Pointer inBuffer, ISC_QUAD[] blobId, int parLength, byte[] par) throws FbException
+        public void addBlob(IStatus status, int length, com.sun.jna.Pointer inBuffer, ISC_QUAD blobId, int parLength, byte[] par) throws FbException
         {
             VTable vTable = getVTable();
             vTable.addBlob.invoke(this, status, length, inBuffer, blobId, parLength, par);
@@ -5995,7 +5995,7 @@ public interface FbInterface extends FbClientLibrary {
             FbException.checkException(status);
         }
 
-        public void registerBlob(IStatus status, ISC_QUAD[] existingBlob, ISC_QUAD[] blobId) throws FbException
+        public void registerBlob(IStatus status, ISC_QUAD existingBlob, ISC_QUAD blobId) throws FbException
         {
             VTable vTable = getVTable();
             vTable.registerBlob.invoke(this, status, existingBlob, blobId);
