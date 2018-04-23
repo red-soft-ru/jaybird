@@ -53,34 +53,34 @@ public class IMetadataBuilderImpl implements FbMetadataBuilder {
     @Override
     public void addSmallint(int index) throws FbException {
         metadataBuilder.setType(status, index, SQL_SHORT);
-        metadataBuilder.setLength(status, index, Short.BYTES);
+        metadataBuilder.setLength(status, index, Short.SIZE / Byte.SIZE);
         metadataBuilder.setScale(status, index, 0);
     }
 
     @Override
     public void addInteger(int index) throws FbException {
         metadataBuilder.setType(status, index, SQL_LONG);
-        metadataBuilder.setLength(status, index, Integer.BYTES);
+        metadataBuilder.setLength(status, index, Integer.SIZE / Byte.SIZE);
         metadataBuilder.setScale(status, index, 0);
     }
 
     @Override
     public void addBigint(int index) throws FbException {
         metadataBuilder.setType(status, index, SQL_INT64);
-        metadataBuilder.setLength(status, index, Long.BYTES);
+        metadataBuilder.setLength(status, index, Long.SIZE / Byte.SIZE);
         metadataBuilder.setScale(status, index, 0);
     }
 
     @Override
     public void addFloat(int index) throws FbException {
         metadataBuilder.setType(status, index, SQL_FLOAT);
-        metadataBuilder.setLength(status, index, Float.BYTES);
+        metadataBuilder.setLength(status, index, Float.SIZE / Byte.SIZE);
     }
 
     @Override
     public void addDouble(int index) throws FbException {
         metadataBuilder.setType(status, index, SQL_DOUBLE);
-        metadataBuilder.setLength(status, index, Double.BYTES);
+        metadataBuilder.setLength(status, index, Double.SIZE / Byte.SIZE);
     }
 
     @Override
@@ -98,31 +98,31 @@ public class IMetadataBuilderImpl implements FbMetadataBuilder {
     @Override
     public void addBlob(int index) throws FbException {
         metadataBuilder.setType(status, index, SQL_BLOB);
-        metadataBuilder.setLength(status, index, Integer.BYTES * 2);
+        metadataBuilder.setLength(status, index, (Integer.SIZE / Byte.SIZE) * 2);
     }
 
     @Override
     public void addBoolean(int index) throws FbException {
         metadataBuilder.setType(status, index, SQL_BOOLEAN);
-        metadataBuilder.setLength(status, index, Short.BYTES);
+        metadataBuilder.setLength(status, index, Short.SIZE / Byte.SIZE);
     }
 
     @Override
     public void addDate(int index) throws FbException {
         metadataBuilder.setType(status, index, SQL_DATE);
-        metadataBuilder.setLength(status, index, Long.BYTES);
+        metadataBuilder.setLength(status, index, Long.SIZE / Byte.SIZE);
     }
 
     @Override
     public void addTime(int index) throws FbException {
         metadataBuilder.setType(status, index, /*SQL_TIME*/13);
-        metadataBuilder.setLength(status, index, Long.BYTES);
+        metadataBuilder.setLength(status, index, Long.SIZE / Byte.SIZE);
     }
 
     @Override
     public void addTimestamp(int index) throws FbException {
         metadataBuilder.setType(status, index, SQL_TIMESTAMP);
-        metadataBuilder.setLength(status, index, Long.BYTES);
+        metadataBuilder.setLength(status, index, Long.SIZE / Byte.SIZE);
     }
 
     @Override
