@@ -186,7 +186,7 @@ public interface FbInterface extends FbClientLibrary {
     public static interface IBlobIntf extends IReferenceCountedIntf
     {
         public void getInfo(IStatus status, int itemsLength, byte[] items, int bufferLength, byte[] buffer) throws FbException;
-        public int getSegment(IStatus status, int bufferLength, com.sun.jna.Pointer buffer, int[] segmentLength) throws FbException;
+        public int getSegment(IStatus status, int bufferLength, com.sun.jna.Pointer buffer, int segmentLength) throws FbException;
         public void putSegment(IStatus status, int length, com.sun.jna.Pointer buffer) throws FbException;
         public void cancel(IStatus status) throws FbException;
         public void close(IStatus status) throws FbException;
@@ -360,10 +360,10 @@ public interface FbInterface extends FbClientLibrary {
         public ITransaction reconnectTransaction(IStatus status, int length, byte[] id) throws FbException;
         public IRequest compileRequest(IStatus status, int blrLength, byte[] blr) throws FbException;
         public void transactRequest(IStatus status, ITransaction transaction, int blrLength, byte[] blr, int inMsgLength, byte[] inMsg, int outMsgLength, byte[] outMsg) throws FbException;
-        public IBlob createBlob(IStatus status, ITransaction transaction, ISC_QUAD[] id, int bpbLength, byte[] bpb) throws FbException;
-        public IBlob openBlob(IStatus status, ITransaction transaction, ISC_QUAD[] id, int bpbLength, byte[] bpb) throws FbException;
-        public int getSlice(IStatus status, ITransaction transaction, ISC_QUAD[] id, int sdlLength, byte[] sdl, int paramLength, byte[] param, int sliceLength, byte[] slice) throws FbException;
-        public void putSlice(IStatus status, ITransaction transaction, ISC_QUAD[] id, int sdlLength, byte[] sdl, int paramLength, byte[] param, int sliceLength, byte[] slice) throws FbException;
+        public IBlob createBlob(IStatus status, ITransaction transaction, ISC_QUAD id, int bpbLength, byte[] bpb) throws FbException;
+        public IBlob openBlob(IStatus status, ITransaction transaction, ISC_QUAD id, int bpbLength, byte[] bpb) throws FbException;
+        public int getSlice(IStatus status, ITransaction transaction, ISC_QUAD id, int sdlLength, byte[] sdl, int paramLength, byte[] param, int sliceLength, byte[] slice) throws FbException;
+        public void putSlice(IStatus status, ITransaction transaction, ISC_QUAD id, int sdlLength, byte[] sdl, int paramLength, byte[] param, int sliceLength, byte[] slice) throws FbException;
         public void executeDyn(IStatus status, ITransaction transaction, int length, byte[] dyn) throws FbException;
         public IStatement prepare(IStatus status, ITransaction tra, int stmtLength, String sqlStmt, int dialect, int flags) throws FbException;
         public ITransaction execute(IStatus status, ITransaction transaction, int stmtLength, String sqlStmt, int dialect, IMessageMetadata inMetadata, com.sun.jna.Pointer inBuffer, IMessageMetadata outMetadata, com.sun.jna.Pointer outBuffer) throws FbException;
@@ -3447,7 +3447,7 @@ public interface FbInterface extends FbClientLibrary {
 
             public static interface Callback_getSegment extends com.sun.jna.Callback
             {
-                public int invoke(IBlob self, IStatus status, int bufferLength, com.sun.jna.Pointer buffer, int[] segmentLength);
+                public int invoke(IBlob self, IStatus status, int bufferLength, com.sun.jna.Pointer buffer, int segmentLength);
             }
 
             public static interface Callback_putSegment extends com.sun.jna.Callback
@@ -3496,7 +3496,7 @@ public interface FbInterface extends FbClientLibrary {
 
                 getSegment = new Callback_getSegment() {
                     @Override
-                    public int invoke(IBlob self, IStatus status, int bufferLength, com.sun.jna.Pointer buffer, int[] segmentLength)
+                    public int invoke(IBlob self, IStatus status, int bufferLength, com.sun.jna.Pointer buffer, int segmentLength)
                     {
                         try
                         {
@@ -3617,7 +3617,7 @@ public interface FbInterface extends FbClientLibrary {
             FbException.checkException(status);
         }
 
-        public int getSegment(IStatus status, int bufferLength, com.sun.jna.Pointer buffer, int[] segmentLength) throws FbException
+        public int getSegment(IStatus status, int bufferLength, com.sun.jna.Pointer buffer, int segmentLength) throws FbException
         {
             VTable vTable = getVTable();
             int result = vTable.getSegment.invoke(this, status, bufferLength, buffer, segmentLength);
@@ -6727,22 +6727,22 @@ public interface FbInterface extends FbClientLibrary {
 
             public static interface Callback_createBlob extends com.sun.jna.Callback
             {
-                public IBlob invoke(IAttachment self, IStatus status, ITransaction transaction, ISC_QUAD[] id, int bpbLength, byte[] bpb);
+                public IBlob invoke(IAttachment self, IStatus status, ITransaction transaction, ISC_QUAD id, int bpbLength, byte[] bpb);
             }
 
             public static interface Callback_openBlob extends com.sun.jna.Callback
             {
-                public IBlob invoke(IAttachment self, IStatus status, ITransaction transaction, ISC_QUAD[] id, int bpbLength, byte[] bpb);
+                public IBlob invoke(IAttachment self, IStatus status, ITransaction transaction, ISC_QUAD id, int bpbLength, byte[] bpb);
             }
 
             public static interface Callback_getSlice extends com.sun.jna.Callback
             {
-                public int invoke(IAttachment self, IStatus status, ITransaction transaction, ISC_QUAD[] id, int sdlLength, byte[] sdl, int paramLength, byte[] param, int sliceLength, byte[] slice);
+                public int invoke(IAttachment self, IStatus status, ITransaction transaction, ISC_QUAD id, int sdlLength, byte[] sdl, int paramLength, byte[] param, int sliceLength, byte[] slice);
             }
 
             public static interface Callback_putSlice extends com.sun.jna.Callback
             {
-                public void invoke(IAttachment self, IStatus status, ITransaction transaction, ISC_QUAD[] id, int sdlLength, byte[] sdl, int paramLength, byte[] param, int sliceLength, byte[] slice);
+                public void invoke(IAttachment self, IStatus status, ITransaction transaction, ISC_QUAD id, int sdlLength, byte[] sdl, int paramLength, byte[] param, int sliceLength, byte[] slice);
             }
 
             public static interface Callback_executeDyn extends com.sun.jna.Callback
@@ -6904,7 +6904,7 @@ public interface FbInterface extends FbClientLibrary {
 
                 createBlob = new Callback_createBlob() {
                     @Override
-                    public IBlob invoke(IAttachment self, IStatus status, ITransaction transaction, ISC_QUAD[] id, int bpbLength, byte[] bpb)
+                    public IBlob invoke(IAttachment self, IStatus status, ITransaction transaction, ISC_QUAD id, int bpbLength, byte[] bpb)
                     {
                         try
                         {
@@ -6920,7 +6920,7 @@ public interface FbInterface extends FbClientLibrary {
 
                 openBlob = new Callback_openBlob() {
                     @Override
-                    public IBlob invoke(IAttachment self, IStatus status, ITransaction transaction, ISC_QUAD[] id, int bpbLength, byte[] bpb)
+                    public IBlob invoke(IAttachment self, IStatus status, ITransaction transaction, ISC_QUAD id, int bpbLength, byte[] bpb)
                     {
                         try
                         {
@@ -6936,7 +6936,7 @@ public interface FbInterface extends FbClientLibrary {
 
                 getSlice = new Callback_getSlice() {
                     @Override
-                    public int invoke(IAttachment self, IStatus status, ITransaction transaction, ISC_QUAD[] id, int sdlLength, byte[] sdl, int paramLength, byte[] param, int sliceLength, byte[] slice)
+                    public int invoke(IAttachment self, IStatus status, ITransaction transaction, ISC_QUAD id, int sdlLength, byte[] sdl, int paramLength, byte[] param, int sliceLength, byte[] slice)
                     {
                         try
                         {
@@ -6952,7 +6952,7 @@ public interface FbInterface extends FbClientLibrary {
 
                 putSlice = new Callback_putSlice() {
                     @Override
-                    public void invoke(IAttachment self, IStatus status, ITransaction transaction, ISC_QUAD[] id, int sdlLength, byte[] sdl, int paramLength, byte[] param, int sliceLength, byte[] slice)
+                    public void invoke(IAttachment self, IStatus status, ITransaction transaction, ISC_QUAD id, int sdlLength, byte[] sdl, int paramLength, byte[] param, int sliceLength, byte[] slice)
                     {
                         try
                         {
@@ -7276,7 +7276,7 @@ public interface FbInterface extends FbClientLibrary {
             FbException.checkException(status);
         }
 
-        public IBlob createBlob(IStatus status, ITransaction transaction, ISC_QUAD[] id, int bpbLength, byte[] bpb) throws FbException
+        public IBlob createBlob(IStatus status, ITransaction transaction, ISC_QUAD id, int bpbLength, byte[] bpb) throws FbException
         {
             VTable vTable = getVTable();
             IBlob result = vTable.createBlob.invoke(this, status, transaction, id, bpbLength, bpb);
@@ -7284,7 +7284,7 @@ public interface FbInterface extends FbClientLibrary {
             return result;
         }
 
-        public IBlob openBlob(IStatus status, ITransaction transaction, ISC_QUAD[] id, int bpbLength, byte[] bpb) throws FbException
+        public IBlob openBlob(IStatus status, ITransaction transaction, ISC_QUAD id, int bpbLength, byte[] bpb) throws FbException
         {
             VTable vTable = getVTable();
             IBlob result = vTable.openBlob.invoke(this, status, transaction, id, bpbLength, bpb);
@@ -7292,7 +7292,7 @@ public interface FbInterface extends FbClientLibrary {
             return result;
         }
 
-        public int getSlice(IStatus status, ITransaction transaction, ISC_QUAD[] id, int sdlLength, byte[] sdl, int paramLength, byte[] param, int sliceLength, byte[] slice) throws FbException
+        public int getSlice(IStatus status, ITransaction transaction, ISC_QUAD id, int sdlLength, byte[] sdl, int paramLength, byte[] param, int sliceLength, byte[] slice) throws FbException
         {
             VTable vTable = getVTable();
             int result = vTable.getSlice.invoke(this, status, transaction, id, sdlLength, sdl, paramLength, param, sliceLength, slice);
@@ -7300,7 +7300,7 @@ public interface FbInterface extends FbClientLibrary {
             return result;
         }
 
-        public void putSlice(IStatus status, ITransaction transaction, ISC_QUAD[] id, int sdlLength, byte[] sdl, int paramLength, byte[] param, int sliceLength, byte[] slice) throws FbException
+        public void putSlice(IStatus status, ITransaction transaction, ISC_QUAD id, int sdlLength, byte[] sdl, int paramLength, byte[] param, int sliceLength, byte[] slice) throws FbException
         {
             VTable vTable = getVTable();
             vTable.putSlice.invoke(this, status, transaction, id, sdlLength, sdl, paramLength, param, sliceLength, slice);
