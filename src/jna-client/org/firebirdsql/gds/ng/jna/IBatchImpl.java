@@ -101,7 +101,7 @@ public class IBatchImpl extends AbstractFbBatch {
         else
             batch.addBlob(status, inBuffer.length, memory, isc_quad, buffer.toBytesWithType().length, buffer.toBytesWithType());
 
-        return new IBlobImpl(database, (ITransactionImpl) transaction, buffer);
+        return new IBlobImpl(database, (ITransactionImpl) transaction, buffer, longByReference.getValue());
     }
 
     @Override

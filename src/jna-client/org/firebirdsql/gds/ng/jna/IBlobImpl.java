@@ -46,7 +46,7 @@ public class IBlobImpl extends AbstractFbBlob implements FbBlob, DatabaseListene
 
     @Override
     public long getBlobId() {
-        return 0;
+        return blobId.getValue();
     }
 
     @Override
