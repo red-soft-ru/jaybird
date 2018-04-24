@@ -213,6 +213,7 @@ public class IBlobImpl extends AbstractFbBlob implements FbBlob, DatabaseListene
             byte[] responseArr = new byte[bufferLength];
             synchronized (getSynchronizationObject()) {
                 checkDatabaseAttached();
+                checkBlobOpen();
 
                 IDatabaseImpl database = (IDatabaseImpl)getDatabase();
                 IStatus status = database.getStatus();
