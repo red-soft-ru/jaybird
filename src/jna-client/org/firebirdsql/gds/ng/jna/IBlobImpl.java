@@ -1,7 +1,6 @@
 package org.firebirdsql.gds.ng.jna;
 
 import com.sun.jna.ptr.LongByReference;
-import com.sun.jna.ptr.ShortByReference;
 import org.firebirdsql.gds.BlobParameterBuffer;
 import org.firebirdsql.gds.ISCConstants;
 import org.firebirdsql.gds.ng.AbstractFbBlob;
@@ -144,8 +143,7 @@ public class IBlobImpl extends AbstractFbBlob implements FbBlob, DatabaseListene
                 IDatabaseImpl database = (IDatabaseImpl)getDatabase();
                 IStatus status = database.getStatus();
                 int result = blob.getSegment(status, sizeRequested, memory, actualLength);
-//                final int result = status.getState();
-                // status 0 means: more to come, isc_segment means: buffer was too small, rest will be returned on next call
+                // result 0 means: more to come, isc_segment means: buffer was too small, rest will be returned on next call
                 if (!(result == 0 || result == ISCConstants.isc_segment)) {
                     if (result == ISCConstants.isc_segstr_eof) {
                         setEof();
@@ -211,7 +209,21 @@ public class IBlobImpl extends AbstractFbBlob implements FbBlob, DatabaseListene
 
     @Override
     public byte[] getBlobInfo(byte[] requestItems, int bufferLength) throws SQLException {
-        return new byte[0];
+        try {
+            byte[] responseArr = new byte[bufferLength];
+            synchronized (getSynchronizationObject()) {
+                checkDatabaseAttached();
+
+                IDatabaseImpl database = (IDatabaseImpl)getDatabase();
+                IStatus status = database.getStatus();
+                blob.getInfo(status, requestItems.length, requestItems, bufferLength, responseArr);
+            }
+
+            return responseArr;
+        } catch (SQLException e) {
+            exceptionListenerDispatcher.errorOccurred(e);
+            throw e;
+        }
     }
 
     private ByteBuffer getByteBuffer(int requiredSize) {
