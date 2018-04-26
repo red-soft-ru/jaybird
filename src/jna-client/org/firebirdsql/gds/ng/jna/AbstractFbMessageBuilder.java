@@ -1,16 +1,21 @@
 package org.firebirdsql.gds.ng.jna;
 
 import org.firebirdsql.encodings.EncodingFactory;
+import org.firebirdsql.gds.BlobParameterBuffer;
+import org.firebirdsql.gds.ng.FbBatch;
 import org.firebirdsql.gds.ng.FbMessageBuilder;
 import org.firebirdsql.gds.ng.FbMessageMetadata;
+import org.firebirdsql.gds.ng.SeekableByteArrayOutputStream;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
-import java.sql.*;
+import java.sql.Date;
+import java.sql.SQLException;
+import java.sql.Time;
+import java.sql.Timestamp;
 
 import static org.firebirdsql.gds.ISCConstants.SQL_INT64;
 
@@ -19,29 +24,32 @@ import static org.firebirdsql.gds.ISCConstants.SQL_INT64;
  * @author <a href="mailto:vasiliy.yashkov@red-soft.ru">Vasiliy Yashkov</a>
  * @since 4.0
  */
-public abstract class AbstractFbMessageBuilder<E extends FbMessageMetadata> implements FbMessageBuilder {
+public abstract class AbstractFbMessageBuilder<E extends FbBatch> implements FbMessageBuilder {
 
     private FbMessageMetadata metadata;
     private ByteBuffer buffer = null;
     private final LittleEndianDatatypeCoder datatypeCoder = new LittleEndianDatatypeCoder(EncodingFactory.createInstance(StandardCharsets.UTF_8));
-    private final ByteArrayOutputStream stream = new ByteArrayOutputStream();
+    private final SeekableByteArrayOutputStream stream = new SeekableByteArrayOutputStream();
+    private final SeekableByteArrayOutputStream blobStream = new SeekableByteArrayOutputStream();
     private int messageAlign;
     private int messageLength;
+    private int blobAlign;
+    private int segmentedBlobSize = 0;
 
-    protected AbstractFbMessageBuilder(E messageMetadata) throws FbException {
-        this.metadata = messageMetadata;
-        this.messageLength = this.metadata.getMessageLength();
-        buffer = ByteBuffer.allocate(this.messageLength);
-        this.messageAlign = this.metadata.getAlignedLength();
-
-    }
-
-    static int align(int target, int alignment) {
+    private int align(int target, int alignment) {
         return (((target) + alignment - 1) & ~(alignment - 1));
     }
 
+    protected AbstractFbMessageBuilder(E batch) throws SQLException {
+        this.metadata = batch.getMetadata();
+        this.messageLength = metadata.getMessageLength();
+        this.messageAlign = metadata.getAlignedLength();
+        this.blobAlign = batch.getBlobAlignment();
+        buffer = ByteBuffer.allocate(this.messageLength);
+    }
+
     @Override
-    public void addSmallint(int index, short value) throws FbException {
+    public void addSmallint(int index, short value) throws SQLException {
         int nullOffset = metadata.getNullOffset(index);
         int offset = metadata.getOffset(index);
 
@@ -55,7 +63,7 @@ public abstract class AbstractFbMessageBuilder<E extends FbMessageMetadata> impl
     }
 
     @Override
-    public void addInteger(int index, int value) throws FbException {
+    public void addInteger(int index, int value) throws SQLException {
         int nullOffset = metadata.getNullOffset(index);
         int offset = metadata.getOffset(index);
 
@@ -69,7 +77,7 @@ public abstract class AbstractFbMessageBuilder<E extends FbMessageMetadata> impl
     }
 
     @Override
-    public void addBigint(int index, long value) throws FbException {
+    public void addBigint(int index, long value) throws SQLException {
         int nullOffset = metadata.getNullOffset(index);
         int offset = metadata.getOffset(index);
 
@@ -83,7 +91,7 @@ public abstract class AbstractFbMessageBuilder<E extends FbMessageMetadata> impl
     }
 
     @Override
-    public void addFloat(int index, float value) throws FbException {
+    public void addFloat(int index, float value) throws SQLException {
         int nullOffset = metadata.getNullOffset(index);
         int offset = metadata.getOffset(index);
 
@@ -97,7 +105,7 @@ public abstract class AbstractFbMessageBuilder<E extends FbMessageMetadata> impl
     }
 
     @Override
-    public void addDouble(int index, double value) throws FbException {
+    public void addDouble(int index, double value) throws SQLException {
         int nullOffset = metadata.getNullOffset(index);
         int offset = metadata.getOffset(index);
         int type = metadata.getType(index);
@@ -118,7 +126,7 @@ public abstract class AbstractFbMessageBuilder<E extends FbMessageMetadata> impl
     }
 
     @Override
-    public void addDecfloat16(int index, BigDecimal value) throws FbException {
+    public void addDecfloat16(int index, BigDecimal value) throws SQLException {
 //        int nullOffset = metadata.getNullOffset(index);
 //        int offset = metadata.getOffset(index);
 //
@@ -132,7 +140,7 @@ public abstract class AbstractFbMessageBuilder<E extends FbMessageMetadata> impl
     }
 
     @Override
-    public void addDecfloat34(int index, BigDecimal value) throws FbException {
+    public void addDecfloat34(int index, BigDecimal value) throws SQLException {
 //        int nullOffset = metadata.getNullOffset(index);
 //        int offset = metadata.getOffset(index);
 //
@@ -146,7 +154,7 @@ public abstract class AbstractFbMessageBuilder<E extends FbMessageMetadata> impl
     }
 
     @Override
-    public void addBlob(int index, long blobId) throws FbException {
+    public void addBlob(int index, long blobId) throws SQLException {
         int nullOffset = metadata.getNullOffset(index);
         int offset = metadata.getOffset(index);
 
@@ -160,7 +168,7 @@ public abstract class AbstractFbMessageBuilder<E extends FbMessageMetadata> impl
     }
 
     @Override
-    public void addBoolean(int index, boolean value) throws FbException {
+    public void addBoolean(int index, boolean value) throws SQLException {
         int nullOffset = metadata.getNullOffset(index);
         int offset = metadata.getOffset(index);
 
@@ -174,7 +182,7 @@ public abstract class AbstractFbMessageBuilder<E extends FbMessageMetadata> impl
     }
 
     @Override
-    public void addDate(int index, Date value) throws FbException {
+    public void addDate(int index, Date value) throws SQLException {
         int nullOffset = metadata.getNullOffset(index);
         int offset = metadata.getOffset(index);
 
@@ -188,7 +196,7 @@ public abstract class AbstractFbMessageBuilder<E extends FbMessageMetadata> impl
     }
 
     @Override
-    public void addTime(int index, Time value) throws FbException {
+    public void addTime(int index, Time value) throws SQLException {
         int nullOffset = metadata.getNullOffset(index);
         int offset = metadata.getOffset(index);
 
@@ -202,7 +210,7 @@ public abstract class AbstractFbMessageBuilder<E extends FbMessageMetadata> impl
     }
 
     @Override
-    public void addTimestamp(int index, Timestamp value) throws FbException {
+    public void addTimestamp(int index, Timestamp value) throws SQLException {
         int nullOffset = metadata.getNullOffset(index);
         int offset = metadata.getOffset(index);
 
@@ -216,7 +224,7 @@ public abstract class AbstractFbMessageBuilder<E extends FbMessageMetadata> impl
     }
 
     @Override
-    public void addChar(int index, String value) throws FbException {
+    public void addChar(int index, String value) throws SQLException {
         int nullOffset = metadata.getNullOffset(index);
         int offset = metadata.getOffset(index);
 
@@ -230,7 +238,7 @@ public abstract class AbstractFbMessageBuilder<E extends FbMessageMetadata> impl
     }
 
     @Override
-    public void addVarchar(int index, String value) throws FbException {
+    public void addVarchar(int index, String value) throws SQLException {
         int nullOffset = metadata.getNullOffset(index);
         int offset = metadata.getOffset(index);
 
@@ -248,13 +256,15 @@ public abstract class AbstractFbMessageBuilder<E extends FbMessageMetadata> impl
     }
 
     @Override
-    public byte[] getData() throws FbException {
+    public byte[] getData() throws SQLException {
         return buffer.array();
     }
 
     @Override
-    public void clear() throws FbException {
+    public void clear() throws SQLException {
         buffer.clear();
+        clearStream();
+        clearBlobStream();
     }
 
     @Override
@@ -263,17 +273,101 @@ public abstract class AbstractFbMessageBuilder<E extends FbMessageMetadata> impl
         stream.write(data);
 
         int align = align(messageLength, messageAlign);
-        byte[] shift = ByteBuffer.allocate(Math.abs(data.length - align)).array();
-        stream.write(shift);
+
+        if (align != 0) {
+            byte[] shift = ByteBuffer.allocate(Math.abs(data.length - align)).array();
+            stream.write(shift);
+        }
     }
 
     @Override
-    public void clearStream() throws FbException {
+    public void clearStream() throws SQLException {
         stream.reset();
     }
 
     @Override
-    public byte[] getStreamData() throws FbException {
+    public byte[] getStreamData() throws SQLException {
        return stream.toByteArray();
+    }
+
+    @Override
+    public void addBlobData(byte[] data, long blobId) throws IOException {
+        long position = addBlobHeader(blobId, null);
+        blobStream.write(data);
+
+        long oldPosition = blobStream.getStreamPosition();
+        blobStream.seek(position);
+
+        blobStream.write(datatypeCoder.encodeInt(data.length));
+
+        blobStream.seek(oldPosition);
+
+        int align = align(blobStream.size(), blobAlign);
+
+        if (align != 0 && blobStream.size() - align < 0) {
+            byte[] shift = ByteBuffer.allocate(Math.abs(blobStream.size() - align)).array();
+            blobStream.write(shift);
+        }
+    }
+
+    @Override
+    public long addBlobHeader(long blobId, BlobParameterBuffer buffer) throws IOException {
+
+        int align = align(blobStream.size(), blobAlign);
+
+        if (align != 0 && blobStream.size() - align < 0) {
+            byte[] shift = ByteBuffer.allocate(Math.abs(blobStream.size() - align)).array();
+            blobStream.write(shift);
+        }
+
+        blobStream.write(datatypeCoder.encodeLong(blobId));
+
+        int rc = blobStream.size();
+        segmentedBlobSize = rc;
+
+        if (buffer != null) {
+            byte[] bytes = buffer.toBytesWithType();
+            byte[] bytesLength = datatypeCoder.encodeInt(bytes.length);
+            blobStream.write(bytesLength);
+            blobStream.write(bytesLength);
+            blobStream.write(bytes);
+        } else {
+            byte[] bytesLength = datatypeCoder.encodeInt(0);
+            blobStream.write(bytesLength);
+            blobStream.write(bytesLength);
+        }
+
+        return rc;
+    }
+
+    @Override
+    public void addBlobSegment(byte[] data, long offset) throws IOException {
+        int align = align(blobStream.size(), FbBatch.BLOB_SEGHDR_ALIGN);
+        if (align != 0 && blobStream.size() - align < 0) {
+            byte[] shift = ByteBuffer.allocate(Math.abs(blobStream.size() - align)).array();
+            blobStream.write(shift);
+        }
+        long oldPosition = blobStream.getStreamPosition();
+        blobStream.seek(offset);
+
+        byte[] dataLength = datatypeCoder.encodeShort(data.length);
+        segmentedBlobSize += align(data.length + dataLength.length, FbBatch.BLOB_SEGHDR_ALIGN);
+        blobStream.write(datatypeCoder.encodeShort(segmentedBlobSize));
+
+        blobStream.seek(oldPosition);
+
+        blobStream.write(dataLength);
+        blobStream.write(data);
+    }
+
+    @Override
+    public void clearBlobStream() throws SQLException {
+        segmentedBlobSize = 0;
+        blobStream.reset();
+    }
+
+    @Override
+    public byte[] getBlobStreamData() throws SQLException {
+        return blobStream.toByteArray();
     }
 }

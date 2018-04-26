@@ -1,50 +1,61 @@
 package org.firebirdsql.gds.ng;
 
-import org.firebirdsql.gds.ng.jna.FbException;
+import org.firebirdsql.gds.BlobParameterBuffer;
 
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.Date;
+import java.sql.SQLException;
 import java.sql.Time;
 import java.sql.Timestamp;
 
 public interface FbMessageBuilder {
 
-    void addSmallint(int index, short value) throws FbException;
+    void addSmallint(int index, short value) throws SQLException;
 
-    void addInteger(int index, int value) throws FbException;
+    void addInteger(int index, int value) throws SQLException;
 
-    void addBigint(int index, long value) throws FbException;
+    void addBigint(int index, long value) throws SQLException;
 
-    void addFloat(int index, float value) throws FbException;
+    void addFloat(int index, float value) throws SQLException;
 
-    void addDouble(int index, double value) throws FbException;
+    void addDouble(int index, double value) throws SQLException;
 
-    void addDecfloat16(int index, BigDecimal value) throws FbException;
+    void addDecfloat16(int index, BigDecimal value) throws SQLException;
 
-    void addDecfloat34(int index, BigDecimal value) throws FbException;
+    void addDecfloat34(int index, BigDecimal value) throws SQLException;
 
-    void addBlob(int index, long blobId) throws FbException;
+    void addBlob(int index, long blobId) throws SQLException;
 
-    void addBoolean(int index, boolean value) throws FbException;
+    void addBoolean(int index, boolean value) throws SQLException;
 
-    void addDate(int index, Date value) throws FbException;
+    void addDate(int index, Date value) throws SQLException;
 
-    void addTime(int index, Time value) throws FbException;
+    void addTime(int index, Time value) throws SQLException;
 
-    void addTimestamp(int index, Timestamp value) throws FbException;
+    void addTimestamp(int index, Timestamp value) throws SQLException;
 
-    void addChar(int index, String value) throws FbException;
+    void addChar(int index, String value) throws SQLException;
 
-    void addVarchar(int index, String value) throws FbException;
+    void addVarchar(int index, String value) throws SQLException;
 
-    byte[] getData() throws FbException;
+    byte[] getData() throws SQLException;
 
-    void clear() throws FbException;
+    void clear() throws SQLException;
 
     void addStreamData(byte[] data) throws IOException;
 
-    byte[] getStreamData() throws FbException;
+    byte[] getStreamData() throws SQLException;
 
-    void clearStream() throws FbException;
+    void clearStream() throws SQLException;
+
+    void addBlobData(byte[] data, long blobId) throws IOException;
+
+    long addBlobHeader(long blobId, BlobParameterBuffer buffer) throws IOException;
+
+    void addBlobSegment(byte[] data, long offset) throws IOException;
+
+    byte[] getBlobStreamData() throws SQLException;
+
+    void clearBlobStream() throws SQLException;
 }

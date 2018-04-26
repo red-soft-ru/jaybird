@@ -1,10 +1,11 @@
 package org.firebirdsql.gds.ng.jna;
 
-import org.firebirdsql.gds.ng.FbMessageMetadata;
+import org.firebirdsql.gds.ng.FbBatch;
+import java.sql.SQLException;
 
 public class IMessageBuilderImpl extends AbstractFbMessageBuilder {
 
-    public IMessageBuilderImpl(FbMessageMetadata messageMetadata) throws FbException {
-        super(messageMetadata);
+    public IMessageBuilderImpl(FbBatch batch) throws SQLException {
+        super(batch);
     }
 }
