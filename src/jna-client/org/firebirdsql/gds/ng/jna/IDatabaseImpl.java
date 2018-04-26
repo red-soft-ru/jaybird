@@ -206,12 +206,16 @@ public class IDatabaseImpl extends AbstractFbDatabase<IDatabaseConnectionImpl>
 
     @Override
     public FbBlob createBlobForOutput(FbTransaction transaction, BlobParameterBuffer blobParameterBuffer) {
-        return null;
+        final IBlobImpl blob = new IBlobImpl(this, (ITransactionImpl) transaction, blobParameterBuffer);
+        blob.addExceptionListener(exceptionListenerDispatcher);
+        return blob;
     }
 
     @Override
     public FbBlob createBlobForInput(FbTransaction transaction, BlobParameterBuffer blobParameterBuffer, long blobId) {
-        return null;
+        final IBlobImpl blob = new IBlobImpl(this, (ITransactionImpl) transaction, blobParameterBuffer, blobId);
+        blob.addExceptionListener(exceptionListenerDispatcher);
+        return blob;
     }
 
     @Override
