@@ -1,12 +1,10 @@
 package org.firebirdsql.gds.ng.jna;
 
-import com.sun.jna.Pointer;
 import com.sun.jna.ptr.LongByReference;
 import org.firebirdsql.gds.BatchParameterBuffer;
 import org.firebirdsql.gds.BlobParameterBuffer;
 import org.firebirdsql.gds.ng.*;
 import org.firebirdsql.jna.fbclient.FbInterface.*;
-import org.firebirdsql.jna.fbclient.ISC_QUAD;
 
 import java.sql.SQLException;
 
@@ -91,15 +89,12 @@ public class IBatchImpl extends AbstractFbBatch {
     public FbBlob addBlob(byte[] inBuffer, long blobId, BlobParameterBuffer buffer) throws SQLException {
         CloseableMemory memory = new CloseableMemory(inBuffer.length);
         memory.write(0, inBuffer, 0, inBuffer.length);
-        ISC_QUAD isc_quad = new ISC_QUAD();
         LongByReference longByReference = new LongByReference(blobId);
-        longByReference.setPointer(isc_quad.getPointer());
-        longByReference.setValue(blobId);
 
         if (buffer == null)
-            batch.addBlob(status, inBuffer.length, memory, isc_quad, 0, null);
+            batch.addBlob(status, inBuffer.length, memory, longByReference, 0, null);
         else
-            batch.addBlob(status, inBuffer.length, memory, isc_quad, buffer.toBytesWithType().length, buffer.toBytesWithType());
+            batch.addBlob(status, inBuffer.length, memory, longByReference, buffer.toBytesWithType().length, buffer.toBytesWithType());
 
         return new IBlobImpl(database, (ITransactionImpl) transaction, buffer, longByReference.getValue());
     }
@@ -121,17 +116,10 @@ public class IBatchImpl extends AbstractFbBatch {
     @Override
     public void registerBlob(long existingBlob, long blobId) throws SQLException {
 
-        ISC_QUAD isc_quad = new ISC_QUAD();
         LongByReference longByReference = new LongByReference(blobId);
-        longByReference.setPointer(isc_quad.getPointer());
-        longByReference.setValue(blobId);
-
-        ISC_QUAD exist_isc_quad = new ISC_QUAD();
         LongByReference existLong = new LongByReference(existingBlob);
-        existLong.setPointer(exist_isc_quad.getPointer());
-        existLong.setValue(existingBlob);
 
-        batch.registerBlob(status, exist_isc_quad, isc_quad);
+        batch.registerBlob(status, existLong, longByReference);
     }
 
     @Override

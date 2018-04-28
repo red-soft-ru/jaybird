@@ -8,7 +8,6 @@ import org.firebirdsql.gds.ng.FbBlob;
 import org.firebirdsql.gds.ng.FbExceptionBuilder;
 import org.firebirdsql.gds.ng.listeners.DatabaseListener;
 import org.firebirdsql.jna.fbclient.FbInterface.*;
-import org.firebirdsql.jna.fbclient.ISC_QUAD;
 
 import java.nio.ByteBuffer;
 import java.sql.SQLException;
@@ -95,16 +94,12 @@ public class IBlobImpl extends AbstractFbBlob implements FbBlob, DatabaseListene
 
                 IDatabaseImpl database = (IDatabaseImpl)getDatabase();
                 IAttachment attachment = database.getAttachment();
-                ISC_QUAD isc_quad = new ISC_QUAD();
-                LongByReference longByReference = new LongByReference(0);
-                longByReference.setPointer(isc_quad.getPointer());
-                longByReference.setValue(blobId.getValue());
                 if (isOutput()) {
                     blob = attachment.createBlob(database.getStatus(), ((ITransactionImpl)getTransaction()).getTransaction(),
-                            isc_quad, bpb.length, bpb);
+                            blobId, bpb.length, bpb);
                 } else {
                     blob = attachment.openBlob(database.getStatus(), ((ITransactionImpl)getTransaction()).getTransaction(),
-                            isc_quad, bpb.length, bpb);
+                            blobId, bpb.length, bpb);
                 }
                 setOpen(true);
                 resetEof();
