@@ -263,8 +263,6 @@ public abstract class AbstractFbMessageBuilder<E extends FbBatch> implements FbM
     @Override
     public void clear() throws SQLException {
         buffer.clear();
-        clearStream();
-        clearBlobStream();
     }
 
     @Override
