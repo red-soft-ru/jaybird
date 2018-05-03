@@ -579,6 +579,21 @@ public abstract class FBAbstractCommonDataSource extends RootCommonDataSource im
     }
 
     @Override
+    public String getDbCryptConfig() {
+        synchronized (lock) {
+            return connectionProperties.getDbCryptConfig();
+        }
+    }
+
+    @Override
+    public void setDbCryptConfig(String dbCryptConfig) {
+        synchronized (lock) {
+            checkNotStarted();
+            connectionProperties.setDbCryptConfig(dbCryptConfig);
+        }
+    }
+
+    @Override
     public boolean isUseGSSAuth() {
         synchronized (lock) {
             return connectionProperties.isUseGSSAuth();

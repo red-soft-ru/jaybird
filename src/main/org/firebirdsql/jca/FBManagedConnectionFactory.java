@@ -426,6 +426,16 @@ public class FBManagedConnectionFactory implements ManagedConnectionFactory, Fir
     }
 
     @Override
+    public String getDbCryptConfig() {
+        return connectionProperties.getDbCryptConfig();
+    }
+
+    @Override
+    public void setDbCryptConfig(String dbCryptConfig) {
+        connectionProperties.setDbCryptConfig(dbCryptConfig);
+    }
+
+    @Override
     public boolean isUseGSSAuth() {
         return connectionProperties.isUseGSSAuth();
     }

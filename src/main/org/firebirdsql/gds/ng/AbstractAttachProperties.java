@@ -41,6 +41,7 @@ public abstract class AbstractAttachProperties<T extends IAttachProperties> impl
     private int soTimeout = IAttachProperties.DEFAULT_SO_TIMEOUT;
     private int connectTimeout = IAttachProperties.DEFAULT_CONNECT_TIMEOUT;
     private WireCrypt wireCrypt = WireCrypt.DEFAULT;
+    private String dbCryptConfig;
     private boolean useGSSAuth = IAttachProperties.DEFAULT_GSS_AUTH;
     private boolean verifyServerCertificate = IAttachProperties.DEFAULT_SERVER_CERTIFICATE;
 
@@ -66,6 +67,7 @@ public abstract class AbstractAttachProperties<T extends IAttachProperties> impl
             soTimeout = src.getSoTimeout();
             connectTimeout = src.getConnectTimeout();
             wireCrypt = src.getWireCrypt();
+            dbCryptConfig = src.getDbCryptConfig();
             useGSSAuth = src.isUseGSSAuth();
             certificate = src.getCertificate();
             repositoryPin = src.getRepositoryPin();
@@ -197,6 +199,17 @@ public abstract class AbstractAttachProperties<T extends IAttachProperties> impl
     @Override
     public void setWireCrypt(WireCrypt wireCrypt) {
         this.wireCrypt = requireNonNull(wireCrypt, "wireCrypt");
+        dirtied();
+    }
+
+    @Override
+    public String getDbCryptConfig() {
+        return dbCryptConfig;
+    }
+
+    @Override
+    public void setDbCryptConfig(String dbCryptConfig) {
+        this.dbCryptConfig = dbCryptConfig;
         dirtied();
     }
 

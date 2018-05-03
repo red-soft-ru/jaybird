@@ -623,6 +623,16 @@ public class FBSADataSource implements DataSource, Serializable, Referenceable, 
     }
 
     @Override
+    public String getDbCryptConfig() {
+        return mcf.getDbCryptConfig();
+    }
+
+    @Override
+    public void setDbCryptConfig(String dbCryptConfig) {
+        mcf.setDbCryptConfig(dbCryptConfig);
+    }
+
+    @Override
     public boolean isUseGSSAuth() {
         return mcf.isUseGSSAuth();
     }
