@@ -409,6 +409,7 @@ public interface FirebirdConnectionProperties {
      * Get the wire encryption level value.
      *
      * @return Wire encryption level ({@code null} implies {@code DEFAULT})
+     * @since 4.0
      */
     String getWireCrypt();
 
@@ -420,8 +421,26 @@ public interface FirebirdConnectionProperties {
      * </p>
      *
      * @param wireCrypt Wire encryption level
+     * @since 4.0
      */
     void setWireCrypt(String wireCrypt);
+
+    /**
+     * Get the database encryption plugin configuration.
+     *
+     * @return Database encryption plugin configuration, meaning plugin specific
+     * @since 3.0.4
+     */
+    String getDbCryptConfig();
+
+    /**
+     * Sets the database encryption plugin configuration.
+     *
+     * @param dbCryptConfig Database encryption plugin configuration, meaning plugin specific
+     * @since 3.0.4
+     */
+    void setDbCryptConfig(String dbCryptConfig);
+
 	
 	    /**
      * @return path to the certificate that will be used when connecting to the database.

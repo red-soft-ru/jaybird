@@ -32,6 +32,8 @@ public class AuthFactorPassword extends AuthFactor {
   private String password;
   private String passwordEnc;
 
+  private boolean hashExpanded;
+
   public AuthFactorPassword(AuthSspi sspi) {
     super(TYPE_PASSWORD, sspi);
     setStage(CHALLENGE);
@@ -47,6 +49,10 @@ public class AuthFactorPassword extends AuthFactor {
 
   public void setPasswordEnc(final String passwordEnc) {
     this.passwordEnc = passwordEnc;
+  }
+
+  public void setHashExpanded(boolean expanded) {
+    this.hashExpanded = expanded;
   }
 
   private final Stage CHALLENGE = new Stage() {
@@ -186,12 +192,18 @@ public class AuthFactorPassword extends AuthFactor {
 
       ByteBuffer oldSalt = new ByteBuffer(0);
       oldSalt.add(salt.getData());
-      final String allData = salt + userName + password;
+      final String allData = new String(salt.getData()) + userName + password;
       salt.add(userName.getBytes());
       salt.add(password.getBytes());
       byte[] data = salt.getData();
       for (int i = 0; i < HASHING_COUNT; i++) {
         data = AuthMethods.hashData(data, 1);
+      }
+
+      if (data.length < allData.length() && hashExpanded) {
+        byte[] bytes = Arrays.copyOf(data, allData.length());
+        Arrays.fill(bytes, data.length, allData.length(), (byte)0xCC);
+        data = bytes;
       }
 
       final byte[] enc64 = new BASE64Encoder().encode(data).getBytes();
