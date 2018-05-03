@@ -42,7 +42,8 @@ public abstract class AbstractAttachProperties<T extends IAttachProperties> impl
     private int connectTimeout = IAttachProperties.DEFAULT_CONNECT_TIMEOUT;
     private boolean useGSSAuth = IAttachProperties.DEFAULT_GSS_AUTH;
     private WireCrypt wireCrypt = WireCrypt.DEFAULT;
-	private boolean verifyServerCertificate = IAttachProperties.DEFAULT_SERVER_CERTIFICATE;
+    private String dbCryptConfig;
+    private boolean verifyServerCertificate = IAttachProperties.DEFAULT_SERVER_CERTIFICATE;
 
     /**
      * Copy constructor for IAttachProperties.
@@ -67,7 +68,8 @@ public abstract class AbstractAttachProperties<T extends IAttachProperties> impl
             connectTimeout = src.getConnectTimeout();
             useGSSAuth = src.isUseGSSAuth();
             wireCrypt = src.getWireCrypt();
-			certificate = src.getCertificate();
+            dbCryptConfig = src.getDbCryptConfig();
+            certificate = src.getCertificate();
             repositoryPin = src.getRepositoryPin();
             verifyServerCertificate = src.getVerifyServerCertificate();
         }
@@ -242,6 +244,17 @@ public abstract class AbstractAttachProperties<T extends IAttachProperties> impl
     @Override
     public void setVerifyServerCertificate(boolean verify) {
         this.verifyServerCertificate = verify;
+        dirtied();
+    }
+
+    @Override
+    public String getDbCryptConfig() {
+        return dbCryptConfig;
+    }
+
+    @Override
+    public void setDbCryptConfig(String dbCryptConfig) {
+        this.dbCryptConfig = dbCryptConfig;
         dirtied();
     }
 
