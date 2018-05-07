@@ -20,23 +20,19 @@ public class FbException extends SQLException {
 
     private static final long serialVersionUID = 1L;
 
-    public FbException(Throwable t)
-    {
+    public FbException(Throwable t) {
         super(t);
     }
 
-    public FbException(String msg)
-    {
+    public FbException(String msg) {
         super(msg);
     }
 
-    public FbException(String msg, Throwable t)
-    {
+    public FbException(String msg, Throwable t) {
         super(msg, t);
     }
 
-    public static void rethrow(Throwable t) throws FbException
-    {
+    public static void rethrow(Throwable t) throws FbException {
         throw new FbException(null, t);
     }
 
@@ -50,11 +46,10 @@ public class FbException extends SQLException {
         t.printStackTrace(pw);
         String msg = sw.toString();
 
-        try (CloseableMemory memory = new CloseableMemory(msg.length() + 1))
-        {
+        try (CloseableMemory memory = new CloseableMemory(msg.length() + 1)) {
             memory.setString(0, msg);
 
-            Pointer[] vector = new Pointer[] {
+            Pointer[] vector = new Pointer[]{
                     new Pointer(ISCConstants.isc_arg_gds),
                     new Pointer(ISCConstants.isc_random),
                     new Pointer(ISCConstants.isc_arg_cstring),
@@ -67,8 +62,7 @@ public class FbException extends SQLException {
         }
     }
 
-    public static void checkException(IStatus status) throws FbException
-    {
+    public static void checkException(IStatus status) throws FbException {
         if ((status.getState() & IStatus.STATE_ERRORS) != 0) {
             FbExceptionBuilder builder = new FbExceptionBuilder();
 
@@ -123,7 +117,7 @@ public class FbException extends SQLException {
 
 
             if (!builder.isEmpty())
-                throw new FbException(builder.toString());
+                throw new FbException(builder.toFlatSQLException());
         }
     }
 }
