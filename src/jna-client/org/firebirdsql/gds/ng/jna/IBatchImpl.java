@@ -24,7 +24,7 @@ public class IBatchImpl extends AbstractFbBatch {
     private IBatch batch = null;
     private IStatus status = null;
 
-    public IBatchImpl(FbDatabase database, FbTransaction transaction, String statement, FbMessageMetadata metadata, BatchParameterBuffer parameters) throws FbException {
+    public IBatchImpl(FbDatabase database, FbTransaction transaction, String statement, FbMessageMetadata metadata, BatchParameterBuffer parameters) throws SQLException {
         super(database, transaction, statement, metadata, parameters);
 
         this.transaction = transaction;
@@ -37,7 +37,7 @@ public class IBatchImpl extends AbstractFbBatch {
         init();
     }
 
-    public IBatchImpl(FbDatabase database, FbTransaction transaction, String statement, BatchParameterBuffer parameters) throws FbException {
+    public IBatchImpl(FbDatabase database, FbTransaction transaction, String statement, BatchParameterBuffer parameters) throws SQLException {
         super(database, transaction, statement, parameters);
 
         this.transaction = transaction;
@@ -49,19 +49,15 @@ public class IBatchImpl extends AbstractFbBatch {
         init();
     }
 
-    private void init() throws FbException {
+    private void init() throws SQLException {
         IMaster master = database.getMaster();
         status = master.getStatus();
 
         if (metadata == null) {
             IStatementImpl statementImpl = new IStatementImpl(database);
-            try {
-                statementImpl.setTransaction(transaction);
-                statementImpl.prepare(statement);
-                metadata = (IMessageMetadataImpl) statementImpl.getInputMetadata();
-            } catch (SQLException e) {
-                throw new FbException(e);
-            }
+            statementImpl.setTransaction(transaction);
+            statementImpl.prepare(statement);
+            metadata = (IMessageMetadataImpl) statementImpl.getInputMetadata();
         }
 
         batch = attachment.createBatch(status, ((ITransactionImpl)transaction).getTransaction(), statement.length(), statement, database.getDatabaseDialect(),
