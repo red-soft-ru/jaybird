@@ -22,12 +22,36 @@ public class IBatchCompletionStateImpl implements FbBatchCompletionState {
     }
 
     @Override
+    public int getSize() throws FbException {
+        return state.getSize(status);
+    }
+
+    @Override
+    public int getState(int index) throws FbException {
+        return state.getState(status, index);
+    }
+
+    @Override
+    public String getError(int index) throws FbException {
+        if (state.findError(status, index) != FbBatchCompletionState.NO_MORE_ERRORS) {
+            StringBuilder builder = new StringBuilder();
+            IStatus errorStatus = database.getMaster().getStatus();
+            state.getStatus(status, errorStatus, index);
+
+            try (CloseableMemory memory = new CloseableMemory(1024)) {
+                util.formatStatus(memory, (int) memory.size() - 1, errorStatus);
+                builder.append(memory.getString(0));
+                return builder.toString();
+            }
+        }
+        return "";
+    }
+
+    @Override
     public String getAllStates() throws FbException {
 
         StringBuilder builder = new StringBuilder();
 
-        int p = 0;
-        IStatus errorStatus = null;
         boolean print1 = false;
         boolean print2 = false;
 
@@ -36,7 +60,7 @@ public class IBatchCompletionStateImpl implements FbBatchCompletionState {
         int updateCount = state.getSize(status);
         int unknownCount = 0;
         int successCount = 0;
-        for (p = 0; p < updateCount; ++p) {
+        for (int p = 0; p < updateCount; ++p) {
             int s = state.getState(status, p);
             switch (s) {
                 case FbBatchCompletionState.EXECUTE_FAILED:
@@ -64,18 +88,19 @@ public class IBatchCompletionStateImpl implements FbBatchCompletionState {
         builder.append(String.format("Summary: total=%d success=%d success(but no update info)=%d\n",
                 updateCount, successCount, unknownCount));
 
-        errorStatus = database.getMaster().getStatus();
-        for (p = 0; (p = state.findError(status, p)) != FbBatchCompletionState.NO_MORE_ERRORS; ++p) {
+        IStatus errorStatus = database.getMaster().getStatus();
+        for (int p = 0; (p = state.findError(status, p)) != FbBatchCompletionState.NO_MORE_ERRORS; ++p) {
             state.getStatus(status, errorStatus, p);
 
-            CloseableMemory memory = new CloseableMemory(1024);
+            try (CloseableMemory memory = new CloseableMemory(1024)) {
 
-            util.formatStatus(memory, (int) memory.size() - 1, errorStatus);
-            if (!print2) {
-                builder.append(String.format("\nDetailed errors status:\n", p));
-                print2 = true;
+                util.formatStatus(memory, (int) memory.size() - 1, errorStatus);
+                if (!print2) {
+                    builder.append(String.format("\nDetailed errors status:\n", p));
+                    print2 = true;
+                }
+                builder.append(String.format("Message %d: %s\n", p, memory.getString(0)));
             }
-            builder.append(String.format("Message %d: %s\n", p, memory.getString(0)));
         }
 
         if (errorStatus != null)

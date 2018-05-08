@@ -13,5 +13,11 @@ public interface FbBatchCompletionState {
     int SUCCESS_NO_INFO = -2;
     int NO_MORE_ERRORS = -1;
 
+    int getSize() throws FbException;
+
+    int getState(int index) throws FbException;
+
+    String getError(int index) throws FbException;
+
     String getAllStates() throws FbException;
 }
