@@ -3,11 +3,7 @@ package org.firebirdsql.gds.ng.jna;
 import com.sun.jna.Pointer;
 import org.firebirdsql.gds.ISCConstants;
 import org.firebirdsql.gds.ng.FbExceptionBuilder;
-import org.firebirdsql.jdbc.FBSQLException;
-import org.firebirdsql.jna.fbclient.FbClientLibrary;
-import org.firebirdsql.jna.fbclient.FbInterface;
 import org.firebirdsql.jna.fbclient.FbInterface.IStatus;
-import org.firebirdsql.jna.fbclient.ISC_STATUS;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -16,6 +12,11 @@ import java.sql.SQLException;
 import static org.firebirdsql.gds.ISCConstants.*;
 import static org.firebirdsql.gds.ISCConstants.isc_arg_number;
 
+/**
+ * Class for handling exceptions from native OO API.
+ *
+ * @since 4.0
+ */
 public class FbException extends SQLException {
 
     private static final long serialVersionUID = 1L;

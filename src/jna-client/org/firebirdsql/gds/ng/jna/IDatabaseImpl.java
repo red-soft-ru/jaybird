@@ -17,6 +17,7 @@ import static org.firebirdsql.gds.ISCConstants.fb_cancel_abort;
 import static org.firebirdsql.gds.ng.TransactionHelper.checkTransactionActive;
 
 /**
+ * Implementation of {@link org.firebirdsql.gds.ng.FbDatabase} for native OO API.
  *
  * @author <a href="mailto:vasiliy.yashkov@red-soft.ru">Vasiliy Yashkov</a>
  * @since 4.0

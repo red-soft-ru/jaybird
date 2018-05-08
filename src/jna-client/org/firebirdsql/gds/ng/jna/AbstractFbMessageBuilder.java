@@ -20,6 +20,7 @@ import java.sql.Timestamp;
 import static org.firebirdsql.gds.ISCConstants.SQL_INT64;
 
 /**
+ * Common implementation of {@link org.firebirdsql.gds.ng.FbMessageBuilder} to build firebird message
  *
  * @author <a href="mailto:vasiliy.yashkov@red-soft.ru">Vasiliy Yashkov</a>
  * @since 4.0

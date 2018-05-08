@@ -10,7 +10,7 @@ import java.sql.SQLException;
 public class IDatabaseConnectionImpl extends JnaConnection<IConnectionProperties, IDatabaseImpl> {
 
     /**
-     * Creates a JnaDatabaseConnection (without establishing a connection to the server).
+     * Creates a IDatabaseConnectionImpl (without establishing a connection to the server).
      *
      * @param clientLibrary
      *         Client library to use
@@ -22,9 +22,8 @@ public class IDatabaseConnectionImpl extends JnaConnection<IConnectionProperties
         this(clientLibrary, connectionProperties, EncodingFactory.getPlatformDefault());
     }
 
-
     /**
-     * Creates a JnaConnection (without establishing a connection to the server).
+     * Creates a IDatabaseConnectionImpl (without establishing a connection to the server).
      *
      * @param clientLibrary    Client library to use
      * @param attachProperties Attach properties
