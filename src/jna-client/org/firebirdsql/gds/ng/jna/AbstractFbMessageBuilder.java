@@ -30,7 +30,7 @@ import static org.firebirdsql.gds.ISCConstants.SQL_INT64;
 public abstract class AbstractFbMessageBuilder<E extends FbBatch> implements FbMessageBuilder {
 
     private FbMessageMetadata metadata;
-    private ByteBuffer buffer = null;
+    private ByteBuffer buffer;
     private final LittleEndianDatatypeCoder datatypeCoder = new LittleEndianDatatypeCoder(EncodingFactory.createInstance(StandardCharsets.UTF_8));
     private final SeekableByteArrayOutputStream stream = new SeekableByteArrayOutputStream();
     private final SeekableByteArrayOutputStream blobStream = new SeekableByteArrayOutputStream();
@@ -261,12 +261,12 @@ public abstract class AbstractFbMessageBuilder<E extends FbBatch> implements FbM
     }
 
     @Override
-    public byte[] getData() throws SQLException {
+    public byte[] getData() {
         return buffer.array();
     }
 
     @Override
-    public void clear() throws SQLException {
+    public void clear() {
         buffer.clear();
     }
 
@@ -284,12 +284,12 @@ public abstract class AbstractFbMessageBuilder<E extends FbBatch> implements FbM
     }
 
     @Override
-    public void clearStream() throws SQLException {
+    public void clearStream() {
         stream.reset();
     }
 
     @Override
-    public byte[] getStreamData() throws SQLException {
+    public byte[] getStreamData() {
        return stream.toByteArray();
     }
 
@@ -364,13 +364,13 @@ public abstract class AbstractFbMessageBuilder<E extends FbBatch> implements FbM
     }
 
     @Override
-    public void clearBlobStream() throws SQLException {
+    public void clearBlobStream() {
         segmentedBlobSize = 0;
         blobStream.reset();
     }
 
     @Override
-    public byte[] getBlobStreamData() throws SQLException {
+    public byte[] getBlobStreamData() {
         return blobStream.toByteArray();
     }
 }

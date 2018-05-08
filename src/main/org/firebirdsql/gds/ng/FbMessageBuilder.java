@@ -39,15 +39,15 @@ public interface FbMessageBuilder {
 
     void addVarchar(int index, String value) throws SQLException;
 
-    byte[] getData() throws SQLException;
+    byte[] getData();
 
-    void clear() throws SQLException;
+    void clear();
 
     void addStreamData(byte[] data) throws IOException;
 
-    byte[] getStreamData() throws SQLException;
+    byte[] getStreamData();
 
-    void clearStream() throws SQLException;
+    void clearStream();
 
     void addBlobData(byte[] data, long blobId) throws IOException;
 
@@ -55,7 +55,7 @@ public interface FbMessageBuilder {
 
     void addBlobSegment(byte[] data, long offset) throws IOException;
 
-    byte[] getBlobStreamData() throws SQLException;
+    byte[] getBlobStreamData();
 
-    void clearBlobStream() throws SQLException;
+    void clearBlobStream();
 }
