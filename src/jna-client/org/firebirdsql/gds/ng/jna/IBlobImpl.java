@@ -132,16 +132,18 @@ public class IBlobImpl extends AbstractFbBlob implements FbBlob, DatabaseListene
                 checkTransactionActive();
                 checkBlobOpen();
                 responseBuffer = getByteBuffer(sizeRequested);
-                CloseableMemory memory = new CloseableMemory(sizeRequested);
-                memory.write(0, responseBuffer.array(), 0, sizeRequested);
+                try (CloseableMemory memory = new CloseableMemory(sizeRequested)) {
+                    memory.write(0, responseBuffer.array(), 0, sizeRequested);
 
-                IDatabaseImpl database = (IDatabaseImpl)getDatabase();
-                IStatus status = database.getStatus();
-                int result = blob.getSegment(status, sizeRequested, memory, actualLength);
-                // result 0 means: more to come, isc_segment means: buffer was too small, rest will be returned on next call
-                if (!(result == 0 || result == ISCConstants.isc_segment)) {
-                    if (result == ISCConstants.isc_segstr_eof) {
-                        setEof();
+                    IDatabaseImpl database = (IDatabaseImpl) getDatabase();
+                    IStatus status = database.getStatus();
+                    int result = blob.getSegment(status, sizeRequested, memory, actualLength);
+                    // result 0 means: more to come, isc_segment means: buffer was too small,
+                    // rest will be returned on next call
+                    if (!(result == 0 || result == ISCConstants.isc_segment)) {
+                        if (result == ISCConstants.isc_segstr_eof) {
+                            setEof();
+                        }
                     }
                 }
             }
@@ -170,12 +172,13 @@ public class IBlobImpl extends AbstractFbBlob implements FbBlob, DatabaseListene
                 checkTransactionActive();
                 checkBlobOpen();
 
-                CloseableMemory memory = new CloseableMemory(segment.length);
-                memory.write(0, segment, 0, segment.length);
+                try (CloseableMemory memory = new CloseableMemory(segment.length)) {
+                    memory.write(0, segment, 0, segment.length);
 
-                IDatabaseImpl database = (IDatabaseImpl)getDatabase();
-                IStatus status = database.getStatus();
-                blob.putSegment(status, segment.length, memory);
+                    IDatabaseImpl database = (IDatabaseImpl) getDatabase();
+                    IStatus status = database.getStatus();
+                    blob.putSegment(status, segment.length, memory);
+                }
             }
         } catch (SQLException e) {
             exceptionListenerDispatcher.errorOccurred(e);
@@ -192,8 +195,8 @@ public class IBlobImpl extends AbstractFbBlob implements FbBlob, DatabaseListene
 
                 IDatabaseImpl database = (IDatabaseImpl)getDatabase();
                 IStatus status = database.getStatus();
-                // result is the current position in the blob (see .NET provider source)
-                // We ignore the result TODO check if useful; not used in wire protocol either
+                // result is the current position in the blob
+                // We ignore the result
                 blob.seek(status, seekMode.getSeekModeId(), offset);
             }
         } catch (SQLException e) {

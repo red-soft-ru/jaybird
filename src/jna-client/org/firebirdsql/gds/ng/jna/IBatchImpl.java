@@ -76,45 +76,47 @@ public class IBatchImpl extends AbstractFbBatch {
 
     @Override
     public void add(int count, byte[] inBuffer) throws SQLException {
-        CloseableMemory memory = new CloseableMemory(inBuffer.length);
-        memory.write(0, inBuffer, 0, inBuffer.length);
-        batch.add(database.getStatus(), count, memory);
+        try (CloseableMemory memory = new CloseableMemory(inBuffer.length)) {
+            memory.write(0, inBuffer, 0, inBuffer.length);
+            batch.add(database.getStatus(), count, memory);
+        }
     }
 
     @Override
     public FbBlob addBlob(byte[] inBuffer, long blobId, BlobParameterBuffer buffer) throws SQLException {
-        CloseableMemory memory = new CloseableMemory(inBuffer.length);
-        memory.write(0, inBuffer, 0, inBuffer.length);
-        LongByReference longByReference = new LongByReference(blobId);
+        try (CloseableMemory memory = new CloseableMemory(inBuffer.length)) {
+            memory.write(0, inBuffer, 0, inBuffer.length);
+            LongByReference longByReference = new LongByReference(blobId);
 
-        if (buffer == null)
-            batch.addBlob(status, inBuffer.length, memory, longByReference, 0, null);
-        else
-            batch.addBlob(status, inBuffer.length, memory, longByReference, buffer.toBytesWithType().length, buffer.toBytesWithType());
+            if (buffer == null)
+                batch.addBlob(status, inBuffer.length, memory, longByReference, 0, null);
+            else
+                batch.addBlob(status, inBuffer.length, memory, longByReference, buffer.toBytesWithType().length, buffer.toBytesWithType());
 
-        return new IBlobImpl(database, (ITransactionImpl) transaction, buffer, longByReference.getValue());
+            return new IBlobImpl(database, (ITransactionImpl) transaction, buffer, longByReference.getValue());
+        }
     }
 
     @Override
     public void appendBlobData(byte[] inBuffer) throws SQLException {
-        CloseableMemory memory = new CloseableMemory(inBuffer.length);
-        memory.write(0, inBuffer, 0, inBuffer.length);
-        batch.appendBlobData(status, inBuffer.length, memory);
+        try (CloseableMemory memory = new CloseableMemory(inBuffer.length)) {
+            memory.write(0, inBuffer, 0, inBuffer.length);
+            batch.appendBlobData(status, inBuffer.length, memory);
+        }
     }
 
     @Override
     public void addBlobStream(byte[] inBuffer) throws SQLException {
-        CloseableMemory memory = new CloseableMemory(inBuffer.length);
-        memory.write(0, inBuffer, 0, inBuffer.length);
-        batch.addBlobStream(status, inBuffer.length, memory);
+        try (CloseableMemory memory = new CloseableMemory(inBuffer.length)) {
+            memory.write(0, inBuffer, 0, inBuffer.length);
+            batch.addBlobStream(status, inBuffer.length, memory);
+        }
     }
 
     @Override
     public void registerBlob(long existingBlob, long blobId) throws SQLException {
-
         LongByReference longByReference = new LongByReference(blobId);
         LongByReference existLong = new LongByReference(existingBlob);
-
         batch.registerBlob(status, existLong, longByReference);
     }
 
