@@ -1,6 +1,8 @@
 package org.firebirdsql.gds.ng.jna;
 
 import org.firebirdsql.encodings.EncodingFactory;
+import org.firebirdsql.extern.decimal.Decimal128;
+import org.firebirdsql.extern.decimal.Decimal64;
 import org.firebirdsql.gds.BlobParameterBuffer;
 import org.firebirdsql.gds.ng.FbBatch;
 import org.firebirdsql.gds.ng.FbMessageBuilder;
@@ -128,30 +130,32 @@ public abstract class AbstractFbMessageBuilder<E extends FbBatch> implements FbM
 
     @Override
     public void addDecfloat16(int index, BigDecimal value) throws SQLException {
-//        int nullOffset = metadata.getNullOffset(index);
-//        int offset = metadata.getOffset(index);
-//
-//        byte[] bytes = datatypeCoder.encodeDecimal64(value);
-//        byte[] nullShort = datatypeCoder.encodeShort(0);
-//
-//        buffer.position(offset);
-//        buffer.put(bytes);
-//        buffer.position(nullOffset);
-//        buffer.put(nullShort);
+        final Decimal64 decimal128 = Decimal64.valueOf(value);
+        int nullOffset = metadata.getNullOffset(index);
+        int offset = metadata.getOffset(index);
+
+        byte[] bytes = datatypeCoder.encodeDecimal64(decimal128);
+        byte[] nullShort = datatypeCoder.encodeShort(0);
+
+        buffer.position(offset);
+        buffer.put(bytes);
+        buffer.position(nullOffset);
+        buffer.put(nullShort);
     }
 
     @Override
     public void addDecfloat34(int index, BigDecimal value) throws SQLException {
-//        int nullOffset = metadata.getNullOffset(index);
-//        int offset = metadata.getOffset(index);
-//
-//        byte[] bytes = datatypeCoder.encodeDecimal128(value);
-//        byte[] nullShort = datatypeCoder.encodeShort(0);
-//
-//        buffer.position(offset);
-//        buffer.put(bytes);
-//        buffer.position(nullOffset);
-//        buffer.put(nullShort);
+        final Decimal128 decimal128 = Decimal128.valueOf(value);
+        int nullOffset = metadata.getNullOffset(index);
+        int offset = metadata.getOffset(index);
+
+        byte[] bytes = datatypeCoder.encodeDecimal128(decimal128);
+        byte[] nullShort = datatypeCoder.encodeShort(0);
+
+        buffer.position(offset);
+        buffer.put(bytes);
+        buffer.position(nullOffset);
+        buffer.put(nullShort);
     }
 
     @Override
