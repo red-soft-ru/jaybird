@@ -361,6 +361,13 @@ public abstract class AbstractFbMessageBuilder<E extends FbBatch> implements FbM
 
         blobStream.write(dataLength);
         blobStream.write(data);
+
+        align = align(blobStream.size(), blobAlign);
+
+        if (align != 0 && blobStream.size() - align < 0) {
+            byte[] shift = ByteBuffer.allocate(Math.abs(blobStream.size() - align)).array();
+            blobStream.write(shift);
+        }
     }
 
     @Override
