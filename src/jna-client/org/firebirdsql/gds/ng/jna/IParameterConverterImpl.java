@@ -9,7 +9,7 @@ import org.firebirdsql.gds.ng.WireCrypt;
 
 import java.sql.SQLException;
 
-public class IParameterConverterImpl extends AbstractParameterConverter<IDatabaseConnectionImpl, JnaServiceConnection> {
+public class IParameterConverterImpl extends AbstractParameterConverter<IDatabaseConnectionImpl, IServiceConnectionImpl> {
 
     @Override
     protected void populateAuthenticationProperties(final AbstractConnection connection,

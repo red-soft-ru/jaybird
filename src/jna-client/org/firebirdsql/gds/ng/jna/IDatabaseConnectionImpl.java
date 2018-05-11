@@ -7,7 +7,12 @@ import org.firebirdsql.jna.fbclient.FbClientLibrary;
 
 import java.sql.SQLException;
 
-public class IDatabaseConnectionImpl extends JnaConnection<IConnectionProperties, IDatabaseImpl> {
+/**
+ * Class handling the initial setup of the native OO API database connection.
+ *
+ * @since 4.0
+ */
+public class IDatabaseConnectionImpl extends AbstractNativeConnection<IConnectionProperties, IDatabaseImpl> {
 
     /**
      * Creates a IDatabaseConnectionImpl (without establishing a connection to the server).

@@ -12,6 +12,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.sql.SQLNonTransientException;
+import java.sql.SQLTransientException;
 
 import static org.firebirdsql.gds.ISCConstants.fb_cancel_abort;
 import static org.firebirdsql.gds.ng.TransactionHelper.checkTransactionActive;
@@ -23,7 +24,7 @@ import static org.firebirdsql.gds.ng.TransactionHelper.checkTransactionActive;
  * @since 4.0
  */
 public class IDatabaseImpl extends AbstractFbDatabase<IDatabaseConnectionImpl>
-        implements JnaAttachment, TransactionListener {
+        implements FbAttachment, TransactionListener {
 
     private static final ParameterConverter<IDatabaseConnectionImpl, ?> PARAMETER_CONVERTER = new IParameterConverterImpl();
 
@@ -32,6 +33,7 @@ public class IDatabaseImpl extends AbstractFbDatabase<IDatabaseConnectionImpl>
     private final IProvider provider;
     private final IStatus status;
     private IAttachment attachment;
+    private IEvents events;
 
     public IDatabaseImpl(IDatabaseConnectionImpl connection) {
         super(connection, connection.createDatatypeCoder());
@@ -67,15 +69,8 @@ public class IDatabaseImpl extends AbstractFbDatabase<IDatabaseConnectionImpl>
         synchronized (getSynchronizationObject()) {
             try {
                 attachment.detach(status);
-            } catch (SQLException ex) {
-                throw ex;
-            } catch (Exception ex) {
-                // TODO Replace with specific error (eg native client error)
-                throw new FbExceptionBuilder()
-                        .exception(ISCConstants.isc_network_error)
-                        .messageParameter(connection.getServerName())
-                        .cause(ex)
-                        .toSQLException();
+            } catch (SQLException e) {
+                throw e;
             } finally {
                 setDetached();
             }
@@ -116,8 +111,8 @@ public class IDatabaseImpl extends AbstractFbDatabase<IDatabaseConnectionImpl>
     public void cancelOperation(int kind) throws SQLException {
         try {
             checkConnected();
-            // TODO Test what happens with 2.1 and earlier client library
-            // No synchronization, otherwise cancel will never work; might conflict with sync policy of JNA (TODO: find out)
+            // No synchronization, otherwise cancel will never work;
+            // might conflict with sync policy of JNA (TODO: find out)
             try {
                 attachment.cancelOperation(status, kind);
             } finally {
@@ -137,9 +132,10 @@ public class IDatabaseImpl extends AbstractFbDatabase<IDatabaseConnectionImpl>
             checkConnected();
             final byte[] tpbArray = tpb.toBytesWithType();
             synchronized (getSynchronizationObject()) {
-                ITransaction transaction = attachment.startTransaction(status, (short) tpbArray.length, tpbArray);
+                ITransaction transaction = attachment.startTransaction(status, tpbArray.length, tpbArray);
 
-                final ITransactionImpl transactionImpl = new ITransactionImpl(this, transaction, TransactionState.ACTIVE);
+                final ITransactionImpl transactionImpl = new ITransactionImpl(this, transaction,
+                        TransactionState.ACTIVE);
                 transactionAdded(transactionImpl);
                 return transactionImpl;
             }
@@ -156,7 +152,8 @@ public class IDatabaseImpl extends AbstractFbDatabase<IDatabaseConnectionImpl>
             final byte[] transactionIdBuffer = getTransactionIdBuffer(transactionId);
 
             synchronized (getSynchronizationObject()) {
-                ITransaction iTransaction = attachment.reconnectTransaction(status, (short) transactionIdBuffer.length, transactionIdBuffer);
+                ITransaction iTransaction = attachment.reconnectTransaction(status, transactionIdBuffer.length,
+                        transactionIdBuffer);
 
                 final ITransactionImpl transaction =
                         new ITransactionImpl(this, iTransaction, TransactionState.PREPARED);
@@ -170,35 +167,23 @@ public class IDatabaseImpl extends AbstractFbDatabase<IDatabaseConnectionImpl>
     }
 
     protected byte[] getTransactionIdBuffer(long transactionId) {
-        // Note: This uses an atypical encoding (as this is actually a TPB without a type)
-        if (transactionId <= 0xffffffffL) {
-            ByteArrayOutputStream bos = new ByteArrayOutputStream(4);
-            try {
-                VaxEncoding.encodeVaxIntegerWithoutLength(bos, (int) transactionId);
-            } catch (IOException e) {
-                // ignored: won't happen with a ByteArrayOutputStream
-            }
-            return bos.toByteArray();
-        } else {
-            // assuming this is FB 3, because FB 2.5 and lower only have 31 bits tx ids; might fail if this path is triggered on FB 2.5 and lower
-            ByteArrayOutputStream bos = new ByteArrayOutputStream(8);
-            try {
-                VaxEncoding.encodeVaxLongWithoutLength(bos, transactionId);
-            } catch (IOException e) {
-                // ignored: won't happen with a ByteArrayOutputStream
-            }
-            return bos.toByteArray();
+        ByteArrayOutputStream bos = new ByteArrayOutputStream(8);
+        try {
+            VaxEncoding.encodeVaxLongWithoutLength(bos, transactionId);
+        } catch (IOException e) {
+            // ignored: won't happen with a ByteArrayOutputStream
         }
+        return bos.toByteArray();
     }
 
     @Override
     public FbStatement createStatement(FbTransaction transaction) throws SQLException {
         try {
             checkConnected();
-            final IStatementImpl stmt = new IStatementImpl(this);
-            stmt.addExceptionListener(exceptionListenerDispatcher);
-            stmt.setTransaction(transaction);
-            return stmt;
+            final IStatementImpl statement = new IStatementImpl(this);
+            statement.addExceptionListener(exceptionListenerDispatcher);
+            statement.setTransaction(transaction);
+            return statement;
         } catch (SQLException e) {
             exceptionListenerDispatcher.errorOccurred(e);
             throw e;
@@ -256,9 +241,8 @@ public class IDatabaseImpl extends AbstractFbDatabase<IDatabaseConnectionImpl>
             }
 
             synchronized (getSynchronizationObject()) {
-
-                attachment.execute(status, ((ITransactionImpl)transaction).getTransaction(), statementText.length(),
-                        statementText, getConnectionDialect(),null, null,
+                attachment.execute(status, ((ITransactionImpl) transaction).getTransaction(), statementText.length(),
+                        statementText, getConnectionDialect(), null, null,
                         null, null);
 
                 if (!isAttached()) {
@@ -274,27 +258,93 @@ public class IDatabaseImpl extends AbstractFbDatabase<IDatabaseConnectionImpl>
 
     @Override
     public int getHandle() {
-        return 0;
+        return -1;
+    }
+
+    protected IEventBlockImpl validateEventHandle(EventHandle eventHandle) throws SQLException {
+        if (!(eventHandle instanceof IEventBlockImpl)) {
+            // TODO SQLState and/or Firebird specific error
+            throw new SQLNonTransientException(String.format("Invalid event handle type: %s, expected: %s",
+                    eventHandle.getClass(), IEventBlockImpl.class));
+        }
+        IEventBlockImpl event = (IEventBlockImpl) eventHandle;
+        if (event.getSize() == -1) {
+            // TODO SQLState and/or Firebird specific error
+            throw new SQLTransientException("Event handle hasn't been initialized");
+        }
+        return event;
     }
 
     @Override
     public EventHandle createEventHandle(String eventName, EventHandler eventHandler) throws SQLException {
-        return null;
+        final IEventBlockImpl eventHandle = new IEventBlockImpl(eventName, eventHandler, getEncoding());
+        synchronized (getSynchronizationObject()) {
+            synchronized (eventHandle) {
+                IUtil util = master.getUtilInterface();
+                IEventBlock eventBlock = util.createEventBlock(status, new String[]{eventName});
+                eventHandle.setEventBlock(eventBlock);
+            }
+        }
+        return eventHandle;
     }
 
     @Override
     public void countEvents(EventHandle eventHandle) throws SQLException {
-
+        try {
+            final IEventBlockImpl eventBlock = validateEventHandle(eventHandle);
+            int count;
+            synchronized (getSynchronizationObject()) {
+                synchronized (eventBlock) {
+                    count = eventBlock.getEventBlock().getCount();
+                }
+            }
+            eventBlock.setEventCount(count);
+        } catch (SQLException e) {
+            exceptionListenerDispatcher.errorOccurred(e);
+            throw e;
+        }
     }
 
     @Override
     public void queueEvent(EventHandle eventHandle) throws SQLException {
+        try {
+            checkConnected();
+            final IEventBlockImpl eventBlock = validateEventHandle(eventHandle);
 
+            synchronized (getSynchronizationObject()) {
+                synchronized (eventBlock) {
+                    int length = eventBlock.getEventBlock().getLength();
+                    byte[] array = eventBlock.getEventBlock().getValues().getByteArray(0, length);
+                    events = attachment.queEvents(status, eventBlock.getCallback(),
+                            length,
+                            array);
+                }
+            }
+        } catch (SQLException e) {
+            exceptionListenerDispatcher.errorOccurred(e);
+            throw e;
+        }
     }
 
     @Override
     public void cancelEvent(EventHandle eventHandle) throws SQLException {
+        try {
+            checkConnected();
+            final IEventBlockImpl eventBlock = validateEventHandle(eventHandle);
 
+            synchronized (getSynchronizationObject()) {
+                synchronized (eventBlock) {
+                    try {
+                        events.cancel(status);
+                    } finally {
+                        eventBlock.releaseMemory();
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            exceptionListenerDispatcher.errorOccurred(e);
+            throw e;
+        }
     }
 
     @Override
@@ -303,12 +353,12 @@ public class IDatabaseImpl extends AbstractFbDatabase<IDatabaseConnectionImpl>
     }
 
     @Override
-    public FbBatch createBatch(FbTransaction transaction, String statement,BatchParameterBuffer parameters) throws SQLException {
+    public FbBatch createBatch(FbTransaction transaction, String statement, BatchParameterBuffer parameters) throws SQLException {
         return new IBatchImpl(this, transaction, statement, parameters);
     }
 
     @Override
-    public FbMetadataBuilder getMetadataBuilder(int fieldCount) throws SQLException  {
+    public FbMetadataBuilder getMetadataBuilder(int fieldCount) throws SQLException {
         return new IMetadataBuilderImpl(this, fieldCount);
     }
 
@@ -335,17 +385,9 @@ public class IDatabaseImpl extends AbstractFbDatabase<IDatabaseConnectionImpl>
                 } else {
                     attachment = provider.attachDatabase(status, dbName, (short) dpbArray.length, dpbArray);
                 }
-            } catch (SQLException ex) {
+            } catch (SQLException e) {
                 safelyDetach();
-                throw ex;
-            } catch (Exception ex) {
-                safelyDetach();
-                // TODO Replace with specific error (eg native client error)
-                throw new FbExceptionBuilder()
-                        .exception(ISCConstants.isc_network_error)
-                        .messageParameter(connection.getServerName())
-                        .cause(ex)
-                        .toSQLException();
+                throw e;
             }
             setAttached();
             afterAttachActions();

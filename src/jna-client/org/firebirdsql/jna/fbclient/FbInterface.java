@@ -181,7 +181,7 @@ public interface FbInterface extends FbClientLibrary {
 
     public static interface IEventCallbackIntf extends IReferenceCountedIntf
     {
-        public void eventCallbackFunction(int length, byte[] events);
+        public void eventCallbackFunction(int length, com.sun.jna.Pointer events);
     }
 
     public static interface IBlobIntf extends IReferenceCountedIntf
@@ -3376,7 +3376,7 @@ public interface FbInterface extends FbClientLibrary {
         {
             public static interface Callback_eventCallbackFunction extends com.sun.jna.Callback
             {
-                public void invoke(IEventCallback self, int length, byte[] events);
+                public void invoke(IEventCallback self, int length, com.sun.jna.Pointer events);
             }
 
             public VTable(com.sun.jna.Pointer pointer)
@@ -3390,7 +3390,7 @@ public interface FbInterface extends FbClientLibrary {
 
                 eventCallbackFunction = new Callback_eventCallbackFunction() {
                     @Override
-                    public void invoke(IEventCallback self, int length, byte[] events)
+                    public void invoke(IEventCallback self, int length, com.sun.jna.Pointer events)
                     {
                         obj.eventCallbackFunction(length, events);
                     }
@@ -3430,7 +3430,7 @@ public interface FbInterface extends FbClientLibrary {
             return new VTable(cloopVTable);
         }
 
-        public void eventCallbackFunction(int length, byte[] events)
+        public void eventCallbackFunction(int length, com.sun.jna.Pointer events)
         {
             VTable vTable = getVTable();
             vTable.eventCallbackFunction.invoke(this, length, events);

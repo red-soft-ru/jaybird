@@ -144,10 +144,9 @@ public class IStatementImpl extends AbstractFbStatement {
                     ByteBuffer outMessage = ByteBuffer.allocate(inMeta.getMessageLength(status) + 1);
                     outPtr = new Memory(outMessage.array().length);
                     outPtr.write(0, outMessage.array(), 0, outMessage.array().length);
-                    statement.execute(status, transaction.getTransaction(), inMeta, inPtr, outMeta, outPtr);
-
-                } else {
                     cursor = statement.openCursor(status, transaction.getTransaction(), inMeta, inPtr, outMeta, 0);
+                } else {
+                    statement.execute(status, transaction.getTransaction(), inMeta, inPtr, outMeta, outPtr);
                 }
 
                 if (hasSingletonResult) {
