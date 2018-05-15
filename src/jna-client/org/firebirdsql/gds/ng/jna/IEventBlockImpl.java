@@ -1,15 +1,13 @@
 package org.firebirdsql.gds.ng.jna;
 
-import com.sun.jna.Callback;
 import com.sun.jna.Memory;
-import com.sun.jna.Platform;
 import com.sun.jna.Pointer;
 import org.firebirdsql.encodings.Encoding;
 import org.firebirdsql.gds.EventHandler;
 import org.firebirdsql.gds.ng.AbstractEventHandle;
-import org.firebirdsql.jna.fbclient.FbClientLibrary;
-import org.firebirdsql.jna.fbclient.FbInterface.*;
-import org.firebirdsql.jna.fbclient.WinFbClientLibrary;
+import org.firebirdsql.jna.fbclient.FbInterface.IEventBlock;
+import org.firebirdsql.jna.fbclient.FbInterface.IEventCallback;
+import org.firebirdsql.jna.fbclient.FbInterface.IEventCallbackIntf;
 import org.firebirdsql.logging.Logger;
 import org.firebirdsql.logging.LoggerFactory;
 
@@ -27,8 +25,8 @@ public class IEventBlockImpl extends AbstractEventHandle {
     private int size = -1;
     private int eventId;
     private IEventBlock eventBlock;
-    private IEventCallback callback;
-    private int reference = 0;
+    private IEventCallback callback = new IEventCallback(new IEventCallbackImpl());
+    private int referenceCount = 0;
 
     IEventBlockImpl(String eventName, EventHandler eventHandler, Encoding encoding) {
         super(eventName, eventHandler);
@@ -39,23 +37,6 @@ public class IEventBlockImpl extends AbstractEventHandle {
         }
         eventNameMemory = new CloseableMemory(eventNameBytes.length);
         eventNameMemory.write(0, eventNameBytes, 0, eventNameBytes.length);
-        callback = new IEventCallback(new IEventCallbackIntf() {
-            @Override
-            public void eventCallbackFunction(int length, Pointer events) {
-                if (length > 0)
-                    onEventOccurred();
-            }
-
-            @Override
-            public void addRef() {
-                ++reference;
-            }
-
-            @Override
-            public int release() {
-                return --reference;
-            }
-        });
     }
 
     @Override
@@ -122,24 +103,40 @@ public class IEventBlockImpl extends AbstractEventHandle {
         }
     }
 
-    private class IEventCallbackImpl extends IEventCallback {
-        public void addRef()
-        {
-            IReferenceCounted.VTable vTable = getVTable();
-            vTable.addRef.invoke(this);
-        }
+    private class IEventCallbackImpl implements IEventCallbackIntf {
 
-        public int release()
-        {
-            IReferenceCounted.VTable vTable = getVTable();
-            int result = vTable.release.invoke(this);
-            return result;
+        @Override
+        public void addRef() {
+            synchronized (this) {
+                ++referenceCount;
+            }
         }
 
         @Override
-        public void eventCallbackFunction(int length, com.sun.jna.Pointer events) {
+        public int release() {
+            synchronized (this) {
+                return --referenceCount;
+            }
+        }
 
-            onEventOccurred();
+        @Override
+        public void eventCallbackFunction(int length, Pointer events) {
+            synchronized (this) {
+                eventBlock.getValues().write(0, events.getByteArray(0, length), 0, length);
+                this.release();
+
+                onEventOccurred();
+            }
+        }
+
+        @Override
+        protected void finalize() throws Throwable {
+            try {
+                release();
+            } finally {
+                super.finalize();
+            }
         }
     }
+
 }
