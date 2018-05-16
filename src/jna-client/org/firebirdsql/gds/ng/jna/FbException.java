@@ -33,8 +33,8 @@ public class FbException extends SQLException {
         super(msg, t);
     }
 
-    public FbException(String reason, String msg, int vendorCode, Throwable cause) {
-        super(reason, msg, vendorCode, cause);
+    public FbException(String reason, String sqlState, int vendorCode, Throwable cause) {
+        super(reason, sqlState, vendorCode, cause);
     }
 
     public static void rethrow(Throwable t) throws FbException {
