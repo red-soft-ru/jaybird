@@ -33,6 +33,10 @@ public class FbException extends SQLException {
         super(msg, t);
     }
 
+    public FbException(String reason, String msg, int vendorCode, Throwable cause) {
+        super(reason, msg, vendorCode, cause);
+    }
+
     public static void rethrow(Throwable t) throws FbException {
         throw new FbException(null, t);
     }
@@ -117,8 +121,11 @@ public class FbException extends SQLException {
             }
 
 
-            if (!builder.isEmpty())
-                throw new FbException(builder.toFlatSQLException());
+            if (!builder.isEmpty()) {
+                SQLException exception = builder.toSQLException();
+                throw new FbException(exception.getMessage(), exception.getSQLState(), exception.getErrorCode(),
+                        exception);
+            }
         }
     }
 }
