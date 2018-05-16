@@ -120,6 +120,7 @@ public class IDatabaseImpl extends AbstractFbDatabase<IDatabaseConnectionImpl>
                 attachment.cancelOperation(status, kind);
             } finally {
                 if (kind == fb_cancel_abort) {
+                    attachment.detach(status);
                     setDetached();
                 }
             }
