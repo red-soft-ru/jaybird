@@ -1,10 +1,12 @@
-package org.firebirdsql.gds.ng.jna;
+package org.firebirdsql.gds.ng.jna.interfaces;
 
+import org.firebirdsql.gds.ng.AbstractFbMessageBuilder;
 import org.firebirdsql.gds.ng.FbBatch;
+
 import java.sql.SQLException;
 
 /**
- * Implementation of {@link org.firebirdsql.gds.ng.jna.AbstractFbMessageBuilder}
+ * Implementation of {@link AbstractFbMessageBuilder}
  * to build messages for a native connection using OO API.
  *
  * @author <a href="mailto:mrotteveel@users.sourceforge.net">Vasiliy Yashkov</a>

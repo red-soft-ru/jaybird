@@ -1,8 +1,9 @@
-package org.firebirdsql.gds.ng.jna;
+package org.firebirdsql.gds.ng.jna.interfaces;
 
 import org.firebirdsql.gds.*;
 import org.firebirdsql.gds.impl.DatabaseParameterBufferExtension;
 import org.firebirdsql.gds.ng.*;
+import org.firebirdsql.gds.ng.jna.FbException;
 import org.firebirdsql.gds.ng.listeners.TransactionListener;
 import org.firebirdsql.jdbc.SQLStateConstants;
 import org.firebirdsql.jna.fbclient.FbClientLibrary;
@@ -32,6 +33,7 @@ public class IDatabaseImpl extends AbstractFbDatabase<IDatabaseConnectionImpl>
     private final IMaster master;
     private final IProvider provider;
     private final IStatus status;
+    private final IUtil util;
     private IAttachment attachment;
     private IEvents events;
 
@@ -41,6 +43,7 @@ public class IDatabaseImpl extends AbstractFbDatabase<IDatabaseConnectionImpl>
         master = clientLibrary.fb_get_master_interface();
         status = master.getStatus();
         provider = master.getDispatcher();
+        util = master.getUtilInterface();
         attachment = null;
     }
 
@@ -241,7 +244,12 @@ public class IDatabaseImpl extends AbstractFbDatabase<IDatabaseConnectionImpl>
             }
 
             synchronized (getSynchronizationObject()) {
-                attachment.execute(status, ((ITransactionImpl) transaction).getTransaction(), statementText.length(),
+                attachment = util.executeCreateDatabase(status, statementText.length(),
+                        statementText, getConnectionDialect(), new boolean[]{false});
+                attachment.execute(status,
+                        transaction != null ? ((ITransactionImpl) transaction).getTransaction() :
+                                attachment.startTransaction(status, 0, null),
+                        statementText.length(),
                         statementText, getConnectionDialect(), null, null,
                         null, null);
 

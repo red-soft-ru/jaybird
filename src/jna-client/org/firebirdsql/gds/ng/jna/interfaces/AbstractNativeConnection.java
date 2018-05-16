@@ -1,10 +1,12 @@
-package org.firebirdsql.gds.ng.jna;
+package org.firebirdsql.gds.ng.jna.interfaces;
 
 import org.firebirdsql.encodings.IEncodingFactory;
 import org.firebirdsql.gds.ng.AbstractConnection;
 import org.firebirdsql.gds.ng.DatatypeCoder;
 import org.firebirdsql.gds.ng.FbAttachment;
 import org.firebirdsql.gds.ng.IAttachProperties;
+import org.firebirdsql.gds.ng.jna.BigEndianDatatypeCoder;
+import org.firebirdsql.gds.ng.jna.LittleEndianDatatypeCoder;
 import org.firebirdsql.jna.fbclient.FbClientLibrary;
 import org.firebirdsql.logging.Logger;
 import org.firebirdsql.logging.LoggerFactory;

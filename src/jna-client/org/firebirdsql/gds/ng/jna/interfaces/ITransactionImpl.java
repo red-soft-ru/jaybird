@@ -1,4 +1,4 @@
-package org.firebirdsql.gds.ng.jna;
+package org.firebirdsql.gds.ng.jna.interfaces;
 
 import org.firebirdsql.gds.ng.AbstractFbTransaction;
 import org.firebirdsql.gds.ng.TransactionState;

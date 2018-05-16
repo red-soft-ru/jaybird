@@ -1,4 +1,4 @@
-package org.firebirdsql.gds.ng.jna;
+package org.firebirdsql.gds.ng.jna.interfaces;
 
 import com.sun.jna.ptr.LongByReference;
 import org.firebirdsql.gds.BlobParameterBuffer;
@@ -6,6 +6,7 @@ import org.firebirdsql.gds.ISCConstants;
 import org.firebirdsql.gds.ng.AbstractFbBlob;
 import org.firebirdsql.gds.ng.FbBlob;
 import org.firebirdsql.gds.ng.FbExceptionBuilder;
+import org.firebirdsql.gds.ng.jna.CloseableMemory;
 import org.firebirdsql.gds.ng.listeners.DatabaseListener;
 import org.firebirdsql.jna.fbclient.FbInterface.*;
 

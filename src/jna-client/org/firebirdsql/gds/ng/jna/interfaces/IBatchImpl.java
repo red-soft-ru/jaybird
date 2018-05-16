@@ -1,9 +1,10 @@
-package org.firebirdsql.gds.ng.jna;
+package org.firebirdsql.gds.ng.jna.interfaces;
 
 import com.sun.jna.ptr.LongByReference;
 import org.firebirdsql.gds.BatchParameterBuffer;
 import org.firebirdsql.gds.BlobParameterBuffer;
 import org.firebirdsql.gds.ng.*;
+import org.firebirdsql.gds.ng.jna.CloseableMemory;
 import org.firebirdsql.jna.fbclient.FbInterface.*;
 
 import java.sql.SQLException;

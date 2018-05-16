@@ -1,7 +1,8 @@
-package org.firebirdsql.gds.ng.jna;
+package org.firebirdsql.gds.ng.jna.interfaces;
 
 import org.firebirdsql.gds.ng.FbMessageMetadata;
 import org.firebirdsql.gds.ng.FbMetadataBuilder;
+import org.firebirdsql.gds.ng.jna.FbException;
 import org.firebirdsql.jna.fbclient.FbInterface.*;
 
 /**

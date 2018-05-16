@@ -1,4 +1,4 @@
-package org.firebirdsql.gds.ng.jna;
+package org.firebirdsql.gds.ng.jna.interfaces;
 
 import com.sun.jna.Memory;
 import com.sun.jna.Pointer;
@@ -6,6 +6,8 @@ import org.firebirdsql.gds.ISCConstants;
 import org.firebirdsql.gds.JaybirdErrorCodes;
 import org.firebirdsql.gds.ng.*;
 import org.firebirdsql.gds.ng.fields.*;
+import org.firebirdsql.gds.ng.jna.FbException;
+import org.firebirdsql.gds.ng.jna.JnaDatabase;
 import org.firebirdsql.jna.fbclient.FbClientLibrary;
 import org.firebirdsql.jna.fbclient.FbInterface.*;
 import org.firebirdsql.jna.fbclient.XSQLVAR;

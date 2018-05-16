@@ -19,6 +19,7 @@
 package org.firebirdsql.gds.ng.jna;
 
 import org.firebirdsql.gds.ng.*;
+import org.firebirdsql.gds.ng.jna.interfaces.IDatabaseConnectionImpl;
 import org.firebirdsql.jna.fbclient.FbClientLibrary;
 
 import java.nio.ByteBuffer;

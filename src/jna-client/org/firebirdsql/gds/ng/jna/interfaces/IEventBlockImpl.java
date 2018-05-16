@@ -1,10 +1,12 @@
-package org.firebirdsql.gds.ng.jna;
+package org.firebirdsql.gds.ng.jna.interfaces;
 
 import com.sun.jna.Memory;
 import com.sun.jna.Pointer;
 import org.firebirdsql.encodings.Encoding;
 import org.firebirdsql.gds.EventHandler;
 import org.firebirdsql.gds.ng.AbstractEventHandle;
+import org.firebirdsql.gds.ng.jna.CloseableMemory;
+import org.firebirdsql.gds.ng.jna.JnaEventHandle;
 import org.firebirdsql.jna.fbclient.FbInterface.IEventBlock;
 import org.firebirdsql.jna.fbclient.FbInterface.IEventCallback;
 import org.firebirdsql.jna.fbclient.FbInterface.IEventCallbackIntf;
