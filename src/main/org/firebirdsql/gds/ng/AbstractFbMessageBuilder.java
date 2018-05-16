@@ -1,4 +1,4 @@
-package org.firebirdsql.gds.ng.jna;
+package org.firebirdsql.gds.ng;
 
 import org.firebirdsql.encodings.EncodingFactory;
 import org.firebirdsql.extern.decimal.Decimal128;
@@ -8,6 +8,7 @@ import org.firebirdsql.gds.ng.FbBatch;
 import org.firebirdsql.gds.ng.FbMessageBuilder;
 import org.firebirdsql.gds.ng.FbMessageMetadata;
 import org.firebirdsql.gds.ng.SeekableByteArrayOutputStream;
+import org.firebirdsql.gds.ng.jna.LittleEndianDatatypeCoder;
 
 import java.io.IOException;
 import java.math.BigDecimal;
