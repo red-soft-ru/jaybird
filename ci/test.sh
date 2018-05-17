@@ -110,20 +110,17 @@ mkdir -p $TEST_DIR
 mkdir -p $WORKSPACE/results/jdk${JDK_VERSION}
 sudo chmod 777 $TEST_DIR
 
-#sudo sed -i 's/#AuthServer = /AuthServer = Legacy_Auth, Srp, Gss, Multifactor /g' /opt/RedDatabase/firebird.conf
-sudo sed -i 's/#AuthServer = /AuthServer = Legacy_Auth, Srp /g' /opt/RedDatabase/firebird.conf
-#sudo sed -i 's/#AuthClient = /AuthClient = Legacy_Auth, Srp, Gss, Multifactor/g' /opt/RedDatabase/firebird.conf
-sudo sed -i 's/#AuthClient = /AuthClient = Legacy_Auth, Srp /g' /opt/RedDatabase/firebird.conf
-#sudo sed -i 's/#UserManager =/UserManager = Srp, Legacy_UserManager, Multifactor_Manager /g' /opt/RedDatabase/firebird.conf
-sudo sed -i 's/#UserManager =/UserManager = Srp, Legacy_UserManager /g' /opt/RedDatabase/firebird.conf
+sudo sed -i 's/#AuthServer = /AuthServer = Legacy_Auth, Srp, Gss, Multifactor /g' /opt/RedDatabase/firebird.conf
+sudo sed -i 's/#AuthClient = /AuthClient = Legacy_Auth, Srp, Gss, Multifactor/g' /opt/RedDatabase/firebird.conf
+sudo sed -i 's/#UserManager =/UserManager = Srp, Legacy_UserManager, Multifactor_Manager /g' /opt/RedDatabase/firebird.conf
 sudo sed -i 's/#WireCrypt = Enabled (for client) \/ Required (for server)/WireCrypt = Disabled/g' /opt/RedDatabase/firebird.conf
 
-#sudo sed -i 's/#KrbServerKeyfile/KrbServerKeyfile/g' /opt/RedDatabase/firebird.conf
-#sudo sed -i 's/#KrbServiceName = rdb_server/KrbServiceName = rdb_server/g' /opt/RedDatabase/firebird.conf
-#sudo sed -i 's/#GssServiceName =/GssServiceName = localhost/g' /opt/RedDatabase/firebird.conf
+sudo sed -i 's/#KrbServerKeyfile/KrbServerKeyfile/g' /opt/RedDatabase/firebird.conf
+sudo sed -i 's/#KrbServiceName = rdb_server/KrbServiceName = rdb_server/g' /opt/RedDatabase/firebird.conf
+sudo sed -i 's/#GssServiceName =/GssServiceName = localhost/g' /opt/RedDatabase/firebird.conf
 
-#sudo sed -i 's/#CertVerifyChain = 1/CertVerifyChain = 0/g' /opt/RedDatabase/firebird.conf
-#sudo sed -i 's/#CertUsernameDN = CN/CertUsernameDN = E/g' /opt/RedDatabase/firebird.conf
+sudo sed -i 's/#CertVerifyChain = 1/CertVerifyChain = 0/g' /opt/RedDatabase/firebird.conf
+sudo sed -i 's/#CertUsernameDN = CN/CertUsernameDN = E/g' /opt/RedDatabase/firebird.conf
 
 echo "Restart RDB..."
 echo "Stopping RDB..."
@@ -134,7 +131,7 @@ echo "Killing all RDB processes..."
 sudo pkill -9 rdb.\* || true
 ps aux|grep rdb||true
 sleep 5
-#sudo /opt/RedDatabase/bin/isql -user SYSDBA -password masterkey /opt/RedDatabase/security3.fdb -i user.sql
+sudo /opt/RedDatabase/bin/isql -user SYSDBA -password masterkey /opt/RedDatabase/security3.fdb -i user.sql
 echo "Start RDB..."
 rdb_control start
 ps aux|grep rdb||true
