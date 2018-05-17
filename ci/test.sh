@@ -54,14 +54,14 @@ check_variable JAVA_HOME
 check_variable WORKSPACE
 
 OS=linux
-RDB_VERSION=3.0.0.917
+RDB_VERSION=4.0.0.784
 TEST_DIR=/tmp/jaybird_test
 ARCH=`arch`
 if [ "$ARCH" == "i686" ]; then
 	ARCH="x86"
 fi
 
-RDB_URL=http://artifactory.red-soft.biz/list/red-database-rc/red-database/linux-${ARCH}/${RDB_VERSION}/linux-${ARCH}-${RDB_VERSION}.bin
+RDB_URL=http://artifactory.red-soft.biz/list/red-database/red-database/linux-${ARCH}/${RDB_VERSION}/linux-${ARCH}-${RDB_VERSION}.bin
 ARCHITECTURE=Classic
 
 uninstallrdb
