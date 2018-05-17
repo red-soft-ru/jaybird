@@ -28,6 +28,7 @@ import org.firebirdsql.gds.ng.fields.RowValue;
 import org.firebirdsql.gds.ng.wire.SimpleStatementListener;
 import org.junit.Before;
 import org.junit.ClassRule;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.ByteArrayOutputStream;
@@ -50,6 +51,7 @@ import static org.junit.Assume.assumeTrue;
  *
  * @author <a href="mailto:mrotteveel@users.sourceforge.net">Mark Rotteveel</a>
  */
+@Ignore
 public class TestJnaBlob extends BaseTestBlob {
 
     @ClassRule

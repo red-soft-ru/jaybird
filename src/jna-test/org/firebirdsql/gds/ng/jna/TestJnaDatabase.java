@@ -33,6 +33,7 @@ import org.firebirdsql.gds.ng.TransactionState;
 import org.firebirdsql.jdbc.SQLStateConstants;
 import org.firebirdsql.management.FBManager;
 import org.junit.ClassRule;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -54,6 +55,7 @@ import static org.junit.Assume.assumeTrue;
  * @author <a href="mailto:mrotteveel@users.sourceforge.net">Mark Rotteveel</a>
  * @since 3.0
  */
+@Ignore
 public class TestJnaDatabase {
 
     // TODO Check if tests can be unified with equivalent wire protocol tests
