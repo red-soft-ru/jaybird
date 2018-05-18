@@ -1,8 +1,9 @@
-package org.firebirdsql.gds.ng.jna.interfaces;
+package org.firebirdsql.gds.ng.jna;
 
 import org.firebirdsql.encodings.EncodingFactory;
 import org.firebirdsql.encodings.IEncodingFactory;
 import org.firebirdsql.gds.ng.IConnectionProperties;
+import org.firebirdsql.gds.ng.jna.interfaces.IDatabaseImpl;
 import org.firebirdsql.jna.fbclient.FbClientLibrary;
 
 import java.sql.SQLException;
@@ -12,7 +13,7 @@ import java.sql.SQLException;
  *
  * @since 4.0
  */
-public class IDatabaseConnectionImpl extends AbstractNativeConnection<IConnectionProperties, IDatabaseImpl> {
+public class NativeDatabaseConnection extends AbstractNativeConnection<IConnectionProperties, IDatabaseImpl> {
 
     /**
      * Creates a IDatabaseConnectionImpl (without establishing a connection to the server).
@@ -22,7 +23,7 @@ public class IDatabaseConnectionImpl extends AbstractNativeConnection<IConnectio
      * @param connectionProperties
      *         Connection properties
      */
-    public IDatabaseConnectionImpl(FbClientLibrary clientLibrary, IConnectionProperties connectionProperties)
+    public NativeDatabaseConnection(FbClientLibrary clientLibrary, IConnectionProperties connectionProperties)
             throws SQLException {
         this(clientLibrary, connectionProperties, EncodingFactory.getPlatformDefault());
     }
@@ -34,7 +35,7 @@ public class IDatabaseConnectionImpl extends AbstractNativeConnection<IConnectio
      * @param attachProperties Attach properties
      * @param encodingFactory
      */
-    protected IDatabaseConnectionImpl(FbClientLibrary clientLibrary, IConnectionProperties attachProperties, IEncodingFactory encodingFactory) throws SQLException {
+    protected NativeDatabaseConnection(FbClientLibrary clientLibrary, IConnectionProperties attachProperties, IEncodingFactory encodingFactory) throws SQLException {
         super(clientLibrary, attachProperties, encodingFactory);
     }
 

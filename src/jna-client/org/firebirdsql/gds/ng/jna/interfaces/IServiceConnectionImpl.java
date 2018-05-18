@@ -3,6 +3,7 @@ package org.firebirdsql.gds.ng.jna.interfaces;
 import org.firebirdsql.encodings.EncodingFactory;
 import org.firebirdsql.encodings.IEncodingFactory;
 import org.firebirdsql.gds.ng.IServiceProperties;
+import org.firebirdsql.gds.ng.jna.AbstractNativeConnection;
 import org.firebirdsql.jna.fbclient.FbClientLibrary;
 
 import java.sql.SQLException;

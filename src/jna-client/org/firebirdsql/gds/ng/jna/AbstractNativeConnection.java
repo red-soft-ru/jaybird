@@ -1,12 +1,10 @@
-package org.firebirdsql.gds.ng.jna.interfaces;
+package org.firebirdsql.gds.ng.jna;
 
 import org.firebirdsql.encodings.IEncodingFactory;
 import org.firebirdsql.gds.ng.AbstractConnection;
 import org.firebirdsql.gds.ng.DatatypeCoder;
 import org.firebirdsql.gds.ng.FbAttachment;
 import org.firebirdsql.gds.ng.IAttachProperties;
-import org.firebirdsql.gds.ng.jna.BigEndianDatatypeCoder;
-import org.firebirdsql.gds.ng.jna.LittleEndianDatatypeCoder;
 import org.firebirdsql.jna.fbclient.FbClientLibrary;
 import org.firebirdsql.logging.Logger;
 import org.firebirdsql.logging.LoggerFactory;
@@ -56,7 +54,7 @@ public abstract class AbstractNativeConnection <T extends IAttachProperties<T>, 
         return clientLibrary;
     }
 
-    final DatatypeCoder createDatatypeCoder() {
+    public final DatatypeCoder createDatatypeCoder() {
         if (bigEndian) {
             return BigEndianDatatypeCoder.forEncodingFactory(getEncodingFactory());
         }

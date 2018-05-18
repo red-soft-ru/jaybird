@@ -6,10 +6,11 @@ import org.firebirdsql.gds.ng.AbstractConnection;
 import org.firebirdsql.gds.ng.AbstractParameterConverter;
 import org.firebirdsql.gds.ng.IAttachProperties;
 import org.firebirdsql.gds.ng.WireCrypt;
+import org.firebirdsql.gds.ng.jna.NativeDatabaseConnection;
 
 import java.sql.SQLException;
 
-public class IParameterConverterImpl extends AbstractParameterConverter<IDatabaseConnectionImpl, IServiceConnectionImpl> {
+public class IParameterConverterImpl extends AbstractParameterConverter<NativeDatabaseConnection, IServiceConnectionImpl> {
 
     @Override
     protected void populateAuthenticationProperties(final AbstractConnection connection,

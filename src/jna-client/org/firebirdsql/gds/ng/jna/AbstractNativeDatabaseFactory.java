@@ -19,7 +19,6 @@
 package org.firebirdsql.gds.ng.jna;
 
 import org.firebirdsql.gds.ng.*;
-import org.firebirdsql.gds.ng.jna.interfaces.IDatabaseConnectionImpl;
 import org.firebirdsql.jna.fbclient.FbClientLibrary;
 
 import java.nio.ByteBuffer;
@@ -49,7 +48,7 @@ public abstract class AbstractNativeDatabaseFactory implements FbDatabaseFactory
         String version = m.group(1);
         int majorVersion = version.charAt(0) - '0';
         if (majorVersion >= 3) {
-            final IDatabaseConnectionImpl databaseConnection = new IDatabaseConnectionImpl(clientLibrary,
+            final NativeDatabaseConnection databaseConnection = new NativeDatabaseConnection(clientLibrary,
                     filterProperties(connectionProperties));
             return databaseConnection.identify();
         } else {

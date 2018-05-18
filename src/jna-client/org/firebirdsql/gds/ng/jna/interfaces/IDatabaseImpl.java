@@ -4,6 +4,7 @@ import org.firebirdsql.gds.*;
 import org.firebirdsql.gds.impl.DatabaseParameterBufferExtension;
 import org.firebirdsql.gds.ng.*;
 import org.firebirdsql.gds.ng.jna.FbException;
+import org.firebirdsql.gds.ng.jna.NativeDatabaseConnection;
 import org.firebirdsql.gds.ng.listeners.TransactionListener;
 import org.firebirdsql.jdbc.SQLStateConstants;
 import org.firebirdsql.jna.fbclient.FbClientLibrary;
@@ -24,10 +25,10 @@ import static org.firebirdsql.gds.ng.TransactionHelper.checkTransactionActive;
  * @author <a href="mailto:vasiliy.yashkov@red-soft.ru">Vasiliy Yashkov</a>
  * @since 4.0
  */
-public class IDatabaseImpl extends AbstractFbDatabase<IDatabaseConnectionImpl>
+public class IDatabaseImpl extends AbstractFbDatabase<NativeDatabaseConnection>
         implements FbAttachment, TransactionListener {
 
-    private static final ParameterConverter<IDatabaseConnectionImpl, ?> PARAMETER_CONVERTER = new IParameterConverterImpl();
+    private static final ParameterConverter<NativeDatabaseConnection, ?> PARAMETER_CONVERTER = new IParameterConverterImpl();
 
     private final FbClientLibrary clientLibrary;
     private final IMaster master;
@@ -37,7 +38,7 @@ public class IDatabaseImpl extends AbstractFbDatabase<IDatabaseConnectionImpl>
     private IAttachment attachment;
     private IEvents events;
 
-    public IDatabaseImpl(IDatabaseConnectionImpl connection) {
+    public IDatabaseImpl(NativeDatabaseConnection connection) {
         super(connection, connection.createDatatypeCoder());
         clientLibrary = connection.getClientLibrary();
         master = clientLibrary.fb_get_master_interface();
