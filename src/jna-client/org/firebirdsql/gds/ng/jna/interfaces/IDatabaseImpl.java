@@ -268,7 +268,7 @@ public class IDatabaseImpl extends AbstractFbDatabase<NativeDatabaseConnection>
 
     @Override
     public int getHandle() {
-        return -1;
+        throw new UnsupportedOperationException( "Native OO API not support database handle" );
     }
 
     protected IEventBlockImpl validateEventHandle(EventHandle eventHandle) throws SQLException {
