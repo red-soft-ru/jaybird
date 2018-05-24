@@ -72,7 +72,6 @@ public class TestIDatabaseImpl {
             db.attach();
 
             assertTrue("Expected isAttached() to return true", db.isAttached());
-            assertThat("Expected non-zero connection handle", db.getHandle(), not(equalTo(0)));
             assertNotNull("Expected version string to be not null", db.getServerVersion());
             assertNotEquals("Expected version should not be invalid", GDSServerVersion.INVALID_VERSION, db.getServerVersion());
         } finally {

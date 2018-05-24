@@ -55,7 +55,6 @@ public class TestNativeDatabaseConnection {
         FbDatabase db = connection.identify();
 
         assertFalse("Expected isAttached() to return false", db.isAttached());
-        assertThat("Expected zero-valued connection handle", db.getHandle(), equalTo(0));
         assertNull("Expected version string to be null", db.getServerVersion());
         assertNull("Expected version should be null", db.getServerVersion());
     }
