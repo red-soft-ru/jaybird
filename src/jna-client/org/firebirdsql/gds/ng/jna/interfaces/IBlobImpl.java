@@ -71,7 +71,7 @@ public class IBlobImpl extends AbstractFbBlob implements FbBlob, DatabaseListene
 
     @Override
     public int getHandle() {
-        return -1;
+        throw new UnsupportedOperationException( "Native OO API not support blob handle" );
     }
 
     @Override
