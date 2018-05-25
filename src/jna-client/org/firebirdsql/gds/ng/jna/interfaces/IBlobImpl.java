@@ -228,7 +228,7 @@ public class IBlobImpl extends AbstractFbBlob implements FbBlob, DatabaseListene
 
     private ByteBuffer getByteBuffer(int requiredSize) {
         if (byteBuffer == null || byteBuffer.capacity() < requiredSize) {
-            byteBuffer = ByteBuffer.allocateDirect(requiredSize);
+            byteBuffer = ByteBuffer.allocate(requiredSize);
         } else {
             byteBuffer.clear();
         }
