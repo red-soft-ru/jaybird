@@ -36,6 +36,7 @@ public class IStatementImpl extends AbstractFbStatement {
     private IResultSet cursor;
     private IMessageMetadata inMeta;
     private IMessageMetadata outMeta;
+    private ByteBuffer inMessage;
 
     public IStatementImpl(IDatabaseImpl database) {
         super(database.getSynchronizationObject());
@@ -85,7 +86,7 @@ public class IStatementImpl extends AbstractFbStatement {
                 }
                 resetAll();
 
-                final IDatabaseImpl db = (IDatabaseImpl)getDatabase();
+                final IDatabaseImpl db = (IDatabaseImpl) getDatabase();
                 if (currentState == StatementState.NEW) {
 
                     // TODO check for allocating statement
@@ -129,19 +130,19 @@ public class IStatementImpl extends AbstractFbStatement {
 
                 setMetaData(getParameterDescriptor(), parameters);
 
-                IDatabaseImpl db = (IDatabaseImpl)getDatabase();
+                IDatabaseImpl db = (IDatabaseImpl) getDatabase();
                 IStatus status = db.getStatus();
 
                 final StatementType statementType = getType();
                 final boolean hasSingletonResult = hasSingletonResult();
-                ITransactionImpl transaction = (ITransactionImpl)getTransaction();
+                ITransactionImpl transaction = (ITransactionImpl) getTransaction();
 
-                ByteBuffer inMessage = ByteBuffer.allocate(inMeta.getMessageLength(status) + 1);
                 Pointer inPtr = new Memory(inMessage.array().length);
                 inPtr.write(0, inMessage.array(), 0, inMessage.array().length);
                 Pointer outPtr = null;
 
-                if (hasSingletonResult) {
+                if (hasSingletonResult ||
+                        (statement.getFlags(status) & IStatement.FLAG_HAS_CURSOR) == IStatement.FLAG_HAS_CURSOR) {
 
                     ByteBuffer outMessage = ByteBuffer.allocate(inMeta.getMessageLength(status) + 1);
                     outPtr = new Memory(outMessage.array().length);
@@ -182,6 +183,8 @@ public class IStatementImpl extends AbstractFbStatement {
         IStatus status = database.getStatus();
         IMetadataBuilder metadataBuilder = master.getMetadataBuilder(status, parameters.getCount());
 
+        inMessage = ByteBuffer.allocate(inMeta.getMessageLength(status) + 1);
+
         for (int idx = 0; idx < parameters.getCount(); idx++) {
 
             FieldValue value = parameters.getFieldValue(idx);
@@ -203,7 +206,23 @@ public class IStatementImpl extends AbstractFbStatement {
                     metadataBuilder.setLength(status, idx, Math.min(fieldDescriptor.getLength(), fieldData.length));
                     metadataBuilder.setType(status, idx, ISCConstants.SQL_TEXT);
                     metadataBuilder.setSubType(status, idx, fieldDescriptor.getSubType());
+                } else {
+                    // Only send the data we need
+                    metadataBuilder.setLength(status, idx, Math.min(fieldDescriptor.getLength(), fieldData.length));
+                    metadataBuilder.setType(status, idx, fieldDescriptor.getType());
+                    metadataBuilder.setSubType(status, idx, fieldDescriptor.getSubType());
                 }
+
+
+                int nullOffset = getInputMetadata().getNullOffset(idx);
+                int offset = getInputMetadata().getOffset(idx);
+
+                byte[] nullShort = {0, 0};
+
+                inMessage.position(offset);
+                inMessage.put(fieldData);
+                inMessage.position(nullOffset);
+                inMessage.put(nullShort);
             }
         }
         inMeta = metadataBuilder.getMetadata(status);
@@ -221,7 +240,7 @@ public class IStatementImpl extends AbstractFbStatement {
                 }
                 if (isAllRowsFetched()) return;
 
-                final IDatabaseImpl db = (IDatabaseImpl)getDatabase();
+                final IDatabaseImpl db = (IDatabaseImpl) getDatabase();
                 IStatus status = db.getStatus();
 
                 ByteBuffer message = ByteBuffer.allocate(outMeta.getMessageLength(status) + 1);
@@ -280,7 +299,7 @@ public class IStatementImpl extends AbstractFbStatement {
     public byte[] getSqlInfo(byte[] requestItems, int bufferLength) throws SQLException {
         try {
             final byte[] responseArr = new byte[bufferLength];
-            final IDatabaseImpl db = (IDatabaseImpl)getDatabase();
+            final IDatabaseImpl db = (IDatabaseImpl) getDatabase();
             IStatus status = db.getStatus();
 
             synchronized (getSynchronizationObject()) {
@@ -313,7 +332,7 @@ public class IStatementImpl extends AbstractFbStatement {
         try {
             synchronized (getSynchronizationObject()) {
                 checkStatementValid();
-                final IDatabaseImpl db = (IDatabaseImpl)getDatabase();
+                final IDatabaseImpl db = (IDatabaseImpl) getDatabase();
                 IStatus status = db.getStatus();
                 statement.setCursorName(status, cursorName + '\0');
             }
