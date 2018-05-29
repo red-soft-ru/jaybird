@@ -14,6 +14,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 /**
@@ -85,6 +86,7 @@ public class TestAuthSspi extends FBJUnit4TestBase {
             ResultSet resultSet = statement.executeQuery("select current_user from rdb$database");
             resultSet.next();
             System.out.println("Current user is " + resultSet.getString(1));
+            assertEquals("artyom.smirnov@red-soft.ru", resultSet.getString(1).toLowerCase());
             JdbcResourceHelper.closeQuietly(resultSet);
             JdbcResourceHelper.closeQuietly(statement);
         } catch (Exception e) {
@@ -121,6 +123,7 @@ public class TestAuthSspi extends FBJUnit4TestBase {
             ResultSet resultSet = statement.executeQuery("select current_user from rdb$database");
             resultSet.next();
             System.out.println("Current user is " + resultSet.getString(1));
+            assertEquals("artyom.smirnov@red-soft.ru", resultSet.getString(1).toLowerCase());
             JdbcResourceHelper.closeQuietly(resultSet);
             JdbcResourceHelper.closeQuietly(statement);
         } catch (Exception e) {
@@ -160,6 +163,7 @@ public class TestAuthSspi extends FBJUnit4TestBase {
             ResultSet resultSet = statement.executeQuery("select current_user from rdb$database");
             resultSet.next();
             System.out.println("Current user is " + resultSet.getString(1));
+            assertEquals("artyom.smirnov@red-soft.ru", resultSet.getString(1).toLowerCase());
             JdbcResourceHelper.closeQuietly(resultSet);
             JdbcResourceHelper.closeQuietly(statement);
         } catch (Exception e) {
