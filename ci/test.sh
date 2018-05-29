@@ -54,7 +54,7 @@ check_variable JAVA_HOME
 check_variable WORKSPACE
 
 OS=linux
-RDB_VERSION=3.0.3.3
+RDB_VERSION=3.0.3.16
 TEST_DIR=/tmp/jaybird_test
 ARCH=`arch`
 if [ "$ARCH" == "i686" ]; then
