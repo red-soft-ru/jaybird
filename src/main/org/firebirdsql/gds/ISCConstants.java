@@ -1636,6 +1636,7 @@ public interface ISCConstants {
     int isc_crdb_load                        = 335545097;
     int isc_crdb_nodb                        = 335545098;
     int isc_crdb_notable                     = 335545099;
+    int isc_login_error                      = 335545106;
     int isc_gfix_db_name                     = 335740929;
     int isc_gfix_invalid_sw                  = 335740930;
     int isc_gfix_incmp_sw                    = 335740932;
