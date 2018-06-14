@@ -2131,6 +2131,18 @@ public abstract class AbstractJavaGDSImpl extends AbstractGDS implements GDS {
 		try {
 			if (op == -1)
 				op = nextOperation(db.in);
+			// If op_trusted_auth is returned, server thinks that old client is being
+			// used and tries to use multifactor plugin, which is at the end of plugins
+			// list of firebird.conf
+			while (op == op_trusted_auth) {
+				if (debug)
+					log.debug("op_trusted_auth ");
+				// Send dummy packet, because server wants to use multifactor plugin,
+				// and client does not
+				final ByteBuffer authData = new ByteBuffer(256);
+				writeAuthData(db, authData);
+				op = nextOperation(db.in);
+			}
 			if (debug)
 				log.debug("op_response ");
 			if (op == op_response) {
