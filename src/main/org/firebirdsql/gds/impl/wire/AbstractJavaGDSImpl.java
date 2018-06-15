@@ -2140,6 +2140,7 @@ public abstract class AbstractJavaGDSImpl extends AbstractGDS implements GDS {
 				// Send dummy packet, because server wants to use multifactor plugin,
 				// and client does not
 				final ByteBuffer authData = new ByteBuffer(256);
+				receiveAuthResponse(db, authData);
 				writeAuthData(db, authData);
 				op = nextOperation(db.in);
 			}
