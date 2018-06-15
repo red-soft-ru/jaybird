@@ -22,6 +22,8 @@
           <pathelement location="${srcdir}/lib/junit.jar" />
           <pathelement location="${srcdir}/src/lib/antlr-runtime-3.4.jar" />
           <pathelement location="${srcdir}/src/lib/fscontext.jar" />
+          <pathelement location="${srcdir}/src/lib/providerutil.jar" />
+          <pathelement location="${srcdir}/src/lib/mini-j2ee_16.jar" />
           <fileset dir="${srcdir}/lib/test/" includes="*.jar" />
         </classpath>
         <batchtest haltonfailure="false" todir="${test.report.dir}">
