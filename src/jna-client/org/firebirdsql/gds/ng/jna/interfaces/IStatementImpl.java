@@ -47,7 +47,8 @@ public class IStatementImpl extends AbstractFbStatement {
     @Override
     protected void free(int option) throws SQLException {
         synchronized (getSynchronizationObject()) {
-            statement.free(database.getStatus());
+            cursor.close(database.getStatus());
+//            statement.free(database.getStatus());
             // Reset statement information
             reset(option == ISCConstants.DSQL_drop);
         }
