@@ -186,8 +186,9 @@ public class IStatementImpl extends AbstractFbStatement {
         IMaster master = database.getMaster();
         IStatus status = database.getStatus();
         IMetadataBuilder metadataBuilder = master.getMetadataBuilder(status, parameters.getCount());
-
-        inMessage = ByteBuffer.allocate(inMeta.getMessageLength(status) + 1);
+        inMessage = ByteBuffer.allocate(inMeta.getMessageLength(status));
+        int offset = 0;
+        byte[] nullShort = {0, 0};
 
         for (int idx = 0; idx < parameters.getCount(); idx++) {
 
@@ -197,40 +198,40 @@ public class IStatementImpl extends AbstractFbStatement {
                 // Note this only works because we mark the type as nullable in allocateXSqlDa
 
             } else {
-
-                // TODO Throw truncation error if fieldData longer than sqllen?
-
                 final FieldDescriptor fieldDescriptor = rowDescriptor.getFieldDescriptor(idx);
                 if (fieldDescriptor.isVarying()) {
-                    // Only send the data we need
                     metadataBuilder.setLength(status, idx, Math.min(fieldDescriptor.getLength(), fieldData.length));
                     metadataBuilder.setType(status, idx, ISCConstants.SQL_VARYING);
+                    metadataBuilder.setScale(status, idx, inMeta.getScale(status, idx));
+                    metadataBuilder.setSubType(status, idx, inMeta.getSubType(status, idx));
+                    metadataBuilder.setCharSet(status, idx, inMeta.getCharSet(status, idx));
+                    byte[] encodeShort = fieldDescriptor.getDatatypeCoder().encodeShort(fieldData.length);
+                    inMessage.put(encodeShort);
+                    offset += encodeShort.length;
+                    inMessage.position(offset);
                 } else if (fieldDescriptor.isFbType(ISCConstants.SQL_TEXT)) {
-                    // Only send the data we need
                     metadataBuilder.setLength(status, idx, Math.min(fieldDescriptor.getLength(), fieldData.length));
                     metadataBuilder.setType(status, idx, ISCConstants.SQL_TEXT);
-                    metadataBuilder.setSubType(status, idx, fieldDescriptor.getSubType());
+                    metadataBuilder.setScale(status, idx, inMeta.getScale(status, idx));
+                    metadataBuilder.setSubType(status, idx, inMeta.getSubType(status, idx));
+                    metadataBuilder.setCharSet(status, idx, inMeta.getCharSet(status, idx));
                 } else {
-                    // Only send the data we need
                     metadataBuilder.setLength(status, idx, Math.min(fieldDescriptor.getLength(), fieldData.length));
                     metadataBuilder.setType(status, idx, fieldDescriptor.getType());
                     metadataBuilder.setSubType(status, idx, fieldDescriptor.getSubType());
+                    metadataBuilder.setSubType(status, idx, inMeta.getSubType(status, idx));
+                    metadataBuilder.setCharSet(status, idx, inMeta.getCharSet(status, idx));
                 }
-
-
-                int nullOffset = getInputMetadata().getNullOffset(idx);
-                int offset = getInputMetadata().getOffset(idx);
-
-                byte[] nullShort = {0, 0};
-
-                inMessage.position(offset);
                 inMessage.put(fieldData);
-                inMessage.position(nullOffset);
+                offset += fieldData.length;
+                inMessage.position(offset);
                 inMessage.put(nullShort);
+                offset += nullShort.length;
+                inMessage.position(offset);
             }
         }
+        
         inMeta = metadataBuilder.getMetadata(status);
-
         metadataBuilder.release();
     }
 
