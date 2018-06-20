@@ -91,8 +91,7 @@ public class IStatementImpl extends AbstractFbStatement {
 
                 final IDatabaseImpl db = (IDatabaseImpl) getDatabase();
                 if (currentState == StatementState.NEW) {
-
-                    // TODO check for allocating statement
+                    // allocated when prepare call
                     switchState(StatementState.ALLOCATED);
                     setType(StatementType.NONE);
                 } else {
@@ -140,18 +139,20 @@ public class IStatementImpl extends AbstractFbStatement {
                 final boolean hasSingletonResult = hasSingletonResult();
                 ITransactionImpl transaction = (ITransactionImpl) getTransaction();
 
-                Pointer inPtr = new Memory(inMessage.array().length);
-                inPtr.write(0, inMessage.array(), 0, inMessage.array().length);
+                Pointer inPtr = null;
+                if (inMessage.array().length > 0) {
+                    inPtr = new Memory(inMessage.array().length);
+                    inPtr.write(0, inMessage.array(), 0, inMessage.array().length);
+                }
                 Pointer outPtr = null;
 
-                if (hasSingletonResult ||
-                        (statement.getFlags(status) & IStatement.FLAG_HAS_CURSOR) == IStatement.FLAG_HAS_CURSOR) {
-
-                    ByteBuffer outMessage = ByteBuffer.allocate(inMeta.getMessageLength(status) + 1);
-                    outPtr = new Memory(outMessage.array().length);
-                    outPtr.write(0, outMessage.array(), 0, outMessage.array().length);
+                if ((statement.getFlags(status) & IStatement.FLAG_HAS_CURSOR) == IStatement.FLAG_HAS_CURSOR) {
                     cursor = statement.openCursor(status, transaction.getTransaction(), inMeta, inPtr, outMeta, 0);
                 } else {
+                    ByteBuffer outMessage = ByteBuffer.allocate(getMaxSqlInfoSize());
+                    outPtr = new Memory(outMessage.array().length);
+                    outPtr.write(0, outMessage.array(), 0, outMessage.array().length);
+                    status = db.getStatus();
                     statement.execute(status, transaction.getTransaction(), inMeta, inPtr, outMeta, outPtr);
                 }
 
