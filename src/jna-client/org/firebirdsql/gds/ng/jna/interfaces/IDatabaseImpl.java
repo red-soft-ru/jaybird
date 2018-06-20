@@ -33,7 +33,6 @@ public class IDatabaseImpl extends AbstractFbDatabase<NativeDatabaseConnection>
     private final FbClientLibrary clientLibrary;
     private final IMaster master;
     private final IProvider provider;
-    private final IStatus status;
     private final IUtil util;
     private IAttachment attachment;
     private IEvents events;
@@ -41,8 +40,7 @@ public class IDatabaseImpl extends AbstractFbDatabase<NativeDatabaseConnection>
     public IDatabaseImpl(NativeDatabaseConnection connection) {
         super(connection, connection.createDatatypeCoder());
         clientLibrary = connection.getClientLibrary();
-        master = clientLibrary.fb_get_master_interface();
-        status = master.getStatus();
+        master = clientLibrary.fb_get_master_interface();        
         provider = master.getDispatcher();
         util = master.getUtilInterface();
         attachment = null;
@@ -72,7 +70,7 @@ public class IDatabaseImpl extends AbstractFbDatabase<NativeDatabaseConnection>
     protected void internalDetach() throws SQLException {
         synchronized (getSynchronizationObject()) {
             try {
-                attachment.detach(status);
+                attachment.detach(getStatus());
             } catch (SQLException e) {
                 throw e;
             } finally {
@@ -100,7 +98,7 @@ public class IDatabaseImpl extends AbstractFbDatabase<NativeDatabaseConnection>
             checkConnected();
             synchronized (getSynchronizationObject()) {
                 try {
-                    attachment.dropDatabase(status);
+                    attachment.dropDatabase(getStatus());
                 } finally {
                     setDetached();
                 }
@@ -118,10 +116,10 @@ public class IDatabaseImpl extends AbstractFbDatabase<NativeDatabaseConnection>
             // No synchronization, otherwise cancel will never work;
             // might conflict with sync policy of JNA (TODO: find out)
             try {
-                attachment.cancelOperation(status, kind);
+                attachment.cancelOperation(getStatus(), kind);
             } finally {
                 if (kind == fb_cancel_abort) {
-                    attachment.detach(status);
+                    attachment.detach(getStatus());
                     setDetached();
                 }
             }
@@ -137,7 +135,7 @@ public class IDatabaseImpl extends AbstractFbDatabase<NativeDatabaseConnection>
             checkConnected();
             final byte[] tpbArray = tpb.toBytesWithType();
             synchronized (getSynchronizationObject()) {
-                ITransaction transaction = attachment.startTransaction(status, tpbArray.length, tpbArray);
+                ITransaction transaction = attachment.startTransaction(getStatus(), tpbArray.length, tpbArray);
 
                 final ITransactionImpl transactionImpl = new ITransactionImpl(this, transaction,
                         TransactionState.ACTIVE);
@@ -157,7 +155,7 @@ public class IDatabaseImpl extends AbstractFbDatabase<NativeDatabaseConnection>
             final byte[] transactionIdBuffer = getTransactionIdBuffer(transactionId);
 
             synchronized (getSynchronizationObject()) {
-                ITransaction iTransaction = attachment.reconnectTransaction(status, transactionIdBuffer.length,
+                ITransaction iTransaction = attachment.reconnectTransaction(getStatus(), transactionIdBuffer.length,
                         transactionIdBuffer);
 
                 final ITransactionImpl transaction =
@@ -214,7 +212,7 @@ public class IDatabaseImpl extends AbstractFbDatabase<NativeDatabaseConnection>
         try {
             final byte[] responseArray = new byte[maxBufferLength];
             synchronized (getSynchronizationObject()) {
-                attachment.getInfo(status, requestItems.length, requestItems, (short) maxBufferLength, responseArray);
+                attachment.getInfo(getStatus(), requestItems.length, requestItems, (short) maxBufferLength, responseArray);
             }
 
             return responseArray;
@@ -246,11 +244,11 @@ public class IDatabaseImpl extends AbstractFbDatabase<NativeDatabaseConnection>
             }
 
             synchronized (getSynchronizationObject()) {
-                attachment = util.executeCreateDatabase(status, statementText.length(),
+                attachment = util.executeCreateDatabase(getStatus(), statementText.length(),
                         statementText, getConnectionDialect(), new boolean[]{false});
-                attachment.execute(status,
+                attachment.execute(getStatus(),
                         transaction != null ? ((ITransactionImpl) transaction).getTransaction() :
-                                attachment.startTransaction(status, 0, null),
+                                attachment.startTransaction(getStatus(), 0, null),
                         statementText.length(),
                         statementText, getConnectionDialect(), null, null,
                         null, null);
@@ -291,7 +289,7 @@ public class IDatabaseImpl extends AbstractFbDatabase<NativeDatabaseConnection>
         synchronized (getSynchronizationObject()) {
             synchronized (eventHandle) {
                 IUtil util = master.getUtilInterface();
-                IEventBlock eventBlock = util.createEventBlock(status, new String[]{eventName});
+                IEventBlock eventBlock = util.createEventBlock(getStatus(), new String[]{eventName});
                 eventHandle.setEventBlock(eventBlock);
             }
         }
@@ -325,7 +323,7 @@ public class IDatabaseImpl extends AbstractFbDatabase<NativeDatabaseConnection>
                 synchronized (eventBlock) {
                     int length = eventBlock.getEventBlock().getLength();
                     byte[] array = eventBlock.getEventBlock().getValues().getByteArray(0, length);
-                    events = attachment.queEvents(status, eventBlock.getCallback(),
+                    events = attachment.queEvents(getStatus(), eventBlock.getCallback(),
                             length,
                             array);
                 }
@@ -345,7 +343,7 @@ public class IDatabaseImpl extends AbstractFbDatabase<NativeDatabaseConnection>
             synchronized (getSynchronizationObject()) {
                 synchronized (eventBlock) {
                     try {
-                        events.cancel(status);
+                        events.cancel(getStatus());
                     } finally {
                         eventBlock.releaseMemory();
                     }
@@ -391,9 +389,9 @@ public class IDatabaseImpl extends AbstractFbDatabase<NativeDatabaseConnection>
         synchronized (getSynchronizationObject()) {
             try {
                 if (create) {
-                    attachment = provider.createDatabase(status, dbName, (short) dpbArray.length, dpbArray);
+                    attachment = provider.createDatabase(getStatus(), dbName, (short) dpbArray.length, dpbArray);
                 } else {
-                    attachment = provider.attachDatabase(status, dbName, (short) dpbArray.length, dpbArray);
+                    attachment = provider.attachDatabase(getStatus(), dbName, (short) dpbArray.length, dpbArray);
                 }
             } catch (SQLException e) {
                 safelyDetach();
@@ -413,7 +411,7 @@ public class IDatabaseImpl extends AbstractFbDatabase<NativeDatabaseConnection>
     }
 
     public IStatus getStatus() {
-        return status;
+        return master.getStatus();
     }
 
     public IAttachment getAttachment() {
