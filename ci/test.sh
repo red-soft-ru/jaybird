@@ -80,7 +80,7 @@ if [ "$USER" == "jenkins" ]; then
     sudo chmod 700 $KEYS_DIR/jenkins
     sudo cp fbt-repository/files/cert/RaUser-d.000/ $KEYS_DIR/jenkins -rfv
 	sudo chown jenkins:jenkins $KEYS_DIR/jenkins -R
-	chmod 700 $KEYS_DIR/jenkins/RaUser-d.000
+	sudo chmod 700 $KEYS_DIR/jenkins/RaUser-d.000
 else
     mkdir -p $KEYS_DIR/root
     chmod 700 $KEYS_DIR/root
