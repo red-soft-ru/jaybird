@@ -239,8 +239,12 @@ public final class ClientAuthBlock {
     private static List<AuthenticationPluginSpi> getSupportedPluginProviders() {
         // TODO Create from service provider interface; use properties?
         return Collections.unmodifiableList(
-                Arrays.<AuthenticationPluginSpi>asList(new SrpAuthenticationPluginSpi(), new LegacyAuthenticationPluginSpi(),
-                    new GssAuthenticationPluginSpi(), new MultifactorAuthenticationPluginSpi()));
+                Arrays.<AuthenticationPluginSpi>asList(
+                        new Srp256AuthenticationPluginSpi(),
+                        new SrpAuthenticationPluginSpi(),
+                        new LegacyAuthenticationPluginSpi(),
+                        new GssAuthenticationPluginSpi(),
+                        new MultifactorAuthenticationPluginSpi()));
     }
 
     public boolean switchPlugin(String pluginName) {
