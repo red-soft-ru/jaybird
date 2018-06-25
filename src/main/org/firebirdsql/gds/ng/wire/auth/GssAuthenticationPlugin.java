@@ -11,7 +11,7 @@ import java.sql.SQLException;
  */
 public class GssAuthenticationPlugin implements AuthenticationPlugin {
 
-  private static final Logger log = LoggerFactory.getLogger(LegacyAuthenticationPlugin.class);
+  private static final Logger log = LoggerFactory.getLogger(GssAuthenticationPlugin.class);
 
   public static final String GSS_AUTH_NAME = "Gss";
 

@@ -16,8 +16,10 @@
  *
  * All rights reserved.
  */
-package org.firebirdsql.gds.ng.wire.auth;
+package org.firebirdsql.gds.ng.wire.auth.legacy;
 
+import org.firebirdsql.gds.ng.wire.auth.AuthenticationPlugin;
+import org.firebirdsql.gds.ng.wire.auth.ClientAuthBlock;
 import org.firebirdsql.logging.Logger;
 import org.firebirdsql.logging.LoggerFactory;
 
@@ -30,19 +32,18 @@ import java.sql.SQLException;
  * @author <a href="mailto:mrotteveel@users.sourceforge.net">Mark Rotteveel</a>
  * @since 3.0
  */
-public class LegacyAuthenticationPlugin implements AuthenticationPlugin {
+class LegacyAuthenticationPlugin implements AuthenticationPlugin {
 
     private static final Logger log = LoggerFactory.getLogger(LegacyAuthenticationPlugin.class);
 
-    public static final String LEGACY_AUTH_NAME = "Legacy_Auth";
-    public static final String LEGACY_PASSWORD_SALT = "9z";
+    private static final String LEGACY_PASSWORD_SALT = "9z";
 
     private byte[] clientData;
     private boolean hasServerData;
 
     @Override
     public String getName() {
-        return LEGACY_AUTH_NAME;
+        return LegacyAuthenticationPluginSpi.LEGACY_AUTH_NAME;
     }
 
     @Override

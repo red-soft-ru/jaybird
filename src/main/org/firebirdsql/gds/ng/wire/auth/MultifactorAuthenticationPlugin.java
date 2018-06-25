@@ -5,6 +5,7 @@ import org.firebirdsql.gds.ISCConstants;
 import org.firebirdsql.gds.impl.wire.ByteBuffer;
 import org.firebirdsql.gds.impl.wire.auth.*;
 import org.firebirdsql.gds.ng.IAttachProperties;
+import org.firebirdsql.gds.ng.wire.auth.legacy.UnixCrypt;
 import org.firebirdsql.jdbc.FBConnectionProperties;
 import org.firebirdsql.logging.Logger;
 import org.firebirdsql.logging.LoggerFactory;

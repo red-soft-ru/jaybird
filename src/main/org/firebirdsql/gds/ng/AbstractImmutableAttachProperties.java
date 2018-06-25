@@ -38,6 +38,7 @@ public abstract class AbstractImmutableAttachProperties<T extends IAttachPropert
     private final int connectTimeout;
     private final WireCrypt wireCrypt;
     private final String dbCryptConfig;
+    private final String authPlugins;
     private final String certificate;
     private final String repositoryPin;
 
@@ -64,6 +65,7 @@ public abstract class AbstractImmutableAttachProperties<T extends IAttachPropert
         connectTimeout = src.getConnectTimeout();
         wireCrypt = src.getWireCrypt();
         dbCryptConfig = src.getDbCryptConfig();
+        authPlugins = src.getAuthPlugins();
         certificate = src.getCertificate();
         repositoryPin = src.getRepositoryPin();
     }
@@ -205,6 +207,16 @@ public abstract class AbstractImmutableAttachProperties<T extends IAttachPropert
 
     @Override
     public void setDbCryptConfig(String dbCryptConfig) {
+        immutable();
+    }
+
+    @Override
+    public String getAuthPlugins() {
+        return authPlugins;
+    }
+
+    @Override
+    public void setAuthPlugins(String authPlugins) {
         immutable();
     }
 

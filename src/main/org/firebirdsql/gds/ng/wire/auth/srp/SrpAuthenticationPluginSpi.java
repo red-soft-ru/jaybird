@@ -16,21 +16,22 @@
  *
  * All rights reserved.
  */
-package org.firebirdsql.gds.ng.wire.auth;
+package org.firebirdsql.gds.ng.wire.auth.srp;
+
+import java.sql.SQLException;
 
 /**
- * Legacy authentication plugin service provider.
+ * Srp (Srp using SHA-1) authentication plugin service provider.
  *
  * @author <a href="mailto:mrotteveel@users.sourceforge.net">Mark Rotteveel</a>
+ * @since 3.0
  */
-public class LegacyAuthenticationPluginSpi implements AuthenticationPluginSpi {
-    @Override
-    public String getPluginName() {
-        return LegacyAuthenticationPlugin.LEGACY_AUTH_NAME;
+public class SrpAuthenticationPluginSpi extends AbstractSrpAuthenticationPluginSpi {
+
+    public static final String SRP_AUTH_NAME = "Srp";
+
+    public SrpAuthenticationPluginSpi() throws SQLException {
+        super(SRP_AUTH_NAME, "SHA-1");
     }
 
-    @Override
-    public AuthenticationPlugin createPlugin() {
-        return new LegacyAuthenticationPlugin();
-    }
 }

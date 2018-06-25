@@ -21,7 +21,7 @@
  * by Iris Van den Broeke, Daniel Deville
  */
 
-package org.firebirdsql.gds.ng.wire.auth;
+package org.firebirdsql.gds.ng.wire.auth.legacy;
 
 /* ------------------------------------------------------------ */
 
