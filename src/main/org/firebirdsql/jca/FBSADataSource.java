@@ -635,6 +635,16 @@ public class FBSADataSource implements DataSource, Serializable, Referenceable, 
     }
 
     @Override
+    public String getAuthPlugins() {
+        return mcf.getAuthPlugins();
+    }
+
+    @Override
+    public void setAuthPlugins(String authPlugins) {
+        mcf.setAuthPlugins(authPlugins);
+    }
+
+    @Override
     public String getCertificate() {
         return mcf.getCertificate();
     }

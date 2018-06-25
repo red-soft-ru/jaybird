@@ -72,6 +72,8 @@ public interface JaybirdErrorCodes {
     int jb_invalidConnectionPropertyValue                = 337248283;
     int jb_dbCryptCallbackInitError = 337248284;
     int jb_dbCryptDataError         = 337248285;
+    int jb_hashAlgorithmNotAvailable                     = 337248286;
+    int jb_noKnownAuthPlugins       = 337248287;
 
     @SuppressWarnings("unused")
     int jb_range_end                = 337264639;

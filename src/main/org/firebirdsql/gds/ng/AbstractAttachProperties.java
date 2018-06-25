@@ -43,6 +43,7 @@ public abstract class AbstractAttachProperties<T extends IAttachProperties> impl
     private boolean useGSSAuth = IAttachProperties.DEFAULT_GSS_AUTH;
     private WireCrypt wireCrypt = WireCrypt.DEFAULT;
     private String dbCryptConfig;
+    private String authPlugins;
     private boolean verifyServerCertificate = IAttachProperties.DEFAULT_SERVER_CERTIFICATE;
 
     /**
@@ -69,6 +70,7 @@ public abstract class AbstractAttachProperties<T extends IAttachProperties> impl
             useGSSAuth = src.isUseGSSAuth();
             wireCrypt = src.getWireCrypt();
             dbCryptConfig = src.getDbCryptConfig();
+            authPlugins = src.getAuthPlugins();
             certificate = src.getCertificate();
             repositoryPin = src.getRepositoryPin();
             verifyServerCertificate = src.getVerifyServerCertificate();
@@ -255,6 +257,17 @@ public abstract class AbstractAttachProperties<T extends IAttachProperties> impl
     @Override
     public void setDbCryptConfig(String dbCryptConfig) {
         this.dbCryptConfig = dbCryptConfig;
+        dirtied();
+    }
+
+    @Override
+    public String getAuthPlugins() {
+        return authPlugins;
+    }
+
+    @Override
+    public void setAuthPlugins(String authPlugins) {
+        this.authPlugins = authPlugins;
         dirtied();
     }
 

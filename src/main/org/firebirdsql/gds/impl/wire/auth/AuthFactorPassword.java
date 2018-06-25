@@ -4,7 +4,7 @@ import org.firebirdsql.encodings.Encoding;
 import org.firebirdsql.gds.impl.wire.ByteBuffer;
 import org.firebirdsql.gds.impl.wire.Bytes;
 import org.firebirdsql.gds.impl.wire.TaggedClumpletReader;
-import org.firebirdsql.gds.ng.wire.auth.UnixCrypt;
+import org.firebirdsql.gds.ng.wire.auth.legacy.UnixCrypt;
 import sun.misc.BASE64Encoder;
 
 import java.io.UnsupportedEncodingException;
