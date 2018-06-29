@@ -136,8 +136,6 @@ public class TestAuthSspi extends FBJUnit4TestBase {
     }
 
     @Test
-    @Ignore
-    // TODO enable test after fix error with open server certificate #25043
     public void testVerifyServerCertificate() throws Exception {
         initLogger();
 
