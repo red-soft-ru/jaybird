@@ -23,7 +23,6 @@ import org.firebirdsql.gds.ConnectionParameterBuffer;
 import org.firebirdsql.gds.ISCConstants;
 import org.firebirdsql.gds.JaybirdErrorCodes;
 import org.firebirdsql.gds.ParameterTagMapping;
-import org.firebirdsql.gds.impl.wire.auth.AuthSspi;
 import org.firebirdsql.gds.ng.FbExceptionBuilder;
 import org.firebirdsql.gds.ng.IAttachProperties;
 import org.firebirdsql.logging.Logger;
@@ -62,7 +61,6 @@ public final class ClientAuthBlock {
     private AuthenticationPlugin currentPlugin;
     private boolean authComplete;
     private boolean firstTime = true;
-    private AuthSspi sspi = null;
 
     public ClientAuthBlock(IAttachProperties<?> attachProperties) throws SQLException {
         this.attachProperties = attachProperties;
@@ -460,13 +458,5 @@ public final class ClientAuthBlock {
 
     public boolean getVerifyServerCertificate() {
         return attachProperties.getVerifyServerCertificate();
-    }
-
-    public AuthSspi getSspi() {
-        return sspi;
-    }
-
-    public void setSspi(AuthSspi sspi) {
-        this.sspi = sspi;
     }
 }
