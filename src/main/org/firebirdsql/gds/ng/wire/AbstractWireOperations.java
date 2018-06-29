@@ -172,7 +172,7 @@ public abstract class AbstractWireOperations implements FbWireOperations {
 
     @Override
     public final Response readSingleResponse(WarningMessageCallback warningCallback) throws SQLException, IOException {
-        AuthSspi sspi = connection.getClientAuthBlock().getSspi();
+        AuthSspi sspi = connection.getSspi();
         int operation = readNextOperation();
         if (sspi != null) {
             try {
@@ -195,7 +195,7 @@ public abstract class AbstractWireOperations implements FbWireOperations {
             } finally {
                 try {
                     sspi.free();
-                    connection.getClientAuthBlock().setSspi(null);
+                    connection.setSspi(null);
                 } catch (GDSAuthException e) {
                     throw new SQLException(e.getMessage());
                 }
