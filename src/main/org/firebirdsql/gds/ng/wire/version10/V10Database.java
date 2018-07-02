@@ -200,7 +200,7 @@ public class V10Database extends AbstractFbWireDatabase implements FbWireDatabas
         }
         else sspi = null;
 
-        connection.getClientAuthBlock().setSspi(sspi);
+        connection.setSspi(sspi);
 
         xdrOut.writeInt(operation);
         xdrOut.writeInt(0); // Database object ID

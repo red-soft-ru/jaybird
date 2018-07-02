@@ -26,6 +26,7 @@ import org.firebirdsql.gds.VaxEncoding;
 import org.firebirdsql.gds.impl.wire.WireProtocolConstants;
 import org.firebirdsql.gds.impl.wire.XdrInputStream;
 import org.firebirdsql.gds.impl.wire.XdrOutputStream;
+import org.firebirdsql.gds.impl.wire.auth.AuthSspi;
 import org.firebirdsql.gds.ng.AbstractConnection;
 import org.firebirdsql.gds.ng.FbExceptionBuilder;
 import org.firebirdsql.gds.ng.IAttachProperties;
@@ -77,6 +78,7 @@ public abstract class WireConnection<T extends IAttachProperties<T>, C extends F
     private int protocolVersion;
     private int protocolArchitecture;
     private int protocolMinimumType;
+    private AuthSspi sspi = null;
 
     private XdrOutputStream xdrOut;
     private XdrInputStream xdrIn;
@@ -529,5 +531,13 @@ public abstract class WireConnection<T extends IAttachProperties<T>, C extends F
             encryptionIdentifiers.addAll(knownServerKey.getIdentifiers());
         }
         return encryptionIdentifiers;
+    }
+
+    public AuthSspi getSspi() {
+        return sspi;
+    }
+
+    public void setSspi(AuthSspi sspi) {
+        this.sspi = sspi;
     }
 }
