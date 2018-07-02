@@ -101,7 +101,9 @@ if [ "$USER" == "jenkins" ]; then
 	sudo -u jenkins /opt/cprocsp/bin/$CPROCSP_ARCH/certmgr -inst -cont '\\.\HDIMAGE\c6bb7811-a370-4de7-91fb-536a1b8b4017'
 else
 	sudo /opt/cprocsp/bin/$CPROCSP_ARCH/certmgr -inst -cont '\\.\HDIMAGE\c6bb7811-a370-4de7-91fb-536a1b8b4017'
-fi	
+fi
+
+/opt/cprocsp/bin/amd64/csptest -passwd -cont '\\.\HDIMAGE\c6bb7811-a370-4de7-91fb-536a1b8b4017' -change 12345678
 
 sudo cp fbt-repository/files/cert/Смирнов.cer ./testuser.cer
 
