@@ -19,6 +19,7 @@
 package org.firebirdsql.gds.ng.jna;
 
 import org.firebirdsql.gds.ng.*;
+import org.firebirdsql.gds.ng.jna.interfaces.IServiceConnectionImpl;
 import org.firebirdsql.jna.fbclient.FbClientLibrary;
 
 import java.nio.ByteBuffer;
@@ -59,10 +60,26 @@ public abstract class AbstractNativeDatabaseFactory implements FbDatabaseFactory
     }
 
     @Override
-    public JnaService serviceConnect(IServiceProperties serviceProperties) throws SQLException {
-        final JnaServiceConnection jnaServiceConnection = new JnaServiceConnection(getClientLibrary(),
-                filterProperties(serviceProperties));
-        return jnaServiceConnection.identify();
+    public FbService serviceConnect(IServiceProperties serviceProperties) throws SQLException {
+        FbClientLibrary clientLibrary = getClientLibrary();
+        ByteBuffer byteBuffer = ByteBuffer.allocate(256);
+        clientLibrary.isc_get_client_version(byteBuffer);
+        String clientVersion = new String(byteBuffer.array()).trim();
+        Pattern p = Pattern.compile("\\s([\\d]+[.][\\d]+)\\b");
+        Matcher m = p.matcher(clientVersion);
+        m.find();
+        String version = m.group(1);
+        int majorVersion = version.charAt(0) - '0';
+        if (majorVersion >= 3) {
+            final IServiceConnectionImpl serviceConnection = new IServiceConnectionImpl(getClientLibrary(),
+                    filterProperties(serviceProperties));
+            return serviceConnection.identify();
+        } else {
+            final JnaServiceConnection jnaServiceConnection = new JnaServiceConnection(getClientLibrary(),
+                    filterProperties(serviceProperties));
+            return jnaServiceConnection.identify();
+        }
+
     }
 
     protected abstract FbClientLibrary getClientLibrary();
