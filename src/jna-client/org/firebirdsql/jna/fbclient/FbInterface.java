@@ -187,7 +187,7 @@ public interface FbInterface extends FbClientLibrary {
     public static interface IBlobIntf extends IReferenceCountedIntf
     {
         public void getInfo(IStatus status, int itemsLength, byte[] items, int bufferLength, byte[] buffer) throws FbException;
-        public int getSegment(IStatus status, int bufferLength, com.sun.jna.Pointer buffer, int segmentLength) throws FbException;
+        public int getSegment(IStatus status, int bufferLength, com.sun.jna.Pointer buffer, com.sun.jna.Pointer segmentLength) throws FbException;
         public void putSegment(IStatus status, int length, com.sun.jna.Pointer buffer) throws FbException;
         public void cancel(IStatus status) throws FbException;
         public void close(IStatus status) throws FbException;
@@ -3448,7 +3448,7 @@ public interface FbInterface extends FbClientLibrary {
 
             public static interface Callback_getSegment extends com.sun.jna.Callback
             {
-                public int invoke(IBlob self, IStatus status, int bufferLength, com.sun.jna.Pointer buffer, int segmentLength);
+                public int invoke(IBlob self, IStatus status, int bufferLength, com.sun.jna.Pointer buffer, com.sun.jna.Pointer segmentLength);
             }
 
             public static interface Callback_putSegment extends com.sun.jna.Callback
@@ -3497,7 +3497,7 @@ public interface FbInterface extends FbClientLibrary {
 
                 getSegment = new Callback_getSegment() {
                     @Override
-                    public int invoke(IBlob self, IStatus status, int bufferLength, com.sun.jna.Pointer buffer, int segmentLength)
+                    public int invoke(IBlob self, IStatus status, int bufferLength, com.sun.jna.Pointer buffer, com.sun.jna.Pointer segmentLength)
                     {
                         try
                         {
@@ -3618,7 +3618,7 @@ public interface FbInterface extends FbClientLibrary {
             FbException.checkException(status);
         }
 
-        public int getSegment(IStatus status, int bufferLength, com.sun.jna.Pointer buffer, int segmentLength) throws FbException
+        public int getSegment(IStatus status, int bufferLength, com.sun.jna.Pointer buffer, com.sun.jna.Pointer segmentLength) throws FbException
         {
             VTable vTable = getVTable();
             int result = vTable.getSegment.invoke(this, status, bufferLength, buffer, segmentLength);

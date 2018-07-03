@@ -127,28 +127,29 @@ public class IBlobImpl extends AbstractFbBlob implements FbBlob, DatabaseListene
             // TODO Honour request for larger sizes by looping?
             sizeRequested = Math.min(sizeRequested, getMaximumSegmentSize());
             final ByteBuffer responseBuffer;
-            final int actualLength = 0;
+            final com.sun.jna.Pointer actualLength = new CloseableMemory(1024);
             synchronized (getSynchronizationObject()) {
                 checkDatabaseAttached();
                 checkTransactionActive();
                 checkBlobOpen();
                 responseBuffer = getByteBuffer(sizeRequested);
                 try (CloseableMemory memory = new CloseableMemory(sizeRequested)) {
-                    memory.write(0, responseBuffer.array(), 0, sizeRequested);
 
                     IDatabaseImpl database = (IDatabaseImpl) getDatabase();
                     IStatus status = database.getStatus();
                     int result = blob.getSegment(status, sizeRequested, memory, actualLength);
                     // result 0 means: more to come, isc_segment means: buffer was too small,
                     // rest will be returned on next call
-                    if (!(result == 0 || result == ISCConstants.isc_segment)) {
-                        if (result == ISCConstants.isc_segstr_eof) {
+                    if (!(IStatus.RESULT_OK == result || result == IStatus.RESULT_SEGMENT)) {
+                        if (result == IStatus.RESULT_NO_DATA) {
                             setEof();
                         }
                     }
+                    memory.read(0, responseBuffer.array(), 0, sizeRequested);
                 }
             }
-            final int actualLengthInt = actualLength & 0xFFFF;
+            final int actualLengthInt = actualLength.getInt(0) & 0xFFFF;
+            ((CloseableMemory) actualLength).close();
             final byte[] segment = new byte[actualLengthInt];
             responseBuffer.get(segment);
             return segment;
