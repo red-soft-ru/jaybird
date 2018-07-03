@@ -43,7 +43,6 @@ import static org.junit.Assert.*;
  *
  * @since 4.0
  */
-@Ignore
 public class TestIStatementImpl extends AbstractStatementTest {
 
     @Rule

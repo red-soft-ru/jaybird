@@ -51,7 +51,6 @@ import static org.junit.Assume.assumeTrue;
  * @author <a href="mailto:mrotteveel@users.sourceforge.net">Mark Rotteveel</a>
  * @since 4.0
  */
-@Ignore
 public class TestIBlobImpl extends BaseTestBlob {
 
     @Rule
