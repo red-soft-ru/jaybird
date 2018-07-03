@@ -68,7 +68,7 @@ public class IStatementImpl extends AbstractFbStatement {
 
     @Override
     public int getHandle() {
-        return -1;
+        throw new UnsupportedOperationException( "Native OO API not support statement handle" );
     }
 
     @Override

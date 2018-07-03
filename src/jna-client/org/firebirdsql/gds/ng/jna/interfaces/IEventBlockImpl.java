@@ -1,12 +1,10 @@
 package org.firebirdsql.gds.ng.jna.interfaces;
 
-import com.sun.jna.Memory;
 import com.sun.jna.Pointer;
 import org.firebirdsql.encodings.Encoding;
 import org.firebirdsql.gds.EventHandler;
 import org.firebirdsql.gds.ng.AbstractEventHandle;
 import org.firebirdsql.gds.ng.jna.CloseableMemory;
-import org.firebirdsql.gds.ng.jna.JnaEventHandle;
 import org.firebirdsql.jna.fbclient.FbInterface.IEventBlock;
 import org.firebirdsql.jna.fbclient.FbInterface.IEventCallback;
 import org.firebirdsql.jna.fbclient.FbInterface.IEventCallbackIntf;
@@ -21,11 +19,10 @@ import org.firebirdsql.logging.LoggerFactory;
  */
 public class IEventBlockImpl extends AbstractEventHandle {
 
-    private static final Logger LOG = LoggerFactory.getLogger(JnaEventHandle.class);
+    private static final Logger LOG = LoggerFactory.getLogger(IEventBlockImpl.class);
 
     private final CloseableMemory eventNameMemory;
     private int size = -1;
-    private int eventId;
     private IEventBlock eventBlock;
     private IEventCallback callback = new IEventCallback(new IEventCallbackImpl());
     private int referenceCount = 0;
@@ -48,14 +45,7 @@ public class IEventBlockImpl extends AbstractEventHandle {
 
     @Override
     public int getEventId() {
-        return eventId;
-    }
-
-    /**
-     * @return Event memory name
-     */
-    Memory getEventNameMemory() {
-        return eventNameMemory;
+        throw new UnsupportedOperationException( "Native OO API not support event id");
     }
 
     /**
@@ -124,10 +114,12 @@ public class IEventBlockImpl extends AbstractEventHandle {
         @Override
         public void eventCallbackFunction(int length, Pointer events) {
             synchronized (this) {
-                eventBlock.getValues().write(0, events.getByteArray(0, length), 0, length);
-                this.release();
+                if (events != null) {
+                    eventBlock.getValues().write(0, events.getByteArray(0, length), 0, length);
+                    this.release();
 
-                onEventOccurred();
+                    onEventOccurred();
+                }
             }
         }
 

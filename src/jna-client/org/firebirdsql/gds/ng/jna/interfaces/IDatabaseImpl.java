@@ -113,8 +113,7 @@ public class IDatabaseImpl extends AbstractFbDatabase<NativeDatabaseConnection>
     public void cancelOperation(int kind) throws SQLException {
         try {
             checkConnected();
-            // No synchronization, otherwise cancel will never work;
-            // might conflict with sync policy of JNA (TODO: find out)
+            // No synchronization, otherwise cancel will never work
             try {
                 attachment.cancelOperation(getStatus(), kind);
             } finally {
