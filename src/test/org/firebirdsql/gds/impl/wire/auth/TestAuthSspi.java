@@ -178,6 +178,11 @@ public class TestAuthSspi extends SimpleFBTestBase {
     public void testTrustedCertificate() throws Exception {
         initLogger();
 
+        File db = new File(DB_PATH + "/" + dbName);
+        if (db.exists())
+            db.delete();
+        createDatabase(dbName);
+
         AuthCryptoPlugin.register(new AuthCryptoPluginImpl());
 
         final FBSADataSource fbDataSource = new FBSADataSource(GDSType.getType("PURE_JAVA"));
