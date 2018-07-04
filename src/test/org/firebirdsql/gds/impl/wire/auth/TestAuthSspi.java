@@ -174,4 +174,39 @@ public class TestAuthSspi extends SimpleFBTestBase {
         statement.close();
         conn.close();
     }
+
+    public void testTrustedCertificate() throws Exception {
+        initLogger();
+
+        AuthCryptoPlugin.register(new AuthCryptoPluginImpl());
+
+        final FBSADataSource fbDataSource = new FBSADataSource(GDSType.getType("PURE_JAVA"));
+
+        final String databaseURL = getdbpath(dbName);
+        fbDataSource.setDatabase(databaseURL);
+        fbDataSource.setNonStandardProperty("isc_dpb_lc_ctype", "WIN1251");
+        fbDataSource.setNonStandardProperty("isc_dpb_user_name", "artyom.smirnov@red-soft.ru");
+        fbDataSource.setNonStandardProperty("isc_dpb_certificate", "testuser.cer");
+        fbDataSource.setNonStandardProperty("isc_dpb_repository_pin", "12345678");
+        fbDataSource.setNonStandardProperty("isc_dpb_trusted_auth", "1");
+        fbDataSource.setNonStandardProperty("isc_dpb_multi_factor_auth", "1");
+
+        Connection conn;
+        try {
+            conn = fbDataSource.getConnection();
+
+            Statement statement = conn.createStatement();
+            ResultSet resultSet = statement.executeQuery("select current_user from rdb$database");
+            resultSet.next();
+            System.out.println("Current user is " + resultSet.getString(1));
+            assertEquals("artyom.smirnov@red-soft.ru", resultSet.getString(1).toLowerCase());
+            resultSet.close();
+            statement.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("Statement should not fail");
+        } finally {
+            fbDataSource.close();
+        }
+    }
 }
