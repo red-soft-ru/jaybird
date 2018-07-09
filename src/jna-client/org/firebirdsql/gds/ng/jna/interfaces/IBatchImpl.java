@@ -61,8 +61,15 @@ public class IBatchImpl extends AbstractFbBatch {
             metadata = (IMessageMetadataImpl) statementImpl.getInputMetadata();
         }
 
-        batch = attachment.createBatch(status, ((ITransactionImpl)transaction).getTransaction(), statement.length(), statement, database.getDatabaseDialect(),
-                metadata.getMetadata(), parameterBuffer.toBytesWithType().length, parameterBuffer.toBytesWithType());
+        if (parameterBuffer == null) {
+            batch = attachment.createBatch(status, ((ITransactionImpl) transaction).getTransaction(), statement.length(),
+                    statement, database.getDatabaseDialect(),
+                    metadata.getMetadata(), 0, null);
+        } else {
+            batch = attachment.createBatch(status, ((ITransactionImpl) transaction).getTransaction(), statement.length(),
+                    statement, database.getDatabaseDialect(),
+                    metadata.getMetadata(), parameterBuffer.toBytesWithType().length, parameterBuffer.toBytesWithType());
+        }
     }
 
     @Override
