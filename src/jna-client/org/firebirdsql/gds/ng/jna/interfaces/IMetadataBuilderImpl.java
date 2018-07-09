@@ -116,7 +116,7 @@ public class IMetadataBuilderImpl implements FbMetadataBuilder {
 
     @Override
     public void addTime(int index) throws FbException {
-        metadataBuilder.setType(status, index, /*SQL_TIME*/13);
+        metadataBuilder.setType(status, index, SQL_TYPE_TIME);
         metadataBuilder.setLength(status, index, Long.SIZE / Byte.SIZE);
     }
 
