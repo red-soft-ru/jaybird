@@ -9,7 +9,7 @@ import java.sql.SQLException;
  * Implementation of {@link AbstractFbMessageBuilder}
  * to build messages for a native connection using OO API.
  *
- * @author <a href="mailto:mrotteveel@users.sourceforge.net">Vasiliy Yashkov</a>
+ * @author <a href="mailto:vasiliy.yashkov@red-soft.ru">Vasiliy Yashkov</a>
  * @since 4.0
  */
 public class IMessageBuilderImpl extends AbstractFbMessageBuilder {
