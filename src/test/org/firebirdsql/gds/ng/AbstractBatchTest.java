@@ -43,7 +43,7 @@ import static org.junit.Assert.assertEquals;
  */
 public abstract class AbstractBatchTest {
     //@formatter:off
-    private String CREATE_TABLE =
+    protected String CREATE_TABLE =
             "CREATE TABLE test_p_metadata (" +
                     "  id INTEGER, " +
                     "  simple_field VARCHAR(60) CHARACTER SET WIN1251 COLLATE PXW_CYRL, " +
@@ -71,7 +71,7 @@ public abstract class AbstractBatchTest {
                     "  /* extended numerics */ " +
                     ")";
 
-    private String INSERT_QUERY = "INSERT INTO test_p_metadata (" +
+    protected String INSERT_QUERY = "INSERT INTO test_p_metadata (" +
             "  id, " +
             "  simple_field, " +
             "  two_byte_field, " +
@@ -98,7 +98,7 @@ public abstract class AbstractBatchTest {
             "  /* extended numerics */ " +
             ") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?/* boolean-param *//* decfloat-param *//* extended numerics-param */)";
 
-    private String TEST_QUERY =
+    protected String TEST_QUERY =
             "SELECT " +
                     "simple_field, two_byte_field, three_byte_field, long_field, int_field, short_field," +
                     "float_field, double_field, smallint_numeric, integer_decimal_1, integer_numeric," +
@@ -111,13 +111,13 @@ public abstract class AbstractBatchTest {
     //@formatter:on
 
     protected FbDatabase db;
-    private static FBManager fbManager;
-    //    private static Connection connection;
-    private static FbTransaction transaction;
-    private static PreparedStatement pstmt;
-    private static ParameterMetaData parameterMetaData;
-    private static FirebirdSupportInfo supportInfo;
-    private static FbMetadataBuilder metadataBuilder;
+    protected static FBManager fbManager;
+    //    private Connection connection;
+    protected FbTransaction transaction;
+    protected PreparedStatement pstmt;
+    protected ParameterMetaData parameterMetaData;
+    protected FirebirdSupportInfo supportInfo;
+    protected FbMetadataBuilder metadataBuilder;
 
     //    protected FbStatement statement;
     protected final FbConnectionProperties connectionInfo;
@@ -221,18 +221,18 @@ public abstract class AbstractBatchTest {
         metadataBuilder.addSmallint(6);
         metadataBuilder.addFloat(7);
         metadataBuilder.addDouble(8);
-        metadataBuilder.addFloat(9);
-        metadataBuilder.addFloat(10);
-        metadataBuilder.addFloat(11);
-        metadataBuilder.addFloat(12);
-        metadataBuilder.addFloat(13);
-        metadataBuilder.addFloat(14);
+        metadataBuilder.addNumeric(9, 3, 1);
+        metadataBuilder.addDecimal(10, 3, 1);
+        metadataBuilder.addNumeric(11, 5, 2);
+        metadataBuilder.addDecimal(12, 9, 3);
+        metadataBuilder.addNumeric(13, 10, 4);
+        metadataBuilder.addDecimal(14, 18, 9);
         metadataBuilder.addDate(15);
         metadataBuilder.addTime(16);
         metadataBuilder.addTimestamp(17);
         metadataBuilder.addBlob(18);
-        metadataBuilder.addBlob(19);
-        metadataBuilder.addBlob(20);
+        metadataBuilder.addBlob(19, 1);
+        metadataBuilder.addBlob(20, -1);
         final FirebirdSupportInfo supportInfo = getDefaultSupportInfo();
         if (supportInfo.supportsBoolean()) {
             metadataBuilder.addBoolean(21);
@@ -242,8 +242,8 @@ public abstract class AbstractBatchTest {
             metadataBuilder.addDecfloat34(23);
         }
         if (supportInfo.supportsDecimalPrecision(34)) {
-            metadataBuilder.addFloat(24);
-            metadataBuilder.addFloat(25);
+            metadataBuilder.addDecNumeric(24, 25, 20);
+            metadataBuilder.addDecDecimal(25, 30, 5);
         }
 
         BatchParameterBuffer buffer = new BatchParameterBufferImpl();
@@ -260,7 +260,7 @@ public abstract class AbstractBatchTest {
         return db.startTransaction(tpb);
     }
 
-    private void allocateTransaction() throws SQLException {
+    protected void allocateTransaction() throws SQLException {
         if (transaction == null || transaction.getState() != TransactionState.ACTIVE) {
             transaction = getTransaction();
         }
