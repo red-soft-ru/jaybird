@@ -18,9 +18,9 @@ import java.sql.Date;
 import java.sql.SQLException;
 import java.sql.Time;
 import java.sql.Timestamp;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertEquals;
@@ -101,9 +101,13 @@ public class TestIBatchImpl extends AbstractBatchTest {
         double testIntNumeric2 = 42.424d;
         double testBigintNumeric = 4242.4242d;
         double testBigintNumeric2 = 4242.424242424d;
-        Date testDate = Date.valueOf(LocalDate.now());
-        Time testTime = Time.valueOf(LocalTime.now());
-        Timestamp testTimestamp = Timestamp.valueOf(LocalDateTime.now());
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        DateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
+        DateFormat timestampFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Calendar cal = Calendar.getInstance();
+        Date testDate = Date.valueOf(dateFormat.format(cal.getTime()));
+        Time testTime = Time.valueOf(timeFormat.format(cal.getTime()));
+        Timestamp testTimestamp = Timestamp.valueOf(timestampFormat.format(cal.getTime()));
 
         FbMessageBuilder builder = new IMessageBuilderImpl(batch);
 
