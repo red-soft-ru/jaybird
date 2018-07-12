@@ -21,6 +21,8 @@ import java.sql.Time;
 import java.sql.Timestamp;
 
 import static org.firebirdsql.gds.ISCConstants.SQL_INT64;
+import static org.firebirdsql.gds.ISCConstants.SQL_LONG;
+import static org.firebirdsql.gds.ISCConstants.SQL_SHORT;
 
 /**
  * Common implementation of {@link org.firebirdsql.gds.ng.FbMessageBuilder} to build firebird message
@@ -121,6 +123,61 @@ public abstract class AbstractFbMessageBuilder<E extends FbBatch> implements FbM
         }
         else
             bytes = datatypeCoder.encodeDouble(value);
+        byte[] nullShort = datatypeCoder.encodeShort(0);
+
+        buffer.position(offset);
+        buffer.put(bytes);
+        buffer.position(nullOffset);
+        buffer.put(nullShort);
+    }
+
+    @Override
+    public void addNumeric(int index, double value) throws SQLException {
+        int nullOffset = metadata.getNullOffset(index);
+        int offset = metadata.getOffset(index);
+        int type = metadata.getType(index);
+        byte[] bytes = null;
+        if (type == SQL_INT64) {
+            BigDecimal decimal = BigDecimal.valueOf(value);
+            BigInteger integer = decimal.unscaledValue();
+            bytes = datatypeCoder.encodeLong(integer.longValue());
+        } else if (type == SQL_SHORT) {
+            BigDecimal decimal = BigDecimal.valueOf(value);
+            short encodedShort = (short)decimal.unscaledValue().intValue();
+            bytes = datatypeCoder.encodeShort(encodedShort);
+        } else if (type == SQL_LONG) {
+//            long encodedLong = Double.doubleToLongBits(value);
+            BigDecimal decimal = BigDecimal.valueOf(value);
+            long encodedLong = (short)decimal.unscaledValue().longValue();
+            bytes = datatypeCoder.encodeLong(encodedLong);
+        }
+        byte[] nullShort = datatypeCoder.encodeShort(0);
+
+        buffer.position(offset);
+        buffer.put(bytes);
+        buffer.position(nullOffset);
+        buffer.put(nullShort);
+    }
+
+    @Override
+    public void addDecimal(int index, double value) throws SQLException {
+        int nullOffset = metadata.getNullOffset(index);
+        int offset = metadata.getOffset(index);
+        int type = metadata.getType(index);
+        byte[] bytes = null;
+        if (type == SQL_INT64) {
+            BigDecimal decimal = BigDecimal.valueOf(value);
+            BigInteger integer = decimal.unscaledValue();
+            bytes = datatypeCoder.encodeLong(integer.longValue());
+        } else if (type == SQL_SHORT) {
+            BigDecimal decimal = BigDecimal.valueOf(value);
+            short encodedShort = (short)decimal.unscaledValue().intValue();
+            bytes = datatypeCoder.encodeShort(encodedShort);
+        } else if (type == SQL_LONG) {
+            BigDecimal decimal = BigDecimal.valueOf(value);
+            long encodedLong = decimal.unscaledValue().longValue();
+            bytes = datatypeCoder.encodeLong(encodedLong);
+        }
         byte[] nullShort = datatypeCoder.encodeShort(0);
 
         buffer.position(offset);

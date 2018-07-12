@@ -21,6 +21,10 @@ public interface FbMessageBuilder {
 
     void addDouble(int index, double value) throws SQLException;
 
+    void addNumeric(int index, double value) throws SQLException;
+
+    void addDecimal(int index, double value) throws SQLException;
+
     void addDecfloat16(int index, BigDecimal value) throws SQLException;
 
     void addDecfloat34(int index, BigDecimal value) throws SQLException;
