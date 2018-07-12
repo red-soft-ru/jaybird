@@ -125,6 +125,9 @@ sudo sed -i 's/#WireCrypt = Enabled (for client) \/ Required (for server)/WireCr
 #sudo sed -i 's/#CertVerifyChain = 1/CertVerifyChain = 0/g' /opt/RedDatabase/firebird.conf
 #sudo sed -i 's/#CertUsernameDN = CN/CertUsernameDN = E/g' /opt/RedDatabase/firebird.conf
 
+# Manual adding rdb libs to library path. See #27089
+sudo ldconfig /opt/RedDatabase/lib
+
 echo "Restart RDB..."
 echo "Stopping RDB..."
 ps aux|grep rdb||true
