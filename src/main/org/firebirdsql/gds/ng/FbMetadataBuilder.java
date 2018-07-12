@@ -21,6 +21,10 @@ public interface FbMetadataBuilder {
 
     void addFloat(int index) throws FbException;
 
+    void addNumeric(int index, int size, int scale) throws FbException;
+
+    void addDecimal(int index, int size, int scale) throws FbException;
+
     void addDouble(int index) throws FbException;
 
     void addDecfloat16(int index) throws FbException;
@@ -28,6 +32,8 @@ public interface FbMetadataBuilder {
     void addDecfloat34(int index) throws FbException;
 
     void addBlob(int index)  throws FbException;
+
+    void addBlob(int index, int subtype)  throws FbException;
 
     void addBoolean(int index)  throws FbException;
 
@@ -44,4 +50,8 @@ public interface FbMetadataBuilder {
     void addChar(int index, int length, int charSet)  throws FbException;
 
     void addVarchar(int index, int length, int charSet)  throws FbException;
+
+    void addDecDecimal(int index, int size, int scale)  throws FbException;
+
+    void addDecNumeric(int index, int size, int scale)  throws FbException;
 }

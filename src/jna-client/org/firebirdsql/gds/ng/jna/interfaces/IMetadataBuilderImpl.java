@@ -15,6 +15,9 @@ import static org.firebirdsql.gds.ISCConstants.*;
  */
 public class IMetadataBuilderImpl implements FbMetadataBuilder {
 
+    private static final int SUBTYPE_NUMERIC = 1;
+    private static final int SUBTYPE_DECIMAL = 2;
+
     private IDatabaseImpl database;
     private IMaster master;
     private IStatus status;
@@ -79,6 +82,24 @@ public class IMetadataBuilderImpl implements FbMetadataBuilder {
     }
 
     @Override
+    public void addNumeric(int index, int size, int scale) throws FbException {
+        metadataBuilder.setType(status, index, SQL_SHORT);
+        metadataBuilder.setLength(status, index, size);
+        if (scale > 0)
+            scale = -scale;
+        metadataBuilder.setScale(status, index, scale);
+        metadataBuilder.setSubType(status, index, SUBTYPE_NUMERIC);
+    }
+
+    @Override
+    public void addDecimal(int index, int size, int scale) throws FbException {
+        metadataBuilder.setType(status, index, SQL_LONG);
+        metadataBuilder.setLength(status, index, size);
+        metadataBuilder.setScale(status, index, scale);
+        metadataBuilder.setSubType(status, index, SUBTYPE_DECIMAL);
+    }
+
+    @Override
     public void addDouble(int index) throws FbException {
         metadataBuilder.setType(status, index, SQL_DOUBLE);
         metadataBuilder.setLength(status, index, Double.SIZE / Byte.SIZE);
@@ -100,6 +121,13 @@ public class IMetadataBuilderImpl implements FbMetadataBuilder {
     public void addBlob(int index) throws FbException {
         metadataBuilder.setType(status, index, SQL_BLOB);
         metadataBuilder.setLength(status, index, (Integer.SIZE / Byte.SIZE) * 2);
+    }
+
+    @Override
+    public void addBlob(int index, int subtype) throws FbException {
+        metadataBuilder.setType(status, index, SQL_BLOB);
+        metadataBuilder.setLength(status, index, (Integer.SIZE / Byte.SIZE) * 2);
+        metadataBuilder.setSubType(status, index, subtype);
     }
 
     @Override
@@ -150,5 +178,21 @@ public class IMetadataBuilderImpl implements FbMetadataBuilder {
         metadataBuilder.setType(status, index, SQL_VARYING);
         metadataBuilder.setLength(status, index, length);
         metadataBuilder.setCharSet(status, index, charSet);
+    }
+
+    @Override
+    public void addDecDecimal(int index, int size, int scale) throws FbException {
+        metadataBuilder.setType(status, index, SQL_DEC_FIXED);
+        metadataBuilder.setLength(status, index, size);
+        metadataBuilder.setScale(status, index, scale);
+        metadataBuilder.setSubType(status, index, SUBTYPE_DECIMAL);
+    }
+
+    @Override
+    public void addDecNumeric(int index, int size, int scale) throws FbException {
+        metadataBuilder.setType(status, index, SQL_DEC_FIXED);
+        metadataBuilder.setLength(status, index, size);
+        metadataBuilder.setScale(status, index, scale);
+        metadataBuilder.setSubType(status, index, SUBTYPE_NUMERIC);
     }
 }
