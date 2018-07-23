@@ -439,6 +439,204 @@ public class TestIBatchImpl extends AbstractBatchTest {
         checkBlob((int)blobID, INSERT_QUERY_WITH_BLOBS.getBytes());
     }
 
+    @Test
+    public void testMultipleMessagesBatchWithoutBlobs() throws SQLException {
+        allocateTransaction();
+        BatchParameterBuffer buffer = new BatchParameterBufferImpl();
+        buffer.addArgument(FbInterface.IBatch.TAG_RECORD_COUNTS, 1);
+        FbBatch batch = db.createBatch(transaction, INSERT_QUERY_WITHOUT_BLOBS, buffer);
+
+        int testInteger = 42;
+        String testVarchar = "test varchar";
+        long testBigInteger = 123456789234L;
+        short testShort = 24;
+        float testFloat = 42.42f;
+        double testDouble = 42.4242d;
+        double testSmallintNumeric = 42.4d;
+        double testIntNumeric = 42.42d;
+        double testIntNumeric2 = 42.424d;
+        double testBigintNumeric = 4242.4242d;
+        double testBigintNumeric2 = 4242.424242424d;
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        DateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
+        DateFormat timestampFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Calendar cal = Calendar.getInstance();
+        Date testDate = Date.valueOf(dateFormat.format(cal.getTime()));
+        Time testTime = Time.valueOf(timeFormat.format(cal.getTime()));
+        Timestamp testTimestamp = Timestamp.valueOf(timestampFormat.format(cal.getTime()));
+
+        FbMessageBuilder builder = new IMessageBuilderImpl(batch);
+
+        builder.addInteger(0, testInteger);
+        builder.addVarchar(1, testVarchar);
+        builder.addVarchar(2, testVarchar);
+        builder.addVarchar(3, testVarchar);
+        builder.addBigint(4, testBigInteger);
+        builder.addInteger(5, testInteger);
+        builder.addSmallint(6, testShort);
+        builder.addFloat(7, testFloat);
+        builder.addDouble(8, testDouble);
+        builder.addNumeric(9, testSmallintNumeric);
+        builder.addDecimal(10, testSmallintNumeric);
+        builder.addNumeric(11, testIntNumeric);
+        builder.addDecimal(12, testIntNumeric2);
+        builder.addNumeric(13, testBigintNumeric);
+        builder.addDecimal(14, testBigintNumeric2);
+        builder.addDate(15, testDate);
+        builder.addTime(16, testTime);
+        builder.addTimestamp(17, testTimestamp);
+        batch.add(1, builder.getData());
+        // clear data for add next message
+        builder.clear();
+
+        builder.addInteger(0, ++testInteger);
+        builder.addVarchar(1, testVarchar);
+        builder.addVarchar(2, testVarchar);
+        builder.addVarchar(3, testVarchar);
+        builder.addBigint(4, testBigInteger);
+        builder.addInteger(5, testInteger);
+        builder.addSmallint(6, testShort);
+        builder.addFloat(7, testFloat);
+        builder.addDouble(8, testDouble);
+        builder.addNumeric(9, testSmallintNumeric);
+        builder.addDecimal(10, testSmallintNumeric);
+        builder.addNumeric(11, testIntNumeric);
+        builder.addDecimal(12, testIntNumeric2);
+        builder.addNumeric(13, testBigintNumeric);
+        builder.addDecimal(14, testBigintNumeric2);
+        builder.addDate(15, testDate);
+        builder.addTime(16, testTime);
+        builder.addTimestamp(17, testTimestamp);
+        batch.add(1, builder.getData());
+        // clear data for add next message
+        builder.clear();
+
+        builder.addInteger(0, ++testInteger);
+        builder.addVarchar(1, testVarchar);
+        builder.addVarchar(2, testVarchar);
+        builder.addVarchar(3, testVarchar);
+        builder.addBigint(4, testBigInteger);
+        builder.addInteger(5, testInteger);
+        builder.addSmallint(6, testShort);
+        builder.addFloat(7, testFloat);
+        builder.addDouble(8, testDouble);
+        builder.addNumeric(9, testSmallintNumeric);
+        builder.addDecimal(10, testSmallintNumeric);
+        builder.addNumeric(11, testIntNumeric);
+        builder.addDecimal(12, testIntNumeric2);
+        builder.addNumeric(13, testBigintNumeric);
+        builder.addDecimal(14, testBigintNumeric2);
+        builder.addDate(15, testDate);
+        builder.addTime(16, testTime);
+        builder.addTimestamp(17, testTimestamp);
+        batch.add(1, builder.getData());
+        // clear data for add next message
+        builder.clear();
+
+        FbBatchCompletionState execute = batch.execute();
+
+        System.out.println(execute.getAllStates());
+
+        assertThat("Expected successful batch execution", execute.getAllStates(), allOf(
+                startsWith("Message Status"),
+                containsString("total=3 success=3"),
+                endsWith("0\n")));
+
+        batch.getTransaction().commit();
+
+        allocateTransaction();
+
+        FbStatement statement = db.createStatement(transaction);
+        final SimpleStatementListener statementListener = new SimpleStatementListener();
+        statement.addStatementListener(statementListener);
+        statement.prepare(SELECT_QUERY_WITHOUT_BLOBS);
+        statement.execute(RowValue.EMPTY_ROW_VALUE);
+        statement.fetchRows(1);
+        statement.fetchRows(1);
+        statement.fetchRows(1);
+        RowValue fieldValues = statementListener.getRows().get(2);
+        byte[] fieldData = fieldValues.getFieldValue(0).getFieldData();
+        assertEquals(testInteger,
+                statement.getFieldDescriptor().getFieldDescriptor(0).getDatatypeCoder().decodeInt(fieldData));
+        fieldData = fieldValues.getFieldValue(1).getFieldData();
+        assertEquals(testVarchar,
+                statement.getFieldDescriptor().getFieldDescriptor(1).getDatatypeCoder().decodeString(fieldData));
+        fieldData = fieldValues.getFieldValue(2).getFieldData();
+        assertEquals(testVarchar,
+                statement.getFieldDescriptor().getFieldDescriptor(2).getDatatypeCoder().decodeString(fieldData));
+        fieldData = fieldValues.getFieldValue(3).getFieldData();
+        assertEquals(testVarchar,
+                statement.getFieldDescriptor().getFieldDescriptor(3).getDatatypeCoder().decodeString(fieldData));
+        fieldData = fieldValues.getFieldValue(4).getFieldData();
+        assertEquals(testBigInteger,
+                statement.getFieldDescriptor().getFieldDescriptor(4).getDatatypeCoder().decodeLong(fieldData));
+        fieldData = fieldValues.getFieldValue(5).getFieldData();
+        assertEquals(testInteger,
+                statement.getFieldDescriptor().getFieldDescriptor(5).getDatatypeCoder().decodeInt(fieldData));
+        fieldData = fieldValues.getFieldValue(6).getFieldData();
+        assertEquals(testShort,
+                statement.getFieldDescriptor().getFieldDescriptor(6).getDatatypeCoder().decodeShort(fieldData));
+        fieldData = fieldValues.getFieldValue(7).getFieldData();
+        assertEquals(testFloat,
+                statement.getFieldDescriptor().getFieldDescriptor(7).getDatatypeCoder().decodeFloat(fieldData),
+                0);
+        fieldData = fieldValues.getFieldValue(8).getFieldData();
+        assertEquals(testDouble,
+                statement.getFieldDescriptor().getFieldDescriptor(8).getDatatypeCoder().decodeDouble(fieldData),
+                0);
+        fieldData = fieldValues.getFieldValue(9).getFieldData();
+        short decodeShort = statement.getFieldDescriptor().getFieldDescriptor(9).getDatatypeCoder().decodeShort(fieldData);
+        BigDecimal decimal = BigDecimal.valueOf(decodeShort, -statement.getFieldDescriptor().getFieldDescriptor(9).getScale());
+        float floatValue = decimal.floatValue();
+        assertEquals(testSmallintNumeric,
+                floatValue,
+                0.001);
+        fieldData = fieldValues.getFieldValue(10).getFieldData();
+        int decodeInt = statement.getFieldDescriptor().getFieldDescriptor(10).getDatatypeCoder().decodeInt(fieldData);
+        decimal = BigDecimal.valueOf(decodeInt, -statement.getFieldDescriptor().getFieldDescriptor(10).getScale());
+        double doubleValue = decimal.doubleValue();
+        assertEquals(testSmallintNumeric,
+                doubleValue,
+                0.001);
+        fieldData = fieldValues.getFieldValue(11).getFieldData();
+        decodeInt = statement.getFieldDescriptor().getFieldDescriptor(11).getDatatypeCoder().decodeInt(fieldData);
+        decimal = BigDecimal.valueOf(decodeInt, -statement.getFieldDescriptor().getFieldDescriptor(11).getScale());
+        doubleValue = decimal.doubleValue();
+        assertEquals(testIntNumeric,
+                doubleValue,
+                0);
+        fieldData = fieldValues.getFieldValue(12).getFieldData();
+        decodeInt = statement.getFieldDescriptor().getFieldDescriptor(12).getDatatypeCoder().decodeInt(fieldData);
+        decimal = BigDecimal.valueOf(decodeInt, -statement.getFieldDescriptor().getFieldDescriptor(12).getScale());
+        doubleValue = decimal.doubleValue();
+        assertEquals(testIntNumeric2,
+                doubleValue,
+                0);
+        fieldData = fieldValues.getFieldValue(13).getFieldData();
+        long decodeLong = statement.getFieldDescriptor().getFieldDescriptor(13).getDatatypeCoder().decodeLong(fieldData);
+        decimal = BigDecimal.valueOf(decodeLong, -statement.getFieldDescriptor().getFieldDescriptor(13).getScale());
+        doubleValue = decimal.doubleValue();
+        assertEquals(testBigintNumeric,
+                doubleValue,
+                0);
+        fieldData = fieldValues.getFieldValue(14).getFieldData();
+        decodeLong = statement.getFieldDescriptor().getFieldDescriptor(14).getDatatypeCoder().decodeLong(fieldData);
+        decimal = BigDecimal.valueOf(decodeLong, -statement.getFieldDescriptor().getFieldDescriptor(14).getScale());
+        doubleValue = decimal.doubleValue();
+        assertEquals(testBigintNumeric2,
+                doubleValue,
+                0);
+        fieldData = fieldValues.getFieldValue(15).getFieldData();
+        assertEquals(testDate,
+                statement.getFieldDescriptor().getFieldDescriptor(15).getDatatypeCoder().decodeDate(fieldData));
+        fieldData = fieldValues.getFieldValue(16).getFieldData();
+        assertEquals(testTime,
+                statement.getFieldDescriptor().getFieldDescriptor(16).getDatatypeCoder().decodeTime(fieldData));
+        fieldData = fieldValues.getFieldValue(17).getFieldData();
+        assertEquals(testTimestamp,
+                statement.getFieldDescriptor().getFieldDescriptor(17).getDatatypeCoder().decodeTimestamp(fieldData));
+    }
+
     public void checkBlob(int blobID, byte[] originalContent) throws Exception {
         // Use sufficiently large value so that multiple segments are used
         final int requiredSize = originalContent.length;
