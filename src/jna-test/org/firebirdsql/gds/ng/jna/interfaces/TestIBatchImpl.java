@@ -232,6 +232,5 @@ public class TestIBatchImpl extends AbstractBatchTest {
         fieldData = fieldValues.getFieldValue(17).getFieldData();
         assertEquals(testTimestamp,
                 statement.getFieldDescriptor().getFieldDescriptor(17).getDatatypeCoder().decodeTimestamp(fieldData));
-        int stop = 0;
     }
 }
