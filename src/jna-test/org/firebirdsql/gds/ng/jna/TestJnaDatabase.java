@@ -42,9 +42,11 @@ import java.io.File;
 import java.sql.SQLException;
 
 import static org.firebirdsql.common.FBTestProperties.*;
+import static org.firebirdsql.common.matchers.GdsTypeMatchers.isEmbeddedType;
 import static org.firebirdsql.common.matchers.SQLExceptionMatchers.*;
 import static org.firebirdsql.util.FirebirdSupportInfo.supportInfoFor;
 import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.Matchers.isOneOf;
 import static org.junit.Assert.*;
 import static org.junit.Assume.assumeThat;
 import static org.junit.Assume.assumeTrue;
@@ -117,7 +119,7 @@ public class TestJnaDatabase {
     @Test
      public void basicStatusVectorProcessing_wrongLogin() throws Exception {
         assumeThat("Embedded on windows does not use authentication",
-                FBTestProperties.GDS_TYPE, is(not(EmbeddedGDSFactoryPlugin.EMBEDDED_TYPE_NAME)));
+                FBTestProperties.GDS_TYPE, not(isEmbeddedType()));
         // set invalid password
         connectionInfo.setPassword("abcd");
         try (JnaDatabase db = (JnaDatabase) factory.connect(connectionInfo)) {
@@ -268,9 +270,8 @@ public class TestJnaDatabase {
     public void testCancelOperation_abortSupported() throws Exception {
         // TODO Investigate why this doesn't work.
         assumeThat("Test doesn't work with local or embedded protocol",
-                FBTestProperties.GDS_TYPE, allOf(
-                        not(equalTo(LocalGDSFactoryPlugin.LOCAL_TYPE_NAME)),
-                        not(equalTo(EmbeddedGDSFactoryPlugin.EMBEDDED_TYPE_NAME))));
+                FBTestProperties.GDS_TYPE, not(
+                        isOneOf(LocalGDSFactoryPlugin.LOCAL_TYPE_NAME, EmbeddedGDSFactoryPlugin.EMBEDDED_TYPE_NAME)));
 
         FBManager fbManager = createFBManager();
         defaultDatabaseSetUp(fbManager);
