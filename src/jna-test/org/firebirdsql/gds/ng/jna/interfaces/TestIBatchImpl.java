@@ -429,14 +429,14 @@ public class TestIBatchImpl extends AbstractBatchTest {
         assertEquals(testTimestamp,
                 statement.getFieldDescriptor().getFieldDescriptor(17).getDatatypeCoder().decodeTimestamp(fieldData));
         fieldData = fieldValues.getFieldValue(18).getFieldData();
-        blobID = statement.getFieldDescriptor().getFieldDescriptor(18).getDatatypeCoder().decodeInt(fieldData);
-        checkBlob((int)blobID, INSERT_QUERY_WITH_BLOBS.getBytes());
+        blobID = statement.getFieldDescriptor().getFieldDescriptor(18).getDatatypeCoder().decodeLong(fieldData);
+        checkBlob(blobID, INSERT_QUERY_WITH_BLOBS.getBytes());
         fieldData = fieldValues.getFieldValue(19).getFieldData();
-        blobID = statement.getFieldDescriptor().getFieldDescriptor(19).getDatatypeCoder().decodeInt(fieldData);
-        checkBlob((int)blobID, INSERT_QUERY_WITH_BLOBS.getBytes());
+        blobID = statement.getFieldDescriptor().getFieldDescriptor(19).getDatatypeCoder().decodeLong(fieldData);
+        checkBlob(blobID, INSERT_QUERY_WITH_BLOBS.getBytes());
         fieldData = fieldValues.getFieldValue(20).getFieldData();
-        blobID = statement.getFieldDescriptor().getFieldDescriptor(20).getDatatypeCoder().decodeInt(fieldData);
-        checkBlob((int)blobID, INSERT_QUERY_WITH_BLOBS.getBytes());
+        blobID = statement.getFieldDescriptor().getFieldDescriptor(20).getDatatypeCoder().decodeLong(fieldData);
+        checkBlob(blobID, INSERT_QUERY_WITH_BLOBS.getBytes());
     }
 
     @Test
@@ -637,7 +637,7 @@ public class TestIBatchImpl extends AbstractBatchTest {
                 statement.getFieldDescriptor().getFieldDescriptor(17).getDatatypeCoder().decodeTimestamp(fieldData));
     }
 
-    public void checkBlob(int blobID, byte[] originalContent) throws Exception {
+    public void checkBlob(long blobID, byte[] originalContent) throws Exception {
         // Use sufficiently large value so that multiple segments are used
         final int requiredSize = originalContent.length;
         final FbBlob blob = db.createBlobForInput(transaction, null, blobID);
