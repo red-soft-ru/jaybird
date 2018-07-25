@@ -1,13 +1,14 @@
 package org.firebirdsql.gds.ng.jna.interfaces;
 
 import org.firebirdsql.gds.BatchParameterBuffer;
-import org.firebirdsql.gds.impl.BatchParameterBufferImpl;
-import org.firebirdsql.gds.impl.GDSFactory;
-import org.firebirdsql.gds.impl.GDSType;
+import org.firebirdsql.gds.BlobParameterBuffer;
+import org.firebirdsql.gds.ISCConstants;
+import org.firebirdsql.gds.impl.*;
 import org.firebirdsql.gds.ng.*;
 import org.firebirdsql.gds.ng.fields.RowValue;
 import org.firebirdsql.gds.ng.jna.AbstractNativeDatabaseFactory;
 import org.firebirdsql.gds.ng.wire.SimpleStatementListener;
+import org.firebirdsql.jdbc.FBBlob;
 import org.firebirdsql.jna.fbclient.FbInterface;
 import org.junit.Rule;
 import org.junit.Test;
@@ -84,6 +85,12 @@ public class TestIBatchImpl extends AbstractBatchTest {
             "  blob_minus_one " +
             ") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
+    protected String INSERT_QUERY_ONLY_BLOBS = "INSERT INTO test_p_metadata (" +
+            "  blob_field, " +
+            "  blob_text_field, " +
+            "  blob_minus_one " +
+            ") VALUES (?, ?, ?)";
+
     protected String SELECT_QUERY_WITHOUT_BLOBS =
             "SELECT " +
                     "id, simple_field, two_byte_field, three_byte_field, long_field, int_field, short_field," +
@@ -98,6 +105,11 @@ public class TestIBatchImpl extends AbstractBatchTest {
                     "float_field, double_field, smallint_numeric, integer_decimal_1, integer_numeric," +
                     "integer_decimal_2, bigint_numeric, bigint_decimal, date_field, time_field," +
                     "timestamp_field, blob_field, blob_text_field, blob_minus_one " +
+                    " from test_p_metadata";
+
+    protected String SELECT_QUERY_ONLY_BLOBS =
+            "SELECT " +
+                    "blob_field, blob_text_field, blob_minus_one " +
                     " from test_p_metadata";
     //@formatter:on
 
@@ -866,6 +878,156 @@ public class TestIBatchImpl extends AbstractBatchTest {
         fieldData = fieldValues.getFieldValue(20).getFieldData();
         blobID = statement.getFieldDescriptor().getFieldDescriptor(20).getDatatypeCoder().decodeLong(fieldData);
         checkBlob(blobID, testBytes);
+    }
+
+    @Test
+    public void testBatchWithBlobStream() throws Exception {
+        allocateTransaction();
+        BatchParameterBuffer buffer = new BatchParameterBufferImpl();
+        // Blobs are placed in a stream
+        buffer.addArgument(FbBatch.TAG_BLOB_POLICY, FbBatch.BLOB_STREAM);
+        FbBatch batch = db.createBatch(transaction, INSERT_QUERY_ONLY_BLOBS, buffer);
+
+        GDSHelper h = new GDSHelper(db);
+        h.setCurrentTransaction(batch.getTransaction());
+
+        FBBlob b1 = new FBBlob(h, 1);
+        FBBlob b2 = new FBBlob(h, 2);
+        FBBlob b3 = new FBBlob(h, 3);
+
+        FbMessageBuilder builder = new IMessageBuilderImpl(batch);
+
+        builder.addBlob(0, b1.getBlobId());
+        builder.addBlob(1, b2.getBlobId());
+        builder.addBlob(2, b3.getBlobId());
+
+        // blobs
+        String d1 = "1111111111111111111";
+        String d2 = "22222222222222222222";
+        String d3 = "333333333333333333333333333333333333333333333333333333333333333";
+
+        builder.addBlobData(d1.getBytes(), b1.getBlobId());
+        builder.addBlobData(d2.getBytes(), b2.getBlobId());
+        builder.addBlobData(d3.getBytes(), b3.getBlobId());
+
+        batch.add(1, builder.getData());
+        batch.addBlobStream(builder.getBlobStreamData());
+        builder.clear();
+
+        FbBatchCompletionState execute = batch.execute();
+
+        System.out.println(execute.getAllStates());
+
+        assertThat("Expected successful batch execution", execute.getAllStates(), allOf(
+                startsWith("Summary"),
+                containsString("total=1 success=0 success(but no update info)=1"),
+                endsWith("\n")));
+
+        batch.getTransaction().commit();
+
+        allocateTransaction();
+
+        FbStatement statement = db.createStatement(transaction);
+        final SimpleStatementListener statementListener = new SimpleStatementListener();
+        statement.addStatementListener(statementListener);
+        statement.prepare(SELECT_QUERY_ONLY_BLOBS);
+        statement.execute(RowValue.EMPTY_ROW_VALUE);
+        statement.fetchRows(1);
+        RowValue fieldValues = statementListener.getRows().get(0);
+        byte[] fieldData = fieldValues.getFieldValue(0).getFieldData();
+        long blobID = statement.getFieldDescriptor().getFieldDescriptor(0).getDatatypeCoder().decodeLong(fieldData);
+        checkBlob(blobID, d1.getBytes());
+        fieldData = fieldValues.getFieldValue(1).getFieldData();
+        blobID = statement.getFieldDescriptor().getFieldDescriptor(1).getDatatypeCoder().decodeLong(fieldData);
+        checkBlob(blobID, d2.getBytes());
+        fieldData = fieldValues.getFieldValue(2).getFieldData();
+        blobID = statement.getFieldDescriptor().getFieldDescriptor(2).getDatatypeCoder().decodeLong(fieldData);
+        checkBlob(blobID, d3.getBytes());
+    }
+
+    @Test
+    public void testBatchWithSegmentedBlobs() throws Exception {
+        allocateTransaction();
+        BatchParameterBuffer buffer = new BatchParameterBufferImpl();
+        // Blobs are placed in a stream
+        buffer.addArgument(FbBatch.TAG_BLOB_POLICY, FbBatch.BLOB_STREAM);
+        FbBatch batch = db.createBatch(transaction, INSERT_QUERY_ONLY_BLOBS, buffer);
+
+        GDSHelper h = new GDSHelper(db);
+        h.setCurrentTransaction(batch.getTransaction());
+
+        FBBlob b1 = new FBBlob(h, 1);
+        FBBlob b2 = new FBBlob(h, 2);
+        FBBlob b3 = new FBBlob(h, 3);
+
+        FbMessageBuilder builder = new IMessageBuilderImpl(batch);
+
+        builder.addBlob(0, b1.getBlobId());
+        builder.addBlob(1, b2.getBlobId());
+        builder.addBlob(2, b3.getBlobId());
+
+        // blobs
+        String d1 = "1111111111111111111";
+        String d2 = "22222222222222222222";
+        String d3 = "333333333333333333333333333333333333333333333333333333333333333";
+
+        BlobParameterBuffer bpb = new BlobParameterBufferImp();
+        bpb.addArgument(ISCConstants.isc_bpb_type, ISCConstants.isc_bpb_type_segmented);
+
+        long offset = builder.addBlobHeader(b1.getBlobId(), bpb);
+        builder.addBlobSegment(d1.getBytes(), offset);
+        builder.addBlobSegment("\n".getBytes(), offset);
+        builder.addBlobSegment(d2.getBytes(), offset);
+        builder.addBlobSegment("\n".getBytes(), offset);
+        builder.addBlobSegment(d3.getBytes(), offset);
+
+        offset = builder.addBlobHeader(b2.getBlobId(), bpb);
+        builder.addBlobSegment(d1.getBytes(), offset);
+        builder.addBlobSegment("\n".getBytes(), offset);
+        builder.addBlobSegment(d2.getBytes(), offset);
+        builder.addBlobSegment("\n".getBytes(), offset);
+        builder.addBlobSegment(d3.getBytes(), offset);
+
+        offset = builder.addBlobHeader(b3.getBlobId(), bpb);
+        builder.addBlobSegment(d1.getBytes(), offset);
+        builder.addBlobSegment("\n".getBytes(), offset);
+        builder.addBlobSegment(d2.getBytes(), offset);
+        builder.addBlobSegment("\n".getBytes(), offset);
+        builder.addBlobSegment(d3.getBytes(), offset);
+
+        batch.add(1, builder.getData());
+        batch.addBlobStream(builder.getBlobStreamData());
+        builder.clear();
+
+        FbBatchCompletionState execute = batch.execute();
+
+        System.out.println(execute.getAllStates());
+
+        assertThat("Expected successful batch execution", execute.getAllStates(), allOf(
+                startsWith("Summary"),
+                containsString("total=1 success=0 success(but no update info)=1"),
+                endsWith("\n")));
+
+        batch.getTransaction().commit();
+
+        allocateTransaction();
+
+        FbStatement statement = db.createStatement(transaction);
+        final SimpleStatementListener statementListener = new SimpleStatementListener();
+        statement.addStatementListener(statementListener);
+        statement.prepare(SELECT_QUERY_ONLY_BLOBS);
+        statement.execute(RowValue.EMPTY_ROW_VALUE);
+        statement.fetchRows(1);
+        RowValue fieldValues = statementListener.getRows().get(0);
+        byte[] fieldData = fieldValues.getFieldValue(0).getFieldData();
+        long blobID = statement.getFieldDescriptor().getFieldDescriptor(0).getDatatypeCoder().decodeLong(fieldData);
+        checkBlob(blobID, d1.getBytes());
+        fieldData = fieldValues.getFieldValue(1).getFieldData();
+        blobID = statement.getFieldDescriptor().getFieldDescriptor(1).getDatatypeCoder().decodeLong(fieldData);
+        checkBlob(blobID, d2.getBytes());
+        fieldData = fieldValues.getFieldValue(2).getFieldData();
+        blobID = statement.getFieldDescriptor().getFieldDescriptor(2).getDatatypeCoder().decodeLong(fieldData);
+        checkBlob(blobID, d3.getBytes());
     }
 
     public void checkBlob(long blobID, byte[] originalContent) throws Exception {
