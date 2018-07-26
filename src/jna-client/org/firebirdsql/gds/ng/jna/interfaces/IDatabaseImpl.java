@@ -243,15 +243,17 @@ public class IDatabaseImpl extends AbstractFbDatabase<NativeDatabaseConnection>
             }
 
             synchronized (getSynchronizationObject()) {
-                attachment = util.executeCreateDatabase(getStatus(), statementText.length(),
-                        statementText, getConnectionDialect(), new boolean[]{false});
-                attachment.execute(getStatus(),
-                        transaction != null ? ((ITransactionImpl) transaction).getTransaction() :
-                                attachment.startTransaction(getStatus(), 0, null),
-                        statementText.length(),
-                        statementText, getConnectionDialect(), null, null,
-                        null, null);
-
+                if (attachment == null) {
+                    attachment = util.executeCreateDatabase(getStatus(), statementText.length(),
+                            statementText, getConnectionDialect(), new boolean[]{false});
+                } else {
+                    attachment.execute(getStatus(),
+                            transaction != null ? ((ITransactionImpl) transaction).getTransaction() :
+                                    attachment.startTransaction(getStatus(), 0, null),
+                            statementText.length(),
+                            statementText, getConnectionDialect(), null, null,
+                            null, null);
+                }
                 if (!isAttached()) {
                     setAttached();
                     afterAttachActions();
