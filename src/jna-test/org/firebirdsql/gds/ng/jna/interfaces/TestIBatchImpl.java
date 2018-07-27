@@ -1040,6 +1040,79 @@ public class TestIBatchImpl extends AbstractBatchTest {
         checkBlob(blobID, allSegments.getBytes());
     }
 
+    @Test
+    public void testBatchWithRegisteredBlobs() throws Exception {
+        allocateTransaction();
+        BatchParameterBuffer buffer = new BatchParameterBufferImpl();
+        // Blobs are placed in a stream
+        buffer.addArgument(FbBatch.TAG_BLOB_POLICY, FbBatch.BLOB_STREAM);
+        FbBatch batch = db.createBatch(transaction, INSERT_QUERY_ONLY_BLOBS, buffer);
+
+        GDSHelper h = new GDSHelper(db);
+        h.setCurrentTransaction(batch.getTransaction());
+
+        // Create blobs
+        FBBlob b1 = new FBBlob(h, 4242);
+        FBBlob b2 = new FBBlob(h, 242);
+        FBBlob b3 = new FBBlob(h, 42);
+
+        FbBlob regBlob1 = h.createBlob(false, false);
+        FbBlob regBlob2 = h.createBlob(false, false);
+        FbBlob regBlob3 = h.createBlob(false, false);
+
+        regBlob1.putSegment(INSERT_QUERY_WITH_BLOBS.getBytes());
+        regBlob1.close();
+        regBlob2.putSegment(INSERT_QUERY_WITHOUT_BLOBS.getBytes());
+        regBlob2.close();
+        regBlob3.putSegment(INSERT_QUERY_ONLY_BLOBS.getBytes());
+        regBlob3.close();
+
+        FbMessageBuilder builder = new IMessageBuilderImpl(batch);
+
+        builder.addBlob(0, b1.getBlobId());
+        builder.addBlob(1, b2.getBlobId());
+        builder.addBlob(2, b3.getBlobId());
+
+        // Register blobs
+        batch.registerBlob(regBlob1.getBlobId(), b1.getBlobId());
+        batch.registerBlob(regBlob2.getBlobId(), b2.getBlobId());
+        batch.registerBlob(regBlob3.getBlobId(), b3.getBlobId());
+
+        batch.add(1, builder.getData());
+        builder.clear();
+
+        FbBatchCompletionState execute = batch.execute();
+
+        System.out.println(execute.getAllStates());
+
+        assertThat("Expected successful batch execution", execute.getAllStates(), allOf(
+                startsWith("Summary"),
+                containsString("total=1 success=0 success(but no update info)=1"),
+                endsWith("\n")));
+
+        batch.getTransaction().commit();
+
+        allocateTransaction();
+
+        FbStatement statement = db.createStatement(transaction);
+        final SimpleStatementListener statementListener = new SimpleStatementListener();
+        statement.addStatementListener(statementListener);
+        statement.prepare(SELECT_QUERY_ONLY_BLOBS);
+        statement.execute(RowValue.EMPTY_ROW_VALUE);
+        statement.fetchRows(1);
+
+        RowValue fieldValues = statementListener.getRows().get(0);
+        byte[] fieldData = fieldValues.getFieldValue(0).getFieldData();
+        long blobID = statement.getFieldDescriptor().getFieldDescriptor(0).getDatatypeCoder().decodeLong(fieldData);
+        checkBlob(blobID, INSERT_QUERY_WITH_BLOBS.getBytes());
+        fieldData = fieldValues.getFieldValue(1).getFieldData();
+        blobID = statement.getFieldDescriptor().getFieldDescriptor(1).getDatatypeCoder().decodeLong(fieldData);
+        checkBlob(blobID, INSERT_QUERY_WITHOUT_BLOBS.getBytes());
+        fieldData = fieldValues.getFieldValue(2).getFieldData();
+        blobID = statement.getFieldDescriptor().getFieldDescriptor(2).getDatatypeCoder().decodeLong(fieldData);
+        checkBlob(blobID, INSERT_QUERY_ONLY_BLOBS.getBytes());
+    }
+
     public void checkBlob(long blobID, byte[] originalContent) throws Exception {
         // Use sufficiently large value so that multiple segments are used
         final int requiredSize = originalContent.length;
