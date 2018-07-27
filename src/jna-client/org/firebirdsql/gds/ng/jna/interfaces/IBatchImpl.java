@@ -23,7 +23,6 @@ public class IBatchImpl extends AbstractFbBatch {
     private IMessageMetadataImpl metadata = null;
     private BatchParameterBuffer parameterBuffer;
     private IBatch batch = null;
-    private IStatus status = null;
 
     public IBatchImpl(FbDatabase database, FbTransaction transaction, String statement, FbMessageMetadata metadata, BatchParameterBuffer parameters) throws SQLException {
         super(database, transaction, statement, metadata, parameters);
@@ -51,9 +50,6 @@ public class IBatchImpl extends AbstractFbBatch {
     }
 
     private void init() throws SQLException {
-        IMaster master = database.getMaster();
-        status = master.getStatus();
-
         if (metadata == null) {
             IStatementImpl statementImpl = new IStatementImpl(database);
             statementImpl.setTransaction(transaction);
@@ -62,11 +58,11 @@ public class IBatchImpl extends AbstractFbBatch {
         }
 
         if (parameterBuffer == null) {
-            batch = attachment.createBatch(status, ((ITransactionImpl) transaction).getTransaction(), statement.length(),
+            batch = attachment.createBatch(database.getStatus(), ((ITransactionImpl) transaction).getTransaction(), statement.length(),
                     statement, database.getDatabaseDialect(),
                     metadata.getMetadata(), 0, null);
         } else {
-            batch = attachment.createBatch(status, ((ITransactionImpl) transaction).getTransaction(), statement.length(),
+            batch = attachment.createBatch(database.getStatus(), ((ITransactionImpl) transaction).getTransaction(), statement.length(),
                     statement, database.getDatabaseDialect(),
                     metadata.getMetadata(), parameterBuffer.toBytesWithType().length, parameterBuffer.toBytesWithType());
         }
@@ -105,9 +101,9 @@ public class IBatchImpl extends AbstractFbBatch {
             LongByReference longByReference = new LongByReference(blobId);
 
             if (buffer == null)
-                batch.addBlob(status, inBuffer.length, memory, longByReference, 0, null);
+                batch.addBlob(database.getStatus(), inBuffer.length, memory, longByReference, 0, null);
             else
-                batch.addBlob(status, inBuffer.length, memory, longByReference, buffer.toBytesWithType().length, buffer.toBytesWithType());
+                batch.addBlob(database.getStatus(), inBuffer.length, memory, longByReference, buffer.toBytesWithType().length, buffer.toBytesWithType());
 
             return new IBlobImpl(database, (ITransactionImpl) transaction, buffer, longByReference.getValue());
         }
@@ -117,7 +113,7 @@ public class IBatchImpl extends AbstractFbBatch {
     public void appendBlobData(byte[] inBuffer) throws SQLException {
         try (CloseableMemory memory = new CloseableMemory(inBuffer.length)) {
             memory.write(0, inBuffer, 0, inBuffer.length);
-            batch.appendBlobData(status, inBuffer.length, memory);
+            batch.appendBlobData(database.getStatus(), inBuffer.length, memory);
         }
     }
 
@@ -125,7 +121,7 @@ public class IBatchImpl extends AbstractFbBatch {
     public void addBlobStream(byte[] inBuffer) throws SQLException {
         try (CloseableMemory memory = new CloseableMemory(inBuffer.length)) {
             memory.write(0, inBuffer, 0, inBuffer.length);
-            batch.addBlobStream(status, inBuffer.length, memory);
+            batch.addBlobStream(database.getStatus(), inBuffer.length, memory);
         }
     }
 
@@ -133,24 +129,24 @@ public class IBatchImpl extends AbstractFbBatch {
     public void registerBlob(long existingBlob, long blobId) throws SQLException {
         LongByReference longByReference = new LongByReference(blobId);
         LongByReference existLong = new LongByReference(existingBlob);
-        batch.registerBlob(status, existLong, longByReference);
+        batch.registerBlob(database.getStatus(), existLong, longByReference);
     }
 
     @Override
     public FbBatchCompletionState execute() throws SQLException {
-        IBatchCompletionState execute = batch.execute(status, ((ITransactionImpl)transaction).getTransaction());
+        IBatchCompletionState execute = batch.execute(database.getStatus(), ((ITransactionImpl)transaction).getTransaction());
 
-        return new IBatchCompletionStateImpl(database, execute, status);
+        return new IBatchCompletionStateImpl(database, execute, database.getStatus());
     }
 
     @Override
     public void cancel() throws SQLException {
-        batch.cancel(status);
+        batch.cancel(database.getStatus());
     }
 
     @Override
     public int getBlobAlignment() throws SQLException {
-        return batch.getBlobAlignment(status);
+        return batch.getBlobAlignment(database.getStatus());
     }
 
     @Override
@@ -160,6 +156,6 @@ public class IBatchImpl extends AbstractFbBatch {
 
     @Override
     public void setDefaultBpb(int parLength, byte[] par) throws SQLException {
-        batch.setDefaultBpb(status, parLength, par);
+        batch.setDefaultBpb(database.getStatus(), parLength, par);
     }
 }
