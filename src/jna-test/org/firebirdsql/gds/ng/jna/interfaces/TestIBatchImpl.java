@@ -956,47 +956,54 @@ public class TestIBatchImpl extends AbstractBatchTest {
         GDSHelper h = new GDSHelper(db);
         h.setCurrentTransaction(batch.getTransaction());
 
-        FBBlob b1 = new FBBlob(h, 1);
-        FBBlob b2 = new FBBlob(h, 2);
-        FBBlob b3 = new FBBlob(h, 3);
+        // Create blobs
+        FBBlob b1 = new FBBlob(h, 4242);
+        FBBlob b2 = new FBBlob(h, 242);
+        FBBlob b3 = new FBBlob(h, 42);
 
         FbMessageBuilder builder = new IMessageBuilderImpl(batch);
 
-        builder.addBlob(0, b1.getBlobId());
-        builder.addBlob(1, b2.getBlobId());
-        builder.addBlob(2, b3.getBlobId());
-
         // blobs
-        String d1 = "1111111111111111111";
-        String d2 = "22222222222222222222";
-        String d3 = "333333333333333333333333333333333333333333333333333333333333333";
+        String blobSegment1 = INSERT_QUERY_WITHOUT_BLOBS;
+        String blobSegment2 = INSERT_QUERY_WITH_BLOBS;
+        String blobSegment3 = INSERT_QUERY_ONLY_BLOBS;
 
         BlobParameterBuffer bpb = new BlobParameterBufferImp();
         bpb.addArgument(ISCConstants.isc_bpb_type, ISCConstants.isc_bpb_type_segmented);
 
         long offset = builder.addBlobHeader(b1.getBlobId(), bpb);
-        builder.addBlobSegment(d1.getBytes(), offset);
-        builder.addBlobSegment("\n".getBytes(), offset);
-        builder.addBlobSegment(d2.getBytes(), offset);
-        builder.addBlobSegment("\n".getBytes(), offset);
-        builder.addBlobSegment(d3.getBytes(), offset);
+        builder.addBlobSegment(blobSegment1.getBytes(), offset, false);
+        builder.addBlobSegment("\n".getBytes(), offset, false);
+        builder.addBlobSegment(blobSegment2.getBytes(), offset, false);
+        builder.addBlobSegment("\n".getBytes(), offset, false);
+        builder.addBlobSegment(blobSegment3.getBytes(), offset, true);
+
+        batch.addBlobStream(builder.getBlobStreamData());
+        builder.clearBlobStream();
 
         offset = builder.addBlobHeader(b2.getBlobId(), bpb);
-        builder.addBlobSegment(d1.getBytes(), offset);
-        builder.addBlobSegment("\n".getBytes(), offset);
-        builder.addBlobSegment(d2.getBytes(), offset);
-        builder.addBlobSegment("\n".getBytes(), offset);
-        builder.addBlobSegment(d3.getBytes(), offset);
+        builder.addBlobSegment(blobSegment1.getBytes(), offset, false);
+        builder.addBlobSegment("\n".getBytes(), offset, false);
+        builder.addBlobSegment(blobSegment2.getBytes(), offset, false);
+        builder.addBlobSegment("\n".getBytes(), offset, false);
+        builder.addBlobSegment(blobSegment3.getBytes(), offset, true);
+
+        batch.addBlobStream(builder.getBlobStreamData());
+        builder.clearBlobStream();
 
         offset = builder.addBlobHeader(b3.getBlobId(), bpb);
-        builder.addBlobSegment(d1.getBytes(), offset);
-        builder.addBlobSegment("\n".getBytes(), offset);
-        builder.addBlobSegment(d2.getBytes(), offset);
-        builder.addBlobSegment("\n".getBytes(), offset);
-        builder.addBlobSegment(d3.getBytes(), offset);
+        builder.addBlobSegment(blobSegment1.getBytes(), offset, false);
+        builder.addBlobSegment("\n".getBytes(), offset, false);
+        builder.addBlobSegment(blobSegment2.getBytes(), offset, false);
+        builder.addBlobSegment("\n".getBytes(), offset, false);
+        builder.addBlobSegment(blobSegment3.getBytes(), offset, true);
 
-        batch.add(1, builder.getData());
+        builder.addBlob(0, b1.getBlobId());
+        builder.addBlob(1, b2.getBlobId());
+        builder.addBlob(2, b3.getBlobId());
+
         batch.addBlobStream(builder.getBlobStreamData());
+        batch.add(1, builder.getData());
         builder.clear();
 
         FbBatchCompletionState execute = batch.execute();
@@ -1018,16 +1025,19 @@ public class TestIBatchImpl extends AbstractBatchTest {
         statement.prepare(SELECT_QUERY_ONLY_BLOBS);
         statement.execute(RowValue.EMPTY_ROW_VALUE);
         statement.fetchRows(1);
+
+        String allSegments = blobSegment1 + "\n" + blobSegment2 + "\n" + blobSegment3;
+
         RowValue fieldValues = statementListener.getRows().get(0);
         byte[] fieldData = fieldValues.getFieldValue(0).getFieldData();
         long blobID = statement.getFieldDescriptor().getFieldDescriptor(0).getDatatypeCoder().decodeLong(fieldData);
-        checkBlob(blobID, d1.getBytes());
+        checkBlob(blobID, allSegments.getBytes());
         fieldData = fieldValues.getFieldValue(1).getFieldData();
         blobID = statement.getFieldDescriptor().getFieldDescriptor(1).getDatatypeCoder().decodeLong(fieldData);
-        checkBlob(blobID, d2.getBytes());
+        checkBlob(blobID, allSegments.getBytes());
         fieldData = fieldValues.getFieldValue(2).getFieldData();
         blobID = statement.getFieldDescriptor().getFieldDescriptor(2).getDatatypeCoder().decodeLong(fieldData);
-        checkBlob(blobID, d3.getBytes());
+        checkBlob(blobID, allSegments.getBytes());
     }
 
     public void checkBlob(long blobID, byte[] originalContent) throws Exception {
