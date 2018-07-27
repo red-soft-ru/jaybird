@@ -402,7 +402,7 @@ public abstract class AbstractFbMessageBuilder<E extends FbBatch> implements FbM
     }
 
     @Override
-    public void addBlobSegment(byte[] data, long offset) throws IOException {
+    public void addBlobSegment(byte[] data, long offset, boolean lastSegment) throws IOException {
         int align = align(blobStream.size(), FbBatch.BLOB_SEGHDR_ALIGN);
         if (align != 0 && blobStream.size() - align < 0) {
             byte[] shift = ByteBuffer.allocate(Math.abs(blobStream.size() - align)).array();
@@ -420,11 +420,15 @@ public abstract class AbstractFbMessageBuilder<E extends FbBatch> implements FbM
         blobStream.write(dataLength);
         blobStream.write(data);
 
-        align = align(blobStream.size(), blobAlign);
+        // If the last blob segment is added,
+        // then blob stream must be aligned using blobAlign
+        if (lastSegment) {
+            align = align(blobStream.size(), blobAlign);
 
-        if (align != 0 && blobStream.size() - align < 0) {
-            byte[] shift = ByteBuffer.allocate(Math.abs(blobStream.size() - align)).array();
-            blobStream.write(shift);
+            if (align != 0 && blobStream.size() - align < 0) {
+                byte[] shift = ByteBuffer.allocate(Math.abs(blobStream.size() - align)).array();
+                blobStream.write(shift);
+            }
         }
     }
 

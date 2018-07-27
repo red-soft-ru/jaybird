@@ -57,7 +57,7 @@ public interface FbMessageBuilder {
 
     long addBlobHeader(long blobId, BlobParameterBuffer buffer) throws IOException;
 
-    void addBlobSegment(byte[] data, long offset) throws IOException;
+    void addBlobSegment(byte[] data, long offset, boolean lastSegment) throws IOException;
 
     byte[] getBlobStreamData();
 
