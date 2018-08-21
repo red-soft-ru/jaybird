@@ -134,7 +134,7 @@ public abstract class AbstractTransactionTest extends FBJUnit4TestBase {
 
     @Test
     public void testBasicPrepareAndCommit() throws Exception {
-        FbTransaction transaction = getTransaction();
+        final FbTransaction transaction = getTransaction();
         assertEquals(TransactionState.ACTIVE, transaction.getState());
         final int key = 23;
         final String value = "TheValueIs23";
@@ -165,7 +165,7 @@ public abstract class AbstractTransactionTest extends FBJUnit4TestBase {
 
     @Test
     public void testBasicPrepareAndRollback() throws Exception {
-        FbTransaction transaction = getTransaction();
+        final FbTransaction transaction = getTransaction();
         assertEquals(TransactionState.ACTIVE, transaction.getState());
         final int key = 23;
         final String value = "TheValueIs23";
