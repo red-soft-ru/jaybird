@@ -142,8 +142,20 @@ public abstract class AbstractTransactionTest extends FBJUnit4TestBase {
 
         transaction.prepare(new byte[0]);
 
-        assertEquals(TransactionState.PREPARED, transaction.getState());
-        assertValueForKey(key, false, null);
+        Thread parallelConnect = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    assertEquals(TransactionState.PREPARED, transaction.getState());
+                    assertValueForKey(key, true, value);
+                } catch (SQLException e) {
+                    // suppress
+                }
+            }
+        });
+        parallelConnect.start();
+
+        Thread.sleep(5000);
 
         transaction.commit();
 
@@ -161,8 +173,20 @@ public abstract class AbstractTransactionTest extends FBJUnit4TestBase {
 
         transaction.prepare(new byte[] { 68, 69, 70 });
 
-        assertEquals(TransactionState.PREPARED, transaction.getState());
-        assertValueForKey(key, false, null);
+        Thread parallelConnect = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    assertEquals(TransactionState.PREPARED, transaction.getState());
+                    assertValueForKey(key, false, null);
+                } catch (SQLException e) {
+                    // suppress
+                }
+            }
+        });
+        parallelConnect.start();
+
+        Thread.sleep(5000);
 
         transaction.rollback();
 
