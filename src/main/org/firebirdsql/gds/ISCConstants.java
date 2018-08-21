@@ -240,6 +240,7 @@ public interface ISCConstants {
     int isc_tpb_restart_requests        = 19;
     int isc_tpb_no_auto_undo            = 20;
     int isc_tpb_lock_timeout            = 21;
+    int isc_tpb_read_consistency        = 22;
 
     /*************************************/
     /* Service parameter block stuff */
