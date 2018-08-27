@@ -66,7 +66,7 @@ public class AuthFactorPassword extends AuthFactor {
       if (passwordEnc == null && password != null)
         passwordEnc = FBDes.crypt(password, "9z").substring(2);
 
-      if (data.getLength() == 0) {
+      if (data.getLength() == 0 && passwordEnc != null) {
         // We need to send encrypted password for legacy password verify
         // Usage password hash as session key if session key isn't set yet
         // For more security LegacyHash parameter must be disable after
