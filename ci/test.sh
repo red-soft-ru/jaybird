@@ -54,7 +54,7 @@ check_variable JAVA_HOME
 check_variable WORKSPACE
 
 OS=linux
-RDB_VERSION=3.0.3.43
+RDB_VERSION=3.0.3.88
 TEST_DIR=/tmp/jaybird_test
 ARCH=`arch`
 if [ "$ARCH" == "i686" ]; then
@@ -113,13 +113,13 @@ mkdir -p $WORKSPACE/results/jdk${JDK_VERSION}
 sudo chmod 777 $TEST_DIR
 
 sudo sed -i 's/#AuthServer = /AuthServer = Srp, Srp256, Legacy_Auth, Gss, Multifactor /g' /opt/RedDatabase/firebird.conf
-sudo sed -i 's/#AuthClient = /AuthClient = Srp, Srp256, Legacy_Auth, Gss, Multifactor/g' /opt/RedDatabase/firebird.conf
+sudo sed -i 's/#AuthClient = Srp, Srp256, Legacy_Auth, Gss, Multifactor\s*#Non Windows clients/AuthClient = Srp, Srp256, Legacy_Auth, Gss, Multifactor/g' /opt/RedDatabase/firebird.conf
 sudo sed -i 's/#UserManager =/UserManager = Srp, Legacy_UserManager, Multifactor_Manager /g' /opt/RedDatabase/firebird.conf
 sudo sed -i 's/#WireCrypt = Enabled (for client) \/ Required (for server)/WireCrypt = Enabled/g' /opt/RedDatabase/firebird.conf
 
 sudo sed -i 's/#KrbServerKeyfile/KrbServerKeyfile/g' /opt/RedDatabase/firebird.conf
-sudo sed -i 's/#KrbServiceName = rdb_server/KrbServiceName = rdb_server/g' /opt/RedDatabase/firebird.conf
-sudo sed -i 's/#GssServiceName =/GssServiceName = localhost/g' /opt/RedDatabase/firebird.conf
+sudo sed -i 's/#GssServiceName/GssServiceName/g' /opt/RedDatabase/firebird.conf
+sudo sed -i 's/#GssHostName =/GssHostName = localhost/g' /opt/RedDatabase/firebird.conf
 
 sudo sed -i 's/#CertVerifyChain = 1/CertVerifyChain = 0/g' /opt/RedDatabase/firebird.conf
 sudo sed -i 's/#CertUsernameDN = CN/CertUsernameDN = E/g' /opt/RedDatabase/firebird.conf
