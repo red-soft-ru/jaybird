@@ -67,8 +67,10 @@ public class TestGSSClient extends FBJUnit4TestBase {
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
-            statement.close();
-            connection.close();
+            if (statement != null)
+                statement.close();
+            if (connection != null)
+                connection.close();
         }
     }
 }
