@@ -2,5 +2,5 @@
 --commit;
 CREATE GLOBAL MAPPING GSS_AUTH USING PLUGIN GSS FROM ANY USER TO USER;
 commit;
-create user "ARTYOM.SMIRNOV@RED-SOFT.RU" password 'q3rgu7Ah' using plugin Multifactor_Manager;
-commit;
+--create user "ARTYOM.SMIRNOV@RED-SOFT.RU" password 'q3rgu7Ah' using plugin Multifactor_Manager;
+--commit;
