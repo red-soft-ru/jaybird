@@ -113,7 +113,7 @@ sudo chmod 777 $TEST_DIR
 sudo sed -i 's/#AuthServer = Srp256/AuthServer = Srp, Srp256, Legacy_Auth, Gss /g' /opt/RedDatabase/firebird.conf
 sudo sed -i 's/#AuthClient = Srp256, Srp, Legacy_Auth, Gss\s*#Non Windows clients/AuthClient = Srp256, Srp, Legacy_Auth, Gss/g' /opt/RedDatabase/firebird.conf
 sudo sed -i 's/#UserManager = Srp/UserManager = Srp, Legacy_UserManager /g' /opt/RedDatabase/firebird.conf
-sudo sed -i 's/#WireCrypt = Enabled (for client) \/ Required (for server)/WireCrypt = Enabled/g' /opt/RedDatabase/firebird.conf
+sudo sed -i 's/#WireCrypt = Enabled (for client) \/ Required (for server)/WireCrypt = Disabled/g' /opt/RedDatabase/firebird.conf
 
 sudo sed -i 's/#KrbServerKeyfile/KrbServerKeyfile/g' /opt/RedDatabase/firebird.conf
 sudo sed -i 's/#GssServiceName/GssServiceName/g' /opt/RedDatabase/firebird.conf
