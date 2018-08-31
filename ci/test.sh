@@ -54,7 +54,7 @@ check_variable JAVA_HOME
 check_variable WORKSPACE
 
 OS=linux
-RDB_VERSION=4.0.0.937
+RDB_VERSION=4.0.0.978
 TEST_DIR=/tmp/jaybird_test
 ARCH=`arch`
 if [ "$ARCH" == "i686" ]; then
@@ -124,9 +124,6 @@ sudo sed -i 's/#WireCrypt = Enabled (for client) \/ Required (for server)/WireCr
 
 #sudo sed -i 's/#CertVerifyChain = 1/CertVerifyChain = 0/g' /opt/RedDatabase/firebird.conf
 #sudo sed -i 's/#CertUsernameDN = CN/CertUsernameDN = E/g' /opt/RedDatabase/firebird.conf
-
-# Manual adding rdb libs to library path. See #27089
-sudo ldconfig /opt/RedDatabase/lib
 
 echo "Restart RDB..."
 echo "Stopping RDB..."
