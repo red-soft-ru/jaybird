@@ -131,7 +131,7 @@ echo "Killing all RDB processes..."
 sudo pkill -9 rdb.\* || true
 ps aux|grep rdb||true
 sleep 5
-sudo /opt/RedDatabase/bin/isql -user SYSDBA -password masterkey /opt/RedDatabase/security3.fdb -i user.sql
+sudo /opt/RedDatabase/bin/isql -user SYSDBA -password masterkey /opt/RedDatabase/security4.fdb -i user.sql
 echo "Start RDB..."
 rdb_control start
 ps aux|grep rdb||true
