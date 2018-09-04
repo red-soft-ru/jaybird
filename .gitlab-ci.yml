@@ -68,9 +68,9 @@ source_package:
     - archive_prefix=jaybird-${VERSION}
     - tar xf dist-src/${archive_prefix}.tar.gz
   script:
-    - pushd ${archive_prefix}
+    - cd ${archive_prefix}
     - ./build.sh jars
-    - popd
+    - ..
     - find
     - mkdir -p dist-${jdk}/{bin,sources,javadoc,test}
     - mv ${archive_prefix}/output/lib/jaybird-*javadoc* dist-${jdk}/javadoc
