@@ -38,8 +38,8 @@ prepare_release:
   before_script:
     - TAG=$(cat build.properties|grep version.tag=|awk -F- '{print $2}')
     - SVNTAG=$(cat build.properties|grep version.svntag|awk -F= '{print $2}')
-    - [ "$(echo $VERSION|awk -F- '{print $2}')" = "$TAG" ] || (echo Update version.tag!; exit 1)
-    - [ "$SVNTAG" = "$CI_COMMIT_REF_NAME" ] || (Update version.svntag!; exit 1)
+    - "[ \"$(echo $VERSION|awk -F- '{print $2}')\" = \"$TAG\" ] || (echo Update version.tag!; exit 1)"
+    - "[ \"$SVNTAG\" = \"$CI_COMMIT_REF_NAME\" ] || (Update version.svntag!; exit 1)"
     - export VERSION=$(echo ${CI_COMMIT_TAG}|sed 's/v//')
     - export BRANCH=${TAG_BRANCH}
   only:
