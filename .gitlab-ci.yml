@@ -59,3 +59,31 @@ source_package:
     expire_in: 1 day
     paths:
       - dist-src/
+
+.build_template: &build_template
+  stage: build
+  before_script:
+    - apk --update add apache-ant bash zip tar
+    - export VERSION=`cat .ci/version`
+    - archive_prefix=jaybird-${VERSION}
+    - tar xf dist-src/${archive_prefix}.tar.gz
+  script:
+    - pushd ${archive_prefix}
+    - ./build.sh jars
+    - popd
+    - find
+    - mkdir -p dist-${jdk}/{bin,sources,javadoc,test}
+    - mv ${archive_prefix}/output/lib/jaybird-*javadoc* dist-${jdk}/javadoc
+    - mv ${archive_prefix}/output/lib/jaybird-*sources* dist-${jdk}/sources
+    - mv ${archive_prefix}/output/lib/jaybird-*test* dist-${jdk}/test
+    - mv ${archive_prefix}/output/lib/* dist-${jdk}/bin
+  artifacts:
+    expire_in: 1 day
+    paths:
+      - dist-bin/
+
+build-jdk18:
+  <<: *build_template
+  variables:
+    jdk: 18
+  image: openjdk:8-jdk-alpine
