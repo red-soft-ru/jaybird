@@ -59,5 +59,3 @@ source_package:
     expire_in: 1 day
     paths:
       - dist-src/
-
-
