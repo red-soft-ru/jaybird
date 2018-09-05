@@ -17,6 +17,10 @@ check_variable VERSION
 
 ARCHIVE_PREFIX=jaybird-$VERSION
 
+if [ "$TAG" != "" ]; then
+	sed -e "s/^version\.tag.*/version.tag=$TAG/" -i build.properties
+fi
+
 hash=`git stash create`
 [ "$hash" = "" ] && hash=HEAD
 rm -rf dist-src
