@@ -76,15 +76,15 @@ source_package:
     - ./build.sh jars
     - cd ..
     - find
-    - mkdir -p dist-${jdk}/{bin,sources,javadoc,test}
-    - mv ${archive_prefix}/output/lib/jaybird-*javadoc* dist-${jdk}/javadoc
-    - mv ${archive_prefix}/output/lib/jaybird-*sources* dist-${jdk}/sources
-    - mv ${archive_prefix}/output/lib/jaybird-*test* dist-${jdk}/test
-    - mv ${archive_prefix}/output/lib/* dist-${jdk}/bin
+    - mkdir -p dist/jdk${jdk}/bin dist/jdk${jdk}/sources dist/jdk${jdk}/javadoc dist/jdk${jdk}/test
+    - mv ${archive_prefix}/output/lib/jaybird-*javadoc* dist/jdk${jdk}/javadoc
+    - mv ${archive_prefix}/output/lib/jaybird-*sources* dist/jdk${jdk}/sources
+    - mv ${archive_prefix}/output/lib/jaybird-*test* dist/jdk${jdk}/test
+    - mv ${archive_prefix}/output/lib/* dist/jdk${jdk}/bin
   artifacts:
     expire_in: 1 day
     paths:
-      - dist-bin/
+      - dist/
 
 build-jdk18:
   <<: *build_template
