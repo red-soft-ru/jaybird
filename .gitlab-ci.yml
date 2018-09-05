@@ -7,7 +7,6 @@ stages:
 variables:
   RELEASE_HUB_PROJECT: jaybird
   CI_URL: ${CI_PROJECT_URL}/pipelines/${CI_PIPELINE_ID}
-  CONTEXT: commit
   TAG_BRANCH: master
 
 .prepare_template: &prepare_template
@@ -19,6 +18,7 @@ variables:
     - echo ${VERSION} > .ci/version
     - echo ${BRANCH} > .ci/branch
     - echo ${TAG} > .ci/tag
+    - echo ${CONTEXT} > .ci/context
   artifacts:
     expire_in: 1 day
     paths:
@@ -32,6 +32,7 @@ prepare_snapshot:
     - export TAG=SNAPSHOT.${BUILDNO}
     - export VERSION=${VERSION}-${TAG}
     - export BRANCH=${CI_COMMIT_REF_NAME}
+    - export CONTEXT=commit
   except:
     - tags
 
@@ -41,6 +42,7 @@ prepare_release:
     - export VERSION=$(echo ${CI_COMMIT_TAG}|sed 's/v//')
     - export BRANCH=${TAG_BRANCH}
     - export TAG=$(echo $VERSION|awk -F- '{print $2}')
+    - export CONTEXT=tag
     - VERSIONTAG=$(cat build.properties|grep version.tag=|awk -F- '{print $2}')
     - SVNTAG=$(cat build.properties|grep version.svntag|awk -F= '{print $2}')
     - "[ \"$TAG\" = \"$VERSIONTAG\" ] || (echo Update version.tag in build.properties!; exit 1)"
@@ -104,7 +106,7 @@ deploy:
     - tags
   script:
     - find dist*
-    - relmanager_client deploy ${RELEASE_HUB_PROJECT} $(cat .ci/version) --artifacts .ci/artifacts --ci_url ${CI_URL} --context ${CONTEXT} --branch ${BRANCH} --commit ${CI_COMMIT_SHA}
+    - relmanager_client deploy ${RELEASE_HUB_PROJECT} $(cat .ci/version) --artifacts .ci/artifacts --ci_url ${CI_URL} --context $(cat .ci/version) --branch $(cat .ci/branch) --commit ${CI_COMMIT_SHA}
   only:
     variables:
       - "$RELEASE_HUB_KEY"
