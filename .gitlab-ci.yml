@@ -91,3 +91,9 @@ build-jdk18:
   variables:
     jdk: 18
   image: openjdk:8-jdk-alpine
+
+build-jdk17:
+  <<: *build_template
+  variables:
+    jdk: 17
+  image: openjdk:7-jdk-alpine
