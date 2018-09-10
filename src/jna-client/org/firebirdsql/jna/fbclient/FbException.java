@@ -1,8 +1,9 @@
-package org.firebirdsql.gds.ng.jna;
+package org.firebirdsql.jna.fbclient;
 
 import com.sun.jna.Pointer;
 import org.firebirdsql.gds.ISCConstants;
 import org.firebirdsql.gds.ng.FbExceptionBuilder;
+import org.firebirdsql.gds.ng.jna.CloseableMemory;
 import org.firebirdsql.jna.fbclient.FbInterface.IStatus;
 
 import java.io.PrintWriter;

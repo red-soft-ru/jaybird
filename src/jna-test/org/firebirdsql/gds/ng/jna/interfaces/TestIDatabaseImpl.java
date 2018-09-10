@@ -1,7 +1,6 @@
 package org.firebirdsql.gds.ng.jna.interfaces;
 
 import org.firebirdsql.common.FBTestProperties;
-import org.firebirdsql.common.rules.GdsTypeRule;
 import org.firebirdsql.gds.ISCConstants;
 import org.firebirdsql.gds.TransactionParameterBuffer;
 import org.firebirdsql.gds.impl.GDSFactory;
@@ -14,10 +13,9 @@ import org.firebirdsql.gds.ng.FbDatabase;
 import org.firebirdsql.gds.ng.FbTransaction;
 import org.firebirdsql.gds.ng.TransactionState;
 import org.firebirdsql.gds.ng.jna.AbstractNativeDatabaseFactory;
-import org.firebirdsql.gds.ng.jna.FbException;
+import org.firebirdsql.jna.fbclient.FbException;
 import org.firebirdsql.jdbc.SQLStateConstants;
 import org.firebirdsql.management.FBManager;
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;

@@ -2,7 +2,7 @@ package org.firebirdsql.gds.ng.jna.interfaces;
 
 import org.firebirdsql.gds.ng.FbBatchCompletionState;
 import org.firebirdsql.gds.ng.jna.CloseableMemory;
-import org.firebirdsql.gds.ng.jna.FbException;
+import org.firebirdsql.jna.fbclient.FbException;
 import org.firebirdsql.jna.fbclient.FbInterface.*;
 
 /**

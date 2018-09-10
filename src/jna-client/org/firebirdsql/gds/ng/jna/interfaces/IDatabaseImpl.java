@@ -3,7 +3,7 @@ package org.firebirdsql.gds.ng.jna.interfaces;
 import org.firebirdsql.gds.*;
 import org.firebirdsql.gds.impl.DatabaseParameterBufferExtension;
 import org.firebirdsql.gds.ng.*;
-import org.firebirdsql.gds.ng.jna.FbException;
+import org.firebirdsql.jna.fbclient.FbException;
 import org.firebirdsql.gds.ng.jna.NativeDatabaseConnection;
 import org.firebirdsql.gds.ng.listeners.TransactionListener;
 import org.firebirdsql.jdbc.SQLStateConstants;
