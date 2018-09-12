@@ -30,6 +30,7 @@ import org.firebirdsql.jdbc.FBTpbMapper;
 import org.firebirdsql.jdbc.field.FBField;
 import org.firebirdsql.jdbc.field.FieldDataProvider;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -82,7 +83,7 @@ public class TestReconnectTransaction extends FBJUnit4TestBase {
         }
     }
 
-    @Test
+    @Test @Ignore
     public void testReconnectTransaction() throws Exception {
         FbConnectionProperties connectionInfo = new FbConnectionProperties();
         connectionInfo.setServerName(FBTestProperties.DB_SERVER_URL);
