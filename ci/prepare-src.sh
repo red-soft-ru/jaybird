@@ -29,12 +29,12 @@ if [ "$ARCH" == "i686" ]; then
 fi
 RDB_URL=http://artifactory.red-soft.biz/list/red-database/red-database/linux-${ARCH}/${RDB_VERSION}/linux-${ARCH}-${RDB_VERSION}.tar.gz
 
-(wget -q "$RDB_URL" -O /tmp/rdb_4_0.tar.gz && tar -xzf /tmp/rdb_4_0.tar.gz) || die "Unable to download RedDatabase"
+(wget -q "$RDB_URL" -O /tmp/linux-"$ARCH"-"$RDB_VERSION".tar.gz && tar -xzf /tmp/linux-"$ARCH"-"$RDB_VERSION".tar.gz) || die "Unable to download RedDatabase"
 
 echo Preparing $VERSION sources
 cd $SOURCES
 
-cp /tmp/rdb_4_0/include/firebird/FbInterface.java $SOURCES/src/jna-client/org/firebirdsql/jna/fbclient/
+cp /tmp/linux-$ARCH-$RDB_VERSION/include/firebird/FbInterface.java $SOURCES/src/jna-client/org/firebirdsql/jna/fbclient/
 
 echo Archiving sources
 ARCHIVE_PREFIX=jaybird-$VERSION
