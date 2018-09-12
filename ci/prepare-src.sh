@@ -34,7 +34,7 @@ RDB_URL=http://artifactory.red-soft.biz/list/red-database/red-database/linux-${A
 echo Preparing $VERSION sources
 cd $SOURCES
 
-cp /tmp/linux-$ARCH-$RDB_VERSION/include/firebird/FbInterface.java $SOURCES/src/jna-client/org/firebirdsql/jna/fbclient/
+cp /tmp/RedDatabase-$RDB_VERSION-$ARCH/include/firebird/FbInterface.java $SOURCES/src/jna-client/org/firebirdsql/jna/fbclient/
 
 echo Archiving sources
 ARCHIVE_PREFIX=jaybird-$VERSION
