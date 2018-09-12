@@ -48,10 +48,7 @@ node('master')
     
     stage('Source dist')
     {
-        archive_prefix="jaybird-${version}"
-        sh 'rm -rf dist-src && mkdir dist-src'
-        sh "git archive --prefix=${archive_prefix}/ -o dist-src/${archive_prefix}.tar.gz HEAD"
-        sh "git archive --prefix=${archive_prefix}/ -o dist-src/${archive_prefix}.zip HEAD"
+        sh "VERSION=${version} ci/prepare-src.sh"
         stash includes: 'dist-src/**', name: 'src'
     }
 }
