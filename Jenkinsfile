@@ -48,6 +48,7 @@ node('master')
     
     stage('Source dist')
     {
+        archive_prefix="jaybird-${version}"
         sh "VERSION=${version} ci/prepare-src.sh"
         stash includes: 'dist-src/**', name: 'src'
     }
