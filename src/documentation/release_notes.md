@@ -53,16 +53,17 @@ Jaybird 4 does not (yet) support the Firebird 3 zlib compression.
 Supported Java versions
 -----------------------
 
-Jaybird 4 supports Java 7 (JDBC 4.1), Java 8 (JDBC 4.2), and Java 9 (JDBC 4.3). 
-Support for earlier Java versions has been dropped.
+Jaybird 4 supports Java 7 (JDBC 4.1), Java 8 (JDBC 4.2), and Java 9 - 10 (JDBC 
+4.3). Support for earlier Java versions has been dropped.
 
-For the time being, snapshots will not be released as specific Java 9 builds,
-the Java 8 builds have the same source and all JDBC 4.3 related functionality. 
+For the time being, there will be no Java 9+ specific builds, the Java 8 builds 
+have the same source and all JDBC 4.3 related functionality.
 
-Jaybird 4 is not (yet) modularized, but all versions declare the automatic 
-module name `org.firebirdsql.jaybird`.
+Given the limited support period for Java 9 and higher versions, we may limit
+support on those versions.
 
-Jaybird 4 will probably drop support Java 7 later in the development cycle.
+Jaybird 4 is not modularized, but all versions declare the automatic module name 
+`org.firebirdsql.jaybird`.
 
 Specification support
 ---------------------
@@ -325,6 +326,10 @@ The implementation comes with a number of caveats:
      (although that in itself would already imply a severe security breach)
  -   the ARC4 encryption - the default provided by Firebird - is considered to 
      be a weak (maybe even broken) cipher these days
+ -   the encryption cipher uses ARCFOUR with a 160 bits key, this means that the 
+     unlimited Cryptographic Jurisdiction Policy needs to be used (or at minimum 
+     a custom policy that allows ARCFOUR with 160 bits keys). See also FAQ entry 
+     [Encryption key did not meet algorithm requirements of Symmetric/Arc4 (337248282)](https://www.firebirdsql.org/file/documentation/drivers_documentation/java/faq.html#encryption-key-did-not-meet-algorithm-requirements-of-symmetricarc4-337248282) 
      
 Database encryption support
 ---------------------------
@@ -406,16 +411,14 @@ applies the SHA-NNN hash. See also [CORE-5788](http://tracker.firebirdsql.org/br
 
 Be aware, support for these plugins depends on support of these hash algorithms 
 in the JVM. For example, SHA-224 is not supported in Oracle Java 7 by default 
-and maybe require additional JCE libraries.
+and may require additional JCE libraries.
 
 ### Default authentication plugins ###
 
-_TODO_: Remove Legacy_Auth from default?
-
-The default plugins applied by Jaybird are now - in order - `Srp256`, `Srp` and 
-`Legacy_Auth`. This applies only for the pure Java protocol. The native 
-implementation will use its own default or the value configured through its 
-`firebird.conf`. 
+The default plugins applied by Jaybird are now - in order - `Srp256`, `Srp`. 
+This applies only for the pure Java protocol and only when connecting to 
+Firebird 3 or higher. The native implementation will use its own default or the 
+value configured through its `firebird.conf`. 
 
 When connecting to Firebird 3 versions earlier than 3.0.4, or if `Srp256` has 
 been removed from the `AuthServer` setting in Firebird, this might result in 
@@ -424,6 +427,12 @@ the attempt to use `Srp256` fails, authentication continues with `Srp`.
 
 To avoid this, consider explicitly configuring the authentication plugins to 
 use, see [Configure authentication plugins] for details.
+
+When connecting to Firebird 3 or higher, the pure Java protocol in Jaybird will 
+no longer try the `Legacy_Auth` plugin by default as it is an unsafe 
+authentication mechanism. We strongly suggest to use SRP users only, but if you 
+really need to use legacy authentication, you can specify connection property 
+`authPlugins=Legacy_Auth`, see [Configure authentication plugins] for details.
 
 Firebird 2.5 and earlier are not affected and will always use legacy 
 authentication.
@@ -457,9 +466,13 @@ version 2.5 or earlier.
 
 Examples:
 
--   JDBC URL to connect using `Srp256`-only:
+-   JDBC URL to connect using `Srp256` only:
 
         jdbc:firebirdsql://localhost/employee?authPlugins=Srp256
+        
+-   JDBC URL to connect using `Legacy_Auth` only (this is unsafe!)
+
+        jdbc:firebirdsql://localhost/employee?authPlugins=Legacy_Auth
 
 -   JDBC URL to try `Legacy_Auth` before `Srp512` (this order is unsafe!)
 
@@ -477,7 +490,7 @@ authentication plugin by implementing the interfaces
 -   `org.firebirdsql.gds.ng.wire.auth.AuthenticationPluginSpi`
 -   `org.firebirdsql.gds.ng.wire.auth.AuthenticationPlugin`
 
-The SPI implementation needs to listed in `META-INF/services/org.firebirdsql.gds.ng.wire.auth.AuthenticationPluginSpi`
+The SPI implementation needs to be listed in `META-INF/services/org.firebirdsql.gds.ng.wire.auth.AuthenticationPluginSpi`
 in your jar.
 
 This support is experimental and comes with a number of caveats:
@@ -556,7 +569,7 @@ applied:
 
 -   Zero values can have a non-zero exponent, and if the exponent is out of 
 range, the exponent value is 'clamped' to the minimum or maximum exponent
-supported. This behavior is subject to change, and future release may
+supported. This behavior is subject to change, and future releases may
 'round' to exact `0` (or `0E0`)
 
 -   Values with a precision larger than the target precision are rounded to the 
@@ -843,6 +856,34 @@ as is, in current Firebird versions, this means the value will be equivalent to
 scale) are passed as is to cast, resulting in an error from the Firebird engine 
 if the resulting cast is invalid
 
+New JDBC protocol prefix jdbc:firebird:
+---------------------------------------
+
+Historically, the JDBC protocols supported by Jaybird have used the prefix 
+`jdbc:firebirdsql:`. We have now added support for `jdbc:firebird:` as an 
+alternative prefix. This prefix was previously only supported in the 
+OpenOffice.org/LibreOffice pure Java variant.
+
+Jaybird now supports the following URL prefixes (or JDBC protocols):
+
+-   Pure Java
+    -    `jdbc:firebirdsql:`
+    -    `jdbc:firebirdsql:java`
+    -    `jdbc:firebird:` (new)
+    -    `jdbc:firebird:java:` (new)
+-   Native
+    -    `jdbc:firebirdsql:native:`
+    -    `jdbc:firebird:native:` (new)
+-   Embedded
+    -    `jdbc:firebirdsql:embedded:`
+    -    `jdbc:firebird:embedded:` (new)
+-   Local
+    -    `jdbc:firebirdsql:local:`
+    -    `jdbc:firebird:local:` (new)
+-   OpenOffice.org/LibreOffice pure Java variant
+    -    `jdbc:firebird:oo:`
+    -    `jdbc:firebirdsql:oo:`
+
 Potentially breaking changes
 ----------------------------
 
@@ -854,7 +895,9 @@ Other fixes and changes
 -----------------------
 
 -   The distribution zip no longer includes the jaybird-@VERSION@.rar. This file
-was an example JCA Resource Archive. 
+was an example JCA Resource Archive.
+-   Added support for Firebird 4 page size 32768 (32KB) in `FBManager` and backup 
+managers (backported to Jaybird 3.0.5) ([JDBC-468](http://tracker.firebirdsql.org/browse/JDBC-468)) 
 
 Removal of deprecated classes and packages
 ------------------------------------------
@@ -892,6 +935,14 @@ expect the driver to remain functional, but chances are certain metadata (eg
 In general we will no longer fix issues that only occur with Firebird 2.1 or
 earlier.
 
+Removed Legacy_Auth from default authentication plugins
+-------------------------------------------------------
+
+The pure Java protocol in Jaybird will - by default - no longer try the 
+`Legacy_Auth` plugin when connecting to Firebird 3 or higher.
+
+See [Default authentication plugins] for more information.
+
 RDB$DB_KEY columns no longer of Types.BINARY
 --------------------------------------------
 
@@ -902,8 +953,8 @@ the exception of `getObject`, which will return a `java.sql.RowId` instead.
 
 Unfortunately this does not apply to parameters, see also [JDBC RowId support].
 
-Due to the method of identification, real columns of type `char character set 
-octets` with the name `DB_KEY` will also be identified as a `ROWID` column.
+Due to the method of identification, real columns of type `char character set octets` 
+with the name `DB_KEY` will also be identified as a `ROWID` column.
 
 Removal of character mapping
 ----------------------------
@@ -976,21 +1027,32 @@ The following constants have been removed in Jaybird 4:
     `FBDriverNotCapableException` will be removed. Use equivalent constants in
     `org.firebirdsql.jdbc.SQLStateConstants`.
 
-Breaking changes for Jaybird 4
-------------------------------
-
-*TODO: Section to be removed*
-
-With Jaybird 4 the following breaking changes will be introduced.
-
-### Dropping support for Java 7 ###
-
-Jaybird 4 will very likely drop support for Java 7 (this decision is not final yet).
-
 Breaking changes for Jaybird 5
 ------------------------------
 
 With Jaybird 5 the following breaking changes will be introduced.
+
+### Dropping support for Java 7 ###
+
+Jaybird 5 will drop support for Java 7.
+
+### Dropping support for Java 8 (tentative) ###
+
+Jaybird 5 may drop support for Java 8, depending on the actual release time line.
+
+This decision is not final yet.
+
+### Dropping or restricting JCA (Java Connector Architecture) support ###
+
+Jaybird is currently built around a JCA (Java Connector Architecture) 
+implementation. As such, it is both a JDBC driver and a JCA driver. The current
+structure requires a dependency on JCA for non-JCA usage.
+
+We are currently considering removing support for JCA entirely, or restructuring 
+Jaybird so the dependency on JCA is only needed when Jaybird is used as a JCA 
+driver.
+
+Please let us know on Firebird-Java if you use Jaybird as a JCA driver. 
 
 ### Removal of deprecated methods ###
 
