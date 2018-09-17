@@ -109,9 +109,9 @@ while ! $NC localhost 3050 </dev/null; do
     fi
 done
 
-#echo rdb_server | kinit rdb_server/localhost
-#klist
+echo rdb_server | kinit rdb_server/localhost
+klist
 
 "${SRCDIR}"/bin/ant -Dtest.report.dir=$REPORTS_DIR -Dtest.db.dir=$TEST_DIR -Djdk=${JDK_VERSION} -Dversion=$JAYBIRD_VERSION -Dbindir=${BINDIR} -Dsrcdir=${SRCDIR} -f "${SOURCES}"/ci/test.xml
 
-#kdestroy
+kdestroy
