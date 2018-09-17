@@ -1,6 +1,6 @@
 stages:
 - prepare
-- source_package
+- sources
 - build
 - test
 - deploy
@@ -54,11 +54,11 @@ prepare_release:
   only:
     - tags
 
-source_package:
+sources:
   tags:
     - docker
     - builder
-  stage: source_package
+  stage: sources
   image: alpine:3.7
   before_script:
     - apk --update add bash git zip tar
@@ -72,6 +72,9 @@ source_package:
     expire_in: 1 day
     paths:
       - dist-src/
+  dependencies:
+    - prepare_snapshot
+    - prepare_release
 
 .build_template: &build_template
   tags:
@@ -96,20 +99,24 @@ source_package:
     expire_in: 1 day
     paths:
       - dist/
+  dependencies:
+    - prepare_snapshot
+    - prepare_release
+    - sources
 
-build-jdk18:
+build:jdk18:
   <<: *build_template
   variables:
     jdk: 18
   image: openjdk:8-jdk-alpine
 
-build-jdk17:
+build:jdk17:
   <<: *build_template
   variables:
     jdk: 17
   image: openjdk:7-jdk-alpine
 
-test-jdk18:
+test:jdk18:
   tags:
     - docker
     - tester
@@ -136,6 +143,11 @@ test-jdk18:
     reports:
       junit:
         - results/jdk${JDK_VERSION}/TEST-*.xml
+  dependencies:
+    - prepare_snapshot
+    - prepare_release
+    - sources
+    - build:jdk18
 
 deploy:
   tags:
