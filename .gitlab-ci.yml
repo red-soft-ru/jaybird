@@ -71,3 +71,38 @@ sources:
   dependencies:
     - prepare:snapshot
     - prepare:release
+
+.build_template: &build_template
+  tags:
+    - docker
+    - builder
+  stage: build
+  before_script:
+    - apk --update add apache-ant bash zip tar
+    - export VERSION=`cat .ci/version`
+    - archive_prefix=jaybird-${VERSION}
+    - tar xf dist-src/${archive_prefix}.tar.gz
+  script:
+    - cd ${archive_prefix}
+    - ./build.sh jars
+    - cd ..
+    - mkdir -p dist/jdk${jdk}/bin dist/jdk${jdk}/sources dist/jdk${jdk}/javadoc dist/jdk${jdk}/test dist/jdk${jdk}/esp
+    - mv ${archive_prefix}/output/lib/jaybird-*javadoc* dist/jdk${jdk}/javadoc
+    - mv ${archive_prefix}/output/lib/jaybird-*sources* dist/jdk${jdk}/sources
+    - mv ${archive_prefix}/output/lib/jaybird-*test* dist/jdk${jdk}/test
+    - mv ${archive_prefix}/output/lib/jaybird-*esp* dist-${jdk}/esp
+    - mv ${archive_prefix}/output/lib/* dist/jdk${jdk}/bin
+  artifacts:
+    expire_in: 1 day
+    paths:
+      - dist/
+  dependencies:
+    - prepare:snapshot
+    - prepare:release
+    - sources
+
+build:jdk18:
+  <<: *build_template
+  variables:
+    jdk: 18
+  image: openjdk:8-jdk-alpine
