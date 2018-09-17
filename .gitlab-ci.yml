@@ -28,7 +28,7 @@ variables:
     paths:
       - .ci/
 
-prepare_snapshot:
+prepare:snapshot:
   <<: *prepare_template
   before_script:
     - VERSION=$(cat build.properties|awk -F= '{if ($1 == "version.major") printf("%s.", $2); if ($1 == "version.minor") printf("%s.", $2); if ($1 == "version.revision") printf("%s", $2)}')
@@ -40,7 +40,7 @@ prepare_snapshot:
   except:
     - tags
 
-prepare_release:
+prepare:release:
   <<: *prepare_template
   before_script:
     - export VERSION=$(echo ${CI_COMMIT_TAG}|sed 's/v//')
@@ -73,8 +73,8 @@ sources:
     paths:
       - dist-src/
   dependencies:
-    - prepare_snapshot
-    - prepare_release
+    - prepare:snapshot
+    - prepare:release
 
 .build_template: &build_template
   tags:
@@ -100,8 +100,8 @@ sources:
     paths:
       - dist/
   dependencies:
-    - prepare_snapshot
-    - prepare_release
+    - prepare:snapshot
+    - prepare:release
     - sources
 
 build:jdk18:
@@ -144,8 +144,8 @@ test:jdk18:
       junit:
         - results/jdk${JDK_VERSION}/TEST-*.xml
   dependencies:
-    - prepare_snapshot
-    - prepare_release
+    - prepare:snapshot
+    - prepare:release
     - sources
     - build:jdk18
 
