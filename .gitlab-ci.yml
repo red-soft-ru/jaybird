@@ -99,6 +99,31 @@ build-jdk17:
     jdk: 17
   image: openjdk:7-jdk-alpine
 
+test-jdk18:
+  variables:
+    BINDIR: ${CI_PROJECT_DIR}/dist/jdk18
+    JDK_VERSION: 18
+    JAVA_HOME: /usr/lib/jvm/jre-1.8.0
+    WORKSPACE: ${CI_PROJECT_DIR}
+  image:
+    name: redsoftru/rdbtestenv-centos7:7.4.1708-20180910
+  stage: test
+  before_script:
+    - export JAYBIRD_VERSION=`cat .ci/version`
+    - export SRCDIR=`pwd`/jaybird-${JAYBIRD_VERSION}
+    - archive_prefix=jaybird-${VERSION}
+    - tar xf dist-src/${archive_prefix}.tar.gz
+  script:
+    - cd ${archive_prefix}
+    - ./ci/test.sh
+  artifacts:
+    expire_in: 1 day
+    paths:
+      - results/jdk${JDK_VERSION}
+    reports:
+      junit:
+        - results/jdk${JDK_VERSION}/TEST-*.xml
+
 deploy:
   stage: deploy
   image: redsoftru/relmanager_client
