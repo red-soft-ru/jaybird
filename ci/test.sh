@@ -51,7 +51,6 @@ fi
 
 
 RDB_URL=http://artifactory.red-soft.biz/list/red-database/red-database/linux-${ARCH}/${RDB_VERSION}/linux-${ARCH}-${RDB_VERSION}.bin
-ARCHITECTURE=Classic
 
 echo "Download fbt"
 (git clone --depth 1 http://git.red-soft.biz/red-database/fbt-repository.git) || die "Unable to checkout tests" 
@@ -79,7 +78,7 @@ echo "Downloading RedDatabase $RDB_BUILD_ID"
 (curl -s "$RDB_URL" -o /tmp/installer.bin && chmod +x /tmp/installer.bin) || die "Unable to download RedDatabase"
 
 echo "Installing RedDatabase"
-/tmp/installer.bin --mode unattended --sysdba_password masterkey --architecture $ARCHITECTURE --debuglevel 4 || die "Unable to install RedDatabase"
+/tmp/installer.bin --mode unattended --sysdba_password masterkey --debuglevel 4 || die "Unable to install RedDatabase"
 rm -f /tmp/installer.bin
 mkdir -p $WORKSPACE/results/jdk${JDK_VERSION}
 chmod 777 $TEST_DIR
