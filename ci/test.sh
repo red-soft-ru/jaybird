@@ -33,6 +33,7 @@ SOURCES=$(readlink -f $(dirname $0)/..)
 OS=linux
 RDB_VERSION=3.0.3.88
 TEST_DIR=/tmp/jaybird_test
+TMPFS=/tmpfs
 export FIREBIRD="$INSTALLDIR"
 export LD_LIBRARY_PATH="$INSTALLDIR/lib"
 export JAVA_HOME
@@ -42,6 +43,12 @@ if [ "$ARCH" == "i686" ]; then
 fi
 
 mkdir -p "${REPORTS_DIR}"
+
+if [ -d $TMPFS ]; then
+    echo Found $TMPFS. Will use it for databases
+    TEST_DIR="$TMPFS"
+fi
+
 
 RDB_URL=http://artifactory.red-soft.biz/list/red-database/red-database/linux-${ARCH}/${RDB_VERSION}/linux-${ARCH}-${RDB_VERSION}.bin
 ARCHITECTURE=Classic
@@ -74,8 +81,6 @@ echo "Downloading RedDatabase $RDB_BUILD_ID"
 echo "Installing RedDatabase"
 /tmp/installer.bin --mode unattended --sysdba_password masterkey --architecture $ARCHITECTURE --debuglevel 4 || die "Unable to install RedDatabase"
 rm -f /tmp/installer.bin
-rm -rf $TEST_DIR
-mkdir -p $TEST_DIR
 mkdir -p $WORKSPACE/results/jdk${JDK_VERSION}
 chmod 777 $TEST_DIR
 
