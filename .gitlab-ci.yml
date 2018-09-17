@@ -129,6 +129,8 @@ test:jdk18:
     name: redsoftru/rdbtestenv-centos7:7.4.1708-20180910
   stage: test
   before_script:
+    - yum install -y krb5-server krb5-workstation expect
+    - ./ci/configure_kerberos.sh
     - export JAYBIRD_VERSION=`cat .ci/version`
     - export SRCDIR=`pwd`/jaybird-${JAYBIRD_VERSION}
     - archive_prefix=jaybird-${JAYBIRD_VERSION}
