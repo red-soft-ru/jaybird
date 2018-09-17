@@ -10,6 +10,9 @@ variables:
   TAG_BRANCH: master
 
 .prepare_template: &prepare_template
+  tags:
+    - docker
+    - builder
   stage: prepare
   image: redsoftru/relmanager_client
   script:
@@ -51,6 +54,9 @@ prepare_release:
     - tags
 
 source_package:
+  tags:
+    - docker
+    - builder
   stage: source_package
   image: alpine:3.7
   before_script:
@@ -67,6 +73,9 @@ source_package:
       - dist-src/
 
 .build_template: &build_template
+  tags:
+    - docker
+    - builder
   stage: build
   before_script:
     - apk --update add apache-ant bash zip tar
@@ -100,6 +109,9 @@ build-jdk17:
   image: openjdk:7-jdk-alpine
 
 test-jdk18:
+  tags:
+    - docker
+    - tester
   variables:
     BINDIR: ${CI_PROJECT_DIR}/dist/jdk18
     JDK_VERSION: 18
@@ -125,6 +137,9 @@ test-jdk18:
         - results/jdk${JDK_VERSION}/TEST-*.xml
 
 deploy:
+  tags:
+    - docker
+    - builder
   stage: deploy
   image: redsoftru/relmanager_client
   except:
