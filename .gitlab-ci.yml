@@ -90,7 +90,7 @@ sources:
     - mv ${archive_prefix}/output/lib/jaybird-*javadoc* dist/jdk${jdk}/javadoc
     - mv ${archive_prefix}/output/lib/jaybird-*sources* dist/jdk${jdk}/sources
     - mv ${archive_prefix}/output/lib/jaybird-*test* dist/jdk${jdk}/test
-    - mv ${archive_prefix}/output/lib/jaybird-*esp* dist/${jdk}/esp
+    - mv ${archive_prefix}/output/lib/jaybird-*esp* dist/jdk${jdk}/esp
     - mv ${archive_prefix}/output/lib/* dist/jdk${jdk}/bin
   artifacts:
     expire_in: 1 day
