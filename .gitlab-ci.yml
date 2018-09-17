@@ -118,3 +118,18 @@ build:jdk16:
   variables:
     jdk: 16
   image: openjdk:6
+
+deploy:
+  tags:
+    - docker
+    - builder
+  stage: deploy
+  image: redsoftru/relmanager_client
+  except:
+    - tags
+  script:
+    - find dist*
+    - relmanager_client deploy ${RELEASE_HUB_PROJECT} $(cat .ci/version) --artifacts .ci/artifacts --ci_url ${CI_URL} --context $(cat .ci/context) --branch $(cat .ci/branch) --commit ${CI_COMMIT_SHA}
+  only:
+    variables:
+      - "$RELEASE_HUB_KEY"
