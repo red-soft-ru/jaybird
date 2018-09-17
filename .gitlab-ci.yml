@@ -124,7 +124,7 @@ test-jdk18:
   before_script:
     - export JAYBIRD_VERSION=`cat .ci/version`
     - export SRCDIR=`pwd`/jaybird-${JAYBIRD_VERSION}
-    - archive_prefix=jaybird-${VERSION}
+    - archive_prefix=jaybird-${JAYBIRD_VERSION}
     - tar xf dist-src/${archive_prefix}.tar.gz
   script:
     - cd ${archive_prefix}
