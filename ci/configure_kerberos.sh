@@ -49,9 +49,9 @@ cat << EOF > /tmp/expect
 #!/usr/bin/expect -f
 spawn kdb5_util create -r RDB.EXAMPLE.COM -s
 expect "Enter KDC database master key: "
-send -- "12345\n"
+send -- "rdb_server\n"
 expect "Re-enter KDC database master key to verify: "
-send -- "12345\n"
+send -- "rdb_server\n"
 expect eof
 EOF
 
@@ -62,9 +62,9 @@ cat << EOF > /tmp/expect
 #!/usr/bin/expect -f
 spawn kadmin.local addprinc rdb_server/admin
 expect "Enter password for principal \"rdb_server/admin@RDB.EXAMPLE.COM\": "
-send -- "12345\n"
+send -- "rdb_server\n"
 expect "Re-enter password for principal \"rdb_server/admin@RDB.EXAMPLE.COM\":"
-send -- "12345\n"
+send -- "rdb_server\n"
 expect eof
 EOF
 chmod +x /tmp/expect
@@ -74,9 +74,9 @@ cat << EOF > /tmp/expect
 #!/usr/bin/expect -f
 spawn kadmin.local addprinc rdb_server/localhost
 expect "Enter password for principal \"rdb_server/localhost@RDB.EXAMPLE.COM\": "
-send -- "12345\n"
+send -- "rdb_server\n"
 expect "Re-enter password for principal \"rdb_server/localhost@RDB.EXAMPLE.COM\":"
-send -- "12345\n"
+send -- "rdb_server\n"
 expect eof
 EOF
 chmod +x /tmp/expect
