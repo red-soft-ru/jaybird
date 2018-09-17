@@ -78,12 +78,12 @@ sources:
     - builder
   stage: build
   before_script:
-    - apk --update add apache-ant bash zip tar
     - export VERSION=`cat .ci/version`
     - archive_prefix=jaybird-${VERSION}
     - tar xf dist-src/${archive_prefix}.tar.gz
   script:
     - cd ${archive_prefix}
+    - export ANT_HOME=`pwd`
     - ./build.sh jars
     - cd ..
     - mkdir -p dist/jdk${jdk}/bin dist/jdk${jdk}/sources dist/jdk${jdk}/javadoc dist/jdk${jdk}/test dist/jdk${jdk}/esp
@@ -106,3 +106,15 @@ build:jdk18:
   variables:
     jdk: 18
   image: openjdk:8-jdk-alpine
+
+build:jdk17:
+  <<: *build_template
+  variables:
+    jdk: 17
+  image: openjdk:7-jdk-alpine
+
+build:jdk16:
+  <<: *build_template
+  variables:
+    jdk: 16
+  image: openjdk:6
