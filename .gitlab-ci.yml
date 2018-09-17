@@ -2,6 +2,7 @@ stages:
 - prepare
 - source_package
 - build
+- test
 - deploy
 
 variables:
