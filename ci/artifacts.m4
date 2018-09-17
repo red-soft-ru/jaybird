@@ -85,3 +85,7 @@ artifact jaybird-full-jdk18 VERSION
 file dist/jdk18/bin/jaybird-full-jdk18-VERSION.jar jar
 file dist/jdk18/sources/jaybird-full-jdk18-VERSION-sources.jar jar sources
 end
+
+testpack jdk18
+dir results/jdk18
+end
