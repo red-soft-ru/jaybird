@@ -83,40 +83,28 @@ sources:
     - tar xf dist-src/${archive_prefix}.tar.gz
   script:
     - cd ${archive_prefix}
-    - export ANT_HOME=`pwd`
-    - ./build.sh jars
-    - cd ..
-    - mkdir -p dist/jdk${jdk}/bin dist/jdk${jdk}/sources dist/jdk${jdk}/javadoc dist/jdk${jdk}/test dist/jdk${jdk}/esp
-    - mv ${archive_prefix}/output/lib/jaybird-*javadoc* dist/jdk${jdk}/javadoc
-    - mv ${archive_prefix}/output/lib/jaybird-*sources* dist/jdk${jdk}/sources
-    - mv ${archive_prefix}/output/lib/jaybird-*test* dist/jdk${jdk}/test
-    - mv ${archive_prefix}/output/lib/jaybird-*esp* dist/jdk${jdk}/esp
-    - mv ${archive_prefix}/output/lib/* dist/jdk${jdk}/bin
+    - ./ci/build.sh
   artifacts:
     expire_in: 1 day
     paths:
       - dist/
-  dependencies:
-    - prepare:snapshot
-    - prepare:release
-    - sources
 
 build:jdk18:
   <<: *build_template
-  variables:
-    jdk: 18
   image: openjdk:8-jdk-alpine
+  variables:
+    JAVA_HOME: /usr/lib/jvm/java-1.8-openjdk
 
 build:jdk17:
   <<: *build_template
-  variables:
-    jdk: 17
   image: openjdk:7-jdk-alpine
+  variables:
+    JAVA_HOME: /usr/lib/jvm/java-1.7-openjdk
 
 build:jdk16:
   <<: *build_template
   variables:
-    jdk: 16
+    JAVA_HOME: /usr/lib/jvm/java-1.6.0-openjdk-amd64/
   image: openjdk:6
 
 deploy:
