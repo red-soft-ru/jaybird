@@ -22,12 +22,13 @@ trap "fail" ERR INT QUIT KILL TERM
 
 check_variable BINDIR
 check_variable SRCDIR
-check_variable JDK_VERSION
 check_variable JAYBIRD_VERSION
 check_variable JAVA_HOME
-check_variable WORKSPACE
+check_variable CI_PROJECT_DIR
 
-REPORTS_DIR="${WORKSPACE}/results/jdk${JDK_VERSION}"
+JAVA="${JAVA_HOME}/bin/java"
+JDK_VERSION=`$JAVA -version 2>&1|head -n 1|awk -F\" '{split($2, v, ".");printf("%s%s", v[1], v[2])}'`
+REPORTS_DIR="${CI_PROJECT_DIR}/results/jdk${JDK_VERSION}"
 INSTALLDIR=/opt/RedDatabase
 SOURCES=$(readlink -f $(dirname $0)/..)
 OS=linux
@@ -47,6 +48,8 @@ mkdir -p "${REPORTS_DIR}"
 if [ -d $TMPFS ]; then
     echo Found $TMPFS. Will use it for databases
     TEST_DIR="$TMPFS"
+else
+	mkdir -p "$TEST_DIR"
 fi
 
 
@@ -78,7 +81,6 @@ echo "Downloading RedDatabase $RDB_BUILD_ID"
 echo "Installing RedDatabase"
 /tmp/installer.bin --mode unattended --sysdba_password masterkey --debuglevel 4 || die "Unable to install RedDatabase"
 rm -f /tmp/installer.bin
-mkdir -p $WORKSPACE/results/jdk${JDK_VERSION}
 chmod 777 $TEST_DIR
 
 sed -i 's/#AuthServer = Srp256/AuthServer = Srp, Srp256, Legacy_Auth, Gss /g' "${INSTALLDIR}"/firebird.conf
