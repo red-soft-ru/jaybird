@@ -83,8 +83,8 @@ rm -f /tmp/installer.bin
 mkdir -p $WORKSPACE/results/jdk${JDK_VERSION}
 chmod 777 $TEST_DIR
 
-sed -i 's/#AuthServer = Srp/AuthServer = Srp, Srp256, Legacy_Auth, Gss, Multifactor /g' "${INSTALLDIR}"/firebird.conf
-sed -i 's/#AuthClient = Srp, Srp256, Legacy_Auth, Gss, Multifactor\s*#Non Windows clients/AuthClient = Srp, Srp256, Legacy_Auth, Gss, Multifactor/g' "${INSTALLDIR}"/firebird.conf
+sed -i 's/#AuthServer = Srp/AuthServer = Multifactor, Srp, Srp256, Legacy_Auth, Gss/g' "${INSTALLDIR}"/firebird.conf
+sed -i 's/#AuthClient = Srp, Srp256, Legacy_Auth, Gss, Multifactor\s*#Non Windows clients/AuthClient = Multifactor, Srp, Srp256, Legacy_Auth, Gss/g' "${INSTALLDIR}"/firebird.conf
 sed -i 's/#UserManager = Srp/UserManager = Srp, Legacy_UserManager, Multifactor_Manager /g' "${INSTALLDIR}"/firebird.conf
 sed -i 's/#WireCrypt = Enabled (for client) \/ Required (for server)/WireCrypt = Disabled/g' "${INSTALLDIR}"/firebird.conf
 
