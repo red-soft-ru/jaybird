@@ -115,7 +115,7 @@ while ! $NC localhost 3050 </dev/null; do
     fi
 done
 
-echo rdb_server | kinit rdb_server/localhost
+kinit -kt /etc/krb5.keytab rdb_server/localhost@RDB.EXAMPLE.COM
 klist
 
 "${SRCDIR}"/bin/ant -Dtest.report.dir=$REPORTS_DIR -Dtest.db.dir=$TEST_DIR -Djdk=${JDK_VERSION} -Dversion=$JAYBIRD_VERSION -Dbindir=${BINDIR} -Dsrcdir=${SRCDIR} -f "${SOURCES}"/ci/test.xml
