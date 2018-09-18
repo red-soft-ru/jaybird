@@ -114,7 +114,6 @@ test:jdk18:
     BINDIR: ${CI_PROJECT_DIR}/dist/jdk18
     JDK_VERSION: 18
     JAVA_HOME: /usr/lib/jvm/jre-1.8.0
-    WORKSPACE: ${CI_PROJECT_DIR}
   image:
     name: redsoftru/rdbtestenv-centos7:7.4.1708-20180910
   stage: test
@@ -131,7 +130,7 @@ test:jdk18:
   artifacts:
     expire_in: 1 day
     paths:
-      - results/jdk${JDK_VERSION}
+      - results
     reports:
       junit:
         - results/jdk${JDK_VERSION}/TEST-*.xml
