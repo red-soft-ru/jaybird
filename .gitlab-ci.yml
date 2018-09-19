@@ -107,6 +107,39 @@ build:jdk16:
     JAVA_HOME: /usr/lib/jvm/java-1.6.0-openjdk-amd64/
   image: openjdk:6
 
+test:jdk18:
+  tags:
+    - docker
+    - tester
+  variables:
+    BINDIR: ${CI_PROJECT_DIR}/dist/jdk18
+    JDK_VERSION: 18
+    JAVA_HOME: /usr/lib/jvm/jre-1.8.0
+  image:
+    name: redsoftru/rdbtestenv-centos7:7.4.1708-20180910
+  stage: test
+  before_script:
+    - yum install -y xinetd
+    - export JAYBIRD_VERSION=`cat .ci/version`
+    - export SRCDIR=`pwd`/jaybird-${JAYBIRD_VERSION}
+    - archive_prefix=jaybird-${JAYBIRD_VERSION}
+    - tar xf dist-src/${archive_prefix}.tar.gz
+  script:
+    - cd ${archive_prefix}
+    - ./ci/test.sh
+  artifacts:
+    expire_in: 1 day
+    paths:
+      - results
+    reports:
+      junit:
+        - results/jdk${JDK_VERSION}/TEST-*.xml
+  dependencies:
+    - prepare:snapshot
+    - prepare:release
+    - sources
+    - build:jdk18
+
 deploy:
   tags:
     - docker
