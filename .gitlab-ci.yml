@@ -77,11 +77,10 @@ sources:
     - docker
     - builder
   stage: build
-  before_script:
+  script:
     - export VERSION=`cat .ci/version`
     - archive_prefix=jaybird-${VERSION}
     - tar xf dist-src/${archive_prefix}.tar.gz
-  script:
     - cd ${archive_prefix}
     - ./ci/build.sh
   artifacts:
@@ -94,12 +93,16 @@ build:jdk18:
   image: openjdk:8-jdk-alpine
   variables:
     JAVA_HOME: /usr/lib/jvm/java-1.8-openjdk
+  before_script:
+    - apk --update add bash
 
 build:jdk17:
   <<: *build_template
   image: openjdk:7-jdk-alpine
   variables:
     JAVA_HOME: /usr/lib/jvm/java-1.7-openjdk
+  before_script:
+    - apk --update add bash
 
 build:jdk16:
   <<: *build_template
