@@ -97,14 +97,10 @@ sources:
 build:jdk18:
   <<: *build_template
   image: openjdk:8-jdk-alpine
-  variables:
-    JAVA_HOME: /usr/lib/jvm/java-1.8-openjdk
 
 build:jdk17:
   <<: *build_template
   image: openjdk:7-jdk-alpine
-  variables:
-    JAVA_HOME: /usr/lib/jvm/java-1.7-openjdk
 
 test:jdk18:
   tags:
