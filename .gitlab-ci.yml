@@ -125,8 +125,6 @@ deploy:
     - builder
   stage: deploy
   image: redsoftru/relmanager_client
-  except:
-    - tags
   script:
     - find dist*
     - relmanager_client deploy ${RELEASE_HUB_PROJECT} $(cat .ci/version) --artifacts .ci/artifacts --ci_url ${CI_URL} --context $(cat .ci/context) --branch $(cat .ci/branch) --commit ${CI_COMMIT_SHA}
