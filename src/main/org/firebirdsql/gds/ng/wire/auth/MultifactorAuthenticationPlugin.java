@@ -80,6 +80,9 @@ public class MultifactorAuthenticationPlugin implements AuthenticationPlugin {
                 data.add((byte) AuthFactor.TYPE_SERVER_CERT);
             }
 
+            if (userName == null && certificate == null)
+                return  AuthStatus.AUTH_CONTINUE;
+
             clientData = Arrays.copyOf(data.getData(), data.getLength());
 
             return AuthStatus.AUTH_MORE_DATA;
