@@ -33,13 +33,15 @@ SOURCES=$(readlink -f $(dirname $0)/..)
 OS=linux
 RDB_VERSION=2.6.0.13407
 ARCH=`arch`
+TEST_DIR=/tmp/jaybird_test
+TMPFS="/tmpfs"
 if [ "$ARCH" == "i686" ]; then
 	ARCH="x86"
 fi
 
 mkdir -p "${REPORTS_DIR}"
 
-if [ -d $TMPFS ]; then
+if [ -d "$TMPFS" ]; then
     echo Found $TMPFS. Will use it for databases
     TEST_DIR="$TMPFS"
 else
