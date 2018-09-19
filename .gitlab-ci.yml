@@ -1,0 +1,151 @@
+stages:
+- prepare
+- sources
+- build
+- test
+- deploy
+
+variables:
+  RELEASE_HUB_PROJECT: jaybird2
+  CI_URL: ${CI_PROJECT_URL}/pipelines/${CI_PIPELINE_ID}
+  TAG_BRANCH: branch_2_2
+
+.prepare_template: &prepare_template
+  tags:
+    - docker
+    - builder
+  stage: prepare
+  image: redsoftru/relmanager_client
+  script:
+    - mkdir .ci
+    - m4 -DVERSION=${VERSION} ci/artifacts.m4 > .ci/artifacts
+    - echo ${VERSION} > .ci/version
+    - echo ${BRANCH} > .ci/branch
+    - echo ${TAG} > .ci/tag
+    - echo ${CONTEXT} > .ci/context
+  artifacts:
+    expire_in: 1 day
+    paths:
+      - .ci/
+
+prepare:snapshot:
+  <<: *prepare_template
+  before_script:
+    - VERSION=$(cat build/init.xml|awk -F\" '{if ($2 == "version.major") printf("%s.", $4); if ($2 == "version.minor") printf("%s.", $4); if ($2 == "version.revision") printf("%s", $4)}')
+    - export BUILDNO=$(relmanager_client genbuildno ${RELEASE_HUB_PROJECT} ${VERSION}-SNAPSHOT)
+    - export TAG=SNAPSHOT.${BUILDNO}
+    - export VERSION=${VERSION}-${TAG}
+    - export BRANCH=${CI_COMMIT_REF_NAME}
+    - export CONTEXT=commit
+  except:
+    - tags
+
+prepare:release:
+  <<: *prepare_template
+  before_script:
+    - export VERSION=$(echo ${CI_COMMIT_TAG}|sed 's/v//')
+    - export BRANCH=${TAG_BRANCH}
+    - export TAG=$(echo $VERSION|awk -F- '{print $2}')
+    - export CONTEXT=tag
+  only:
+    - tags
+
+sources:
+  tags:
+    - docker
+    - builder
+  stage: sources
+  image: alpine:3.7
+  before_script:
+    - apk --update add bash git zip tar
+    - git config --global user.name "Dummy Name"
+    - git config --global user.email "dummy@email.org"
+    - export VERSION=`cat .ci/version`
+    - export TAG=`cat .ci/tag`
+  script:
+    - ./ci/dist-src.sh
+  artifacts:
+    expire_in: 1 day
+    paths:
+      - dist-src/
+  dependencies:
+    - prepare:snapshot
+    - prepare:release
+
+.build_template: &build_template
+  tags:
+    - docker
+    - builder
+  stage: build
+  script:
+    - export VERSION=`cat .ci/version`
+    - archive_prefix=jaybird-${VERSION}
+    - tar xf dist-src/${archive_prefix}.tar.gz
+    - cd ${archive_prefix}
+    - ./ci/build.sh
+  artifacts:
+    expire_in: 1 day
+    paths:
+      - dist/
+
+build:jdk18:
+  <<: *build_template
+  image: openjdk:8-jdk-alpine
+  before_script:
+    - apk --update add bash
+
+build:jdk17:
+  <<: *build_template
+  image: openjdk:7-jdk-alpine
+  before_script:
+    - apk --update add bash
+
+build:jdk16:
+  <<: *build_template
+  image: openjdk:6
+
+test:jdk18:
+  tags:
+    - docker
+    - tester
+  variables:
+    BINDIR: ${CI_PROJECT_DIR}/dist/jdk18
+    JDK_VERSION: 18
+    JAVA_HOME: /usr/lib/jvm/jre-1.8.0
+  image:
+    name: redsoftru/rdbtestenv-centos6:6.9-20180919
+  stage: test
+  before_script:
+    - yum install -y xinetd
+    - export JAYBIRD_VERSION=`cat .ci/version`
+    - export SRCDIR=`pwd`/jaybird-${JAYBIRD_VERSION}
+    - archive_prefix=jaybird-${JAYBIRD_VERSION}
+    - tar xf dist-src/${archive_prefix}.tar.gz
+  script:
+    - cd ${archive_prefix}
+    - ./ci/test.sh
+  artifacts:
+    expire_in: 1 day
+    paths:
+      - results
+    reports:
+      junit:
+        - results/jdk${JDK_VERSION}/TEST-*.xml
+  dependencies:
+    - prepare:snapshot
+    - prepare:release
+    - sources
+    - build:jdk18
+
+deploy:
+  tags:
+    - docker
+    - builder
+  stage: deploy
+  image: redsoftru/relmanager_client
+  script:
+    - find dist*
+    - relmanager_client deploy ${RELEASE_HUB_PROJECT} $(cat .ci/version) --artifacts .ci/artifacts --ci_url ${CI_URL} --context $(cat .ci/context) --branch $(cat .ci/branch) --commit ${CI_COMMIT_SHA}
+  only:
+    variables:
+      - "$RELEASE_HUB_KEY"
