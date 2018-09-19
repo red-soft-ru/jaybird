@@ -31,8 +31,8 @@ mkdir -p ${CI_PROJECT_DIR}/dist/jdk${JDK_VERSION}/bin \
 		 ${CI_PROJECT_DIR}/dist/jdk${JDK_VERSION}/test \
 		 ${CI_PROJECT_DIR}/dist/jdk${JDK_VERSION}/esp
 
-cp output/lib/jaybird-*javadoc* dist/jdk${JDK_VERSION}/javadoc
-cp output/lib/jaybird-*sources* dist/jdk${JDK_VERSION}/sources
-cp output/lib/jaybird-*test* dist/jdk${JDK_VERSION}/test
-cp output/lib/jaybird-**esp* dist/jdk${JDK_VERSION}/esp
-cp output/lib/* dist/jdk${JDK_VERSION}/bin
+cp output/lib/jaybird-*javadoc* ${CI_PROJECT_DIR}/dist/jdk${JDK_VERSION}/javadoc
+cp output/lib/jaybird-*sources* ${CI_PROJECT_DIR}/dist/jdk${JDK_VERSION}/sources
+cp output/lib/jaybird-*test* ${CI_PROJECT_DIR}/dist/jdk${JDK_VERSION}/test
+cp output/lib/jaybird-**esp* ${CI_PROJECT_DIR}/dist/jdk${JDK_VERSION}/esp
+cp output/lib/* ${CI_PROJECT_DIR}/dist/jdk${JDK_VERSION}/bin
