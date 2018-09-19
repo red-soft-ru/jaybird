@@ -1,6 +1,7 @@
 package org.firebirdsql.cryptoapi;
 
 import com.sun.jna.Pointer;
+import com.sun.jna.WString;
 import org.firebirdsql.cryptoapi.cryptopro.CertUtils;
 import org.firebirdsql.cryptoapi.cryptopro.ContainerInfo;
 import org.firebirdsql.cryptoapi.cryptopro.CryptoProProvider;
@@ -88,7 +89,10 @@ public class AuthCryptoPluginImpl extends AuthCryptoPlugin {
     try {
       prov = Crypt32.certGetCertificateContextProperty(cert, CERT_KEY_PROV_INFO_PROP_ID);
       _CRYPT_KEY_PROV_INFO info = new _CRYPT_KEY_PROV_INFO(prov);
-      provHandle = Advapi.cryptAcquireContext(info.pwszContainerName.toString(), null, CryptoProProvider.PROV_DEFAULT, /*CRYPT_SILENT*/0);
+      final WString containerName = info.pwszContainerName;
+      if (containerName == null)
+        return null;
+      provHandle = Advapi.cryptAcquireContext(containerName.toString(), null, CryptoProProvider.PROV_DEFAULT, /*CRYPT_SILENT*/0);
       final Pointer keyHandle = Advapi.cryptGetUserKey(provHandle, info.dwKeySpec);
       if (keyHandle != null)
         return new AuthPrivateKeyContext(provHandle, keyHandle);
