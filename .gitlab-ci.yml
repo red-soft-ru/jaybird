@@ -91,23 +91,17 @@ sources:
 build:jdk18:
   <<: *build_template
   image: openjdk:8-jdk-alpine
-  variables:
-    JAVA_HOME: /usr/lib/jvm/java-1.8-openjdk
   before_script:
     - apk --update add bash
 
 build:jdk17:
   <<: *build_template
   image: openjdk:7-jdk-alpine
-  variables:
-    JAVA_HOME: /usr/lib/jvm/java-1.7-openjdk
   before_script:
     - apk --update add bash
 
 build:jdk16:
   <<: *build_template
-  variables:
-    JAVA_HOME: /usr/lib/jvm/java-1.6.0-openjdk-amd64/
   image: openjdk:6
 
 test:jdk18:
