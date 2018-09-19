@@ -26,6 +26,7 @@ import org.firebirdsql.gds.TransactionParameterBuffer;
 import org.firebirdsql.gds.impl.TransactionParameterBufferImpl;
 import org.firebirdsql.gds.ng.fields.FieldValue;
 import org.firebirdsql.gds.ng.fields.RowValue;
+import org.firebirdsql.jdbc.FBConnection;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -108,7 +109,7 @@ public abstract class AbstractTransactionTest extends FBJUnit4TestBase {
 
     @Test
     public void testBasicCommit() throws Exception {
-        FbTransaction transaction = getTransaction();
+        FbTransaction transaction = getTransaction(0);
         assertEquals(TransactionState.ACTIVE, transaction.getState());
         final int key = 23;
         final String value = "TheValueIs23";
@@ -121,7 +122,7 @@ public abstract class AbstractTransactionTest extends FBJUnit4TestBase {
 
     @Test
     public void testBasicRollback() throws Exception {
-        FbTransaction transaction = getTransaction();
+        FbTransaction transaction = getTransaction(0);
         assertEquals(TransactionState.ACTIVE, transaction.getState());
         final int key = 23;
         final String value = "TheValueIs23";
@@ -134,7 +135,7 @@ public abstract class AbstractTransactionTest extends FBJUnit4TestBase {
 
     @Test
     public void testBasicPrepareAndCommit() throws Exception {
-        final FbTransaction transaction = getTransaction();
+        final FbTransaction transaction = getTransaction(0);
         assertEquals(TransactionState.ACTIVE, transaction.getState());
         final int key = 23;
         final String value = "TheValueIs23";
@@ -142,20 +143,8 @@ public abstract class AbstractTransactionTest extends FBJUnit4TestBase {
 
         transaction.prepare(new byte[0]);
 
-        Thread parallelConnect = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    assertEquals(TransactionState.PREPARED, transaction.getState());
-                    assertValueForKey(key, true, value);
-                } catch (SQLException e) {
-                    // suppress
-                }
-            }
-        });
-        parallelConnect.start();
-
-        Thread.sleep(5000);
+        assertEquals(TransactionState.PREPARED, transaction.getState());
+        assertValueForKey(getTransaction(5), key, false, null);
 
         transaction.commit();
 
@@ -165,7 +154,7 @@ public abstract class AbstractTransactionTest extends FBJUnit4TestBase {
 
     @Test
     public void testBasicPrepareAndRollback() throws Exception {
-        final FbTransaction transaction = getTransaction();
+        final FbTransaction transaction = getTransaction(0);
         assertEquals(TransactionState.ACTIVE, transaction.getState());
         final int key = 23;
         final String value = "TheValueIs23";
@@ -173,20 +162,8 @@ public abstract class AbstractTransactionTest extends FBJUnit4TestBase {
 
         transaction.prepare(new byte[] { 68, 69, 70 });
 
-        Thread parallelConnect = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    assertEquals(TransactionState.PREPARED, transaction.getState());
-                    assertValueForKey(key, false, null);
-                } catch (SQLException e) {
-                    // suppress
-                }
-            }
-        });
-        parallelConnect.start();
-
-        Thread.sleep(5000);
+        assertEquals(TransactionState.PREPARED, transaction.getState());
+        assertValueForKey(getTransaction(5), key, false, null);
 
         transaction.rollback();
 
@@ -213,6 +190,25 @@ public abstract class AbstractTransactionTest extends FBJUnit4TestBase {
         }
     }
 
+    private void assertValueForKey(FbTransaction transaction, int key, boolean hasRow, String expectedValue) throws SQLException {
+        FbStatement statement = db.createStatement(transaction);
+        try {
+            statement.prepare("SELECT thevalue FROM keyvalue WHERE thekey = ?");
+
+            FieldValue parameter1 = statement.getParameterDescriptor().getFieldDescriptor(0).createDefaultFieldValue();
+            parameter1.setFieldData(db.getDatatypeCoder().encodeInt(key));
+
+            statement.execute(RowValue.of(parameter1));
+            statement.fetchRows(1);
+
+        } catch (SQLException e) {
+            // ignore
+        } finally {
+            transaction.rollback();
+            statement.close();
+        }
+    }
+
     private void insertKeyValue(FbTransaction transaction, int key, String value) throws SQLException {
         FbStatement statement = db.createStatement(transaction);
         try {
@@ -229,12 +225,14 @@ public abstract class AbstractTransactionTest extends FBJUnit4TestBase {
         }
     }
 
-    protected final FbTransaction getTransaction() throws SQLException {
+    protected final FbTransaction getTransaction(int timeout) throws SQLException {
         TransactionParameterBuffer tpb = new TransactionParameterBufferImpl();
         tpb.addArgument(ISCConstants.isc_tpb_read_committed);
         tpb.addArgument(ISCConstants.isc_tpb_rec_version);
         tpb.addArgument(ISCConstants.isc_tpb_write);
         tpb.addArgument(ISCConstants.isc_tpb_wait);
+        if (timeout > 0)
+            tpb.addArgument(ISCConstants.isc_tpb_lock_timeout, 5);
         return db.startTransaction(tpb);
     }
 }
