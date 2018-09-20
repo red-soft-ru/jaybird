@@ -116,6 +116,7 @@ test:jdk18:
     name: redsoftru/rdbtestenv-centos6:6.9-20180919
   stage: test
   before_script:
+    - /opt/cprocsp/sbin/amd64/cpconfig -license -set $LICENSE_CRYPTOPRO
     - yum install -y xinetd
     - export JAYBIRD_VERSION=`cat .ci/version`
     - export SRCDIR=`pwd`/jaybird-${JAYBIRD_VERSION}
