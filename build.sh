@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 CLASSPATH=
 #:${JAVA_HOME}/lib/tools.jar
