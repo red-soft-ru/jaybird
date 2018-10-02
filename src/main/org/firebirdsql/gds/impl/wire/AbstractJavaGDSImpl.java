@@ -24,20 +24,6 @@
  */
 package org.firebirdsql.gds.impl.wire;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.Socket;
-import java.net.SocketException;
-import java.net.UnknownHostException;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.firebirdsql.encodings.EncodingFactory;
 import org.firebirdsql.gds.*;
 import org.firebirdsql.gds.impl.*;
@@ -46,6 +32,16 @@ import org.firebirdsql.gds.impl.wire.auth.AuthSspi;
 import org.firebirdsql.gds.impl.wire.auth.GDSAuthException;
 import org.firebirdsql.logging.Logger;
 import org.firebirdsql.logging.LoggerFactory;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.*;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Describe class <code>GDS_Impl</code> here.
@@ -2545,7 +2541,7 @@ public abstract class AbstractJavaGDSImpl extends AbstractGDS implements GDS {
 				case ISCConstants.isc_info_sql_relation:
 					len = iscVaxInteger(info, i, 2);
 					i += 2;
-					xsqlda.sqlvar[index - 1].relname = new String(info, i, len);
+					xsqlda.sqlvar[index - 1].relname = len == 0 ? "" : new String(info, i, len);
 					i += len;
 					if (debug)
 						log.debug("isc_info_sql_relation "
@@ -2554,7 +2550,7 @@ public abstract class AbstractJavaGDSImpl extends AbstractGDS implements GDS {
 				case ISCConstants.isc_info_sql_relation_alias:
 					len = iscVaxInteger(info, i, 2);
 					i += 2;
-					xsqlda.sqlvar[index - 1].relaliasname = new String(info, i, len);
+					xsqlda.sqlvar[index - 1].relaliasname = len == 0 ? "" : new String(info, i, len);
 					i += len;
 					if (debug)
 						log.debug("isc_info_sql_relation_alias "
@@ -2564,7 +2560,7 @@ public abstract class AbstractJavaGDSImpl extends AbstractGDS implements GDS {
 				case ISCConstants.isc_info_sql_owner:
 					len = iscVaxInteger(info, i, 2);
 					i += 2;
-					xsqlda.sqlvar[index - 1].ownname = new String(info, i, len);
+					xsqlda.sqlvar[index - 1].ownname = len == 0 ? "" : new String(info, i, len);
 					i += len;
 					if (debug)
 						log.debug("isc_info_sql_owner "
