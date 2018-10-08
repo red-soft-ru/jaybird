@@ -12,8 +12,6 @@ import org.firebirdsql.gds.impl.GDSType;
 import org.firebirdsql.gds.impl.wire.TransactionParameterBufferImpl;
 import org.firebirdsql.jca.FBSADataSource;
 import org.firebirdsql.jca.FBTpb;
-import org.firebirdsql.logging.Logger;
-import org.firebirdsql.logging.LoggerFactory;
 
 import java.io.File;
 import java.sql.Connection;
@@ -52,11 +50,11 @@ public class TestAuthSspi extends SimpleFBTestBase {
 
         c = gds.createDatabaseParameterBuffer();
 
-        c.addArgument(ISCConstants.isc_dpb_num_buffers, new byte[] { 90});
-        c.addArgument(ISCConstants.isc_dpb_dummy_packet_interval, new byte[] {
+        c.addArgument(ISCConstants.isc_dpb_num_buffers, new byte[]{90});
+        c.addArgument(ISCConstants.isc_dpb_dummy_packet_interval, new byte[]{
                 120, 10, 0, 0});
         c.addArgument(ISCConstants.isc_dpb_sql_dialect,
-                new byte[] { 3, 0, 0, 0});
+                new byte[]{3, 0, 0, 0});
         c.addArgument(ISCConstants.isc_dpb_user_name, DB_USER);
         c.addArgument(ISCConstants.isc_dpb_password, DB_PASSWORD);
 
@@ -70,11 +68,14 @@ public class TestAuthSspi extends SimpleFBTestBase {
     }
 
     protected IscDbHandle createDatabase(String name) throws Exception {
-
         IscDbHandle db = gds.createIscDbHandle();
 
         gds.iscCreateDatabase(getdbpath(name), db, c);
         return db;
+    }
+
+    private void dropDatabase(IscDbHandle db) throws Exception {
+        gds.iscDropDatabase(db);
     }
 
     protected void tearDown() throws Exception {
@@ -89,28 +90,32 @@ public class TestAuthSspi extends SimpleFBTestBase {
         File db = new File(DB_PATH + "/" + dbName);
         if (db.exists())
             db.delete();
-        createDatabase(dbName);
+        IscDbHandle database = createDatabase(dbName);
 
-        AuthCryptoPlugin.register(new AuthCryptoPluginImpl());
+        try {
+            AuthCryptoPlugin.register(new AuthCryptoPluginImpl());
 
-        final FBSADataSource fbDataSource = new FBSADataSource(GDSType.getType("PURE_JAVA"));
+            final FBSADataSource fbDataSource = new FBSADataSource(GDSType.getType("PURE_JAVA"));
 
-        final String databaseURL = getdbpath(dbName);
-        fbDataSource.setDatabase(databaseURL);
-        fbDataSource.setNonStandardProperty("isc_dpb_trusted_auth", "1");
-        fbDataSource.setNonStandardProperty("isc_dpb_multi_factor_auth", "1");
-        fbDataSource.setNonStandardProperty("isc_dpb_certificate", "testuser.cer");
-        fbDataSource.setNonStandardProperty("isc_dpb_repository_pin", "12345678");
+            final String databaseURL = getdbpath(dbName);
+            fbDataSource.setDatabase(databaseURL);
+            fbDataSource.setNonStandardProperty("isc_dpb_trusted_auth", "1");
+            fbDataSource.setNonStandardProperty("isc_dpb_multi_factor_auth", "1");
+            fbDataSource.setNonStandardProperty("isc_dpb_certificate", "testuser.cer");
+            fbDataSource.setNonStandardProperty("isc_dpb_repository_pin", "12345678");
 
-        final Connection conn = fbDataSource.getConnection();
+            final Connection conn = fbDataSource.getConnection();
 
-        Statement statement = conn.createStatement();
-        ResultSet resultSet = statement.executeQuery("select current_user from rdb$database");
-        resultSet.next();
-        System.out.println("Current user is " + resultSet.getString(1));
-        resultSet.close();
-        statement.close();
-        conn.close();
+            Statement statement = conn.createStatement();
+            ResultSet resultSet = statement.executeQuery("select current_user from rdb$database");
+            resultSet.next();
+            System.out.println("Current user is " + resultSet.getString(1));
+            resultSet.close();
+            statement.close();
+            conn.close();
+        } finally {
+            dropDatabase(database);
+        }
     }
 
     public void testMultifactorAuthPasswordOnly() throws Exception {
@@ -119,28 +124,32 @@ public class TestAuthSspi extends SimpleFBTestBase {
         File db = new File(DB_PATH + "/" + dbName);
         if (db.exists())
             db.delete();
-        createDatabase(dbName);
+        IscDbHandle database = createDatabase(dbName);
 
-        AuthCryptoPlugin.register(new AuthCryptoPluginImpl());
+        try {
+            AuthCryptoPlugin.register(new AuthCryptoPluginImpl());
 
-        final FBSADataSource fbDataSource = new FBSADataSource(GDSType.getType("PURE_JAVA"));
+            final FBSADataSource fbDataSource = new FBSADataSource(GDSType.getType("PURE_JAVA"));
 
-        final String databaseURL = getdbpath(dbName);
-        fbDataSource.setDatabase(databaseURL);
-        fbDataSource.setNonStandardProperty("isc_dpb_user_name", "artyom.smirnov@red-soft.ru");
-        fbDataSource.setNonStandardProperty("isc_dpb_password", "q3rgu7Ah");
-        fbDataSource.setNonStandardProperty("isc_dpb_trusted_auth", "1");
-        fbDataSource.setNonStandardProperty("isc_dpb_multi_factor_auth", "1");
+            final String databaseURL = getdbpath(dbName);
+            fbDataSource.setDatabase(databaseURL);
+            fbDataSource.setNonStandardProperty("isc_dpb_user_name", "artyom.smirnov@red-soft.ru");
+            fbDataSource.setNonStandardProperty("isc_dpb_password", "q3rgu7Ah");
+            fbDataSource.setNonStandardProperty("isc_dpb_trusted_auth", "1");
+            fbDataSource.setNonStandardProperty("isc_dpb_multi_factor_auth", "1");
 
-        final Connection conn = fbDataSource.getConnection();
+            final Connection conn = fbDataSource.getConnection();
 
-        Statement statement = conn.createStatement();
-        ResultSet resultSet = statement.executeQuery("select current_user from rdb$database");
-        resultSet.next();
-        System.out.println("Current user is " + resultSet.getString(1));
-        resultSet.close();
-        statement.close();
-        conn.close();
+            Statement statement = conn.createStatement();
+            ResultSet resultSet = statement.executeQuery("select current_user from rdb$database");
+            resultSet.next();
+            System.out.println("Current user is " + resultSet.getString(1));
+            resultSet.close();
+            statement.close();
+            conn.close();
+        } finally {
+            dropDatabase(database);
+        }
     }
 
     public void testMultifactorAuthPasswordAndCertificate() throws Exception {
@@ -149,30 +158,34 @@ public class TestAuthSspi extends SimpleFBTestBase {
         File db = new File(DB_PATH + "/" + dbName);
         if (db.exists())
             db.delete();
-        createDatabase(dbName);
+        IscDbHandle database = createDatabase(dbName);
 
-        AuthCryptoPlugin.register(new AuthCryptoPluginImpl());
+        try {
+            AuthCryptoPlugin.register(new AuthCryptoPluginImpl());
 
-        final FBSADataSource fbDataSource = new FBSADataSource(GDSType.getType("PURE_JAVA"));
+            final FBSADataSource fbDataSource = new FBSADataSource(GDSType.getType("PURE_JAVA"));
 
-        final String databaseURL = getdbpath(dbName);
-        fbDataSource.setDatabase(databaseURL);
-        fbDataSource.setNonStandardProperty("isc_dpb_user_name", "artyom.smirnov@red-soft.ru");
-        fbDataSource.setNonStandardProperty("isc_dpb_password", "q3rgu7Ah");
-        fbDataSource.setNonStandardProperty("isc_dpb_certificate", "testuser.cer");
-        fbDataSource.setNonStandardProperty("isc_dpb_repository_pin", "12345678");
-        fbDataSource.setNonStandardProperty("isc_dpb_trusted_auth", "1");
-        fbDataSource.setNonStandardProperty("isc_dpb_multi_factor_auth", "1");
+            final String databaseURL = getdbpath(dbName);
+            fbDataSource.setDatabase(databaseURL);
+            fbDataSource.setNonStandardProperty("isc_dpb_user_name", "artyom.smirnov@red-soft.ru");
+            fbDataSource.setNonStandardProperty("isc_dpb_password", "q3rgu7Ah");
+            fbDataSource.setNonStandardProperty("isc_dpb_certificate", "testuser.cer");
+            fbDataSource.setNonStandardProperty("isc_dpb_repository_pin", "12345678");
+            fbDataSource.setNonStandardProperty("isc_dpb_trusted_auth", "1");
+            fbDataSource.setNonStandardProperty("isc_dpb_multi_factor_auth", "1");
 
-        final Connection conn = fbDataSource.getConnection();
+            final Connection conn = fbDataSource.getConnection();
 
-        Statement statement = conn.createStatement();
-        ResultSet resultSet = statement.executeQuery("select current_user from rdb$database");
-        resultSet.next();
-        System.out.println("Current user is " + resultSet.getString(1));
-        resultSet.close();
-        statement.close();
-        conn.close();
+            Statement statement = conn.createStatement();
+            ResultSet resultSet = statement.executeQuery("select current_user from rdb$database");
+            resultSet.next();
+            System.out.println("Current user is " + resultSet.getString(1));
+            resultSet.close();
+            statement.close();
+            conn.close();
+        } finally {
+            dropDatabase(database);
+        }
     }
 
     public void testTrustedCertificate() throws Exception {
@@ -181,37 +194,41 @@ public class TestAuthSspi extends SimpleFBTestBase {
         File db = new File(DB_PATH + "/" + dbName);
         if (db.exists())
             db.delete();
-        createDatabase(dbName);
+        IscDbHandle database = createDatabase(dbName);
 
-        AuthCryptoPlugin.register(new AuthCryptoPluginImpl());
-
-        final FBSADataSource fbDataSource = new FBSADataSource(GDSType.getType("PURE_JAVA"));
-
-        final String databaseURL = getdbpath(dbName);
-        fbDataSource.setDatabase(databaseURL);
-        fbDataSource.setNonStandardProperty("isc_dpb_lc_ctype", "WIN1251");
-        fbDataSource.setNonStandardProperty("isc_dpb_user_name", "artyom.smirnov@red-soft.ru");
-        fbDataSource.setNonStandardProperty("isc_dpb_certificate", "testuser.cer");
-        fbDataSource.setNonStandardProperty("isc_dpb_repository_pin", "12345678");
-        fbDataSource.setNonStandardProperty("isc_dpb_trusted_auth", "1");
-        fbDataSource.setNonStandardProperty("isc_dpb_multi_factor_auth", "1");
-
-        Connection conn;
         try {
-            conn = fbDataSource.getConnection();
+            AuthCryptoPlugin.register(new AuthCryptoPluginImpl());
 
-            Statement statement = conn.createStatement();
-            ResultSet resultSet = statement.executeQuery("select current_user from rdb$database");
-            resultSet.next();
-            System.out.println("Current user is " + resultSet.getString(1));
-            assertEquals("artyom.smirnov@red-soft.ru", resultSet.getString(1).toLowerCase());
-            resultSet.close();
-            statement.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-            fail("Statement should not fail");
+            final FBSADataSource fbDataSource = new FBSADataSource(GDSType.getType("PURE_JAVA"));
+
+            final String databaseURL = getdbpath(dbName);
+            fbDataSource.setDatabase(databaseURL);
+            fbDataSource.setNonStandardProperty("isc_dpb_lc_ctype", "WIN1251");
+            fbDataSource.setNonStandardProperty("isc_dpb_user_name", "artyom.smirnov@red-soft.ru");
+            fbDataSource.setNonStandardProperty("isc_dpb_certificate", "testuser.cer");
+            fbDataSource.setNonStandardProperty("isc_dpb_repository_pin", "12345678");
+            fbDataSource.setNonStandardProperty("isc_dpb_trusted_auth", "1");
+            fbDataSource.setNonStandardProperty("isc_dpb_multi_factor_auth", "1");
+
+            Connection conn;
+            try {
+                conn = fbDataSource.getConnection();
+
+                Statement statement = conn.createStatement();
+                ResultSet resultSet = statement.executeQuery("select current_user from rdb$database");
+                resultSet.next();
+                System.out.println("Current user is " + resultSet.getString(1));
+                assertEquals("artyom.smirnov@red-soft.ru", resultSet.getString(1).toLowerCase());
+                resultSet.close();
+                statement.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+                fail("Statement should not fail");
+            } finally {
+                fbDataSource.close();
+            }
         } finally {
-            fbDataSource.close();
+            dropDatabase(database);
         }
     }
 }
