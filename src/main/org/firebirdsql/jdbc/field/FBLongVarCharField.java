@@ -140,6 +140,8 @@ public class FBLongVarCharField extends FBStringField implements FBFlushableFiel
 
     @Override
     public void setCachedObject(FBFlushableField.CachedObject cachedObject) throws SQLException {
+        // setNull() to reset field to empty state
+        setNull();
         bytes = cachedObject.bytes;
         binaryStream = cachedObject.binaryStream;
         characterStream = cachedObject.characterStream;

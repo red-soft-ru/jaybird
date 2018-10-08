@@ -33,9 +33,6 @@ import static org.firebirdsql.common.JdbcResourceHelper.closeQuietly;
 import static org.junit.Assert.*;
 import static org.junit.Assume.assumeTrue;
 
-/**
- * @author <a href="mailto:mrotteveel@users.sourceforge.net">Mark Rotteveel</a>
- */
 public class FBDatabaseMetaDataPseudoColumnsTest {
 
     //@formatter:off
@@ -107,7 +104,7 @@ public class FBDatabaseMetaDataPseudoColumnsTest {
     }
 
     /**
-     * Tests the ordinal positions and types for the metadata columns of getColumns().
+     * Tests the ordinal positions and types for the metadata columns of getPseudoColumns().
      */
     @Test
     public void testPseudoColumnsMetaDataColumns() throws Exception {
@@ -232,7 +229,7 @@ public class FBDatabaseMetaDataPseudoColumnsTest {
     @Test
     public void testPattern_usingEscape_recordVersionOnly() throws Exception {
         List<Map<PseudoColumnMetaData, Object>> validationRules = supportsRecordVersion
-                ? Collections.singletonList(createRecordVersionValidationRules(NORMAL_TABLE_NAME, "NO"))
+                ? Collections.<Map<PseudoColumnMetaData, Object>>singletonList(createRecordVersionValidationRules(NORMAL_TABLE_NAME, "NO"))
                 : Collections.<Map<PseudoColumnMetaData, Object>>emptyList();
 
         ResultSet pseudoColumns = dbmd.getPseudoColumns(null, null, NORMAL_TABLE_NAME, "RDB$RECORD\\_VERSION");
@@ -242,7 +239,7 @@ public class FBDatabaseMetaDataPseudoColumnsTest {
     @Test
     public void testPattern_singleWildCard_recordVersionOnly() throws Exception {
         List<Map<PseudoColumnMetaData, Object>> validationRules = supportsRecordVersion
-                ? Collections.singletonList(createRecordVersionValidationRules(NORMAL_TABLE_NAME, "NO"))
+                ? Collections.<Map<PseudoColumnMetaData, Object>>singletonList(createRecordVersionValidationRules(NORMAL_TABLE_NAME, "NO"))
                 : Collections.<Map<PseudoColumnMetaData, Object>>emptyList();
 
         ResultSet pseudoColumns = dbmd.getPseudoColumns(null, null, NORMAL_TABLE_NAME, "RDB$RECORD_VERSION");

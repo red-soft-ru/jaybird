@@ -54,7 +54,7 @@ final class MetaDataTestSupport<T extends Enum<T> & MetaDataInfo> {
         this.metaDataInfoClass = metaDataInfoClass;
         this.requiredMetaData = requiredMetaData.isEmpty()
                 ? Collections.<T>emptySet()
-                : Collections.unmodifiableSet(EnumSet.copyOf(requiredMetaData));
+                : Collections.<T>unmodifiableSet(EnumSet.copyOf(requiredMetaData));
     }
 
     /**
