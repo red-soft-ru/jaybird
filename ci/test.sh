@@ -59,6 +59,14 @@ if [ "$ARCH" == "x86" ]; then
 	CPROCSP_ARCH=ia32
 fi
 
+echo Will use build $RDB_VERSION for testing
+
+echo "Downloading RedDatabase $RDB_BUILD_ID"
+(curl -s "$RDB_URL" -o /tmp/installer.bin && chmod +x /tmp/installer.bin) || die "Unable to download RedDatabase"
+
+echo "Installing RedDatabase"
+/tmp/installer.bin --DBAPasswd masterkey --mode unattended --architecture $ARCHITECTURE || die "Unable to install RedDatabase"
+
 KEYS_DIR=/var/opt/cprocsp/keys
 mkdir -p $KEYS_DIR/firebird
 chmod 700 $KEYS_DIR/firebird
@@ -72,13 +80,6 @@ sudo -u firebird /opt/cprocsp/bin/$CPROCSP_ARCH/csptest -passwd -cont '\\.\HDIMA
 
 cp fbt-repository/files/cert/Смирнов.cer ./testuser.cer
 
-echo Will use build $RDB_VERSION for testing
-
-echo "Downloading RedDatabase $RDB_BUILD_ID"
-(curl -s "$RDB_URL" -o /tmp/installer.bin && chmod +x /tmp/installer.bin) || die "Unable to download RedDatabase"
-
-echo "Installing RedDatabase"
-/tmp/installer.bin --DBAPasswd masterkey --mode unattended --architecture $ARCHITECTURE || die "Unable to install RedDatabase"
 chmod 777 $TEST_DIR
 
 sed -i 's/#VerifyCertChain = 1/VerifyCertChain = 0/g' "${INSTALLDIR}/firebird.conf"
