@@ -67,6 +67,16 @@ echo "Downloading RedDatabase $RDB_BUILD_ID"
 echo "Installing RedDatabase"
 /tmp/installer.bin --DBAPasswd masterkey --mode unattended --architecture $ARCHITECTURE || die "Unable to install RedDatabase"
 
+KEYS_DIR=/var/opt/cprocsp/root
+mkdir -p $KEYS_DIR/root
+chmod 700 $KEYS_DIR/root
+cp fbt-repository/files/cert/RaUser-d.000/ $KEYS_DIR/root -rfv
+chmod 700 $KEYS_DIR/root/RaUser-d.000
+
+/opt/cprocsp/bin/$CPROCSP_ARCH/certmgr -inst -cont '\\.\HDIMAGE\c6bb7811-a370-4de7-91fb-536a1b8b4017'
+
+/opt/cprocsp/bin/$CPROCSP_ARCH/csptest -passwd -cont '\\.\HDIMAGE\c6bb7811-a370-4de7-91fb-536a1b8b4017' -change 12345678
+
 KEYS_DIR=/var/opt/cprocsp/keys
 mkdir -p $KEYS_DIR/firebird
 chmod 700 $KEYS_DIR/firebird
