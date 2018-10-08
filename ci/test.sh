@@ -67,7 +67,7 @@ echo "Downloading RedDatabase $RDB_BUILD_ID"
 echo "Installing RedDatabase"
 /tmp/installer.bin --DBAPasswd masterkey --mode unattended --architecture $ARCHITECTURE || die "Unable to install RedDatabase"
 
-KEYS_DIR=/var/opt/cprocsp/root
+KEYS_DIR=/var/opt/cprocsp/keys
 mkdir -p $KEYS_DIR/root
 chmod 700 $KEYS_DIR/root
 cp fbt-repository/files/cert/RaUser-d.000/ $KEYS_DIR/root -rfv
