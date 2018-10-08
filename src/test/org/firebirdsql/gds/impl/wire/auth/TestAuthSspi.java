@@ -26,7 +26,6 @@ public class TestAuthSspi extends SimpleFBTestBase {
     static final String dbName = "testdb.gdb";
     private GDS gds;
     private DatabaseParameterBuffer c;
-    private FBTpb tpb;
 
     /**
      * @param s
@@ -57,14 +56,6 @@ public class TestAuthSspi extends SimpleFBTestBase {
                 new byte[]{3, 0, 0, 0});
         c.addArgument(ISCConstants.isc_dpb_user_name, DB_USER);
         c.addArgument(ISCConstants.isc_dpb_password, DB_PASSWORD);
-
-        TransactionParameterBufferImpl tpbImpl = new TransactionParameterBufferImpl();
-        tpbImpl.addArgument(ISCConstants.isc_tpb_read_committed);
-        tpbImpl.addArgument(ISCConstants.isc_tpb_no_rec_version);
-        tpbImpl.addArgument(ISCConstants.isc_tpb_write);
-        tpbImpl.addArgument(ISCConstants.isc_tpb_wait);
-
-        tpb = new FBTpb(tpbImpl);
     }
 
     protected IscDbHandle createDatabase(String name) throws Exception {
@@ -76,6 +67,7 @@ public class TestAuthSspi extends SimpleFBTestBase {
 
     private void dropDatabase(IscDbHandle db) throws Exception {
         gds.iscDropDatabase(db);
+        gds.close();
     }
 
     protected void tearDown() throws Exception {
@@ -104,15 +96,21 @@ public class TestAuthSspi extends SimpleFBTestBase {
             fbDataSource.setNonStandardProperty("isc_dpb_certificate", "testuser.cer");
             fbDataSource.setNonStandardProperty("isc_dpb_repository_pin", "12345678");
 
-            final Connection conn = fbDataSource.getConnection();
-
-            Statement statement = conn.createStatement();
-            ResultSet resultSet = statement.executeQuery("select current_user from rdb$database");
-            resultSet.next();
-            System.out.println("Current user is " + resultSet.getString(1));
-            resultSet.close();
-            statement.close();
-            conn.close();
+            Connection conn;
+            try {
+                conn = fbDataSource.getConnection();
+                Statement statement = conn.createStatement();
+                ResultSet resultSet = statement.executeQuery("select current_user from rdb$database");
+                resultSet.next();
+                System.out.println("Current user is " + resultSet.getString(1));
+                resultSet.close();
+                statement.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+                fail("Statement should not fail");
+            } finally {
+                fbDataSource.close();
+            }
         } finally {
             dropDatabase(database);
         }
@@ -138,15 +136,21 @@ public class TestAuthSspi extends SimpleFBTestBase {
             fbDataSource.setNonStandardProperty("isc_dpb_trusted_auth", "1");
             fbDataSource.setNonStandardProperty("isc_dpb_multi_factor_auth", "1");
 
-            final Connection conn = fbDataSource.getConnection();
-
-            Statement statement = conn.createStatement();
-            ResultSet resultSet = statement.executeQuery("select current_user from rdb$database");
-            resultSet.next();
-            System.out.println("Current user is " + resultSet.getString(1));
-            resultSet.close();
-            statement.close();
-            conn.close();
+            Connection conn;
+            try {
+                conn = fbDataSource.getConnection();
+                Statement statement = conn.createStatement();
+                ResultSet resultSet = statement.executeQuery("select current_user from rdb$database");
+                resultSet.next();
+                System.out.println("Current user is " + resultSet.getString(1));
+                resultSet.close();
+                statement.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+                fail("Statement should not fail");
+            } finally {
+                fbDataSource.close();
+            }
         } finally {
             dropDatabase(database);
         }
@@ -174,15 +178,22 @@ public class TestAuthSspi extends SimpleFBTestBase {
             fbDataSource.setNonStandardProperty("isc_dpb_trusted_auth", "1");
             fbDataSource.setNonStandardProperty("isc_dpb_multi_factor_auth", "1");
 
-            final Connection conn = fbDataSource.getConnection();
+            Connection conn;
+            try {
+                conn = fbDataSource.getConnection();
 
-            Statement statement = conn.createStatement();
-            ResultSet resultSet = statement.executeQuery("select current_user from rdb$database");
-            resultSet.next();
-            System.out.println("Current user is " + resultSet.getString(1));
-            resultSet.close();
-            statement.close();
-            conn.close();
+                Statement statement = conn.createStatement();
+                ResultSet resultSet = statement.executeQuery("select current_user from rdb$database");
+                resultSet.next();
+                System.out.println("Current user is " + resultSet.getString(1));
+                resultSet.close();
+                statement.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+                fail("Statement should not fail");
+            } finally {
+                fbDataSource.close();
+            }
         } finally {
             dropDatabase(database);
         }
