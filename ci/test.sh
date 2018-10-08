@@ -60,14 +60,15 @@ if [ "$ARCH" == "x86" ]; then
 fi
 
 KEYS_DIR=/var/opt/cprocsp/keys
-mkdir -p $KEYS_DIR/root
-chmod 700 $KEYS_DIR/root
-cp fbt-repository/files/cert/RaUser-d.000/ $KEYS_DIR/root -rfv
-chmod 700 $KEYS_DIR/root/RaUser-d.000
+mkdir -p $KEYS_DIR/firebird
+chmod 700 $KEYS_DIR/firebird
+cp fbt-repository/files/cert/RaUser-d.000/ $KEYS_DIR/firebird -rfv
+chmod 700 $KEYS_DIR/firebird/RaUser-d.000
+chown firebird:firebird -R $KEYS_DIR/firebird
 
-/opt/cprocsp/bin/$CPROCSP_ARCH/certmgr -inst -cont '\\.\HDIMAGE\c6bb7811-a370-4de7-91fb-536a1b8b4017'
+sudo -u firebird /opt/cprocsp/bin/$CPROCSP_ARCH/certmgr -inst -cont '\\.\HDIMAGE\c6bb7811-a370-4de7-91fb-536a1b8b4017'
 
-/opt/cprocsp/bin/$CPROCSP_ARCH/csptest -passwd -cont '\\.\HDIMAGE\c6bb7811-a370-4de7-91fb-536a1b8b4017' -change 12345678
+sudo -u firebird /opt/cprocsp/bin/$CPROCSP_ARCH/csptest -passwd -cont '\\.\HDIMAGE\c6bb7811-a370-4de7-91fb-536a1b8b4017' -change 12345678
 
 cp fbt-repository/files/cert/Смирнов.cer ./testuser.cer
 
