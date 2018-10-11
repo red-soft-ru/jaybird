@@ -198,84 +198,84 @@ public class TestIBatchImpl extends AbstractBatchTest {
         statement.execute(RowValue.EMPTY_ROW_VALUE);
         statement.fetchRows(1);
         RowValue fieldValues = statementListener.getRows().get(0);
-        byte[] fieldData = fieldValues.getFieldValue(0).getFieldData();
+        byte[] fieldData = fieldValues.getFieldData(0);
         assertEquals(testInteger,
                 statement.getFieldDescriptor().getFieldDescriptor(0).getDatatypeCoder().decodeInt(fieldData));
-        fieldData = fieldValues.getFieldValue(1).getFieldData();
+        fieldData = fieldValues.getFieldData(1);
         assertEquals(testVarchar,
                 statement.getFieldDescriptor().getFieldDescriptor(1).getDatatypeCoder().decodeString(fieldData));
-        fieldData = fieldValues.getFieldValue(2).getFieldData();
+        fieldData = fieldValues.getFieldData(2);
         assertEquals(testVarchar,
                 statement.getFieldDescriptor().getFieldDescriptor(2).getDatatypeCoder().decodeString(fieldData));
-        fieldData = fieldValues.getFieldValue(3).getFieldData();
+        fieldData = fieldValues.getFieldData(3);
         assertEquals(testVarchar,
                 statement.getFieldDescriptor().getFieldDescriptor(3).getDatatypeCoder().decodeString(fieldData));
-        fieldData = fieldValues.getFieldValue(4).getFieldData();
+        fieldData = fieldValues.getFieldData(4);
         assertEquals(testBigInteger,
                 statement.getFieldDescriptor().getFieldDescriptor(4).getDatatypeCoder().decodeLong(fieldData));
-        fieldData = fieldValues.getFieldValue(5).getFieldData();
+        fieldData = fieldValues.getFieldData(5);
         assertEquals(testInteger,
                 statement.getFieldDescriptor().getFieldDescriptor(5).getDatatypeCoder().decodeInt(fieldData));
-        fieldData = fieldValues.getFieldValue(6).getFieldData();
+        fieldData = fieldValues.getFieldData(6);
         assertEquals(testShort,
                 statement.getFieldDescriptor().getFieldDescriptor(6).getDatatypeCoder().decodeShort(fieldData));
-        fieldData = fieldValues.getFieldValue(7).getFieldData();
+        fieldData = fieldValues.getFieldData(7);
         assertEquals(testFloat,
                 statement.getFieldDescriptor().getFieldDescriptor(7).getDatatypeCoder().decodeFloat(fieldData),
                 0);
-        fieldData = fieldValues.getFieldValue(8).getFieldData();
+        fieldData = fieldValues.getFieldData(8);
         assertEquals(testDouble,
                 statement.getFieldDescriptor().getFieldDescriptor(8).getDatatypeCoder().decodeDouble(fieldData),
                 0);
-        fieldData = fieldValues.getFieldValue(9).getFieldData();
+        fieldData = fieldValues.getFieldData(9);
         short decodeShort = statement.getFieldDescriptor().getFieldDescriptor(9).getDatatypeCoder().decodeShort(fieldData);
         BigDecimal decimal = BigDecimal.valueOf(decodeShort, -statement.getFieldDescriptor().getFieldDescriptor(9).getScale());
         float floatValue = decimal.floatValue();
         assertEquals(testSmallintNumeric,
                 floatValue,
                 0.001);
-        fieldData = fieldValues.getFieldValue(10).getFieldData();
+        fieldData = fieldValues.getFieldData(10);
         int decodeInt = statement.getFieldDescriptor().getFieldDescriptor(10).getDatatypeCoder().decodeInt(fieldData);
         decimal = BigDecimal.valueOf(decodeInt, -statement.getFieldDescriptor().getFieldDescriptor(10).getScale());
         double doubleValue = decimal.doubleValue();
         assertEquals(testSmallintNumeric,
                 doubleValue,
                 0.001);
-        fieldData = fieldValues.getFieldValue(11).getFieldData();
+        fieldData = fieldValues.getFieldData(11);
         decodeInt = statement.getFieldDescriptor().getFieldDescriptor(11).getDatatypeCoder().decodeInt(fieldData);
         decimal = BigDecimal.valueOf(decodeInt, -statement.getFieldDescriptor().getFieldDescriptor(11).getScale());
         doubleValue = decimal.doubleValue();
         assertEquals(testIntNumeric,
                 doubleValue,
                 0);
-        fieldData = fieldValues.getFieldValue(12).getFieldData();
+        fieldData = fieldValues.getFieldData(12);
         decodeInt = statement.getFieldDescriptor().getFieldDescriptor(12).getDatatypeCoder().decodeInt(fieldData);
         decimal = BigDecimal.valueOf(decodeInt, -statement.getFieldDescriptor().getFieldDescriptor(12).getScale());
         doubleValue = decimal.doubleValue();
         assertEquals(testIntNumeric2,
                 doubleValue,
                 0);
-        fieldData = fieldValues.getFieldValue(13).getFieldData();
+        fieldData = fieldValues.getFieldData(13);
         long decodeLong = statement.getFieldDescriptor().getFieldDescriptor(13).getDatatypeCoder().decodeLong(fieldData);
         decimal = BigDecimal.valueOf(decodeLong, -statement.getFieldDescriptor().getFieldDescriptor(13).getScale());
         doubleValue = decimal.doubleValue();
         assertEquals(testBigintNumeric,
                 doubleValue,
                 0);
-        fieldData = fieldValues.getFieldValue(14).getFieldData();
+        fieldData = fieldValues.getFieldData(14);
         decodeLong = statement.getFieldDescriptor().getFieldDescriptor(14).getDatatypeCoder().decodeLong(fieldData);
         decimal = BigDecimal.valueOf(decodeLong, -statement.getFieldDescriptor().getFieldDescriptor(14).getScale());
         doubleValue = decimal.doubleValue();
         assertEquals(testBigintNumeric2,
                 doubleValue,
                 0);
-        fieldData = fieldValues.getFieldValue(15).getFieldData();
+        fieldData = fieldValues.getFieldData(15);
         assertEquals(testDate,
                 statement.getFieldDescriptor().getFieldDescriptor(15).getDatatypeCoder().decodeDate(fieldData));
-        fieldData = fieldValues.getFieldValue(16).getFieldData();
+        fieldData = fieldValues.getFieldData(16);
         assertEquals(testTime,
                 statement.getFieldDescriptor().getFieldDescriptor(16).getDatatypeCoder().decodeTime(fieldData));
-        fieldData = fieldValues.getFieldValue(17).getFieldData();
+        fieldData = fieldValues.getFieldData(17);
         assertEquals(testTimestamp,
                 statement.getFieldDescriptor().getFieldDescriptor(17).getDatatypeCoder().decodeTimestamp(fieldData));
     }
@@ -360,93 +360,93 @@ public class TestIBatchImpl extends AbstractBatchTest {
         statement.execute(RowValue.EMPTY_ROW_VALUE);
         statement.fetchRows(1);
         RowValue fieldValues = statementListener.getRows().get(0);
-        byte[] fieldData = fieldValues.getFieldValue(0).getFieldData();
+        byte[] fieldData = fieldValues.getFieldData(0);
         assertEquals(testInteger,
                 statement.getFieldDescriptor().getFieldDescriptor(0).getDatatypeCoder().decodeInt(fieldData));
-        fieldData = fieldValues.getFieldValue(1).getFieldData();
+        fieldData = fieldValues.getFieldData(1);
         assertEquals(testVarchar,
                 statement.getFieldDescriptor().getFieldDescriptor(1).getDatatypeCoder().decodeString(fieldData));
-        fieldData = fieldValues.getFieldValue(2).getFieldData();
+        fieldData = fieldValues.getFieldData(2);
         assertEquals(testVarchar,
                 statement.getFieldDescriptor().getFieldDescriptor(2).getDatatypeCoder().decodeString(fieldData));
-        fieldData = fieldValues.getFieldValue(3).getFieldData();
+        fieldData = fieldValues.getFieldData(3);
         assertEquals(testVarchar,
                 statement.getFieldDescriptor().getFieldDescriptor(3).getDatatypeCoder().decodeString(fieldData));
-        fieldData = fieldValues.getFieldValue(4).getFieldData();
+        fieldData = fieldValues.getFieldData(4);
         assertEquals(testBigInteger,
                 statement.getFieldDescriptor().getFieldDescriptor(4).getDatatypeCoder().decodeLong(fieldData));
-        fieldData = fieldValues.getFieldValue(5).getFieldData();
+        fieldData = fieldValues.getFieldData(5);
         assertEquals(testInteger,
                 statement.getFieldDescriptor().getFieldDescriptor(5).getDatatypeCoder().decodeInt(fieldData));
-        fieldData = fieldValues.getFieldValue(6).getFieldData();
+        fieldData = fieldValues.getFieldData(6);
         assertEquals(testShort,
                 statement.getFieldDescriptor().getFieldDescriptor(6).getDatatypeCoder().decodeShort(fieldData));
-        fieldData = fieldValues.getFieldValue(7).getFieldData();
+        fieldData = fieldValues.getFieldData(7);
         assertEquals(testFloat,
                 statement.getFieldDescriptor().getFieldDescriptor(7).getDatatypeCoder().decodeFloat(fieldData),
                 0);
-        fieldData = fieldValues.getFieldValue(8).getFieldData();
+        fieldData = fieldValues.getFieldData(8);
         assertEquals(testDouble,
                 statement.getFieldDescriptor().getFieldDescriptor(8).getDatatypeCoder().decodeDouble(fieldData),
                 0);
-        fieldData = fieldValues.getFieldValue(9).getFieldData();
+        fieldData = fieldValues.getFieldData(9);
         short decodeShort = statement.getFieldDescriptor().getFieldDescriptor(9).getDatatypeCoder().decodeShort(fieldData);
         BigDecimal decimal = BigDecimal.valueOf(decodeShort, -statement.getFieldDescriptor().getFieldDescriptor(9).getScale());
         float floatValue = decimal.floatValue();
         assertEquals(testSmallintNumeric,
                 floatValue,
                 0.001);
-        fieldData = fieldValues.getFieldValue(10).getFieldData();
+        fieldData = fieldValues.getFieldData(10);
         int decodeInt = statement.getFieldDescriptor().getFieldDescriptor(10).getDatatypeCoder().decodeInt(fieldData);
         decimal = BigDecimal.valueOf(decodeInt, -statement.getFieldDescriptor().getFieldDescriptor(10).getScale());
         double doubleValue = decimal.doubleValue();
         assertEquals(testSmallintNumeric,
                 doubleValue,
                 0.001);
-        fieldData = fieldValues.getFieldValue(11).getFieldData();
+        fieldData = fieldValues.getFieldData(11);
         decodeInt = statement.getFieldDescriptor().getFieldDescriptor(11).getDatatypeCoder().decodeInt(fieldData);
         decimal = BigDecimal.valueOf(decodeInt, -statement.getFieldDescriptor().getFieldDescriptor(11).getScale());
         doubleValue = decimal.doubleValue();
         assertEquals(testIntNumeric,
                 doubleValue,
                 0);
-        fieldData = fieldValues.getFieldValue(12).getFieldData();
+        fieldData = fieldValues.getFieldData(12);
         decodeInt = statement.getFieldDescriptor().getFieldDescriptor(12).getDatatypeCoder().decodeInt(fieldData);
         decimal = BigDecimal.valueOf(decodeInt, -statement.getFieldDescriptor().getFieldDescriptor(12).getScale());
         doubleValue = decimal.doubleValue();
         assertEquals(testIntNumeric2,
                 doubleValue,
                 0);
-        fieldData = fieldValues.getFieldValue(13).getFieldData();
+        fieldData = fieldValues.getFieldData(13);
         long decodeLong = statement.getFieldDescriptor().getFieldDescriptor(13).getDatatypeCoder().decodeLong(fieldData);
         decimal = BigDecimal.valueOf(decodeLong, -statement.getFieldDescriptor().getFieldDescriptor(13).getScale());
         doubleValue = decimal.doubleValue();
         assertEquals(testBigintNumeric,
                 doubleValue,
                 0);
-        fieldData = fieldValues.getFieldValue(14).getFieldData();
+        fieldData = fieldValues.getFieldData(14);
         decodeLong = statement.getFieldDescriptor().getFieldDescriptor(14).getDatatypeCoder().decodeLong(fieldData);
         decimal = BigDecimal.valueOf(decodeLong, -statement.getFieldDescriptor().getFieldDescriptor(14).getScale());
         doubleValue = decimal.doubleValue();
         assertEquals(testBigintNumeric2,
                 doubleValue,
                 0);
-        fieldData = fieldValues.getFieldValue(15).getFieldData();
+        fieldData = fieldValues.getFieldData(15);
         assertEquals(testDate,
                 statement.getFieldDescriptor().getFieldDescriptor(15).getDatatypeCoder().decodeDate(fieldData));
-        fieldData = fieldValues.getFieldValue(16).getFieldData();
+        fieldData = fieldValues.getFieldData(16);
         assertEquals(testTime,
                 statement.getFieldDescriptor().getFieldDescriptor(16).getDatatypeCoder().decodeTime(fieldData));
-        fieldData = fieldValues.getFieldValue(17).getFieldData();
+        fieldData = fieldValues.getFieldData(17);
         assertEquals(testTimestamp,
                 statement.getFieldDescriptor().getFieldDescriptor(17).getDatatypeCoder().decodeTimestamp(fieldData));
-        fieldData = fieldValues.getFieldValue(18).getFieldData();
+        fieldData = fieldValues.getFieldData(18);
         blobID = statement.getFieldDescriptor().getFieldDescriptor(18).getDatatypeCoder().decodeLong(fieldData);
         checkBlob(blobID, INSERT_QUERY_WITH_BLOBS.getBytes());
-        fieldData = fieldValues.getFieldValue(19).getFieldData();
+        fieldData = fieldValues.getFieldData(19);
         blobID = statement.getFieldDescriptor().getFieldDescriptor(19).getDatatypeCoder().decodeLong(fieldData);
         checkBlob(blobID, INSERT_QUERY_WITH_BLOBS.getBytes());
-        fieldData = fieldValues.getFieldValue(20).getFieldData();
+        fieldData = fieldValues.getFieldData(20);
         blobID = statement.getFieldDescriptor().getFieldDescriptor(20).getDatatypeCoder().decodeLong(fieldData);
         checkBlob(blobID, INSERT_QUERY_WITH_BLOBS.getBytes());
     }
@@ -567,84 +567,84 @@ public class TestIBatchImpl extends AbstractBatchTest {
         statement.fetchRows(1);
         statement.fetchRows(1);
         RowValue fieldValues = statementListener.getRows().get(2);
-        byte[] fieldData = fieldValues.getFieldValue(0).getFieldData();
+        byte[] fieldData = fieldValues.getFieldData(0);
         assertEquals(testInteger,
                 statement.getFieldDescriptor().getFieldDescriptor(0).getDatatypeCoder().decodeInt(fieldData));
-        fieldData = fieldValues.getFieldValue(1).getFieldData();
+        fieldData = fieldValues.getFieldData(1);
         assertEquals(testVarchar,
                 statement.getFieldDescriptor().getFieldDescriptor(1).getDatatypeCoder().decodeString(fieldData));
-        fieldData = fieldValues.getFieldValue(2).getFieldData();
+        fieldData = fieldValues.getFieldData(2);
         assertEquals(testVarchar,
                 statement.getFieldDescriptor().getFieldDescriptor(2).getDatatypeCoder().decodeString(fieldData));
-        fieldData = fieldValues.getFieldValue(3).getFieldData();
+        fieldData = fieldValues.getFieldData(3);
         assertEquals(testVarchar,
                 statement.getFieldDescriptor().getFieldDescriptor(3).getDatatypeCoder().decodeString(fieldData));
-        fieldData = fieldValues.getFieldValue(4).getFieldData();
+        fieldData = fieldValues.getFieldData(4);
         assertEquals(testBigInteger,
                 statement.getFieldDescriptor().getFieldDescriptor(4).getDatatypeCoder().decodeLong(fieldData));
-        fieldData = fieldValues.getFieldValue(5).getFieldData();
+        fieldData = fieldValues.getFieldData(5);
         assertEquals(testInteger,
                 statement.getFieldDescriptor().getFieldDescriptor(5).getDatatypeCoder().decodeInt(fieldData));
-        fieldData = fieldValues.getFieldValue(6).getFieldData();
+        fieldData = fieldValues.getFieldData(6);
         assertEquals(testShort,
                 statement.getFieldDescriptor().getFieldDescriptor(6).getDatatypeCoder().decodeShort(fieldData));
-        fieldData = fieldValues.getFieldValue(7).getFieldData();
+        fieldData = fieldValues.getFieldData(7);
         assertEquals(testFloat,
                 statement.getFieldDescriptor().getFieldDescriptor(7).getDatatypeCoder().decodeFloat(fieldData),
                 0);
-        fieldData = fieldValues.getFieldValue(8).getFieldData();
+        fieldData = fieldValues.getFieldData(8);
         assertEquals(testDouble,
                 statement.getFieldDescriptor().getFieldDescriptor(8).getDatatypeCoder().decodeDouble(fieldData),
                 0);
-        fieldData = fieldValues.getFieldValue(9).getFieldData();
+        fieldData = fieldValues.getFieldData(9);
         short decodeShort = statement.getFieldDescriptor().getFieldDescriptor(9).getDatatypeCoder().decodeShort(fieldData);
         BigDecimal decimal = BigDecimal.valueOf(decodeShort, -statement.getFieldDescriptor().getFieldDescriptor(9).getScale());
         float floatValue = decimal.floatValue();
         assertEquals(testSmallintNumeric,
                 floatValue,
                 0.001);
-        fieldData = fieldValues.getFieldValue(10).getFieldData();
+        fieldData = fieldValues.getFieldData(10);
         int decodeInt = statement.getFieldDescriptor().getFieldDescriptor(10).getDatatypeCoder().decodeInt(fieldData);
         decimal = BigDecimal.valueOf(decodeInt, -statement.getFieldDescriptor().getFieldDescriptor(10).getScale());
         double doubleValue = decimal.doubleValue();
         assertEquals(testSmallintNumeric,
                 doubleValue,
                 0.001);
-        fieldData = fieldValues.getFieldValue(11).getFieldData();
+        fieldData = fieldValues.getFieldData(11);
         decodeInt = statement.getFieldDescriptor().getFieldDescriptor(11).getDatatypeCoder().decodeInt(fieldData);
         decimal = BigDecimal.valueOf(decodeInt, -statement.getFieldDescriptor().getFieldDescriptor(11).getScale());
         doubleValue = decimal.doubleValue();
         assertEquals(testIntNumeric,
                 doubleValue,
                 0);
-        fieldData = fieldValues.getFieldValue(12).getFieldData();
+        fieldData = fieldValues.getFieldData(12);
         decodeInt = statement.getFieldDescriptor().getFieldDescriptor(12).getDatatypeCoder().decodeInt(fieldData);
         decimal = BigDecimal.valueOf(decodeInt, -statement.getFieldDescriptor().getFieldDescriptor(12).getScale());
         doubleValue = decimal.doubleValue();
         assertEquals(testIntNumeric2,
                 doubleValue,
                 0);
-        fieldData = fieldValues.getFieldValue(13).getFieldData();
+        fieldData = fieldValues.getFieldData(13);
         long decodeLong = statement.getFieldDescriptor().getFieldDescriptor(13).getDatatypeCoder().decodeLong(fieldData);
         decimal = BigDecimal.valueOf(decodeLong, -statement.getFieldDescriptor().getFieldDescriptor(13).getScale());
         doubleValue = decimal.doubleValue();
         assertEquals(testBigintNumeric,
                 doubleValue,
                 0);
-        fieldData = fieldValues.getFieldValue(14).getFieldData();
+        fieldData = fieldValues.getFieldData(14);
         decodeLong = statement.getFieldDescriptor().getFieldDescriptor(14).getDatatypeCoder().decodeLong(fieldData);
         decimal = BigDecimal.valueOf(decodeLong, -statement.getFieldDescriptor().getFieldDescriptor(14).getScale());
         doubleValue = decimal.doubleValue();
         assertEquals(testBigintNumeric2,
                 doubleValue,
                 0);
-        fieldData = fieldValues.getFieldValue(15).getFieldData();
+        fieldData = fieldValues.getFieldData(15);
         assertEquals(testDate,
                 statement.getFieldDescriptor().getFieldDescriptor(15).getDatatypeCoder().decodeDate(fieldData));
-        fieldData = fieldValues.getFieldValue(16).getFieldData();
+        fieldData = fieldValues.getFieldData(16);
         assertEquals(testTime,
                 statement.getFieldDescriptor().getFieldDescriptor(16).getDatatypeCoder().decodeTime(fieldData));
-        fieldData = fieldValues.getFieldValue(17).getFieldData();
+        fieldData = fieldValues.getFieldData(17);
         assertEquals(testTimestamp,
                 statement.getFieldDescriptor().getFieldDescriptor(17).getDatatypeCoder().decodeTimestamp(fieldData));
     }
@@ -789,93 +789,93 @@ public class TestIBatchImpl extends AbstractBatchTest {
         statement.fetchRows(1);
         statement.fetchRows(1);
         RowValue fieldValues = statementListener.getRows().get(2);
-        byte[] fieldData = fieldValues.getFieldValue(0).getFieldData();
+        byte[] fieldData = fieldValues.getFieldData(0);
         assertEquals(testInteger,
                 statement.getFieldDescriptor().getFieldDescriptor(0).getDatatypeCoder().decodeInt(fieldData));
-        fieldData = fieldValues.getFieldValue(1).getFieldData();
+        fieldData = fieldValues.getFieldData(1);
         assertEquals(testVarchar,
                 statement.getFieldDescriptor().getFieldDescriptor(1).getDatatypeCoder().decodeString(fieldData));
-        fieldData = fieldValues.getFieldValue(2).getFieldData();
+        fieldData = fieldValues.getFieldData(2);
         assertEquals(testVarchar,
                 statement.getFieldDescriptor().getFieldDescriptor(2).getDatatypeCoder().decodeString(fieldData));
-        fieldData = fieldValues.getFieldValue(3).getFieldData();
+        fieldData = fieldValues.getFieldData(3);
         assertEquals(testVarchar,
                 statement.getFieldDescriptor().getFieldDescriptor(3).getDatatypeCoder().decodeString(fieldData));
-        fieldData = fieldValues.getFieldValue(4).getFieldData();
+        fieldData = fieldValues.getFieldData(4);
         assertEquals(testBigInteger,
                 statement.getFieldDescriptor().getFieldDescriptor(4).getDatatypeCoder().decodeLong(fieldData));
-        fieldData = fieldValues.getFieldValue(5).getFieldData();
+        fieldData = fieldValues.getFieldData(5);
         assertEquals(testInteger,
                 statement.getFieldDescriptor().getFieldDescriptor(5).getDatatypeCoder().decodeInt(fieldData));
-        fieldData = fieldValues.getFieldValue(6).getFieldData();
+        fieldData = fieldValues.getFieldData(6);
         assertEquals(testShort,
                 statement.getFieldDescriptor().getFieldDescriptor(6).getDatatypeCoder().decodeShort(fieldData));
-        fieldData = fieldValues.getFieldValue(7).getFieldData();
+        fieldData = fieldValues.getFieldData(7);
         assertEquals(testFloat,
                 statement.getFieldDescriptor().getFieldDescriptor(7).getDatatypeCoder().decodeFloat(fieldData),
                 0);
-        fieldData = fieldValues.getFieldValue(8).getFieldData();
+        fieldData = fieldValues.getFieldData(8);
         assertEquals(testDouble,
                 statement.getFieldDescriptor().getFieldDescriptor(8).getDatatypeCoder().decodeDouble(fieldData),
                 0);
-        fieldData = fieldValues.getFieldValue(9).getFieldData();
+        fieldData = fieldValues.getFieldData(9);
         short decodeShort = statement.getFieldDescriptor().getFieldDescriptor(9).getDatatypeCoder().decodeShort(fieldData);
         BigDecimal decimal = BigDecimal.valueOf(decodeShort, -statement.getFieldDescriptor().getFieldDescriptor(9).getScale());
         float floatValue = decimal.floatValue();
         assertEquals(testSmallintNumeric,
                 floatValue,
                 0.001);
-        fieldData = fieldValues.getFieldValue(10).getFieldData();
+        fieldData = fieldValues.getFieldData(10);
         int decodeInt = statement.getFieldDescriptor().getFieldDescriptor(10).getDatatypeCoder().decodeInt(fieldData);
         decimal = BigDecimal.valueOf(decodeInt, -statement.getFieldDescriptor().getFieldDescriptor(10).getScale());
         double doubleValue = decimal.doubleValue();
         assertEquals(testSmallintNumeric,
                 doubleValue,
                 0.001);
-        fieldData = fieldValues.getFieldValue(11).getFieldData();
+        fieldData = fieldValues.getFieldData(11);
         decodeInt = statement.getFieldDescriptor().getFieldDescriptor(11).getDatatypeCoder().decodeInt(fieldData);
         decimal = BigDecimal.valueOf(decodeInt, -statement.getFieldDescriptor().getFieldDescriptor(11).getScale());
         doubleValue = decimal.doubleValue();
         assertEquals(testIntNumeric,
                 doubleValue,
                 0);
-        fieldData = fieldValues.getFieldValue(12).getFieldData();
+        fieldData = fieldValues.getFieldData(12);
         decodeInt = statement.getFieldDescriptor().getFieldDescriptor(12).getDatatypeCoder().decodeInt(fieldData);
         decimal = BigDecimal.valueOf(decodeInt, -statement.getFieldDescriptor().getFieldDescriptor(12).getScale());
         doubleValue = decimal.doubleValue();
         assertEquals(testIntNumeric2,
                 doubleValue,
                 0);
-        fieldData = fieldValues.getFieldValue(13).getFieldData();
+        fieldData = fieldValues.getFieldData(13);
         long decodeLong = statement.getFieldDescriptor().getFieldDescriptor(13).getDatatypeCoder().decodeLong(fieldData);
         decimal = BigDecimal.valueOf(decodeLong, -statement.getFieldDescriptor().getFieldDescriptor(13).getScale());
         doubleValue = decimal.doubleValue();
         assertEquals(testBigintNumeric,
                 doubleValue,
                 0);
-        fieldData = fieldValues.getFieldValue(14).getFieldData();
+        fieldData = fieldValues.getFieldData(14);
         decodeLong = statement.getFieldDescriptor().getFieldDescriptor(14).getDatatypeCoder().decodeLong(fieldData);
         decimal = BigDecimal.valueOf(decodeLong, -statement.getFieldDescriptor().getFieldDescriptor(14).getScale());
         doubleValue = decimal.doubleValue();
         assertEquals(testBigintNumeric2,
                 doubleValue,
                 0);
-        fieldData = fieldValues.getFieldValue(15).getFieldData();
+        fieldData = fieldValues.getFieldData(15);
         assertEquals(testDate,
                 statement.getFieldDescriptor().getFieldDescriptor(15).getDatatypeCoder().decodeDate(fieldData));
-        fieldData = fieldValues.getFieldValue(16).getFieldData();
+        fieldData = fieldValues.getFieldData(16);
         assertEquals(testTime,
                 statement.getFieldDescriptor().getFieldDescriptor(16).getDatatypeCoder().decodeTime(fieldData));
-        fieldData = fieldValues.getFieldValue(17).getFieldData();
+        fieldData = fieldValues.getFieldData(17);
         assertEquals(testTimestamp,
                 statement.getFieldDescriptor().getFieldDescriptor(17).getDatatypeCoder().decodeTimestamp(fieldData));
-        fieldData = fieldValues.getFieldValue(18).getFieldData();
+        fieldData = fieldValues.getFieldData(18);
         long blobID = statement.getFieldDescriptor().getFieldDescriptor(18).getDatatypeCoder().decodeLong(fieldData);
         checkBlob(blobID, testBytes);
-        fieldData = fieldValues.getFieldValue(19).getFieldData();
+        fieldData = fieldValues.getFieldData(19);
         blobID = statement.getFieldDescriptor().getFieldDescriptor(19).getDatatypeCoder().decodeLong(fieldData);
         checkBlob(blobID, testBytes);
-        fieldData = fieldValues.getFieldValue(20).getFieldData();
+        fieldData = fieldValues.getFieldData(20);
         blobID = statement.getFieldDescriptor().getFieldDescriptor(20).getDatatypeCoder().decodeLong(fieldData);
         checkBlob(blobID, testBytes);
     }
@@ -934,13 +934,13 @@ public class TestIBatchImpl extends AbstractBatchTest {
         statement.execute(RowValue.EMPTY_ROW_VALUE);
         statement.fetchRows(1);
         RowValue fieldValues = statementListener.getRows().get(0);
-        byte[] fieldData = fieldValues.getFieldValue(0).getFieldData();
+        byte[] fieldData = fieldValues.getFieldData(0);
         long blobID = statement.getFieldDescriptor().getFieldDescriptor(0).getDatatypeCoder().decodeLong(fieldData);
         checkBlob(blobID, d1.getBytes());
-        fieldData = fieldValues.getFieldValue(1).getFieldData();
+        fieldData = fieldValues.getFieldData(1);
         blobID = statement.getFieldDescriptor().getFieldDescriptor(1).getDatatypeCoder().decodeLong(fieldData);
         checkBlob(blobID, d2.getBytes());
-        fieldData = fieldValues.getFieldValue(2).getFieldData();
+        fieldData = fieldValues.getFieldData(2);
         blobID = statement.getFieldDescriptor().getFieldDescriptor(2).getDatatypeCoder().decodeLong(fieldData);
         checkBlob(blobID, d3.getBytes());
     }
@@ -1029,13 +1029,13 @@ public class TestIBatchImpl extends AbstractBatchTest {
         String allSegments = blobSegment1 + "\n" + blobSegment2 + "\n" + blobSegment3;
 
         RowValue fieldValues = statementListener.getRows().get(0);
-        byte[] fieldData = fieldValues.getFieldValue(0).getFieldData();
+        byte[] fieldData = fieldValues.getFieldData(0);
         long blobID = statement.getFieldDescriptor().getFieldDescriptor(0).getDatatypeCoder().decodeLong(fieldData);
         checkBlob(blobID, allSegments.getBytes());
-        fieldData = fieldValues.getFieldValue(1).getFieldData();
+        fieldData = fieldValues.getFieldData(1);
         blobID = statement.getFieldDescriptor().getFieldDescriptor(1).getDatatypeCoder().decodeLong(fieldData);
         checkBlob(blobID, allSegments.getBytes());
-        fieldData = fieldValues.getFieldValue(2).getFieldData();
+        fieldData = fieldValues.getFieldData(2);
         blobID = statement.getFieldDescriptor().getFieldDescriptor(2).getDatatypeCoder().decodeLong(fieldData);
         checkBlob(blobID, allSegments.getBytes());
     }
@@ -1208,13 +1208,13 @@ public class TestIBatchImpl extends AbstractBatchTest {
         String allSegments = blobSegment1 + "\n" + blobSegment2 + "\n" + blobSegment3;
 
         RowValue fieldValues = statementListener.getRows().get(1);
-        byte[] fieldData = fieldValues.getFieldValue(0).getFieldData();
+        byte[] fieldData = fieldValues.getFieldData(0);
         long blobID = statement.getFieldDescriptor().getFieldDescriptor(0).getDatatypeCoder().decodeLong(fieldData);
         checkBlob(blobID, allSegments.getBytes());
-        fieldData = fieldValues.getFieldValue(1).getFieldData();
+        fieldData = fieldValues.getFieldData(1);
         blobID = statement.getFieldDescriptor().getFieldDescriptor(1).getDatatypeCoder().decodeLong(fieldData);
         checkBlob(blobID, allSegments.getBytes());
-        fieldData = fieldValues.getFieldValue(2).getFieldData();
+        fieldData = fieldValues.getFieldData(2);
         blobID = statement.getFieldDescriptor().getFieldDescriptor(2).getDatatypeCoder().decodeLong(fieldData);
         checkBlob(blobID, allSegments.getBytes());
     }
@@ -1281,13 +1281,13 @@ public class TestIBatchImpl extends AbstractBatchTest {
         statement.fetchRows(1);
 
         RowValue fieldValues = statementListener.getRows().get(0);
-        byte[] fieldData = fieldValues.getFieldValue(0).getFieldData();
+        byte[] fieldData = fieldValues.getFieldData(0);
         long blobID = statement.getFieldDescriptor().getFieldDescriptor(0).getDatatypeCoder().decodeLong(fieldData);
         checkBlob(blobID, INSERT_QUERY_WITH_BLOBS.getBytes());
-        fieldData = fieldValues.getFieldValue(1).getFieldData();
+        fieldData = fieldValues.getFieldData(1);
         blobID = statement.getFieldDescriptor().getFieldDescriptor(1).getDatatypeCoder().decodeLong(fieldData);
         checkBlob(blobID, INSERT_QUERY_WITHOUT_BLOBS.getBytes());
-        fieldData = fieldValues.getFieldValue(2).getFieldData();
+        fieldData = fieldValues.getFieldData(2);
         blobID = statement.getFieldDescriptor().getFieldDescriptor(2).getDatatypeCoder().decodeLong(fieldData);
         checkBlob(blobID, INSERT_QUERY_ONLY_BLOBS.getBytes());
     }

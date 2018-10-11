@@ -25,7 +25,6 @@ import org.firebirdsql.gds.ISCConstants;
 import org.firebirdsql.gds.TransactionParameterBuffer;
 import org.firebirdsql.gds.impl.TransactionParameterBufferImpl;
 import org.firebirdsql.gds.ng.fields.RowValue;
-import org.firebirdsql.jdbc.FBConnection;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -194,10 +193,10 @@ public abstract class AbstractTransactionTest extends FBJUnit4TestBase {
         try {
             statement.prepare("SELECT thevalue FROM keyvalue WHERE thekey = ?");
 
-            FieldValue parameter1 = statement.getParameterDescriptor().getFieldDescriptor(0).createDefaultFieldValue();
-            parameter1.setFieldData(db.getDatatypeCoder().encodeInt(key));
+            RowValue rowValue = RowValue.of(
+                    db.getDatatypeCoder().encodeInt(key));
 
-            statement.execute(RowValue.of(parameter1));
+            statement.execute(rowValue);
             statement.fetchRows(1);
 
         } catch (SQLException e) {

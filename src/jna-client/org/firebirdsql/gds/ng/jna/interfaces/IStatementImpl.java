@@ -193,8 +193,7 @@ public class IStatementImpl extends AbstractFbStatement {
 
         for (int idx = 0; idx < parameters.getCount(); idx++) {
 
-            FieldValue value = parameters.getFieldValue(idx);
-            byte[] fieldData = value.getFieldData();
+            byte[] fieldData = parameters.getFieldData(idx);
             if (fieldData == null) {
                 // Note this only works because we mark the type as nullable in allocateXSqlDa
 

@@ -23,11 +23,9 @@ import org.firebirdsql.gds.impl.GDSType;
 import org.firebirdsql.gds.ng.AbstractStatementTest;
 import org.firebirdsql.gds.ng.DatatypeCoder;
 import org.firebirdsql.gds.ng.FbDatabase;
-import org.firebirdsql.gds.ng.fields.FieldValue;
 import org.firebirdsql.gds.ng.fields.RowValue;
 import org.firebirdsql.gds.ng.jna.AbstractNativeDatabaseFactory;
 import org.firebirdsql.gds.ng.wire.SimpleStatementListener;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -211,10 +209,11 @@ public class TestIStatementImpl extends AbstractStatementTest {
                         "WHERE a.RDB$CHARACTER_SET_ID = ? OR a.RDB$BYTES_PER_CHARACTER = ?");
 
         final DatatypeCoder coder = db.getDatatypeCoder();
-        FieldValue param1 = new FieldValue(coder.encodeShort(3)); // smallint = 3 (id of UNICODE_FSS)
-        FieldValue param2 = new FieldValue(coder.encodeShort(1)); // smallint = 1 (single byte character sets)
+        RowValue rowValue = RowValue.of(
+                coder.encodeShort(3), // smallint = 3 (id of UNICODE_FSS)
+                coder.encodeShort(1)); // smallint = 1 (single byte character sets)
 
-        statement.execute(RowValue.of(param1, param2));
+        statement.execute(rowValue);
 
         assertEquals("Expected hasResultSet to be set to true", Boolean.TRUE, listener.hasResultSet());
         assertEquals("Expected hasSingletonResult to be set to false", Boolean.FALSE, listener.hasSingletonResult());
