@@ -52,7 +52,7 @@ public final class ClientAuthBlock {
     private static final Logger log = LoggerFactory.getLogger(ClientAuthBlock.class);
 
     private static final Pattern AUTH_PLUGIN_LIST_SPLIT = Pattern.compile("[ \t,;]+");
-    private static final String DEFAULT_AUTH_PLUGINS = "Srp256,Srp";
+    private static final String DEFAULT_AUTH_PLUGINS = "Srp256,Srp,Gss";
     private static final Map<String, AuthenticationPluginSpi> PLUGIN_MAPPING = getAvailableAuthenticationPlugins();
 
     private final IAttachProperties<?> attachProperties;
@@ -69,6 +69,10 @@ public final class ClientAuthBlock {
 
     public String getLogin() {
         return attachProperties.getUser();
+    }
+
+    public String getNormalizedLogin() {
+        return normalizeLogin(getLogin());
     }
 
     public String getPassword() {
@@ -318,6 +322,47 @@ public final class ClientAuthBlock {
         return currentPlugin.getSessionKey();
     }
 
+    /**
+     * Normalizes a login by uppercasing unquoted user names, or stripping and unescaping (double) quoted user names.
+     *
+     * @param login Login to process
+     * @return Normalized login
+     */
+    static String normalizeLogin(String login) {
+        if (login == null || login.isEmpty()) {
+            return login;
+        }
+        // Contrary to Firebird, check if login is enclosed in double quotes, not just starting with a double quote
+        if (login.length() > 2 && login.charAt(0) == '"' && login.charAt(login.length() - 1) == '"') {
+            return normalizeQuotedLogin(login);
+        }
+        return login.toUpperCase(Locale.ROOT);
+    }
+
+    private static String normalizeQuotedLogin(String login) {
+        final StringBuilder sb = new StringBuilder(login.length() - 2);
+        sb.append(login, 1, login.length() - 1);
+
+        for (int idx = 0; idx < sb.length(); idx++) {
+            // Double double quotes ("") escape a double quote in a quoted string
+            if (sb.charAt(idx) == '"') {
+                // Strip double quote escape
+                sb.deleteCharAt(idx);
+                if (idx < sb.length() && sb.charAt(idx) == '"') {
+                    // Retain escaped double quote
+                    idx += 1;
+                } else {
+                    // The character after escape is not a double quote, we terminate the conversion and truncate.
+                    // Firebird does this as well (see common/utils.cpp#dpbItemUpper)
+                    sb.setLength(idx);
+                    return sb.toString();
+                }
+            }
+        }
+
+        return sb.toString();
+    }
+
     private void extractDataToParameterBuffer(ConnectionParameterBuffer pb) {
         byte[] clientData = getClientData();
         if (clientData == null || clientData.length == 0) {
@@ -380,9 +425,8 @@ public final class ClientAuthBlock {
     // TODO Move plugin loading to separate class?
 
     private static Map<String, AuthenticationPluginSpi> getAvailableAuthenticationPlugins() {
-        List<AuthenticationPluginSpi> authenticationPluginSpis = getAvailableAuthenticationPluginSpis();
-        Map<String, AuthenticationPluginSpi> pluginMapping = new HashMap<>(authenticationPluginSpis.size());
-        for (AuthenticationPluginSpi pluginSpi : authenticationPluginSpis) {
+        Map<String, AuthenticationPluginSpi> pluginMapping = new HashMap<>();
+        for (AuthenticationPluginSpi pluginSpi : getAvailableAuthenticationPluginSpis()) {
             String pluginName = pluginSpi.getPluginName();
             if (pluginMapping.containsKey(pluginName)) {
                 log.warn("Authentication plugin provider for " + pluginName + " already registered. Skipping "

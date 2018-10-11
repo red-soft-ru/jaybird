@@ -281,6 +281,13 @@ Support has also been added to `DatabaseMetaData`:
 Other database metadata (eg `getColumns`) will **not** list the `RDB$DB_KEY` 
 column, as it is a pseudo-column.
 
+In result sets, Jaybird will now also automatically map request for columns by 
+name `RDB$DB_KEY` (case insensitive) to `DB_KEY` as Firebird automatically 
+applies this alias for the `RDB$DB_KEY` column(s) in a select-list.
+
+Be aware that result set metadata will still report `DB_KEY` as the column name 
+and label.
+
 Wire encryption support
 -----------------------
 
@@ -326,6 +333,10 @@ The implementation comes with a number of caveats:
      (although that in itself would already imply a severe security breach)
  -   the ARC4 encryption - the default provided by Firebird - is considered to 
      be a weak (maybe even broken) cipher these days
+ -   the encryption cipher uses ARCFOUR with a 160 bits key, this means that the 
+     unlimited Cryptographic Jurisdiction Policy needs to be used (or at minimum 
+     a custom policy that allows ARCFOUR with 160 bits keys). See also FAQ entry 
+     [Encryption key did not meet algorithm requirements of Symmetric/Arc4 (337248282)](https://www.firebirdsql.org/file/documentation/drivers_documentation/java/faq.html#encryption-key-did-not-meet-algorithm-requirements-of-symmetricarc4-337248282) 
      
 Database encryption support
 ---------------------------
@@ -748,7 +759,48 @@ up to a precision of 34.
 
 Values set on a field or parameter will be rounded using `RoundingMode.HALF_EVEN` 
 to the target scale of the field. Values exceeding a precision of 34 will be
-rejected with a `TypeConversionException`. 
+rejected with a `TypeConversionException`.
+
+JDBC DatabaseMetaData.getPseudoColumns implemented
+--------------------------------------------------
+
+The `DatabaseMetaData.getPseudoColumns` method (introduced in JDBC 4.1) has now
+been implemented.
+
+The JDBC API specifies this method as:
+
+> Retrieves a description of the pseudo or hidden columns available in a given 
+> table within the specified catalog and schema. Pseudo or hidden columns may 
+> not always be stored within a table and are not visible in a `ResultSet` 
+> unless they are specified in the query's outermost `SELECT` list. Pseudo or 
+> hidden columns may not necessarily be able to be modified. If there are no 
+> pseudo or hidden columns, an empty `ResultSet` is returned. 
+
+For Firebird 2.5 and earlier it will only report on `RDB$DB_KEY`, for Firebird 3
+and higher it will also report on `RDB$RECORD_VERSION`.
+
+The pseudo-column `RDB$RECORD_VERSION` was introduced in Firebird 3, its value
+is the transaction that last updated the row.
+
+JDBC DatabaseMetaData.getVersionColumns implemented
+---------------------------------------------------
+
+The `DatabaseMetaData.getVersionColumns` method has now been implemented.
+
+The JDBC API specifies this method as:
+
+> Retrieves a description of a table's columns that are automatically updated 
+> when any value in a row is updated. They are unordered. 
+
+For Firebird 2.5 and earlier it will only report on `RDB$DB_KEY`, for Firebird 3
+and higher it will also report on `RDB$RECORD_VERSION`.
+
+The pseudo-column `RDB$RECORD_VERSION` was introduced in Firebird 3, its value
+is the transaction that last updated the row.
+
+Jaybird only returns pseudo-column as version columns, so 'last updated' columns 
+updated by a trigger, calculated columns, or other forms of change tracking are 
+not reported by this method.
 
 Improved JDBC function escape support
 -------------------------------------
@@ -951,6 +1003,29 @@ Unfortunately this does not apply to parameters, see also [JDBC RowId support].
 
 Due to the method of identification, real columns of type `char character set octets` 
 with the name `DB_KEY` will also be identified as a `ROWID` column.
+
+DatabaseMetaData.getBestRowIdentifier scope handling
+----------------------------------------------------
+
+Previously, the Jaybird implementation of `DatabaseMetaData.getBestRowIdentifier`
+used the `scope` parameter to populate the `SCOPE` column of its result set, 
+instead of using it to filter on the required scope.
+
+This has been changed to instead filter on `scope`. In this implementation,
+the columns of the primary key are considered the best row identifier, with
+scope `bestRowSession`. It will be returned for all values of `scope`.
+
+If a table does not have a primary key, the `RDB$DB_KEY` is considered the
+second-best alternative, with scope `bestRowTransaction`. It will only be 
+returned for scopes `bestRowTemporary` and `bestRowTransaction`. See also
+[JDBC RowId support].
+
+If you are currently using `DatabaseMetaData.getBestRowIdentifier` with 
+`scope` value `DatabaseMetaData.bestRowSession`, consider if you need to
+use `bestRowTransaction` instead.
+
+If you are relying on the `SCOPE` column containing the value for the requested
+scope, change your logic to remove that dependency.
 
 Removal of character mapping
 ----------------------------

@@ -147,31 +147,10 @@ public class TestFBDatabaseMetaData {
                 count++;
             }
 
-            String databaseProductName = dmd.getDatabaseProductName();
-            boolean redDatabase = databaseProductName.contains("RedDatabase");
-
-            int sysTableCount;
-            final int databaseMajorVersion = dmd.getDatabaseMajorVersion();
-            final int databaseMinorVersion = dmd.getDatabaseMinorVersion();
-            if (databaseMajorVersion < 2) {
-                sysTableCount = 32;
-            } else if (databaseMajorVersion == 2 && databaseMinorVersion == 0) {
-                sysTableCount = 33;
-            } else if (databaseMajorVersion == 2 && databaseMinorVersion == 1) {
-                sysTableCount = 40;
-            } else if (databaseMajorVersion == 2 && databaseMinorVersion == 5) {
-                sysTableCount = 42;
-            } else if (databaseMajorVersion == 2 && databaseMinorVersion == 6) { // Red Database 2.6
-                sysTableCount = 43;
-            } else if (databaseMajorVersion == 3 && databaseMinorVersion == 0) {
-                if (redDatabase)
-                    sysTableCount = 51; // Red Database 3.0
-                else
-                    sysTableCount = 50;
-            } else if (databaseMajorVersion == 4 && databaseMinorVersion == 0) {
-                sysTableCount = 50;
-            } else {
-                fail(String.format("Unsupported database server version %d.%d for this test case: found table count %d", databaseMajorVersion, databaseMinorVersion, count));
+            int sysTableCount = getDefaultSupportInfo().getSystemTableCount();
+            if (sysTableCount == -1) {
+                fail(String.format("Unsupported database server version %d.%d for this test case: found table count %d",
+                        dmd.getDatabaseMajorVersion(), dmd.getDatabaseMinorVersion(), count));
 
                 // needed to make compiler happy - it does not know that fail() throws an exception
                 return;
@@ -638,17 +617,32 @@ public class TestFBDatabaseMetaData {
         createTable("best_row_pk");
         createTable("best_row_no_pk", null);
 
-        try (ResultSet rs = dmd.getBestRowIdentifier("", "", "BEST_ROW_PK", DatabaseMetaData.bestRowSession, true)) {
-            assertTrue("Should have rows", rs.next());
-            assertEquals("Column name should be C1", "C1", rs.getString(2));
-            assertEquals("Column type should be INTEGER", "INTEGER", rs.getString(4));
-            assertFalse("Should have only one row", rs.next());
+        for (int scope : new int[] { DatabaseMetaData.bestRowTemporary, DatabaseMetaData.bestRowTransaction,
+                DatabaseMetaData.bestRowTransaction }) {
+            try (ResultSet rs = dmd.getBestRowIdentifier("", "", "BEST_ROW_PK", scope, true)) {
+                assertTrue("Should have rows", rs.next());
+                assertEquals("Column name should be C1", "C1", rs.getString(2));
+                assertEquals("Column type should be INTEGER", "INTEGER", rs.getString(4));
+                assertEquals("Scope should be bestRowSession", DatabaseMetaData.bestRowSession, rs.getInt(1));
+                assertEquals("Pseudo column should be bestRowNotPseudo",
+                        DatabaseMetaData.bestRowNotPseudo, rs.getInt(8));
+                assertFalse("Should have only one row", rs.next());
+            }
+        }
+
+        for (int scope : new int[] { DatabaseMetaData.bestRowTemporary, DatabaseMetaData.bestRowTransaction }) {
+            try (ResultSet rs = dmd.getBestRowIdentifier("", "", "BEST_ROW_NO_PK", scope, true)) {
+                assertTrue("Should have rows", rs.next());
+                assertEquals("Column name should be RDB$DB_KEY", "RDB$DB_KEY", rs.getString(2));
+                assertEquals("Scope should be bestRowTransaction", DatabaseMetaData.bestRowTransaction, rs.getInt(1));
+                assertEquals("Pseudo column should be bestRowPseudo",
+                        DatabaseMetaData.bestRowPseudo, rs.getInt(8));
+                assertFalse("Should have only one row", rs.next());
+            }
         }
 
         try (ResultSet rs = dmd.getBestRowIdentifier("", "", "BEST_ROW_NO_PK", DatabaseMetaData.bestRowSession, true)) {
-            assertTrue("Should have rows", rs.next());
-            assertEquals("Column name should be RDB$DB_KEY", "RDB$DB_KEY", rs.getString(2));
-            assertFalse("Should have only one row", rs.next());
+            assertFalse("Should have no rows", rs.next());
         }
     }
 

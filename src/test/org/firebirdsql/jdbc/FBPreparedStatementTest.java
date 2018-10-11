@@ -50,7 +50,7 @@ import static org.junit.Assume.assumeTrue;
  * @author <a href="mailto:rrokytskyy@users.sourceforge.net">Roman Rokytskyy</a>
  * @author <a href="mailto:mrotteveel@users.sourceforge.net">Mark Rotteveel</a>
  */
-public class TestFBPreparedStatement extends FBJUnit4TestBase {
+public class FBPreparedStatementTest extends FBJUnit4TestBase {
 
     @Rule
     public final ExpectedException expectedException = ExpectedException.none();
@@ -543,7 +543,7 @@ public class TestFBPreparedStatement extends FBJUnit4TestBase {
 
     /**
      * Test if failure in setting the parameter leaves the driver in correct
-     * state (i.e. "not all params were set").
+     * state (i.e. "Parameter with index 1 was not set").
      */
     @Test
     public void testBindParameter() throws Exception {
@@ -552,7 +552,9 @@ public class TestFBPreparedStatement extends FBJUnit4TestBase {
 
         try (PreparedStatement ps = con.prepareStatement("UPDATE testtab SET field1 = ? WHERE id = ?")) {
             try {
+                // Failure to set leaves parameter uninitialized
                 ps.setString(1, "veeeeeeeeeeeeeeeeeeeeery looooooooooooooooooooooong striiiiiiiiiiiiiiiiiiing");
+                fail("Expected data truncation");
             } catch (DataTruncation ex) {
                 // ignore
             }
@@ -561,7 +563,11 @@ public class TestFBPreparedStatement extends FBJUnit4TestBase {
 
             try {
                 ps.execute();
-            } catch (FBMissingParameterException ex) {
+                fail("expected exception on execute");
+            } catch (SQLException ex) {
+                if (!ex.getMessage().startsWith("Parameter with index 1 was not set")) {
+                    throw ex;
+                }
                 // correct (not using expected exception here due to following statements!)
             }
         }
@@ -1303,6 +1309,46 @@ public class TestFBPreparedStatement extends FBJUnit4TestBase {
             assertTrue("expected a row", rs.next());
             assertEquals("Unexpected string length in Firebird", chars.length, rs.getInt(1));
             assertEquals("Selected string value does not match inserted", testvalue, rs.getString(2));
+        }
+    }
+
+    /**
+     * Tests if reexecuting a prepared statement after fetch failure works for holdable result set.
+     * <p>
+     * See <a href="http://tracker.firebirdsql.org/browse/JDBC-531">JDBC-531</a>
+     * </p>
+     */
+    @Test
+    public void testReexecuteStatementAfterFailure() throws Exception {
+        executeDDL(con, "recreate table encoding_error ("
+                + " id integer primary key, "
+                + " stringcolumn varchar(10) character set NONE"
+                + ")");
+        try (PreparedStatement pstmt = con.prepareStatement("insert into encoding_error (id, stringcolumn) values (?, ?)")) {
+            pstmt.setInt(1, 1);
+            pstmt.setBytes(2, new byte[] { (byte) 0xFF, (byte) 0xFF });
+            pstmt.executeUpdate();
+
+            pstmt.setInt(1, 2);
+            pstmt.executeUpdate();
+        }
+        con.setAutoCommit(false);
+        try (PreparedStatement pstmt = con.prepareStatement(
+                "select cast(stringcolumn as varchar(10) character set UTF8) from encoding_error",
+                ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT)) {
+            try {
+                ResultSet rs = pstmt.executeQuery();
+
+                rs.next();
+            } catch (SQLException e) {
+                // ignore
+            }
+
+            expectedException.expect(allOf(
+                    errorCodeEquals(ISCConstants.isc_malformed_string),
+                    fbMessageStartsWith(ISCConstants.isc_malformed_string)));
+            ResultSet rs2 = pstmt.executeQuery();
+            rs2.next();
         }
     }
 

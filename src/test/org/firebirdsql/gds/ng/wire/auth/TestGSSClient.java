@@ -52,15 +52,25 @@ public class TestGSSClient extends FBJUnit4TestBase {
         Properties props = new Properties();
         props.put("lc_ctype", "WIN1251");
         props.put("useGSSAuth", "true");
-        FBConnection connection = (FBConnection) DriverManager.getConnection(getUrl(), props);
-        Statement statement = connection.createStatement();
-
-        ResultSet resultSet = statement.executeQuery("select current_user from rdb$database");
-        resultSet.next();
-        String currentUser = resultSet.getString(1);
-        System.out.println("GSS auth. Current database user: " + currentUser);
-        assertEquals("RDB_SERVER/LOCALHOST", currentUser);
-        statement.close();
-        connection.close();
+        FBConnection connection = null;
+        Statement statement = null;
+        try {
+            connection = (FBConnection) DriverManager.getConnection(getUrl(), props);
+            statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery("select current_user from rdb$database");
+            resultSet.next();
+            String currentUser = resultSet.getString(1);
+            System.out.println("GSS auth. Current database user: " + currentUser);
+            assertEquals("RDB_SERVER/LOCALHOST", currentUser);
+            statement.close();
+            connection.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            if (statement != null)
+                statement.close();
+            if (connection != null)
+                connection.close();
+        }
     }
 }
