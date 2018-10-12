@@ -43,11 +43,13 @@ import static org.junit.Assert.*;
  */
 public class TestIStatementImpl extends AbstractStatementTest {
 
+    private static final String gdsType = "FBOONATIVE";
+
     @Rule
     public final ExpectedException expectedException = ExpectedException.none();
 
     private final AbstractNativeDatabaseFactory factory =
-            (AbstractNativeDatabaseFactory) GDSFactory.getDatabaseFactoryForType(GDSType.getType("NATIVE"));
+            (AbstractNativeDatabaseFactory) GDSFactory.getDatabaseFactoryForType(GDSType.getType(gdsType));
 
     @Override
     protected Class<? extends FbDatabase> getExpectedDatabaseType() {

@@ -7,7 +7,7 @@ import org.firebirdsql.gds.impl.GDSFactory;
 import org.firebirdsql.gds.impl.GDSServerVersion;
 import org.firebirdsql.gds.impl.GDSType;
 import org.firebirdsql.gds.impl.TransactionParameterBufferImpl;
-import org.firebirdsql.gds.impl.jni.EmbeddedGDSFactoryPlugin;
+import org.firebirdsql.gds.impl.jni.FbOOEmbeddedGDSFactoryPlugin;
 import org.firebirdsql.gds.ng.FbConnectionProperties;
 import org.firebirdsql.gds.ng.FbDatabase;
 import org.firebirdsql.gds.ng.FbTransaction;
@@ -45,8 +45,10 @@ public class TestIDatabaseImpl {
     @Rule
     public final ExpectedException expectedException = ExpectedException.none();
 
+    private static final String gdsType = "FBOONATIVE";
+
     private final AbstractNativeDatabaseFactory factory =
-            (AbstractNativeDatabaseFactory) GDSFactory.getDatabaseFactoryForType(GDSType.getType("NATIVE"));
+            (AbstractNativeDatabaseFactory) GDSFactory.getDatabaseFactoryForType(GDSType.getType(gdsType));
     private final FbConnectionProperties connectionInfo;
     {
         connectionInfo = new FbConnectionProperties();
@@ -59,7 +61,7 @@ public class TestIDatabaseImpl {
     }
 
     public static FBManager createFBManager() {
-        return new FBManager(GDSType.getType("NATIVE"));
+        return new FBManager(GDSType.getType(gdsType));
     }
 
     @Test
@@ -98,7 +100,7 @@ public class TestIDatabaseImpl {
     @Test
     public void basicStatusProcessing_wrongLogin() throws Exception {
         assumeThat("Embedded on windows does not use authentication",
-                FBTestProperties.GDS_TYPE, is(not(EmbeddedGDSFactoryPlugin.EMBEDDED_TYPE_NAME)));
+                FBTestProperties.GDS_TYPE, is(not(FbOOEmbeddedGDSFactoryPlugin.EMBEDDED_TYPE_NAME)));
         // set invalid password
         connectionInfo.setPassword("abcd");
         try (IDatabaseImpl db = (IDatabaseImpl) factory.connect(connectionInfo)) {

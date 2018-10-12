@@ -24,7 +24,7 @@ public class TestIServiceConnectionImpl {
     public final ExpectedException expectedException = ExpectedException.none();
 
     private AbstractNativeDatabaseFactory factory =
-            (AbstractNativeDatabaseFactory) GDSFactory.getDatabaseFactoryForType(GDSType.getType("NATIVE"));
+            (AbstractNativeDatabaseFactory) GDSFactory.getDatabaseFactoryForType(GDSType.getType("FBOONATIVE"));
 
     private final FbServiceProperties connectionInfo;
     {

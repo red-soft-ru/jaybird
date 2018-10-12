@@ -39,6 +39,8 @@ import static org.junit.Assert.assertTrue;
  */
 public class TestIBatchImpl extends AbstractBatchTest {
 
+    private static final String gdsType = "FBOONATIVE";
+
     //@formatter:off
     protected String INSERT_QUERY_WITHOUT_BLOBS = "INSERT INTO test_p_metadata (" +
             "  id, " +
@@ -117,7 +119,7 @@ public class TestIBatchImpl extends AbstractBatchTest {
     public final ExpectedException expectedException = ExpectedException.none();
 
     private final AbstractNativeDatabaseFactory factory =
-            (AbstractNativeDatabaseFactory) GDSFactory.getDatabaseFactoryForType(GDSType.getType("NATIVE"));
+            (AbstractNativeDatabaseFactory) GDSFactory.getDatabaseFactoryForType(GDSType.getType(gdsType));
 
     @Override
     protected Class<? extends FbDatabase> getExpectedDatabaseType() {

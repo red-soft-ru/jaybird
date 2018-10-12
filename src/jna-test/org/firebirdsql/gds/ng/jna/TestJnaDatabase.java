@@ -25,6 +25,8 @@ import org.firebirdsql.gds.TransactionParameterBuffer;
 import org.firebirdsql.gds.impl.GDSServerVersion;
 import org.firebirdsql.gds.impl.TransactionParameterBufferImpl;
 import org.firebirdsql.gds.impl.jni.EmbeddedGDSFactoryPlugin;
+import org.firebirdsql.gds.impl.jni.FbOOEmbeddedGDSFactoryPlugin;
+import org.firebirdsql.gds.impl.jni.FbOOLocalGDSFactoryPlugin;
 import org.firebirdsql.gds.impl.jni.LocalGDSFactoryPlugin;
 import org.firebirdsql.gds.ng.FbConnectionProperties;
 import org.firebirdsql.gds.ng.FbDatabase;
@@ -271,7 +273,8 @@ public class TestJnaDatabase {
         // TODO Investigate why this doesn't work.
         assumeThat("Test doesn't work with local or embedded protocol",
                 FBTestProperties.GDS_TYPE, not(
-                        isOneOf(LocalGDSFactoryPlugin.LOCAL_TYPE_NAME, EmbeddedGDSFactoryPlugin.EMBEDDED_TYPE_NAME)));
+                        isOneOf(LocalGDSFactoryPlugin.LOCAL_TYPE_NAME, EmbeddedGDSFactoryPlugin.EMBEDDED_TYPE_NAME,
+                                FbOOLocalGDSFactoryPlugin.LOCAL_TYPE_NAME, FbOOEmbeddedGDSFactoryPlugin.EMBEDDED_TYPE_NAME)));
 
         FBManager fbManager = createFBManager();
         defaultDatabaseSetUp(fbManager);

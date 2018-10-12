@@ -93,7 +93,8 @@ import static org.junit.Assert.assertTrue;
 public class TestJaybirdBlobBackupProblem {
 
     @ClassRule
-    public static final GdsTypeRule testTypes = GdsTypeRule.supports(EmbeddedGDSFactoryPlugin.EMBEDDED_TYPE_NAME);
+    public static final GdsTypeRule testTypes = GdsTypeRule.supports(EmbeddedGDSFactoryPlugin.EMBEDDED_TYPE_NAME,
+            FbOOEmbeddedGDSFactoryPlugin.EMBEDDED_TYPE_NAME);
 
     @Rule
     public final TemporaryFolder temporaryFolder = new TemporaryFolder();

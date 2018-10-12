@@ -16,11 +16,14 @@ import java.sql.SQLException;
  * @since 4.0
  */
 public class TestITransactionImpl extends AbstractTransactionTest {
+
+    private static final String gdsType = "FBOONATIVE";
+
     @Rule
     public final ExpectedException expectedException = ExpectedException.none();
 
     private AbstractNativeDatabaseFactory factory =
-            (AbstractNativeDatabaseFactory) GDSFactory.getDatabaseFactoryForType(GDSType.getType("NATIVE"));
+            (AbstractNativeDatabaseFactory) GDSFactory.getDatabaseFactoryForType(GDSType.getType(gdsType));
 
     @Override
     protected FbDatabase createDatabase() throws SQLException {

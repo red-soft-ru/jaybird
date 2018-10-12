@@ -25,11 +25,14 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class TestIEventBlockImpl extends FBJUnit4TestBase {
+
+    private static final String gdsType = "FBOONATIVE";
+
     @Rule
     public final ExpectedException expectedException = ExpectedException.none();
 
     private AbstractNativeDatabaseFactory factory =
-            (AbstractNativeDatabaseFactory) GDSFactory.getDatabaseFactoryForType(GDSType.getType("NATIVE"));
+            (AbstractNativeDatabaseFactory) GDSFactory.getDatabaseFactoryForType(GDSType.getType(gdsType));
     //@formatter:off
     public static final String TABLE_DEF =
             "CREATE TABLE TEST (" +

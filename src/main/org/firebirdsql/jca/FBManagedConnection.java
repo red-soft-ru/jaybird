@@ -23,6 +23,8 @@ import org.firebirdsql.gds.impl.DatabaseParameterBufferExtension;
 import org.firebirdsql.gds.impl.DbAttachInfo;
 import org.firebirdsql.gds.impl.GDSHelper;
 import org.firebirdsql.gds.impl.jni.EmbeddedGDSFactoryPlugin;
+import org.firebirdsql.gds.impl.jni.FbOOEmbeddedGDSFactoryPlugin;
+import org.firebirdsql.gds.impl.jni.FbOOLocalGDSFactoryPlugin;
 import org.firebirdsql.gds.impl.jni.LocalGDSFactoryPlugin;
 import org.firebirdsql.gds.ng.*;
 import org.firebirdsql.gds.ng.fields.RowValue;
@@ -134,6 +136,12 @@ public class FBManagedConnection implements ManagedConnection, XAResource, Excep
             final String gdsTypeName = mcf.getGDSType().toString();
             if (!(EmbeddedGDSFactoryPlugin.EMBEDDED_TYPE_NAME.equals(gdsTypeName)
                     || LocalGDSFactoryPlugin.LOCAL_TYPE_NAME.equals(gdsTypeName))) {
+                final DbAttachInfo dbAttachInfo = DbAttachInfo.parseConnectString(mcf.getDatabase());
+                connectionProperties.setServerName(dbAttachInfo.getServer());
+                connectionProperties.setPortNumber(dbAttachInfo.getPort());
+                connectionProperties.setDatabaseName(dbAttachInfo.getFileName());
+            } else if (!(FbOOEmbeddedGDSFactoryPlugin.EMBEDDED_TYPE_NAME.equals(gdsTypeName)
+                    || FbOOLocalGDSFactoryPlugin.LOCAL_TYPE_NAME.equals(gdsTypeName))) {
                 final DbAttachInfo dbAttachInfo = DbAttachInfo.parseConnectString(mcf.getDatabase());
                 connectionProperties.setServerName(dbAttachInfo.getServer());
                 connectionProperties.setPortNumber(dbAttachInfo.getPort());

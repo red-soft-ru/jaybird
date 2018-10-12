@@ -37,49 +37,16 @@ public abstract class AbstractNativeDatabaseFactory implements FbDatabaseFactory
 
     @Override
     public FbDatabase connect(IConnectionProperties connectionProperties) throws SQLException {
-
-        // TODO check the correctness of the required interface
-        FbClientLibrary clientLibrary = getClientLibrary();
-        ByteBuffer byteBuffer = ByteBuffer.allocate(256);
-        clientLibrary.isc_get_client_version(byteBuffer);
-        String clientVersion = new String(byteBuffer.array()).trim();
-        Pattern p = Pattern.compile("\\s([\\d]+[.][\\d]+)\\b");
-        Matcher m = p.matcher(clientVersion);
-        m.find();
-        String version = m.group(1);
-        int majorVersion = version.charAt(0) - '0';
-        if (majorVersion >= 3) {
-            final NativeDatabaseConnection databaseConnection = new NativeDatabaseConnection(clientLibrary,
-                    filterProperties(connectionProperties));
-            return databaseConnection.identify();
-        } else {
-            final JnaDatabaseConnection jnaDatabaseConnection = new JnaDatabaseConnection(clientLibrary,
-                    filterProperties(connectionProperties));
-            return jnaDatabaseConnection.identify();
-        }
+        final JnaDatabaseConnection jnaDatabaseConnection = new JnaDatabaseConnection(getClientLibrary(),
+                filterProperties(connectionProperties));
+        return jnaDatabaseConnection.identify();
     }
 
     @Override
     public FbService serviceConnect(IServiceProperties serviceProperties) throws SQLException {
-        FbClientLibrary clientLibrary = getClientLibrary();
-        ByteBuffer byteBuffer = ByteBuffer.allocate(256);
-        clientLibrary.isc_get_client_version(byteBuffer);
-        String clientVersion = new String(byteBuffer.array()).trim();
-        Pattern p = Pattern.compile("\\s([\\d]+[.][\\d]+)\\b");
-        Matcher m = p.matcher(clientVersion);
-        m.find();
-        String version = m.group(1);
-        int majorVersion = version.charAt(0) - '0';
-        if (majorVersion >= 3) {
-            final IServiceConnectionImpl serviceConnection = new IServiceConnectionImpl(getClientLibrary(),
-                    filterProperties(serviceProperties));
-            return serviceConnection.identify();
-        } else {
-            final JnaServiceConnection jnaServiceConnection = new JnaServiceConnection(getClientLibrary(),
-                    filterProperties(serviceProperties));
-            return jnaServiceConnection.identify();
-        }
-
+        final JnaServiceConnection jnaServiceConnection = new JnaServiceConnection(getClientLibrary(),
+                filterProperties(serviceProperties));
+        return jnaServiceConnection.identify();
     }
 
     protected abstract FbClientLibrary getClientLibrary();

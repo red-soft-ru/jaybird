@@ -52,6 +52,8 @@ import static org.junit.Assume.assumeTrue;
  */
 public class TestIBlobImpl extends BaseTestBlob {
 
+    private static final String gdsType = "FBOONATIVE";
+
     @Rule
     public final ExpectedException expectedException = ExpectedException.none();
 
@@ -59,7 +61,7 @@ public class TestIBlobImpl extends BaseTestBlob {
 
     @Before
     public void setFactory() {
-        factory = (AbstractNativeDatabaseFactory) GDSFactory.getDatabaseFactoryForType(GDSType.getType("NATIVE"));
+        factory = (AbstractNativeDatabaseFactory) GDSFactory.getDatabaseFactoryForType(GDSType.getType(gdsType));
     }
 
     /**
