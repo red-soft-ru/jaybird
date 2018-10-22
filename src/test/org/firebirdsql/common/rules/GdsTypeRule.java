@@ -22,6 +22,9 @@ package org.firebirdsql.common.rules;
 
 import org.firebirdsql.common.FBTestProperties;
 import org.firebirdsql.gds.impl.jni.*;
+import org.firebirdsql.gds.impl.nativeoo.FbOOEmbeddedGDSFactoryPlugin;
+import org.firebirdsql.gds.impl.nativeoo.FbOOLocalGDSFactoryPlugin;
+import org.firebirdsql.gds.impl.nativeoo.FbOONativeGDSFactoryPlugin;
 import org.hamcrest.Matcher;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;

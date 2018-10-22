@@ -9,8 +9,7 @@ import org.firebirdsql.gds.TransactionParameterBuffer;
 import org.firebirdsql.gds.impl.BatchParameterBufferImpl;
 import org.firebirdsql.gds.impl.TransactionParameterBufferImpl;
 import org.firebirdsql.jdbc.FirebirdConnection;
-import org.firebirdsql.jdbc.JaybirdTypeCodes;
-import org.firebirdsql.jna.fbclient.FbInterface;
+import org.firebirdsql.nativeoo.gds.ng.FbInterface;
 import org.firebirdsql.management.FBManager;
 import org.firebirdsql.util.FirebirdSupportInfo;
 import org.junit.After;
@@ -21,14 +20,7 @@ import org.junit.rules.ExpectedException;
 
 import java.sql.*;
 
-import static java.sql.ParameterMetaData.parameterModeIn;
-import static java.sql.ParameterMetaData.parameterNullable;
-import static java.sql.Types.BOOLEAN;
-import static java.sql.Types.DECIMAL;
-import static java.sql.Types.NUMERIC;
-import static org.firebirdsql.common.DdlHelper.executeCreateTable;
 import static org.firebirdsql.common.FBTestProperties.*;
-import static org.firebirdsql.common.FBTestProperties.getConnectionViaDriverManager;
 import static org.firebirdsql.util.FirebirdSupportInfo.supportInfoFor;
 import static org.junit.Assert.assertEquals;
 

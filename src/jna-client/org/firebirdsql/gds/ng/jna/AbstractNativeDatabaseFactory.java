@@ -19,13 +19,9 @@
 package org.firebirdsql.gds.ng.jna;
 
 import org.firebirdsql.gds.ng.*;
-import org.firebirdsql.gds.ng.jna.interfaces.IServiceConnectionImpl;
 import org.firebirdsql.jna.fbclient.FbClientLibrary;
 
-import java.nio.ByteBuffer;
 import java.sql.SQLException;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Common implementation for client library and embedded database factory.

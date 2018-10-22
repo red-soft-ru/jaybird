@@ -3,7 +3,7 @@ package org.firebirdsql.gds.impl;
 import org.firebirdsql.gds.BatchParameterBuffer;
 import org.firebirdsql.gds.ParameterBuffer;
 import org.firebirdsql.gds.impl.argument.ArgumentType;
-import org.firebirdsql.jna.fbclient.FbInterface;
+import org.firebirdsql.nativeoo.gds.ng.FbInterface;
 
 /**
  *

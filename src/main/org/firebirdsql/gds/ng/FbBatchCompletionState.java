@@ -1,6 +1,6 @@
 package org.firebirdsql.gds.ng;
 
-import org.firebirdsql.jna.fbclient.FbException;
+import org.firebirdsql.nativeoo.gds.ng.FbException;
 
 /**
  *

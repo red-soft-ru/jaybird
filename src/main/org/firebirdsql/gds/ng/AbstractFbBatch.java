@@ -1,16 +1,10 @@
 package org.firebirdsql.gds.ng;
 
 import org.firebirdsql.gds.BatchParameterBuffer;
-import org.firebirdsql.gds.ng.listeners.DatabaseListener;
 import org.firebirdsql.gds.ng.listeners.ExceptionListener;
 import org.firebirdsql.gds.ng.listeners.ExceptionListenerDispatcher;
-import org.firebirdsql.gds.ng.listeners.TransactionListener;
-import org.firebirdsql.jna.fbclient.FbInterface;
 import org.firebirdsql.logging.Logger;
 import org.firebirdsql.logging.LoggerFactory;
-
-import java.sql.SQLException;
-import java.sql.SQLWarning;
 
 /**
  *

@@ -26,6 +26,7 @@ import com.sun.jna.ptr.IntByReference;
 import com.sun.jna.ptr.LongByReference;
 import com.sun.jna.ptr.PointerByReference;
 import com.sun.jna.ptr.ShortByReference;
+import org.firebirdsql.nativeoo.gds.ng.FbInterface;
 
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
