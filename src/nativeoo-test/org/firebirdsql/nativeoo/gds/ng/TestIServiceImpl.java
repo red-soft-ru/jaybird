@@ -39,8 +39,8 @@ public class TestIServiceImpl {
     @Rule
     public final ExpectedException expectedException = ExpectedException.none();
 
-    private AbstractNativeDatabaseFactory factory =
-            (AbstractNativeDatabaseFactory) GDSFactory.getDatabaseFactoryForType(GDSType.getType(gdsType));
+    private AbstractNativeOODatabaseFactory factory =
+            (AbstractNativeOODatabaseFactory) GDSFactory.getDatabaseFactoryForType(GDSType.getType(gdsType));
 
     private final FbServiceProperties connectionInfo;
     {

@@ -46,8 +46,8 @@ public class TestIDatabaseImpl {
 
     private static final String gdsType = "FBOONATIVE";
 
-    private final AbstractNativeDatabaseFactory factory =
-            (AbstractNativeDatabaseFactory) GDSFactory.getDatabaseFactoryForType(GDSType.getType(gdsType));
+    private final AbstractNativeOODatabaseFactory factory =
+            (AbstractNativeOODatabaseFactory) GDSFactory.getDatabaseFactoryForType(GDSType.getType(gdsType));
     private final FbConnectionProperties connectionInfo;
     {
         connectionInfo = new FbConnectionProperties();

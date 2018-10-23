@@ -22,8 +22,8 @@ public class TestITransactionImpl extends AbstractTransactionTest {
     @Rule
     public final ExpectedException expectedException = ExpectedException.none();
 
-    private AbstractNativeDatabaseFactory factory =
-            (AbstractNativeDatabaseFactory) GDSFactory.getDatabaseFactoryForType(GDSType.getType(gdsType));
+    private AbstractNativeOODatabaseFactory factory =
+            (AbstractNativeOODatabaseFactory) GDSFactory.getDatabaseFactoryForType(GDSType.getType(gdsType));
 
     @Override
     protected FbDatabase createDatabase() throws SQLException {

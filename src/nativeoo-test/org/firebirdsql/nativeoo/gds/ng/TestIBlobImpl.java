@@ -57,11 +57,11 @@ public class TestIBlobImpl extends BaseTestBlob {
     @Rule
     public final ExpectedException expectedException = ExpectedException.none();
 
-    private AbstractNativeDatabaseFactory factory;
+    private AbstractNativeOODatabaseFactory factory;
 
     @Before
     public void setFactory() {
-        factory = (AbstractNativeDatabaseFactory) GDSFactory.getDatabaseFactoryForType(GDSType.getType(gdsType));
+        factory = (AbstractNativeOODatabaseFactory) GDSFactory.getDatabaseFactoryForType(GDSType.getType(gdsType));
     }
 
     /**

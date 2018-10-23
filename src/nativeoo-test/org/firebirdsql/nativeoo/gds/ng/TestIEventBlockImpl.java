@@ -31,8 +31,8 @@ public class TestIEventBlockImpl extends FBJUnit4TestBase {
     @Rule
     public final ExpectedException expectedException = ExpectedException.none();
 
-    private AbstractNativeDatabaseFactory factory =
-            (AbstractNativeDatabaseFactory) GDSFactory.getDatabaseFactoryForType(GDSType.getType(gdsType));
+    private AbstractNativeOODatabaseFactory factory =
+            (AbstractNativeOODatabaseFactory) GDSFactory.getDatabaseFactoryForType(GDSType.getType(gdsType));
     //@formatter:off
     public static final String TABLE_DEF =
             "CREATE TABLE TEST (" +

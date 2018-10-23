@@ -117,8 +117,8 @@ public class TestIBatchImpl extends AbstractBatchTest {
     @Rule
     public final ExpectedException expectedException = ExpectedException.none();
 
-    private final AbstractNativeDatabaseFactory factory =
-            (AbstractNativeDatabaseFactory) GDSFactory.getDatabaseFactoryForType(GDSType.getType(gdsType));
+    private final AbstractNativeOODatabaseFactory factory =
+            (AbstractNativeOODatabaseFactory) GDSFactory.getDatabaseFactoryForType(GDSType.getType(gdsType));
 
     @Override
     protected Class<? extends FbDatabase> getExpectedDatabaseType() {
