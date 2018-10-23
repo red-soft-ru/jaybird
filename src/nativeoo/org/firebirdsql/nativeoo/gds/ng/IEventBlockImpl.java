@@ -110,10 +110,10 @@ public class IEventBlockImpl extends AbstractEventHandle {
         }
 
         @Override
-        public void eventCallbackFunction(int length, byte[] events) {
+        public void eventCallbackFunction(int length, com.sun.jna.Pointer events) {
             synchronized (this) {
                 if (events != null) {
-                    eventBlock.getValues().write(0, events, 0, length);
+                    eventBlock.getValues().write(0, events.getByteArray(0, length), 0, length);
                     this.release();
 
                     onEventOccurred();
