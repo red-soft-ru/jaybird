@@ -4,7 +4,7 @@ package org.firebirdsql.nativeoo.gds.ng;
 
 
 import org.firebirdsql.jna.fbclient.*;
-import org.firebirdsql.nativeoo.gds.ng.FbException;
+
 
 /**
  * JNA Wrapper for library implementing <b>interface.h</b>.
@@ -442,9 +442,12 @@ public interface FbInterface extends FbClientLibrary
 	{
 		public String getLogin();
 		public String getPassword();
+		public String getCertificate();
+		public String getRepositoryPin();
 		public com.sun.jna.Pointer getData(com.sun.jna.Pointer length);
 		public void putData(IStatus status, int length, com.sun.jna.Pointer data) throws FbException;
 		public ICryptKey newKey(IStatus status) throws FbException;
+		public IAuthBlock getAuthBlock(IStatus status) throws FbException;
 	}
 
 	public static interface IServerIntf extends IAuthIntf
@@ -519,6 +522,17 @@ public interface FbInterface extends FbClientLibrary
 		public int execute(IStatus status, IUser user, IListUsers callback) throws FbException;
 		public void commit(IStatus status) throws FbException;
 		public void rollback(IStatus status) throws FbException;
+	}
+
+	public static interface IAuthBlockIntf extends IVersionedIntf
+	{
+		public String getType();
+		public String getName();
+		public String getPlugin();
+		public String getSecurityDb();
+		public String getOriginalPlugin();
+		public boolean next(IStatus status) throws FbException;
+		public boolean first(IStatus status) throws FbException;
 	}
 
 	public static interface IWireCryptPluginIntf extends IPluginBaseIntf
@@ -662,6 +676,8 @@ public interface FbInterface extends FbClientLibrary
 		public IEventBlock createEventBlock(IStatus status, String[] events) throws FbException;
 		public IDecFloat16 getDecFloat16(IStatus status) throws FbException;
 		public IDecFloat34 getDecFloat34(IStatus status) throws FbException;
+		public ITransaction getTransactionByHandle(IStatus status, com.sun.jna.ptr.LongByReference hndlPtr) throws FbException;
+		public IStatement getStatementByHandle(IStatus status, com.sun.jna.ptr.LongByReference hndlPtr) throws FbException;
 	}
 
 	public static interface IOffsetsCallbackIntf extends IVersionedIntf
@@ -1066,7 +1082,7 @@ public interface FbInterface extends FbClientLibrary
 		public int createPublicKeyFromCertificate(ICryptoRepository repository, ICryptoKey[] key);
 		public int deleteCertificatePublicKey(ICryptoKey key);
 		public int getSerialNumber(byte[] serialNumber, com.sun.jna.Pointer length);
-		public int getOwnerName(com.sun.jna.Pointer ownerName, com.sun.jna.Pointer length, String user_dn, String pattern);
+		public int getOwnerName(com.sun.jna.Pointer ownerName, com.sun.jna.Pointer length, String user_dn);
 		public int getKeyContainer(com.sun.jna.Pointer container, com.sun.jna.Pointer length);
 	}
 
@@ -8360,6 +8376,16 @@ public interface FbInterface extends FbClientLibrary
 				public String invoke(IClientBlock self);
 			}
 
+			public static interface Callback_getCertificate extends com.sun.jna.Callback
+			{
+				public String invoke(IClientBlock self);
+			}
+
+			public static interface Callback_getRepositoryPin extends com.sun.jna.Callback
+			{
+				public String invoke(IClientBlock self);
+			}
+
 			public static interface Callback_getData extends com.sun.jna.Callback
 			{
 				public com.sun.jna.Pointer invoke(IClientBlock self, com.sun.jna.Pointer length);
@@ -8373,6 +8399,11 @@ public interface FbInterface extends FbClientLibrary
 			public static interface Callback_newKey extends com.sun.jna.Callback
 			{
 				public ICryptKey invoke(IClientBlock self, IStatus status);
+			}
+
+			public static interface Callback_getAuthBlock extends com.sun.jna.Callback
+			{
+				public IAuthBlock invoke(IClientBlock self, IStatus status);
 			}
 
 			public VTable(com.sun.jna.Pointer pointer)
@@ -8397,6 +8428,22 @@ public interface FbInterface extends FbClientLibrary
 					public String invoke(IClientBlock self)
 					{
 						return obj.getPassword();
+					}
+				};
+
+				getCertificate = new Callback_getCertificate() {
+					@Override
+					public String invoke(IClientBlock self)
+					{
+						return obj.getCertificate();
+					}
+				};
+
+				getRepositoryPin = new Callback_getRepositoryPin() {
+					@Override
+					public String invoke(IClientBlock self)
+					{
+						return obj.getRepositoryPin();
 					}
 				};
 
@@ -8438,6 +8485,22 @@ public interface FbInterface extends FbClientLibrary
 						}
 					}
 				};
+
+				getAuthBlock = new Callback_getAuthBlock() {
+					@Override
+					public IAuthBlock invoke(IClientBlock self, IStatus status)
+					{
+						try
+						{
+							return obj.getAuthBlock(status);
+						}
+						catch (Throwable t)
+						{
+							FbException.catchException(status, t);
+							return null;
+						}
+					}
+				};
 			}
 
 			public VTable()
@@ -8446,15 +8509,18 @@ public interface FbInterface extends FbClientLibrary
 
 			public Callback_getLogin getLogin;
 			public Callback_getPassword getPassword;
+			public Callback_getCertificate getCertificate;
+			public Callback_getRepositoryPin getRepositoryPin;
 			public Callback_getData getData;
 			public Callback_putData putData;
 			public Callback_newKey newKey;
+			public Callback_getAuthBlock getAuthBlock;
 
 			@Override
 			protected java.util.List<String> getFieldOrder()
 			{
 				java.util.List<String> fields = super.getFieldOrder();
-				fields.addAll(java.util.Arrays.asList("getLogin", "getPassword", "getData", "putData", "newKey"));
+				fields.addAll(java.util.Arrays.asList("getLogin", "getPassword", "getCertificate", "getRepositoryPin", "getData", "putData", "newKey", "getAuthBlock"));
 				return fields;
 			}
 		}
@@ -8491,6 +8557,20 @@ public interface FbInterface extends FbClientLibrary
 			return result;
 		}
 
+		public String getCertificate()
+		{
+			VTable vTable = getVTable();
+			String result = vTable.getCertificate.invoke(this);
+			return result;
+		}
+
+		public String getRepositoryPin()
+		{
+			VTable vTable = getVTable();
+			String result = vTable.getRepositoryPin.invoke(this);
+			return result;
+		}
+
 		public com.sun.jna.Pointer getData(com.sun.jna.Pointer length)
 		{
 			VTable vTable = getVTable();
@@ -8509,6 +8589,14 @@ public interface FbInterface extends FbClientLibrary
 		{
 			VTable vTable = getVTable();
 			ICryptKey result = vTable.newKey.invoke(this, status);
+			FbException.checkException(status);
+			return result;
+		}
+
+		public IAuthBlock getAuthBlock(IStatus status) throws FbException
+		{
+			VTable vTable = getVTable();
+			IAuthBlock result = vTable.getAuthBlock.invoke(this, status);
 			FbException.checkException(status);
 			return result;
 		}
@@ -9675,6 +9763,218 @@ public interface FbInterface extends FbClientLibrary
 			VTable vTable = getVTable();
 			vTable.rollback.invoke(this, status);
 			FbException.checkException(status);
+		}
+	}
+
+	public static class IAuthBlock extends IVersioned implements IAuthBlockIntf
+	{
+		public static class VTable extends IVersioned.VTable
+		{
+			public static interface Callback_getType extends com.sun.jna.Callback
+			{
+				public String invoke(IAuthBlock self);
+			}
+
+			public static interface Callback_getName extends com.sun.jna.Callback
+			{
+				public String invoke(IAuthBlock self);
+			}
+
+			public static interface Callback_getPlugin extends com.sun.jna.Callback
+			{
+				public String invoke(IAuthBlock self);
+			}
+
+			public static interface Callback_getSecurityDb extends com.sun.jna.Callback
+			{
+				public String invoke(IAuthBlock self);
+			}
+
+			public static interface Callback_getOriginalPlugin extends com.sun.jna.Callback
+			{
+				public String invoke(IAuthBlock self);
+			}
+
+			public static interface Callback_next extends com.sun.jna.Callback
+			{
+				public boolean invoke(IAuthBlock self, IStatus status);
+			}
+
+			public static interface Callback_first extends com.sun.jna.Callback
+			{
+				public boolean invoke(IAuthBlock self, IStatus status);
+			}
+
+			public VTable(com.sun.jna.Pointer pointer)
+			{
+				super(pointer);
+			}
+
+			public VTable(final IAuthBlockIntf obj)
+			{
+				super(obj);
+
+				getType = new Callback_getType() {
+					@Override
+					public String invoke(IAuthBlock self)
+					{
+						return obj.getType();
+					}
+				};
+
+				getName = new Callback_getName() {
+					@Override
+					public String invoke(IAuthBlock self)
+					{
+						return obj.getName();
+					}
+				};
+
+				getPlugin = new Callback_getPlugin() {
+					@Override
+					public String invoke(IAuthBlock self)
+					{
+						return obj.getPlugin();
+					}
+				};
+
+				getSecurityDb = new Callback_getSecurityDb() {
+					@Override
+					public String invoke(IAuthBlock self)
+					{
+						return obj.getSecurityDb();
+					}
+				};
+
+				getOriginalPlugin = new Callback_getOriginalPlugin() {
+					@Override
+					public String invoke(IAuthBlock self)
+					{
+						return obj.getOriginalPlugin();
+					}
+				};
+
+				next = new Callback_next() {
+					@Override
+					public boolean invoke(IAuthBlock self, IStatus status)
+					{
+						try
+						{
+							return obj.next(status);
+						}
+						catch (Throwable t)
+						{
+							FbException.catchException(status, t);
+							return false;
+						}
+					}
+				};
+
+				first = new Callback_first() {
+					@Override
+					public boolean invoke(IAuthBlock self, IStatus status)
+					{
+						try
+						{
+							return obj.first(status);
+						}
+						catch (Throwable t)
+						{
+							FbException.catchException(status, t);
+							return false;
+						}
+					}
+				};
+			}
+
+			public VTable()
+			{
+			}
+
+			public Callback_getType getType;
+			public Callback_getName getName;
+			public Callback_getPlugin getPlugin;
+			public Callback_getSecurityDb getSecurityDb;
+			public Callback_getOriginalPlugin getOriginalPlugin;
+			public Callback_next next;
+			public Callback_first first;
+
+			@Override
+			protected java.util.List<String> getFieldOrder()
+			{
+				java.util.List<String> fields = super.getFieldOrder();
+				fields.addAll(java.util.Arrays.asList("getType", "getName", "getPlugin", "getSecurityDb", "getOriginalPlugin", "next", "first"));
+				return fields;
+			}
+		}
+
+		public IAuthBlock()
+		{
+		}
+
+		public IAuthBlock(final IAuthBlockIntf obj)
+		{
+			vTable = new VTable(obj);
+			vTable.write();
+			cloopVTable = vTable.getPointer();
+			write();
+		}
+
+		@Override
+		protected VTable createVTable()
+		{
+			return new VTable(cloopVTable);
+		}
+
+		public String getType()
+		{
+			VTable vTable = getVTable();
+			String result = vTable.getType.invoke(this);
+			return result;
+		}
+
+		public String getName()
+		{
+			VTable vTable = getVTable();
+			String result = vTable.getName.invoke(this);
+			return result;
+		}
+
+		public String getPlugin()
+		{
+			VTable vTable = getVTable();
+			String result = vTable.getPlugin.invoke(this);
+			return result;
+		}
+
+		public String getSecurityDb()
+		{
+			VTable vTable = getVTable();
+			String result = vTable.getSecurityDb.invoke(this);
+			return result;
+		}
+
+		public String getOriginalPlugin()
+		{
+			VTable vTable = getVTable();
+			String result = vTable.getOriginalPlugin.invoke(this);
+			return result;
+		}
+
+		public boolean next(IStatus status) throws FbException
+		{
+			VTable vTable = getVTable();
+			boolean result = vTable.next.invoke(this, status);
+			FbException.checkException(status);
+			return result;
+		}
+
+		public boolean first(IStatus status) throws FbException
+		{
+			VTable vTable = getVTable();
+			boolean result = vTable.first.invoke(this, status);
+			FbException.checkException(status);
+			return result;
 		}
 	}
 
@@ -11849,6 +12149,16 @@ public interface FbInterface extends FbClientLibrary
 				public IDecFloat34 invoke(IUtil self, IStatus status);
 			}
 
+			public static interface Callback_getTransactionByHandle extends com.sun.jna.Callback
+			{
+				public ITransaction invoke(IUtil self, IStatus status, com.sun.jna.ptr.LongByReference hndlPtr);
+			}
+
+			public static interface Callback_getStatementByHandle extends com.sun.jna.Callback
+			{
+				public IStatement invoke(IUtil self, IStatus status, com.sun.jna.ptr.LongByReference hndlPtr);
+			}
+
 			public VTable(com.sun.jna.Pointer pointer)
 			{
 				super(pointer);
@@ -12061,6 +12371,38 @@ public interface FbInterface extends FbClientLibrary
 						}
 					}
 				};
+
+				getTransactionByHandle = new Callback_getTransactionByHandle() {
+					@Override
+					public ITransaction invoke(IUtil self, IStatus status, com.sun.jna.ptr.LongByReference hndlPtr)
+					{
+						try
+						{
+							return obj.getTransactionByHandle(status, hndlPtr);
+						}
+						catch (Throwable t)
+						{
+							FbException.catchException(status, t);
+							return null;
+						}
+					}
+				};
+
+				getStatementByHandle = new Callback_getStatementByHandle() {
+					@Override
+					public IStatement invoke(IUtil self, IStatus status, com.sun.jna.ptr.LongByReference hndlPtr)
+					{
+						try
+						{
+							return obj.getStatementByHandle(status, hndlPtr);
+						}
+						catch (Throwable t)
+						{
+							FbException.catchException(status, t);
+							return null;
+						}
+					}
+				};
 			}
 
 			public VTable()
@@ -12083,12 +12425,14 @@ public interface FbInterface extends FbClientLibrary
 			public Callback_createEventBlock createEventBlock;
 			public Callback_getDecFloat16 getDecFloat16;
 			public Callback_getDecFloat34 getDecFloat34;
+			public Callback_getTransactionByHandle getTransactionByHandle;
+			public Callback_getStatementByHandle getStatementByHandle;
 
 			@Override
 			protected java.util.List<String> getFieldOrder()
 			{
 				java.util.List<String> fields = super.getFieldOrder();
-				fields.addAll(java.util.Arrays.asList("getFbVersion", "loadBlob", "dumpBlob", "getPerfCounters", "executeCreateDatabase", "decodeDate", "decodeTime", "encodeDate", "encodeTime", "formatStatus", "getClientVersion", "getXpbBuilder", "setOffsets", "createEventBlock", "getDecFloat16", "getDecFloat34"));
+				fields.addAll(java.util.Arrays.asList("getFbVersion", "loadBlob", "dumpBlob", "getPerfCounters", "executeCreateDatabase", "decodeDate", "decodeTime", "encodeDate", "encodeTime", "formatStatus", "getClientVersion", "getXpbBuilder", "setOffsets", "createEventBlock", "getDecFloat16", "getDecFloat34", "getTransactionByHandle", "getStatementByHandle"));
 				return fields;
 			}
 		}
@@ -12223,6 +12567,22 @@ public interface FbInterface extends FbClientLibrary
 		{
 			VTable vTable = getVTable();
 			IDecFloat34 result = vTable.getDecFloat34.invoke(this, status);
+			FbException.checkException(status);
+			return result;
+		}
+
+		public ITransaction getTransactionByHandle(IStatus status, com.sun.jna.ptr.LongByReference hndlPtr) throws FbException
+		{
+			VTable vTable = getVTable();
+			ITransaction result = vTable.getTransactionByHandle.invoke(this, status, hndlPtr);
+			FbException.checkException(status);
+			return result;
+		}
+
+		public IStatement getStatementByHandle(IStatus status, com.sun.jna.ptr.LongByReference hndlPtr) throws FbException
+		{
+			VTable vTable = getVTable();
+			IStatement result = vTable.getStatementByHandle.invoke(this, status, hndlPtr);
 			FbException.checkException(status);
 			return result;
 		}
@@ -18166,7 +18526,7 @@ public interface FbInterface extends FbClientLibrary
 
 			public static interface Callback_getOwnerName extends com.sun.jna.Callback
 			{
-				public int invoke(ICryptoCertificate self, com.sun.jna.Pointer ownerName, com.sun.jna.Pointer length, String user_dn, String pattern);
+				public int invoke(ICryptoCertificate self, com.sun.jna.Pointer ownerName, com.sun.jna.Pointer length, String user_dn);
 			}
 
 			public static interface Callback_getKeyContainer extends com.sun.jna.Callback
@@ -18313,9 +18673,9 @@ public interface FbInterface extends FbClientLibrary
 
 				getOwnerName = new Callback_getOwnerName() {
 					@Override
-					public int invoke(ICryptoCertificate self, com.sun.jna.Pointer ownerName, com.sun.jna.Pointer length, String user_dn, String pattern)
+					public int invoke(ICryptoCertificate self, com.sun.jna.Pointer ownerName, com.sun.jna.Pointer length, String user_dn)
 					{
-						return obj.getOwnerName(ownerName, length, user_dn, pattern);
+						return obj.getOwnerName(ownerName, length, user_dn);
 					}
 				};
 
@@ -18490,10 +18850,10 @@ public interface FbInterface extends FbClientLibrary
 			return result;
 		}
 
-		public int getOwnerName(com.sun.jna.Pointer ownerName, com.sun.jna.Pointer length, String user_dn, String pattern)
+		public int getOwnerName(com.sun.jna.Pointer ownerName, com.sun.jna.Pointer length, String user_dn)
 		{
 			VTable vTable = getVTable();
-			int result = vTable.getOwnerName.invoke(this, ownerName, length, user_dn, pattern);
+			int result = vTable.getOwnerName.invoke(this, ownerName, length, user_dn);
 			return result;
 		}
 
