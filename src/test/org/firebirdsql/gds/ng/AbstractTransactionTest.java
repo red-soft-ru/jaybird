@@ -194,10 +194,7 @@ public abstract class AbstractTransactionTest extends FBJUnit4TestBase {
         try {
             statement.prepare("SELECT thevalue FROM keyvalue WHERE thekey = ?");
 
-            FieldValue parameter1 = statement.getParameterDescriptor().getFieldDescriptor(0).createDefaultFieldValue();
-            parameter1.setFieldData(db.getDatatypeCoder().encodeInt(key));
-
-            statement.execute(RowValue.of(parameter1));
+            statement.execute(RowValue.of(db.getDatatypeCoder().encodeInt(key)));
             statement.fetchRows(1);
 
         } catch (SQLException e) {
