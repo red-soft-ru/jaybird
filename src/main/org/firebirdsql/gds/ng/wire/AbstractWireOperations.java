@@ -341,7 +341,9 @@ public abstract class AbstractWireOperations implements FbWireOperations {
             } catch (Exception e) {
                 warningCallback.processWarning(new SQLWarning(e));
                 // ignoring exceptions
-                log.warn("Exception in consumePackets", e);
+                String message = "Exception in consumePackets";
+                log.warn(message + ": " + e + "; see debug level for stacktrace");
+                log.debug(message, e);
             }
         }
     }

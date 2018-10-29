@@ -150,7 +150,9 @@ public class FBDatabaseMetaData implements FirebirdDatabaseMetaData {
                     try {
                         stmt.close();
                     } catch (Exception e) {
-                        log.warn("error closing cached statements in DatabaseMetaData.close", e);
+                        log.warn("error closing cached statements in DatabaseMetaData.close; "
+                                + "see debug level for stacktrace");
+                        log.debug("error closing cached statements in DatabaseMetaData.close", e);
                     }
                 }
             } finally {
@@ -410,14 +412,260 @@ public class FBDatabaseMetaData implements FirebirdDatabaseMetaData {
 
     @Override
     public boolean supportsConvert() throws SQLException {
-        // TODO: Set true after JDBC-294 has been done
-        return false;   // Support is broken right now
+        return true;
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * See also {@link org.firebirdsql.jdbc.escape.ConvertFunction} for caveats.
+     * </p>
+     */
     @Override
     public boolean supportsConvert(int fromType, int toType) throws SQLException {
-        // TODO: implement actual mapping with JDBC-294
-        return false;   // Support is broken right now
+        switch (fromType) {
+        case JaybirdTypeCodes.DECFLOAT:
+            if (!firebirdSupportInfo.supportsDecfloat()) {
+                return false;
+            }
+            // Intentional fallthrough
+        case Types.TINYINT: // Doesn't exist in Firebird; handled as if SMALLINT
+        case Types.SMALLINT:
+        case Types.INTEGER:
+        case Types.BIGINT:
+        case Types.FLOAT:
+        case Types.REAL:
+        case Types.DOUBLE:
+        case Types.NUMERIC:
+        case Types.DECIMAL:
+            // Numerical values all convertible to the same types.
+            switch (toType) {
+            case Types.TINYINT: // Doesn't exist in Firebird; handled as if SMALLINT
+            case Types.SMALLINT:
+            case Types.INTEGER:
+            case Types.BIGINT:
+            case Types.FLOAT:
+            case Types.REAL:
+            case Types.DOUBLE:
+            case Types.NUMERIC:
+            case Types.DECIMAL:
+            case Types.CHAR:
+            case Types.VARCHAR:
+            case Types.LONGVARCHAR:
+            case Types.CLOB:
+            case Types.NCHAR:
+            case Types.LONGNVARCHAR:
+            case Types.NVARCHAR:
+            case Types.NCLOB:
+                return true;
+            // casting numerical values to binary types will result in ASCII bytes of string conversion, not to the
+            // binary representation of the number (eg 1 will be converted to binary 0x31 (ASCII '1'), not 0x01)
+            case Types.BINARY:
+            case Types.VARBINARY:
+            case Types.LONGVARBINARY:
+            case Types.BLOB:
+                return true;
+            case JaybirdTypeCodes.DECFLOAT:
+                return firebirdSupportInfo.supportsDecfloat();
+            default:
+                return false;
+            }
+
+        case Types.CHAR:
+        case Types.VARCHAR:
+        case Types.LONGVARCHAR:
+        case Types.CLOB:
+        case Types.NCHAR:
+        case Types.LONGNVARCHAR:
+        case Types.NVARCHAR:
+        case Types.NCLOB:
+        case Types.BINARY:
+        case Types.VARBINARY:
+        case Types.LONGVARBINARY:
+        case Types.BLOB:
+        case Types.ROWID: // Internally rowid is not discernible from BINARY
+            // String and binary values all convertible to the same types
+            // Be aware though that casting of binary to non-string/binary will perform the same conversion as
+            // if it is an ASCII string value. Eg the binary string value 0x31 cast to integer will be 1, not 49.
+            switch (toType) {
+            case Types.CHAR:
+            case Types.VARCHAR:
+            case Types.LONGVARCHAR:
+            case Types.CLOB:
+            case Types.NCHAR:
+            case Types.LONGNVARCHAR:
+            case Types.NVARCHAR:
+            case Types.NCLOB:
+            case Types.BINARY:
+            case Types.VARBINARY:
+            case Types.LONGVARBINARY:
+            case Types.BLOB:
+                return true;
+            case Types.TINYINT: // Doesn't exist in Firebird; handled as if SMALLINT
+            case Types.SMALLINT:
+            case Types.INTEGER:
+            case Types.BIGINT:
+            case Types.FLOAT:
+            case Types.REAL:
+            case Types.DOUBLE:
+            case Types.NUMERIC:
+            case Types.DECIMAL:
+            case Types.DATE:
+            case Types.TIME:
+            case Types.TIMESTAMP:
+                return fromType != Types.ROWID;
+            case JaybirdTypeCodes.DECFLOAT:
+                return fromType != Types.ROWID && firebirdSupportInfo.supportsDecfloat();
+            case Types.BOOLEAN:
+                return fromType != Types.ROWID && firebirdSupportInfo.supportsBoolean();
+            case Types.ROWID:
+                // As size of rowid is context dependent, we can't cast to it using the convert escape
+                return false;
+            case Types.TIME_WITH_TIMEZONE:
+            case Types.TIMESTAMP_WITH_TIMEZONE:
+                // TODO JDBC-540
+                return false;
+            default:
+                return false;
+            }
+
+        case Types.DATE:
+            switch(toType) {
+            case Types.DATE:
+            case Types.TIMESTAMP:
+                return true;
+            case Types.TIME:
+            case Types.TIME_WITH_TIMEZONE:
+                return false;
+            case Types.TIMESTAMP_WITH_TIMEZONE:
+                // TODO JDBC-540
+                return false;
+            case Types.CHAR:
+            case Types.VARCHAR:
+            case Types.LONGVARCHAR:
+            case Types.CLOB:
+            case Types.NCHAR:
+            case Types.LONGNVARCHAR:
+            case Types.NVARCHAR:
+            case Types.NCLOB:
+                return true;
+            // casting date/time values to binary types will result in ASCII bytes of string conversion
+            case Types.BINARY:
+            case Types.VARBINARY:
+            case Types.LONGVARBINARY:
+            case Types.BLOB:
+                return true;
+            default:
+                return false;
+            }
+        case Types.TIME:
+            switch(toType) {
+            case Types.TIMESTAMP:
+            case Types.TIME:
+                return true;
+            case Types.DATE:
+                return false;
+            case Types.TIME_WITH_TIMEZONE:
+            case Types.TIMESTAMP_WITH_TIMEZONE:
+                // TODO JDBC-540
+                return false;
+            case Types.CHAR:
+            case Types.VARCHAR:
+            case Types.LONGVARCHAR:
+            case Types.CLOB:
+            case Types.NCHAR:
+            case Types.LONGNVARCHAR:
+            case Types.NVARCHAR:
+            case Types.NCLOB:
+                return true;
+            // casting date/time values to binary types will result in ASCII bytes of string conversion
+            case Types.BINARY:
+            case Types.VARBINARY:
+            case Types.LONGVARBINARY:
+            case Types.BLOB:
+                return true;
+            default:
+                return false;
+            }
+        case Types.TIMESTAMP:
+            switch(toType) {
+            case Types.TIMESTAMP:
+            case Types.TIME:
+            case Types.DATE:
+                return true;
+            case Types.TIME_WITH_TIMEZONE:
+            case Types.TIMESTAMP_WITH_TIMEZONE:
+                // TODO JDBC-540
+                return false;
+            case Types.CHAR:
+            case Types.VARCHAR:
+            case Types.LONGVARCHAR:
+            case Types.CLOB:
+            case Types.NCHAR:
+            case Types.LONGNVARCHAR:
+            case Types.NVARCHAR:
+            case Types.NCLOB:
+                return true;
+            // casting date/time values to binary types will result in ASCII bytes of string conversion
+            case Types.BINARY:
+            case Types.VARBINARY:
+            case Types.LONGVARBINARY:
+            case Types.BLOB:
+                return true;
+            default:
+                return false;
+            }
+
+        case Types.NULL:
+            // If a type can be cast to itself, then null can be cast to it as well
+            return toType != Types.NULL && supportsConvert(toType, toType);
+
+        case Types.BOOLEAN:
+            if (firebirdSupportInfo.supportsBoolean()) {
+                switch (toType) {
+                case Types.BOOLEAN:
+                case Types.CHAR:
+                case Types.VARCHAR:
+                case Types.LONGVARCHAR:
+                case Types.CLOB:
+                case Types.NCHAR:
+                case Types.LONGNVARCHAR:
+                case Types.NVARCHAR:
+                case Types.NCLOB:
+                    return true;
+                // casting boolean values to binary types will result in ASCII bytes of string conversion
+                case Types.BINARY:
+                case Types.VARBINARY:
+                case Types.LONGVARBINARY:
+                case Types.BLOB:
+                    return true;
+                default:
+                    return false;
+                }
+            }
+            return false;
+
+        case Types.TIME_WITH_TIMEZONE:
+        case Types.TIMESTAMP_WITH_TIMEZONE:
+            // TODO JDBC-540
+            return false;
+
+        case Types.ARRAY:
+            // Arrays are not supported by Jaybird (and casting would be tricky anyway)
+            return false;
+        // Unsupported types
+        case Types.BIT:
+        case Types.OTHER:
+        case Types.JAVA_OBJECT:
+        case Types.DISTINCT:
+        case Types.STRUCT:
+        case Types.REF:
+        case Types.DATALINK:
+        case Types.SQLXML:
+        case Types.REF_CURSOR:
+        default:
+            return false;
+        }
     }
 
     @Override
@@ -1979,7 +2227,7 @@ public class FBDatabaseMetaData implements FirebirdDatabaseMetaData {
         final RowDescriptor rowDescriptor = new RowDescriptorBuilder(8, datatypeCoder)
                 .at(0).simple(SQL_SHORT, 0, "SCOPE", "ROWIDENTIFIER").addField()
                 .at(1).simple(SQL_VARYING, OBJECT_NAME_LENGTH, "COLUMN_NAME", "ROWIDENTIFIER").addField()
-                .at(2).simple(SQL_SHORT, 0, "DATA_TYPE", "ROWIDENTIFIER").addField()
+                .at(2).simple(SQL_LONG, 0, "DATA_TYPE", "ROWIDENTIFIER").addField()
                 .at(3).simple(SQL_VARYING, 31, "TYPE_NAME", "ROWIDENTIFIER").addField()
                 .at(4).simple(SQL_LONG, 0, "COLUMN_SIZE", "ROWIDENTIFIER").addField()
                 .at(5).simple(SQL_LONG, 0, "BUFFER_LENGTH", "ROWIDENTIFIER").addField()
@@ -2010,7 +2258,7 @@ public class FBDatabaseMetaData implements FirebirdDatabaseMetaData {
                                         ? DatabaseMetaData.bestRowTransaction
                                         : DatabaseMetaData.bestRowSession))
                         .at(1).set(getBytes("RDB$DB_KEY"))
-                        .at(2).set(createShort(Types.ROWID))
+                        .at(2).set(createInt(Types.ROWID))
                         .at(3).set(getBytes(getDataTypeName(char_type, 0, CS_BINARY)))
                         .at(4).set(createInt(pseudoColumns.getInt(6)))
                         .at(7).set(createShort(DatabaseMetaData.bestRowPseudo))
@@ -2445,7 +2693,7 @@ public class FBDatabaseMetaData implements FirebirdDatabaseMetaData {
     public ResultSet getTypeInfo() throws SQLException {
         final RowDescriptor rowDescriptor = new RowDescriptorBuilder(18, datatypeCoder)
                 .at(0).simple(SQL_VARYING, 31, "TYPE_NAME", "TYPEINFO").addField()
-                .at(1).simple(SQL_SHORT, 0, "DATA_TYPE", "TYPEINFO").addField()
+                .at(1).simple(SQL_LONG, 0, "DATA_TYPE", "TYPEINFO").addField()
                 .at(2).simple(SQL_LONG, 0, "PRECISION", "TYPEINFO").addField()
                 .at(3).simple(SQL_VARYING, 1, "LITERAL_PREFIX", "TYPEINFO").addField()
                 .at(4).simple(SQL_VARYING, 1, "LITERAL_SUFFIX", "TYPEINFO").addField()
@@ -2474,44 +2722,44 @@ public class FBDatabaseMetaData implements FirebirdDatabaseMetaData {
         // DECFLOAT=-6001 (TODO Change when standardized)
         if (getDatabaseMajorVersion() >= 4) {
             rows.add(RowValue.of(rowDescriptor,
-                    getBytes("DECFLOAT"), createShort(JaybirdTypeCodes.DECFLOAT), DECFLOAT_34_PRECISION, null, null,
+                    getBytes("DECFLOAT"), createInt(JaybirdTypeCodes.DECFLOAT), DECFLOAT_34_PRECISION, null, null,
                     getBytes("precision"), TYPE_NULLABLE, CASEINSENSITIVE, TYPE_SEARCHABLE, SIGNED, VARIABLESCALE,
                     NOTAUTOINC, null, SHORT_ZERO, SHORT_ZERO, createInt(SQL_DEC34), null, RADIX_TEN));
         }
 
         //BIGINT=-5
         rows.add(RowValue.of(rowDescriptor,
-                getBytes("BIGINT"), createShort(Types.BIGINT), BIGINT_PRECISION, null, null, null,
+                getBytes("BIGINT"), createInt(Types.BIGINT), BIGINT_PRECISION, null, null, null,
                 TYPE_NULLABLE, CASEINSENSITIVE, TYPE_SEARCHABLE, SIGNED, FIXEDSCALE, NOTAUTOINC, null, SHORT_ZERO,
                 SHORT_ZERO, createInt(SQL_INT64), null, RADIX_TEN));
 
         //LONGVARBINARY=-4
         rows.add(RowValue.of(rowDescriptor,
-                getBytes("BLOB SUB_TYPE BINARY"), createShort(Types.LONGVARBINARY), INT_ZERO, null, null,
+                getBytes("BLOB SUB_TYPE BINARY"), createInt(Types.LONGVARBINARY), INT_ZERO, null, null,
                 null, TYPE_NULLABLE, CASESENSITIVE, blobTypePred, UNSIGNED, FIXEDSCALE, NOTAUTOINC, null,
                 SHORT_ZERO, SHORT_ZERO, createInt(SQL_BLOB), null, RADIX_TEN));
 
         //VARBINARY=-3
         rows.add(RowValue.of(rowDescriptor,
-                getBytes("VARCHAR"), createShort(Types.VARBINARY), createInt(32765), null, null, getBytes("length"),
+                getBytes("VARCHAR"), createInt(Types.VARBINARY), createInt(32765), null, null, getBytes("length"),
                 TYPE_NULLABLE, CASESENSITIVE, TYPE_SEARCHABLE, UNSIGNED, FIXEDSCALE, NOTAUTOINC, null, SHORT_ZERO,
                 SHORT_ZERO, createInt(SQL_VARYING), null, RADIX_TEN));
 
         //BINARY=-2
         rows.add(RowValue.of(rowDescriptor,
-                getBytes("CHAR"), createShort(Types.BINARY), createInt(32767), null, null, getBytes("length"),
+                getBytes("CHAR"), createInt(Types.BINARY), createInt(32767), null, null, getBytes("length"),
                 TYPE_NULLABLE, CASESENSITIVE, TYPE_SEARCHABLE, UNSIGNED, FIXEDSCALE, NOTAUTOINC, null, SHORT_ZERO,
                 SHORT_ZERO, createInt(SQL_TEXT), null, RADIX_TEN));
 
         //LONGVARCHAR=-1
         rows.add(RowValue.of(rowDescriptor,
-                getBytes("BLOB SUB_TYPE TEXT"), createShort(Types.LONGVARCHAR), INT_ZERO, getBytes("'"), getBytes("'"),
+                getBytes("BLOB SUB_TYPE TEXT"), createInt(Types.LONGVARCHAR), INT_ZERO, getBytes("'"), getBytes("'"),
                 null, TYPE_NULLABLE, CASESENSITIVE, blobTypePred, UNSIGNED, FIXEDSCALE, NOTAUTOINC, null,
                 SHORT_ZERO, SHORT_ZERO, createInt(SQL_BLOB), null, RADIX_TEN));
 
         //CHAR=1
         rows.add(RowValue.of(rowDescriptor,
-                getBytes("CHAR"), createShort(Types.CHAR), createInt(32767), getBytes("'"),
+                getBytes("CHAR"), createInt(Types.CHAR), createInt(32767), getBytes("'"),
                 getBytes("'"), getBytes("length"), TYPE_NULLABLE, CASESENSITIVE, TYPE_SEARCHABLE, UNSIGNED,
                 FIXEDSCALE, NOTAUTOINC, null, SHORT_ZERO, SHORT_ZERO, createInt(SQL_TEXT), null,
                 RADIX_TEN));
@@ -2519,44 +2767,44 @@ public class FBDatabaseMetaData implements FirebirdDatabaseMetaData {
         //NUMERIC=2
         // TODO Handle DEC_FIXED
         rows.add(RowValue.of(rowDescriptor,
-                getBytes("NUMERIC"), createShort(Types.NUMERIC), NUMERIC_PRECISION, null, null,
+                getBytes("NUMERIC"), createInt(Types.NUMERIC), NUMERIC_PRECISION, null, null,
                 getBytes("precision,scale"), TYPE_NULLABLE, CASEINSENSITIVE, TYPE_SEARCHABLE, SIGNED, FIXEDSCALE,
                 NOTAUTOINC, null, SHORT_ZERO, NUMERIC_PRECISION, createInt(SQL_INT64), null, RADIX_TEN));
 
         //DECIMAL=3
         // TODO Handle DEC_FIXED
         rows.add(RowValue.of(rowDescriptor,
-                getBytes("DECIMAL"), createShort(Types.DECIMAL), DECIMAL_PRECISION, null, null,
+                getBytes("DECIMAL"), createInt(Types.DECIMAL), DECIMAL_PRECISION, null, null,
                 getBytes("precision,scale"), TYPE_NULLABLE, CASEINSENSITIVE, TYPE_SEARCHABLE, SIGNED, FIXEDSCALE,
                 NOTAUTOINC, null, SHORT_ZERO, DECIMAL_PRECISION, createInt(SQL_INT64), null, RADIX_TEN));
 
         //INTEGER=4
         rows.add(RowValue.of(rowDescriptor,
-                getBytes("INTEGER"), createShort(Types.INTEGER), INTEGER_PRECISION, null, null, null,
+                getBytes("INTEGER"), createInt(Types.INTEGER), INTEGER_PRECISION, null, null, null,
                 TYPE_NULLABLE, CASEINSENSITIVE, TYPE_SEARCHABLE, SIGNED, FIXEDSCALE, NOTAUTOINC, null, SHORT_ZERO,
                 SHORT_ZERO, createInt(SQL_LONG), null, RADIX_TEN));
 
         //SMALLINT=5
         rows.add(RowValue.of(rowDescriptor,
-                getBytes("SMALLINT"), createShort(Types.SMALLINT), SMALLINT_PRECISION, null, null,
+                getBytes("SMALLINT"), createInt(Types.SMALLINT), SMALLINT_PRECISION, null, null,
                 null, TYPE_NULLABLE, CASEINSENSITIVE, TYPE_SEARCHABLE, SIGNED, FIXEDSCALE, NOTAUTOINC, null,
                 SHORT_ZERO, SHORT_ZERO, createInt(SQL_SHORT), null, RADIX_TEN));
 
         //FLOAT=6
         rows.add(RowValue.of(rowDescriptor,
-                getBytes("FLOAT"), createShort(Types.FLOAT), FLOAT_PRECISION, null, null, null,
+                getBytes("FLOAT"), createInt(Types.FLOAT), FLOAT_PRECISION, null, null, null,
                 TYPE_NULLABLE, CASEINSENSITIVE, TYPE_SEARCHABLE, SIGNED, VARIABLESCALE, NOTAUTOINC, null, SHORT_ZERO,
                 SHORT_ZERO, createInt(SQL_FLOAT), null, RADIX_TEN));
 
         //DOUBLE=8
         rows.add(RowValue.of(rowDescriptor,
-                getBytes("DOUBLE PRECISION"), createShort(Types.DOUBLE), DOUBLE_PRECISION, null, null,
+                getBytes("DOUBLE PRECISION"), createInt(Types.DOUBLE), DOUBLE_PRECISION, null, null,
                 null, TYPE_NULLABLE, CASEINSENSITIVE, TYPE_SEARCHABLE, SIGNED, VARIABLESCALE, NOTAUTOINC, null,
                 SHORT_ZERO, SHORT_ZERO, createInt(SQL_DOUBLE), null, RADIX_TEN));
 
         //VARCHAR=12
         rows.add(RowValue.of(rowDescriptor,
-                getBytes("VARCHAR"), createShort(Types.VARCHAR), createInt(32765), getBytes("'"),
+                getBytes("VARCHAR"), createInt(Types.VARCHAR), createInt(32765), getBytes("'"),
                 getBytes("'"), getBytes("length"), TYPE_NULLABLE, CASESENSITIVE, TYPE_SEARCHABLE, UNSIGNED,
                 FIXEDSCALE, NOTAUTOINC, null, SHORT_ZERO, SHORT_ZERO, createInt(SQL_VARYING), null,
                 RADIX_TEN));
@@ -2564,32 +2812,32 @@ public class FBDatabaseMetaData implements FirebirdDatabaseMetaData {
         //BOOLEAN=16
         if (getDatabaseMajorVersion() >= 3) {
             rows.add(RowValue.of(rowDescriptor,
-                    getBytes("BOOLEAN"), createShort(Types.BOOLEAN), BOOLEAN_PRECISION,
+                    getBytes("BOOLEAN"), createInt(Types.BOOLEAN), BOOLEAN_PRECISION,
                     null, null, null, TYPE_NULLABLE, CASEINSENSITIVE, TYPE_PRED_BASIC, UNSIGNED, FIXEDSCALE,
                     NOTAUTOINC, null, SHORT_ZERO, SHORT_ZERO, createInt(SQL_BOOLEAN), null, RADIX_BINARY));
         }
 
         //DATE=91
         rows.add(RowValue.of(rowDescriptor,
-                getBytes("DATE"), createShort(Types.DATE), DATE_PRECISION, getBytes("date'"), getBytes("'"), null,
+                getBytes("DATE"), createInt(Types.DATE), DATE_PRECISION, getBytes("date'"), getBytes("'"), null,
                 TYPE_NULLABLE, CASEINSENSITIVE, TYPE_SEARCHABLE, UNSIGNED, FIXEDSCALE, NOTAUTOINC, null, SHORT_ZERO,
                 SHORT_ZERO, createInt(SQL_TYPE_DATE), null, RADIX_TEN));
 
         //TIME=92
         rows.add(RowValue.of(rowDescriptor,
-                getBytes("TIME"), createShort(Types.TIME), TIME_PRECISION, getBytes("time'"), getBytes("'"), null,
+                getBytes("TIME"), createInt(Types.TIME), TIME_PRECISION, getBytes("time'"), getBytes("'"), null,
                 TYPE_NULLABLE, CASEINSENSITIVE, TYPE_SEARCHABLE, UNSIGNED, FIXEDSCALE, NOTAUTOINC, null, SHORT_ZERO,
                 SHORT_ZERO, createInt(SQL_TYPE_TIME), null, RADIX_TEN));
 
         //TIMESTAMP=93
         rows.add(RowValue.of(rowDescriptor,
-                getBytes("TIMESTAMP"), createShort(Types.TIMESTAMP), TIMESTAMP_PRECISION, getBytes("timestamp'"),
+                getBytes("TIMESTAMP"), createInt(Types.TIMESTAMP), TIMESTAMP_PRECISION, getBytes("timestamp'"),
                 getBytes("'"), null, TYPE_NULLABLE, CASEINSENSITIVE, TYPE_SEARCHABLE, UNSIGNED, FIXEDSCALE, NOTAUTOINC,
                 null, SHORT_ZERO, SHORT_ZERO, createInt(SQL_TIMESTAMP), null, RADIX_TEN));
 
         //OTHER=1111
         rows.add(RowValue.of(rowDescriptor,
-                getBytes("ARRAY"), createShort(Types.OTHER), INT_ZERO, null, null, null, TYPE_NULLABLE,
+                getBytes("ARRAY"), createInt(Types.OTHER), INT_ZERO, null, null, null, TYPE_NULLABLE,
                 CASESENSITIVE, TYPE_PRED_NONE, UNSIGNED, FIXEDSCALE, NOTAUTOINC, null, SHORT_ZERO, SHORT_ZERO,
                 createInt(SQL_ARRAY), null, RADIX_TEN));
 
@@ -2597,7 +2845,7 @@ public class FBDatabaseMetaData implements FirebirdDatabaseMetaData {
         // Should we split this into all negative blob types currently known in the DB?
         // Blob is potentially searchable with like, etc, acting as if it isn't.
         rows.add(RowValue.of(rowDescriptor,
-                getBytes("BLOB SUB_TYPE <0 "), createShort(Types.BLOB), INT_ZERO, null, null, null,
+                getBytes("BLOB SUB_TYPE <0 "), createInt(Types.BLOB), INT_ZERO, null, null, null,
                 TYPE_NULLABLE, CASESENSITIVE, TYPE_PRED_NONE, UNSIGNED, FIXEDSCALE, NOTAUTOINC, null, SHORT_ZERO,
                 SHORT_ZERO, createInt(SQL_BLOB), null, RADIX_TEN));
 

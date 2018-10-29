@@ -33,8 +33,12 @@ import java.io.Reader;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.sql.*;
-import java.sql.Date;
-import java.util.*;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.LinkedList;
+import java.util.Iterator;
 
 /**
  * Implementation of {@link ResultSet}.
