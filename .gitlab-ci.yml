@@ -98,9 +98,9 @@ build:jdk18:
   <<: *build_template
   image: openjdk:8-jdk-alpine
 
-build:jdk17:
-  <<: *build_template
-  image: openjdk:7-jdk-alpine
+#build:jdk17:
+#  <<: *build_template
+#  image: openjdk:7-jdk-alpine
 
 test:jdk18:
   tags:
