@@ -949,6 +949,11 @@ managers (backported to Jaybird 3.0.5) ([JDBC-468](http://tracker.firebirdsql.or
 -   Changed: The value returned by `ResultSetMetaData.getColumnDisplaySize` was 
 revised for `REAL`/`FLOAT` and `DOUBLE PRECISION` to take scientific notation 
 into account ([JDBC-514](http://tracker.firebirdsql.org/browse/JDBC-514))
+-   Fixed: Database metadata pattern parameters now allow the pattern escape 
+character (`\`) to occur unescaped, this means that patterns `A\B` and `A\\B` 
+will both match a value of `A\B`. This complies with the (undocumented) JDBC 
+expectation that patterns follow the ODBC requirements for pattern value 
+arguments ([JDBC-562](http://tracker.firebirdsql.org/browse/JDBC-562))
 
 Removal of deprecated classes and packages
 ------------------------------------------
@@ -985,6 +990,10 @@ expect the driver to remain functional, but chances are certain metadata (eg
 
 In general we will no longer fix issues that only occur with Firebird 2.1 or
 earlier.
+
+As a result of changes in `FBDatabaseMetaData`, most result set producing 
+methods will no longer work with Firebird 1.5 or earlier (unsupported since 
+Jaybird 3).
 
 Removed Legacy_Auth from default authentication plugins
 -------------------------------------------------------
@@ -1137,6 +1146,8 @@ The following methods will be removed in Jaybird 5:
     `MaintenanceManager.getLimboTransactions()` instead.
 -   `TraceManager.loadConfigurationFromFile(String)`, use standard Java 
     functionality like `new String(Files.readAllBytes(Paths.get(fileName)), <charset>)`
+-   `FBDatabaseMetaData.hasNoWildcards(String pattern)`
+-   `FBDatabaseMetaData.stripEscape(String pattern)`
     
 ### Removal of deprecated constants ###
 
