@@ -22,6 +22,7 @@ import static org.junit.Assert.fail;
  * @author <a href="mailto:vasiliy.yashkov@red-soft.ru">Vasiliy Yashkov</a>
  * @since 3.0
  */
+@Ignore
 public class TestAuthSspi extends FBJUnit4TestBase {
 
     public static void initLogger() {
@@ -40,7 +41,7 @@ public class TestAuthSspi extends FBJUnit4TestBase {
         fbDataSource.setNonStandardProperty("isc_dpb_lc_ctype", "WIN1251");
         fbDataSource.setNonStandardProperty("isc_dpb_trusted_auth", "1");
         fbDataSource.setNonStandardProperty("isc_dpb_multi_factor_auth", "1");
-        fbDataSource.setNonStandardProperty("isc_dpb_certificate", "testuser.cer");
+        fbDataSource.setNonStandardProperty("isc_dpb_certificate", "/home/vasiliy/tmp/cert_user.cer");
         fbDataSource.setNonStandardProperty("isc_dpb_repository_pin", "12345678");
 
         Connection conn = null;
@@ -71,8 +72,8 @@ public class TestAuthSspi extends FBJUnit4TestBase {
 
         fbDataSource.setDatabase(FBTestProperties.DB_DATASOURCE_URL);
         fbDataSource.setNonStandardProperty("isc_dpb_lc_ctype", "WIN1251");
-        fbDataSource.setNonStandardProperty("isc_dpb_user_name", "artyom.smirnov@red-soft.ru");
-        fbDataSource.setNonStandardProperty("isc_dpb_password", "q3rgu7Ah");
+        fbDataSource.setNonStandardProperty("isc_dpb_user_name", "TEST@TEST.RU");
+        fbDataSource.setNonStandardProperty("isc_dpb_password", "test");
         fbDataSource.setNonStandardProperty("isc_dpb_trusted_auth", "1");
         fbDataSource.setNonStandardProperty("isc_dpb_multi_factor_auth", "1");
 

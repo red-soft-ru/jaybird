@@ -52,7 +52,7 @@ public final class ClientAuthBlock {
     private static final Logger log = LoggerFactory.getLogger(ClientAuthBlock.class);
 
     private static final Pattern AUTH_PLUGIN_LIST_SPLIT = Pattern.compile("[ \t,;]+");
-    private static final String DEFAULT_AUTH_PLUGINS = "Srp256,Srp,Gss";
+    private static final String DEFAULT_AUTH_PLUGINS = "Srp256,Srp,Certificate,GostPassword,Gss";
     private static final Map<String, AuthenticationPluginSpi> PLUGIN_MAPPING = getAvailableAuthenticationPlugins();
 
     private final IAttachProperties<?> attachProperties;
@@ -115,6 +115,7 @@ public final class ClientAuthBlock {
         while (providerIterator.hasNext()) {
             AuthenticationPluginSpi provider = providerIterator.next();
             AuthenticationPlugin plugin = provider.createPlugin();
+
             log.debug("Trying authentication plugin " + plugin);
             try {
                 switch (plugin.authenticate(this)) {
@@ -479,7 +480,8 @@ public final class ClientAuthBlock {
                 "org.firebirdsql.gds.ng.wire.auth.srp.Srp256AuthenticationPluginSpi",
                 "org.firebirdsql.gds.ng.wire.auth.srp.Srp384AuthenticationPluginSpi",
                 "org.firebirdsql.gds.ng.wire.auth.srp.Srp512AuthenticationPluginSpi",
-                "org.firebirdsql.gds.ng.wire.auth.MultifactorAuthenticationPluginSpi",
+                "org.firebirdsql.gds.ng.wire.auth.CertificateAuthenticationPluginSpi",
+                "org.firebirdsql.gds.ng.wire.auth.GostPasswordAuthenticationPluginSpi",
                 "org.firebirdsql.gds.ng.wire.auth.GssAuthenticationPluginSpi",
         }) {
             try {

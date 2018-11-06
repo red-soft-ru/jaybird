@@ -14,7 +14,6 @@ import org.firebirdsql.cryptoapi.windows.crypt32._CERT_CONTEXT;
 import org.firebirdsql.cryptoapi.windows.crypt32._CERT_PUBLIC_KEY_INFO;
 import org.firebirdsql.cryptoapi.windows.crypt32._CRYPT_KEY_PROV_INFO;
 import org.firebirdsql.cryptoapi.windows.sspi._ALG_ID;
-import org.firebirdsql.gds.impl.wire.Bytes;
 import org.firebirdsql.gds.impl.wire.auth.AuthCryptoException;
 import org.firebirdsql.gds.impl.wire.auth.AuthCryptoPlugin;
 import org.firebirdsql.gds.impl.wire.auth.AuthPrivateKeyContext;
@@ -135,8 +134,8 @@ public class AuthCryptoPluginImpl extends AuthCryptoPlugin {
   }
 
   @Override
-  public void setIV(final Object keyHandle, final Bytes iVdata) throws AuthCryptoException {
-    if (!cryptSetKeyParam((Pointer) keyHandle, Wincrypt.KP_IV, iVdata.bytes(), 0))
+  public void setIV(final Object keyHandle, final byte[] iVdata) throws AuthCryptoException {
+    if (!cryptSetKeyParam((Pointer) keyHandle, Wincrypt.KP_IV, iVdata, 0))
       throw new AuthCryptoException("Can't set initialization vector for key.");
   }
 
@@ -202,13 +201,13 @@ public class AuthCryptoPluginImpl extends AuthCryptoPlugin {
   }
 
   @Override
-  public Object getSessionPublicKey(final Bytes publicKeyData, final Bytes exchangeKeyData, final AuthPrivateKeyContext userKey)
+  public Object getSessionPublicKey(final byte[] publicKeyData, final byte[] exchangeKeyData, final AuthPrivateKeyContext userKey)
       throws AuthCryptoException {
-    final Pointer exchKey = Advapi.cryptImportKey((Pointer) userKey.getProvHandle(), exchangeKeyData.bytes(), (Pointer) userKey.getKeyHandle(), 0);
+    final Pointer exchKey = Advapi.cryptImportKey((Pointer) userKey.getProvHandle(), exchangeKeyData, (Pointer) userKey.getKeyHandle(), 0);
     if (exchKey == null)
       throw new AuthCryptoException("Can't import public key.");
     try {
-      Pointer keyHandle = Advapi.cryptImportKey(provider, publicKeyData.bytes(), exchKey, 0);
+      Pointer keyHandle = Advapi.cryptImportKey(provider, publicKeyData, exchKey, 0);
       if (keyHandle == null) {
         int error = Advapi.getLastError();
         if (error == Winerror.CRYPT_BAD_DATA) {
@@ -218,7 +217,7 @@ public class AuthCryptoPluginImpl extends AuthCryptoPlugin {
           alg.write();
           cryptSetKeyParam(exchKey, KP_ALGID, alg.getPointer(), 0);
 
-          keyHandle = Advapi.cryptImportKey(provider, publicKeyData.bytes(), exchKey, 0);
+          keyHandle = Advapi.cryptImportKey(provider, publicKeyData, exchKey, 0);
 
           if (keyHandle == null)
             throw new AuthCryptoException("Can't import public key.");
