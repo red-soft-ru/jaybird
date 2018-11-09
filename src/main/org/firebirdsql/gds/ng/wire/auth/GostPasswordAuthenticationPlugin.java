@@ -37,13 +37,13 @@ public class GostPasswordAuthenticationPlugin implements AuthenticationPlugin {
 
             String userName = clientAuthBlock.getLogin();
             if (userName != null && !userName.isEmpty()) {
-                AuthFactorPassword authFactorPassword = new AuthFactorPassword(authSspi);
+                AuthFactorGostPassword authFactorGostPassword = new AuthFactorGostPassword(authSspi);
 
-                authFactorPassword.setUserName(userName);
-                authFactorPassword.setPassword(clientAuthBlock.getPassword());
-                authFactorPassword.setPasswordEnc(UnixCrypt.crypt(clientAuthBlock.getPassword(), "9z").substring(2, 13));
-                authFactorPassword.setHashExpanded(true);
-                authSspi.addFactor(authFactorPassword);
+                authFactorGostPassword.setUserName(userName);
+                authFactorGostPassword.setPassword(clientAuthBlock.getPassword());
+                authFactorGostPassword.setPasswordEnc(UnixCrypt.crypt(clientAuthBlock.getPassword(), "9z").substring(2, 13));
+                authFactorGostPassword.setHashExpanded(true);
+                authSspi.addFactor(authFactorGostPassword);
                 try {
                     authSspi.request(data);
                 } catch (GDSAuthException e) {

@@ -1,12 +1,9 @@
 package org.firebirdsql.gds.ng.wire.auth;
 
 import org.firebirdsql.gds.GDSException;
-import org.firebirdsql.gds.ISCConstants;
 import org.firebirdsql.gds.impl.wire.ByteBuffer;
 import org.firebirdsql.gds.impl.wire.auth.*;
-import org.firebirdsql.gds.ng.IAttachProperties;
 import org.firebirdsql.gds.ng.wire.auth.legacy.UnixCrypt;
-import org.firebirdsql.jdbc.FBConnectionProperties;
 import org.firebirdsql.logging.Logger;
 import org.firebirdsql.logging.LoggerFactory;
 import org.firebirdsql.util.ByteArrayHelper;
@@ -52,13 +49,13 @@ public class MultifactorAuthenticationPlugin implements AuthenticationPlugin {
 
             String userName = clientAuthBlock.getLogin();
             if (userName != null && !userName.isEmpty()) {
-                AuthFactorPassword authFactorPassword = new AuthFactorPassword(authSspi);
+                AuthFactorGostPassword authFactorGostPassword = new AuthFactorGostPassword(authSspi);
 
-                authFactorPassword.setUserName(userName);
-                authFactorPassword.setPassword(clientAuthBlock.getPassword());
-                authFactorPassword.setPasswordEnc(UnixCrypt.crypt(clientAuthBlock.getPassword(), "9z").substring(2, 13));
-                authFactorPassword.setHashExpanded(true);
-                authSspi.addFactor(authFactorPassword);
+                authFactorGostPassword.setUserName(userName);
+                authFactorGostPassword.setPassword(clientAuthBlock.getPassword());
+                authFactorGostPassword.setPasswordEnc(UnixCrypt.crypt(clientAuthBlock.getPassword(), "9z").substring(2, 13));
+                authFactorGostPassword.setHashExpanded(true);
+                authSspi.addFactor(authFactorGostPassword);
                 data.add((byte) AuthFactor.TYPE_PASSWORD);
             }
 

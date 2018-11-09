@@ -16,7 +16,7 @@ import static org.firebirdsql.gds.ClumpletReader.Kind.Tagged;
  *          Date: 12.10.12
  *          Time: 0:04
  */
-public class AuthFactorPassword extends AuthFactor {
+public class AuthFactorGostPassword extends AuthFactor {
   public static final int SALT_LENGTH = 12;
   public static final byte rdSymmetricMethod = 0;
   public static final byte rdHashMethod = 1;
@@ -33,7 +33,7 @@ public class AuthFactorPassword extends AuthFactor {
 
   private boolean hashExpanded;
 
-  public AuthFactorPassword(AuthSspi sspi) {
+  public AuthFactorGostPassword(AuthSspi sspi) {
     super(TYPE_PASSWORD, sspi);
     setStage(CHALLENGE);
   }
