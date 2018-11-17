@@ -27,6 +27,11 @@ Connecting to Firebird 3 requires some additional configuration, see
 [Jaybird and Firebird 3.0](https://github.com/FirebirdSQL/jaybird/wiki/Jaybird-and-Firebird-3)
 for details.
 
+Firebird 4 is not formally supported in Jaybird 2.2.x, although connecting and 
+most functionality will work. We suggest that you use Jaybird 3.x or higher for 
+Firebird 4. Support for newer data types like `DECFLOAT` and `NUMERIC`/`DECIMAL` 
+with precision higher than 18 will be introduced in Jaybird 4. 
+
 This driver does not support InterBase servers due to Firebird-specific changes
 in the protocol and database attachment parameters.
 
@@ -807,6 +812,9 @@ Firebird support
 
 Jaybird 2.2 supports Firebird 1.0 and higher, but is only tested with Firebird
 2.1, 2.5 and 3.0. 
+
+Firebird 4 is not formally supported in Jaybird 2.2.x, although connecting and 
+most functionality will work.
 
 Firebird 1.0 and 1.5 support will be dropped with Jaybird 3.0. In general this 
 should not impact the use of the driver, but might have impact on the 
