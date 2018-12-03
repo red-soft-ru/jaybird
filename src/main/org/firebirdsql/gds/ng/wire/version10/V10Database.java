@@ -18,15 +18,11 @@
  */
 package org.firebirdsql.gds.ng.wire.version10;
 
-import com.sun.security.jgss.GSSUtil;
 import org.firebirdsql.encodings.Encoding;
 import org.firebirdsql.gds.*;
 import org.firebirdsql.gds.impl.DatabaseParameterBufferExtension;
-import org.firebirdsql.gds.impl.wire.ByteBuffer;
-import org.firebirdsql.gds.impl.wire.XdrInputStream;
 import org.firebirdsql.gds.impl.wire.XdrOutputStream;
 import org.firebirdsql.gds.impl.wire.auth.AuthSspi;
-import org.firebirdsql.gds.impl.wire.auth.GDSAuthException;
 import org.firebirdsql.gds.ng.FbBatch;
 import org.firebirdsql.gds.ng.FbExceptionBuilder;
 import org.firebirdsql.gds.ng.FbMessageMetadata;
@@ -38,21 +34,15 @@ import org.firebirdsql.gds.ng.dbcrypt.DbCryptCallback;
 import org.firebirdsql.gds.ng.fields.BlrCalculator;
 import org.firebirdsql.gds.ng.wire.*;
 import org.firebirdsql.gds.ng.wire.auth.GSSClient;
+import org.firebirdsql.jdbc.FBDriverNotCapableException;
 import org.firebirdsql.jdbc.SQLStateConstants;
 import org.firebirdsql.logging.Logger;
 import org.firebirdsql.logging.LoggerFactory;
 import org.ietf.jgss.*;
-import sun.misc.BASE64Encoder;
-import sun.security.jgss.GSSCredentialImpl;
-import sun.security.jgss.GSSToken;
-import sun.security.jgss.spi.GSSNameSpi;
 
-import javax.security.auth.Subject;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.net.InetAddress;
 import java.nio.charset.Charset;
-import java.security.PrivilegedAction;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.sql.SQLNonTransientConnectionException;
@@ -93,17 +83,17 @@ public class V10Database extends AbstractFbWireDatabase implements FbWireDatabas
 
     @Override
     public FbBatch createBatch(FbTransaction transaction, String statement, FbMessageMetadata metadata, BatchParameterBuffer parameters) throws SQLException {
-        throw new SQLException("Not implemented");
+        throw new FBDriverNotCapableException();
     }
 
     @Override
     public FbBatch createBatch(FbTransaction transaction, String statement, BatchParameterBuffer parameters) throws SQLException {
-        throw new SQLException("Not implemented");
+        throw new FBDriverNotCapableException();
     }
 
     @Override
     public FbMetadataBuilder getMetadataBuilder(int fieldCount) throws SQLException {
-        throw new SQLException("Not implemented");
+        throw new FBDriverNotCapableException();
     }
 
     @Override

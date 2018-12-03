@@ -24,7 +24,7 @@ import static org.firebirdsql.common.FBTestProperties.DB_USER;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-public class TestIEventBlockImpl extends FBJUnit4TestBase {
+public class IEventBlockImplTest extends FBJUnit4TestBase {
 
     private static final String gdsType = "FBOONATIVE";
 

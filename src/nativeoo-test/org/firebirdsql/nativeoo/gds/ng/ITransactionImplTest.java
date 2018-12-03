@@ -15,7 +15,7 @@ import java.sql.SQLException;
  *
  * @since 4.0
  */
-public class TestITransactionImpl extends AbstractTransactionTest {
+public class ITransactionImplTest extends AbstractTransactionTest {
 
     private static final String gdsType = "FBOONATIVE";
 

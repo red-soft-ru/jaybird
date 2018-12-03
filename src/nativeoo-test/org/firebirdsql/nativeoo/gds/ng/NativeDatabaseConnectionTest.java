@@ -14,7 +14,7 @@ import static org.firebirdsql.common.FBTestProperties.DB_PASSWORD;
 import static org.firebirdsql.common.FBTestProperties.DB_USER;
 import static org.junit.Assert.*;
 
-public class TestNativeDatabaseConnection {
+public class NativeDatabaseConnectionTest {
 
     @Rule
     public final ExpectedException expectedException = ExpectedException.none();

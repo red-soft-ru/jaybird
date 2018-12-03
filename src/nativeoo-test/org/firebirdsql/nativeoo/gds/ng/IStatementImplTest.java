@@ -41,7 +41,7 @@ import static org.junit.Assert.*;
  *
  * @since 4.0
  */
-public class TestIStatementImpl extends AbstractStatementTest {
+public class IStatementImplTest extends AbstractStatementTest {
 
     private static final String gdsType = "FBOONATIVE";
 

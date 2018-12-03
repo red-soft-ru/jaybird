@@ -37,7 +37,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeThat;
 import static org.junit.Assume.assumeTrue;
 
-public class TestIDatabaseImpl {
+public class IDatabaseImplTest {
 
     // TODO Assert in tests need to be checked (and more need to be added)
 
@@ -105,7 +105,7 @@ public class TestIDatabaseImpl {
         try (IDatabaseImpl db = (IDatabaseImpl) factory.connect(connectionInfo)) {
 
             expectedException.expect(allOf(
-                    isA(FbException.class),
+                    isA(SQLException.class),
                     message(startsWith(getFbMessage(ISCConstants.isc_login))),
                     errorCode(equalTo(ISCConstants.isc_login))
             ));

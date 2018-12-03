@@ -16,7 +16,7 @@ import static org.firebirdsql.common.FBTestProperties.DB_USER;
 import static org.junit.Assert.*;
 import static org.junit.Assert.assertNull;
 
-public class TestIServiceConnectionImpl {
+public class IServiceConnectionImplTest {
     @Rule
     public final ExpectedException expectedException = ExpectedException.none();
 
