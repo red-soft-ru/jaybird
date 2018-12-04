@@ -8,8 +8,6 @@ import org.firebirdsql.gds.ng.*;
 import org.firebirdsql.gds.ng.fields.RowValue;
 import org.firebirdsql.gds.ng.wire.SimpleStatementListener;
 import org.firebirdsql.jdbc.FBBlob;
-import org.firebirdsql.jdbc.JaybirdType;
-import org.firebirdsql.jdbc.JaybirdTypeCodes;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
