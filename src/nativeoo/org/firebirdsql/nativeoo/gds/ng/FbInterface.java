@@ -13,27 +13,6 @@ import org.firebirdsql.jna.fbclient.*;
  */
 public interface FbInterface extends FbClientLibrary
 {
-	public static void catchException(IStatus status, Throwable t) {
-		if (t == null)
-			return;
-		java.io.StringWriter sw = new java.io.StringWriter();
-		java.io.PrintWriter pw = new java.io.PrintWriter(sw);
-		t.printStackTrace(pw);
-		String msg = sw.toString();
-		try (CloseableMemory memory = new CloseableMemory(msg.length())) {
-			memory.setString(0, msg);
-			com.sun.jna.Pointer[] vector = new com.sun.jna.Pointer[]{
-				new com.sun.jna.Pointer(org.firebirdsql.gds.ISCConstants.isc_arg_gds),
-				new com.sun.jna.Pointer(org.firebirdsql.gds.ISCConstants.isc_random),
-				new com.sun.jna.Pointer(org.firebirdsql.gds.ISCConstants.isc_arg_cstring),
-				new com.sun.jna.Pointer(msg.length()),
-				memory,
-				new com.sun.jna.Pointer(org.firebirdsql.gds.ISCConstants.isc_arg_end)
-			};
-			status.setErrors2(vector.length, vector);
-		}
-	}
-
 	public static interface IVersionedIntf
 	{
 	}
@@ -1777,7 +1756,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return null;
 						}
 					}
@@ -2097,7 +2076,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return null;
 						}
 					}
@@ -2113,7 +2092,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 						}
 					}
 				};
@@ -2128,7 +2107,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 						}
 					}
 				};
@@ -2285,7 +2264,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return null;
 						}
 					}
@@ -2403,7 +2382,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return null;
 						}
 					}
@@ -2419,7 +2398,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return null;
 						}
 					}
@@ -2435,7 +2414,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return null;
 						}
 					}
@@ -2681,7 +2660,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return null;
 						}
 					}
@@ -2697,7 +2676,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return null;
 						}
 					}
@@ -2713,7 +2692,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 						}
 					}
 				};
@@ -2811,7 +2790,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return null;
 						}
 					}
@@ -3023,7 +3002,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return null;
 						}
 					}
@@ -3039,7 +3018,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return null;
 						}
 					}
@@ -3174,7 +3153,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 						}
 					}
 				};
@@ -3189,7 +3168,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 						}
 					}
 				};
@@ -3567,7 +3546,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 						}
 					}
 				};
@@ -3582,7 +3561,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return 0;
 						}
 					}
@@ -3598,7 +3577,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 						}
 					}
 				};
@@ -3613,7 +3592,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 						}
 					}
 				};
@@ -3628,7 +3607,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 						}
 					}
 				};
@@ -3643,7 +3622,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return 0;
 						}
 					}
@@ -3800,7 +3779,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 						}
 					}
 				};
@@ -3815,7 +3794,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 						}
 					}
 				};
@@ -3830,7 +3809,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 						}
 					}
 				};
@@ -3845,7 +3824,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 						}
 					}
 				};
@@ -3860,7 +3839,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 						}
 					}
 				};
@@ -3875,7 +3854,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 						}
 					}
 				};
@@ -3890,7 +3869,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 						}
 					}
 				};
@@ -3905,7 +3884,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return null;
 						}
 					}
@@ -3921,7 +3900,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return null;
 						}
 					}
@@ -3937,7 +3916,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return null;
 						}
 					}
@@ -4158,7 +4137,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return 0;
 						}
 					}
@@ -4174,7 +4153,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return null;
 						}
 					}
@@ -4190,7 +4169,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return null;
 						}
 					}
@@ -4206,7 +4185,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return null;
 						}
 					}
@@ -4222,7 +4201,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return null;
 						}
 					}
@@ -4238,7 +4217,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return 0;
 						}
 					}
@@ -4254,7 +4233,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return false;
 						}
 					}
@@ -4270,7 +4249,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return 0;
 						}
 					}
@@ -4286,7 +4265,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return 0;
 						}
 					}
@@ -4302,7 +4281,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return 0;
 						}
 					}
@@ -4318,7 +4297,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return 0;
 						}
 					}
@@ -4334,7 +4313,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return 0;
 						}
 					}
@@ -4350,7 +4329,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return 0;
 						}
 					}
@@ -4366,7 +4345,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return null;
 						}
 					}
@@ -4382,7 +4361,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return 0;
 						}
 					}
@@ -4398,7 +4377,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return 0;
 						}
 					}
@@ -4414,7 +4393,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return 0;
 						}
 					}
@@ -4663,7 +4642,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 						}
 					}
 				};
@@ -4678,7 +4657,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 						}
 					}
 				};
@@ -4693,7 +4672,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 						}
 					}
 				};
@@ -4708,7 +4687,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 						}
 					}
 				};
@@ -4723,7 +4702,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 						}
 					}
 				};
@@ -4738,7 +4717,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 						}
 					}
 				};
@@ -4753,7 +4732,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 						}
 					}
 				};
@@ -4768,7 +4747,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 						}
 					}
 				};
@@ -4783,7 +4762,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return 0;
 						}
 					}
@@ -4799,7 +4778,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return null;
 						}
 					}
@@ -4989,7 +4968,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return 0;
 						}
 					}
@@ -5005,7 +4984,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return 0;
 						}
 					}
@@ -5021,7 +5000,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return 0;
 						}
 					}
@@ -5037,7 +5016,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return 0;
 						}
 					}
@@ -5053,7 +5032,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return 0;
 						}
 					}
@@ -5069,7 +5048,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return 0;
 						}
 					}
@@ -5085,7 +5064,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return false;
 						}
 					}
@@ -5101,7 +5080,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return false;
 						}
 					}
@@ -5117,7 +5096,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return null;
 						}
 					}
@@ -5133,7 +5112,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 						}
 					}
 				};
@@ -5148,7 +5127,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 						}
 					}
 				};
@@ -5366,7 +5345,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 						}
 					}
 				};
@@ -5381,7 +5360,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return 0;
 						}
 					}
@@ -5397,7 +5376,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return null;
 						}
 					}
@@ -5413,7 +5392,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return 0;
 						}
 					}
@@ -5429,7 +5408,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return null;
 						}
 					}
@@ -5445,7 +5424,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return null;
 						}
 					}
@@ -5461,7 +5440,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return null;
 						}
 					}
@@ -5477,7 +5456,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return null;
 						}
 					}
@@ -5493,7 +5472,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 						}
 					}
 				};
@@ -5508,7 +5487,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 						}
 					}
 				};
@@ -5523,7 +5502,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return 0;
 						}
 					}
@@ -5539,7 +5518,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return 0;
 						}
 					}
@@ -5555,7 +5534,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 						}
 					}
 				};
@@ -5570,7 +5549,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return null;
 						}
 					}
@@ -5791,7 +5770,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 						}
 					}
 				};
@@ -5806,7 +5785,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 						}
 					}
 				};
@@ -5821,7 +5800,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 						}
 					}
 				};
@@ -5836,7 +5815,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 						}
 					}
 				};
@@ -5851,7 +5830,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 						}
 					}
 				};
@@ -5866,7 +5845,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return null;
 						}
 					}
@@ -5882,7 +5861,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 						}
 					}
 				};
@@ -5897,7 +5876,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return 0;
 						}
 					}
@@ -5913,7 +5892,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return null;
 						}
 					}
@@ -5929,7 +5908,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 						}
 					}
 				};
@@ -6084,7 +6063,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return 0;
 						}
 					}
@@ -6100,7 +6079,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return 0;
 						}
 					}
@@ -6116,7 +6095,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return 0;
 						}
 					}
@@ -6132,7 +6111,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 						}
 					}
 				};
@@ -6260,7 +6239,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 						}
 					}
 				};
@@ -6275,7 +6254,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 						}
 					}
 				};
@@ -6290,7 +6269,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 						}
 					}
 				};
@@ -6305,7 +6284,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 						}
 					}
 				};
@@ -6320,7 +6299,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 						}
 					}
 				};
@@ -6335,7 +6314,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 						}
 					}
 				};
@@ -6350,7 +6329,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 						}
 					}
 				};
@@ -6466,7 +6445,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 						}
 					}
 				};
@@ -6822,7 +6801,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 						}
 					}
 				};
@@ -6837,7 +6816,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return null;
 						}
 					}
@@ -6853,7 +6832,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return null;
 						}
 					}
@@ -6869,7 +6848,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return null;
 						}
 					}
@@ -6885,7 +6864,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 						}
 					}
 				};
@@ -6900,7 +6879,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return null;
 						}
 					}
@@ -6916,7 +6895,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return null;
 						}
 					}
@@ -6932,7 +6911,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return 0;
 						}
 					}
@@ -6948,7 +6927,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 						}
 					}
 				};
@@ -6963,7 +6942,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 						}
 					}
 				};
@@ -6978,7 +6957,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return null;
 						}
 					}
@@ -6994,7 +6973,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return null;
 						}
 					}
@@ -7010,7 +6989,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return null;
 						}
 					}
@@ -7026,7 +7005,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return null;
 						}
 					}
@@ -7042,7 +7021,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 						}
 					}
 				};
@@ -7057,7 +7036,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 						}
 					}
 				};
@@ -7072,7 +7051,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 						}
 					}
 				};
@@ -7087,7 +7066,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 						}
 					}
 				};
@@ -7102,7 +7081,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return 0;
 						}
 					}
@@ -7118,7 +7097,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 						}
 					}
 				};
@@ -7133,7 +7112,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return 0;
 						}
 					}
@@ -7149,7 +7128,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 						}
 					}
 				};
@@ -7164,7 +7143,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return null;
 						}
 					}
@@ -7416,7 +7395,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 						}
 					}
 				};
@@ -7431,7 +7410,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 						}
 					}
 				};
@@ -7446,7 +7425,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 						}
 					}
 				};
@@ -7554,7 +7533,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return null;
 						}
 					}
@@ -7570,7 +7549,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return null;
 						}
 					}
@@ -7586,7 +7565,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return null;
 						}
 					}
@@ -7602,7 +7581,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 						}
 					}
 				};
@@ -7617,7 +7596,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 						}
 					}
 				};
@@ -7732,7 +7711,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 						}
 					}
 				};
@@ -7747,7 +7726,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 						}
 					}
 				};
@@ -7762,7 +7741,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return null;
 						}
 					}
@@ -7857,7 +7836,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return null;
 						}
 					}
@@ -7873,7 +7852,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return null;
 						}
 					}
@@ -8026,7 +8005,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 						}
 					}
 				};
@@ -8041,7 +8020,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 						}
 					}
 				};
@@ -8056,7 +8035,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 						}
 					}
 				};
@@ -8182,7 +8161,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 						}
 					}
 				};
@@ -8197,7 +8176,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return null;
 						}
 					}
@@ -8371,7 +8350,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 						}
 					}
 				};
@@ -8386,7 +8365,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return null;
 						}
 					}
@@ -8402,7 +8381,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return null;
 						}
 					}
@@ -8538,7 +8517,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return 0;
 						}
 					}
@@ -8554,7 +8533,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 						}
 					}
 				};
@@ -8636,7 +8615,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return 0;
 						}
 					}
@@ -8738,7 +8717,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 						}
 					}
 				};
@@ -8841,7 +8820,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 						}
 					}
 				};
@@ -8936,7 +8915,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 						}
 					}
 				};
@@ -9148,7 +9127,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 						}
 					}
 				};
@@ -9302,7 +9281,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 						}
 					}
 				};
@@ -9543,7 +9522,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 						}
 					}
 				};
@@ -9558,7 +9537,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return 0;
 						}
 					}
@@ -9574,7 +9553,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 						}
 					}
 				};
@@ -9589,7 +9568,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 						}
 					}
 				};
@@ -9755,7 +9734,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return false;
 						}
 					}
@@ -9771,7 +9750,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return false;
 						}
 					}
@@ -9910,7 +9889,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return null;
 						}
 					}
@@ -9926,7 +9905,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 						}
 					}
 				};
@@ -9941,7 +9920,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 						}
 					}
 				};
@@ -9956,7 +9935,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 						}
 					}
 				};
@@ -10135,7 +10114,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return 0;
 						}
 					}
@@ -10151,7 +10130,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return null;
 						}
 					}
@@ -10167,7 +10146,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return false;
 						}
 					}
@@ -10183,7 +10162,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return null;
 						}
 					}
@@ -10283,7 +10262,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return null;
 						}
 					}
@@ -10374,7 +10353,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 						}
 					}
 				};
@@ -10389,7 +10368,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 						}
 					}
 				};
@@ -10404,7 +10383,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 						}
 					}
 				};
@@ -10419,7 +10398,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 						}
 					}
 				};
@@ -10567,7 +10546,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return null;
 						}
 					}
@@ -10583,7 +10562,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return null;
 						}
 					}
@@ -10599,7 +10578,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return null;
 						}
 					}
@@ -10795,7 +10774,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return false;
 						}
 					}
@@ -10876,7 +10855,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 						}
 					}
 				};
@@ -10891,7 +10870,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 						}
 					}
 				};
@@ -10977,7 +10956,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 						}
 					}
 				};
@@ -10992,7 +10971,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return null;
 						}
 					}
@@ -11080,7 +11059,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 						}
 					}
 				};
@@ -11095,7 +11074,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 						}
 					}
 				};
@@ -11216,7 +11195,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return null;
 						}
 					}
@@ -11232,7 +11211,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return null;
 						}
 					}
@@ -11248,7 +11227,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return null;
 						}
 					}
@@ -11264,7 +11243,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return null;
 						}
 					}
@@ -11280,7 +11259,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return null;
 						}
 					}
@@ -11296,7 +11275,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return null;
 						}
 					}
@@ -11312,7 +11291,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return null;
 						}
 					}
@@ -11328,7 +11307,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return null;
 						}
 					}
@@ -11344,7 +11323,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return 0;
 						}
 					}
@@ -11509,7 +11488,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 						}
 					}
 				};
@@ -11524,7 +11503,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 						}
 					}
 				};
@@ -11539,7 +11518,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 						}
 					}
 				};
@@ -11554,7 +11533,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return null;
 						}
 					}
@@ -11570,7 +11549,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return null;
 						}
 					}
@@ -11586,7 +11565,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return null;
 						}
 					}
@@ -11771,7 +11750,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 						}
 					}
 				};
@@ -11786,7 +11765,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 						}
 					}
 				};
@@ -11867,7 +11846,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 						}
 					}
 				};
@@ -12026,7 +12005,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 						}
 					}
 				};
@@ -12041,7 +12020,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 						}
 					}
 				};
@@ -12056,7 +12035,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 						}
 					}
 				};
@@ -12071,7 +12050,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 						}
 					}
 				};
@@ -12086,7 +12065,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return null;
 						}
 					}
@@ -12150,7 +12129,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return null;
 						}
 					}
@@ -12166,7 +12145,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return 0;
 						}
 					}
@@ -12182,7 +12161,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return null;
 						}
 					}
@@ -12198,7 +12177,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return null;
 						}
 					}
@@ -12214,7 +12193,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return null;
 						}
 					}
@@ -12230,7 +12209,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return null;
 						}
 					}
@@ -12246,7 +12225,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return null;
 						}
 					}
@@ -12452,7 +12431,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 						}
 					}
 				};
@@ -12621,7 +12600,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 						}
 					}
 				};
@@ -12636,7 +12615,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 						}
 					}
 				};
@@ -12651,7 +12630,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 						}
 					}
 				};
@@ -12666,7 +12645,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 						}
 					}
 				};
@@ -12681,7 +12660,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 						}
 					}
 				};
@@ -12696,7 +12675,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 						}
 					}
 				};
@@ -12711,7 +12690,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 						}
 					}
 				};
@@ -12726,7 +12705,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return false;
 						}
 					}
@@ -12742,7 +12721,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 						}
 					}
 				};
@@ -12757,7 +12736,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 						}
 					}
 				};
@@ -12772,7 +12751,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return false;
 						}
 					}
@@ -12788,7 +12767,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return false;
 						}
 					}
@@ -12804,7 +12783,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return (byte) 0;
 						}
 					}
@@ -12820,7 +12799,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return 0;
 						}
 					}
@@ -12836,7 +12815,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return 0;
 						}
 					}
@@ -12852,7 +12831,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return 0;
 						}
 					}
@@ -12868,7 +12847,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return null;
 						}
 					}
@@ -12884,7 +12863,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return null;
 						}
 					}
@@ -12900,7 +12879,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return 0;
 						}
 					}
@@ -12916,7 +12895,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return null;
 						}
 					}
@@ -13659,7 +13638,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return null;
 						}
 					}
@@ -15934,7 +15913,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return null;
 						}
 					}
@@ -16023,7 +16002,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 						}
 					}
 				};
@@ -16038,7 +16017,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return null;
 						}
 					}
@@ -16126,7 +16105,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 						}
 					}
 				};
@@ -16141,7 +16120,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return null;
 						}
 					}
@@ -16229,7 +16208,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 						}
 					}
 				};
@@ -16244,7 +16223,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return null;
 						}
 					}
@@ -16350,7 +16329,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 						}
 					}
 				};
@@ -16365,7 +16344,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 						}
 					}
 				};
@@ -16380,7 +16359,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 						}
 					}
 				};
@@ -16499,7 +16478,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 						}
 					}
 				};
@@ -16522,7 +16501,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 						}
 					}
 				};
@@ -16640,7 +16619,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 						}
 					}
 				};
@@ -16663,7 +16642,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 						}
 					}
 				};
@@ -19659,7 +19638,7 @@ public interface FbInterface extends FbClientLibrary
 						}
 						catch (Throwable t)
 						{
-							catchException(status, t);
+							FbInterfaceException.catchException(status, t);
 							return null;
 						}
 					}
