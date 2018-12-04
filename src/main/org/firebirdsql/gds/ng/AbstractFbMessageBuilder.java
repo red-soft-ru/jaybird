@@ -47,12 +47,10 @@ public abstract class AbstractFbMessageBuilder<E extends FbBatch> implements FbM
 
         if (parameterDescriptor.isVarying()) {
             byte[] dataLen;
-            if (data == null) {
-//                data = nulls;
+            if (data == null)
                 dataLen = parameterDescriptor.getDatatypeCoder().encodeShort(0);
-            } else {
+            else
                 dataLen = parameterDescriptor.getDatatypeCoder().encodeShort(data.length);
-            }
             buffer.position(offset);
             buffer.put(dataLen);
             offset += dataLen.length;
@@ -60,7 +58,6 @@ public abstract class AbstractFbMessageBuilder<E extends FbBatch> implements FbM
 
         buffer.position(offset);
         if (data == null) {
-            buffer.put(new byte[]{});
             buffer.position(nullOffset);
             buffer.put(parameterDescriptor.getDatatypeCoder().encodeShort(1));
         } else {
