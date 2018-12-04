@@ -22,7 +22,7 @@ RESULT_DIR=`pwd`/dist-src
 rm -rf $RESULT_DIR
 mkdir -p $RESULT_DIR
 
-RDB_VERSION=4.0.0.998
+RDB_VERSION=4.0.0.1133
 ARCH=`arch`
 if [ "$ARCH" == "i686" ]; then
 	ARCH="x86"
