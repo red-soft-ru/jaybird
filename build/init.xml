@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<project name="init">
+<project name="init" xmlns:if="ant:if" xmlns:unless="ant:unless">
     <target name="init">
         <echo message="Java version: ${ant.java.version}"/>
         <echo message="Ant version: ${ant.version}"/>
@@ -229,7 +229,7 @@
         <path id="javac.driver.classpath">
             <path refid="javac.j2ee.classpath"/>
             <pathelement location="${build.j2ee}"/>
-            <pathelement location="${module.thirdparty}/antlr-runtime-4.7.jar"/>
+            <pathelement location="${module.thirdparty}/antlr-runtime-4.7.2.jar"/>
             <pathelement location="${module.thirdparty}/jna-4.5.0.jar"/>
         </path>
 
@@ -240,8 +240,8 @@
             <pathelement location="${lib.dir}/junit.jar"/>
             <pathelement location="${module.thirdparty}/fscontext.jar"/>
             <pathelement location="${module.thirdparty}/providerutil.jar"/>
-            <pathelement location="${module.thirdparty}/log4j-1.2.17.jar"/>
             <pathelement location="${module.thirdparty}/platform-4.5.0.jar"/>
+            <pathelement location="${module.thirdparty}/log4j-1.2.17.jar"/>
             <pathelement location="${module.thirdparty}/jna-4.5.0.jar"/>
             <fileset dir="${lib_test.dir}" includes="*.jar"/>
         </path>

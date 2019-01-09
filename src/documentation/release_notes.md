@@ -26,7 +26,7 @@ be sent to the Firebird-java mailing list or reported on the issue tracker
 Supported Firebird versions
 ---------------------------
 
-Jaybird @VERSION@ was tested against Firebird 2.5.7, 3.0.4, and a recent 
+Jaybird @VERSION@ was tested against Firebird 2.5.8, 3.0.4, and a recent 
 Firebird 4 snapshot build, but should also support other Firebird versions from 
 2.5 and up.
 
@@ -40,6 +40,14 @@ in the protocol and database attachment parameters that are sent to the server.
 ### Notes on Firebird 3 support
 
 Jaybird 4 does not (yet) support the Firebird 3 zlib compression.
+
+### Notes on Firebird 4 support
+
+Jaybird 4 does not (yet) support the new `TIME WITH TIME ZONE` and `TIMESTAMP 
+WITH TIME ZONE` types. We plan to add this before the Jaybird 4.0.0 release.
+
+Jaybird 4 does not support the protocol improvements of Firebird 4 like statement 
+and session timeouts. Nor does it implement the new batch protocol.
 
 Supported Java versions
 -----------------------
@@ -151,7 +159,7 @@ use `jaybird-@VERSION@.jar` (not `-full`!), and **not** include
 server.
 
 For `getGeneratedKeys` support you will need to include 
-`antlr-runtime-4.7.jar` on your classpath.
+`antlr-runtime-4.7.2.jar` on your classpath.
 
 For native, local or embedded support, you will need to include `jna-4.4.0.jar` 
 on your classpath. See also [Type 2 (native) and embedded driver].
@@ -176,6 +184,10 @@ If you manage your dependencies manually, you need to do the following:
 1.  Replace the Jaybird 3 library with the Jaybird 4 version
     - `jaybird-3.0.x.jar` with `jaybird-@VERSION@.jar` 
     - `jaybird-full-3.0.x.jar` with `jaybird-full-@VERSION@.jar`
+    
+2.  If installed, remove `antlr-runtime-4.7.jar` and replace it with 
+    `antlr-runtime-4.7.2.jar`. This library is necessary for `getGeneratedKeys`
+    support.
     
 Gotcha's
 --------
@@ -208,9 +220,12 @@ Java support
 
 ### Java 7 ###
 
-The driver supports Java 7 for now.
-
-Jaybird 4 will very likely drop support for Java 7 (this decision is not final yet).
+The driver supports Java 7 with caveats.
+ 
+Some of the libraries used for testing Jaybird have upped there minimum version
+to Java 8, while we need those library versions to test - for example - Java 11. 
+When we can no longer work around these issues, we will sacrifice Java 7 test 
+coverage in order to maintain Java 7 support.
 
 ### Java 8 ###
 
@@ -234,6 +249,11 @@ where the Java 8 version does not need that module.
 
 Given the limited support period for Java 9 and higher versions, we may limit
 support on those versions to the most recent LTS version and the latest release.
+
+No final decisions have been made on releasing a version specific artifact, but
+likely a latest Java LTS-version specific release will be made available before 
+final Jaybird 4.0.0 (probably named jaybird-javaNN, eg jaybird-java11, to avoid 
+overlap with the current jaybird-jdkNN naming convention when we get to Java 15).
 
 Firebird support
 ----------------
@@ -923,6 +943,117 @@ Jaybird now supports the following URL prefixes (or JDBC protocols):
 -   OpenOffice.org/LibreOffice pure Java variant
     -    `jdbc:firebird:oo:`
     -    `jdbc:firebirdsql:oo:`
+    
+Generated keys support improvements
+-----------------------------------
+
+Support for generated keys generation was improved with the following changes.
+
+### Configuration of generated keys behaviour ###
+
+A new connection property `generatedKeysEnabled` (alias `generated_keys_enabled`)
+has been added that allows the behaviour of generated keys support to be 
+configured. Also available on data sources.
+
+This property supports the following values (case insensitive):
+
+- `default`: default behaviour to enable generated keys for statement types with 
+`RETURNING` clause in the connected Firebird version (absence of this property, 
+`null` or empty string implies `default`). This corresponds to the existing 
+behaviour.
+- `disabled`: disable support. Attempts to use generated keys methods other than 
+using `Statement.NO_GENERATED_KEYS` will throw a `SQLFeatureNotSupportedException`.
+- `ignored`: ignore generated keys support. Attempts to use generated keys methods
+will not attempt to detect generated keys support and execute as if the statement
+generates no keys. The `Statement.getGeneratedKeys()` method will always return 
+an empty result set. This behaviour is equivalent to using the non-generated 
+keys methods.
+- A comma-separated list of statement types to enable.
+
+For `disabled` and `ignored`, `DatabaseMetaData.supportsGetGeneratedKeys` will 
+report `false`.
+
+Because of the behaviour specified in the next section, typos in property values
+will behave as `ignored` (eg using `generatedKeysEnabled=disable` instead of 
+`disabled` will behave as `ignored`).
+
+#### Selectively enable statement types ####
+
+This last option allows you to selectively enable support for generated keys.
+For example, `generatedKeysEnabled=insert` will only enable it for `insert` 
+while ignoring it for all other statement types. Statement types that are not 
+enabled will behave as if they generate no keys and will execute normally. For 
+these statement types, `Statement.getGeneratedKeys()` will return an empty 
+result set.
+
+Possible statement type values (case insensitive) are:
+
+- `insert`
+- `update`
+- `delete`
+- `update_or_insert`
+- `merge`
+
+Invalid values will be ignored. If none of he specified statement types are 
+supported by Firebird, it will behave as `ignored`[^generated15].
+
+[^generated15]: This is not the case for the unsupported Firebird 1.0 and 1.5
+versions. There this will behave similar to `disabled`, and you will need to
+explicitly specify `ignored` instead to get this behaviour.
+
+Some examples:
+
+- `jdbc:firebird://localhost/testdb?generatedKeysEnabled=insert` will only 
+enable insert support
+- `jdbc:firebird://localhost/testdb?generatedKeysEnabled=merge` will only 
+enable merge support. But only on Firebird 3 and higher, for Firebird 2.5 this 
+will behave as `ignored` given the lack of `RETURNING` support for merge.
+- `jdbc:firebird://localhost/testdb?generatedKeysEnabled=insert,update` will 
+only enable insert and update support
+
+This feature can be used to circumvent issues with frameworks or tools that 
+always use generated keys methods for prepare or execution. For example with 
+`UPDATE` statements that touch multiple records and - given the Firebird 
+limitations for `RETURNING` - produce the error _"multiple rows in singleton 
+select"_.
+
+### Support for MERGE ###
+
+Firebird 3 added `RETURNING` support for `MERGE`, this support is now available
+in Jaybird.
+
+### Support for Firebird 4 RETURNING * ###
+
+Firebird 4 added a `RETURNING *` ('returning all') clause which returns all
+columns of the row affected by a DML statement. When connected to Firebird 4, 
+the `Statement.RETURN_GENERATED_KEYS` methods will no longer query the database 
+metadata for the column names, but instead append a `RETURNING *` clause.
+
+Artificial testing by repeatedly executing the same insert statement using 
+`Statement.execute(insert, Statement.RETURN_GENERATED_KEYS)` shows a performance 
+improvement of roughly 200% (even 400% on localhost).
+
+### Generated keys grammar simplification ###
+
+The grammar used by the generated keys support has been simplified to avoid
+issues with complex statements not being identified as types that generate keys, 
+and to reduce maintenance.
+
+The downside is that this may introduce different behaviour, as statements
+previously not identified as generated keys types, now could be identified as
+generated keys. Especially with DML other than `INSERT`, or 
+`INSERT .. SELECT ..` this could result in error _"multiple rows in singleton 
+select"_ as the `RETURNING` clause is currently only supported for statements 
+that modify a single row.
+
+You will either need to change the execution of these statements to use the 
+normal execute/prepare or use `Statement.NO_GENERATED_KEYS`. Alternatively 
+ignore or only selectively enable generated keys support, see 
+[Configuration of generated keys behaviour] above.
+
+### Other behavioural changes to generated keys ###
+
+See [Changes to behaviour of generated keys] in [Stricter JDBC compliance]. 
 
 Potentially breaking changes
 ----------------------------
@@ -946,6 +1077,11 @@ character (`\`) to occur unescaped, this means that patterns `A\B` and `A\\B`
 will both match a value of `A\B`. This complies with the (undocumented) JDBC 
 expectation that patterns follow the ODBC requirements for pattern value 
 arguments ([JDBC-562](http://tracker.firebirdsql.org/browse/JDBC-562))
+-   Upgraded antlr-runtime used for generated keys support from 4.7 to 4.7.2.  
+    The grammar generated for version 4.7.2 should still run on 4.7, but we
+suggest that you upgrade this dependency.
+-   Improvement: Added `FBManager.setDefaultCharacterSet` to set default 
+database character set during database creation ([JDBC-541](http://tracker.firebirdsql.org/browse/JDBC-541))
 
 Removal of deprecated classes and packages
 ------------------------------------------
@@ -1030,6 +1166,78 @@ use `bestRowTransaction` instead.
 
 If you are relying on the `SCOPE` column containing the value for the requested
 scope, change your logic to remove that dependency.
+
+Stricter JDBC compliance
+------------------------
+
+In Jaybird 4 a number of changes were made for stricter compliance to the JDBC
+specification.
+
+### Changes to behaviour of generated keys ###
+
+#### Order of columns for columns by position ####
+
+In previous versions of Jaybird, the column indexes (passed to 
+`Connection.prepareStatement` and `Statement.executeXXX` methods accepting an 
+`int[]`) where sorted. The columns in the generated `RETURNING` clause where
+in ascending ordinal order.  
+
+In Jaybird 4 this sort is no longer applied, so columns will be in the order 
+specified by the array. If you were previously relying on this behaviour, you 
+will need to sort the array yourself or correct the indexes used in 
+`ResultSet.getXXX(int)`.
+
+#### Empty or null columnIndexes or columnNames no longer allowed ####
+
+The various generated keys `Connection.prepareStatement` and `Statement.executeXXX` 
+methods accepting an `int[]` or `String[]` array no longer accept a null or 
+empty array if the statement is a statement that generates keys. Instead an 
+exception is thrown with message _"Generated keys array (columnIndexes|columnNames) 
+was empty or null. A non-empty array is required."_
+
+This change does not apply for statements that already explicitly include a 
+`RETURNING` clause or for non-generated keys statements. In those cases, the
+array is ignored.
+
+#### Invalid column index no longer allowed ####
+
+In addition, the methods accepting an `int[]` array no longer ignore invalid 
+column indexes and instead throw an exception with message _"Generated keys 
+column position &lt;position&gt; does not exist for table &lt;tablename&gt;. 
+Check DatabaseMetaData.getColumns (column ORDINAL_POSITION) for valid values."_
+
+If you were previously relying on this behaviour, you will need to remove 
+invalid column indexes from the array.
+
+This change does not apply for statements that already explicitly include a 
+`RETURNING` clause or for non-generated keys statements. In those cases, the
+array is ignored.
+
+#### Unknown table ####
+
+If generated keys methods using `Statement.RETURN_GENERATED_KEYS` or `int[]` 
+cannot find any columns for a table, an exception is now thrown with message 
+_"No columns were found for table &lt;tablename&gt; to build RETURNING clause. 
+The table does not exist."_. Previously this executed as if the statement 
+generated no keys and deferred to Firebird to return a _"Table unknown"_ error.
+
+On Firebird 4, using `Statement.RETURN_GENERATED_KEYS` will continue to produce 
+a _"Table unknown"_ error as it does not need to query the metadata, and instead 
+defers this to Firebird using `RETURNING *`.
+
+This change does not apply for statements that already explicitly include a 
+`RETURNING` clause or for non-generated keys statements.
+
+#### Grammar simplification ####
+
+The generated keys grammar was changed, this may in some cases change the 
+detection of statement types and execute statements previously generated 
+as normal statement to be enhanced with a `RETURNING` clause.
+
+This is probably only a theoretical concern (we don't know of actual cases
+where detection changed). 
+
+See also [Generated keys grammar simplification]. 
 
 Removal of character mapping
 ----------------------------
@@ -1142,6 +1350,8 @@ The following methods will be removed in Jaybird 5:
     functionality like `new String(Files.readAllBytes(Paths.get(fileName)), <charset>)`
 -   `FBDatabaseMetaData.hasNoWildcards(String pattern)`
 -   `FBDatabaseMetaData.stripEscape(String pattern)`
+-   `StatementParser.parseInsertStatement(String sql)`, use 
+    `StatementParser.parseStatement(String sql)`
     
 ### Removal of deprecated constants ###
 
@@ -1149,6 +1359,9 @@ The following constants will be removed in Jaybird 5:
 
 -   All `SQL_STATE_*` constants in `FBSQLParseException` will be removed. Use equivalent 
     constants in `org.firebirdsql.jdbc.SQLStateConstants`.
+-   `DatabaseParameterBufferExtension.EXTENSION_PARAMETERS` will be removed. There is no
+    official replacement as this should be considered an implementation detail. It is
+    possible that `DatabaseParameterBufferExtension` will be removed entirely.
     
 Compatibility notes
 ===================
