@@ -88,7 +88,7 @@ sudo -u firebird /opt/cprocsp/bin/$CPROCSP_ARCH/certmgr -inst -cont '\\.\HDIMAGE
 
 sudo -u firebird /opt/cprocsp/bin/$CPROCSP_ARCH/csptest -passwd -cont '\\.\HDIMAGE\c6bb7811-a370-4de7-91fb-536a1b8b4017' -change 12345678
 
-cp fbt-repository/files/cert/Смирнов.cer ./testuser.cer
+cp fbt-repository/files/cert/Smirnov.cer ./testuser.cer
 
 chmod 777 $TEST_DIR
 
