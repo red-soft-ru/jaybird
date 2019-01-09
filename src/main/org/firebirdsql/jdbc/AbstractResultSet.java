@@ -128,7 +128,7 @@ public abstract class AbstractResultSet implements ResultSet, FirebirdResultSet,
             cached = cached
                     || rsType != ResultSet.TYPE_FORWARD_ONLY
                     || metaDataQuery;
-        closeableFields = null;
+            closeableFields = null;
             prepareVars(cached);
             if (cached) {
                 fbFetcher = new FBCachedFetcher(gdsHelper, fbStatement.fetchSize, fbStatement.maxRows, stmt, this,
