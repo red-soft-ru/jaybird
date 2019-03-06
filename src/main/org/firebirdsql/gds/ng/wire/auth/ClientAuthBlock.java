@@ -252,7 +252,9 @@ public final class ClientAuthBlock {
                 currentPlugin = pluginProvider.createPlugin();
                 return true;
             }
-            iterator.remove();
+            // Do not remove the plugin from the list, if it does not match the server plugin.
+            // Perhaps, he is still needed.
+            // iterator.remove();
         }
         return false;
     }
