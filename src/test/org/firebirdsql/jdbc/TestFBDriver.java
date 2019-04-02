@@ -29,6 +29,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import java.io.StringReader;
 import java.sql.*;
 import java.util.*;
 
@@ -276,6 +277,30 @@ public class TestFBDriver {
     @Test
     public void authenticateDatabaseUsingCaseSensitiveLegacyAccount() throws Exception {
         checkCaseSensitiveLogin("Legacy_Auth");
+    }
+
+    /**
+     * This test checks a parameter that hasn't value using the example NO_GARBAGE_COLLECT
+     *
+     * @throws Exception
+     *         if something went wrong.
+     */
+    @Test
+    public void testSingletonParameter() throws Exception {
+        Properties props = getDefaultPropertiesForConnection();
+        // Note that for proper testing this needs to be different from the mapping in isc_tpb_mapping.properties
+        props.load(new StringReader("TRANSACTION_READ_COMMITTED=isc_tpb_read_committed," +
+                "isc_tpb_no_rec_version,isc_tpb_write,isc_tpb_nowait\nno_garbage_collect=1"));
+        try (Connection connection = DriverManager.getConnection(getUrl(), props);
+             Statement statement = connection.createStatement()) {
+            try (ResultSet resultSet = statement.executeQuery(
+                    "select MON$GARBAGE_COLLECTION "
+                            + "from MON$ATTACHMENTS "
+                            + "where MON$ATTACHMENT_ID = CURRENT_CONNECTION")) {
+                assertTrue("Should have at least one row", resultSet.next());
+                assertEquals("Value should be 0.", 0, resultSet.getInt(1));
+            }
+        }
     }
 
     private void checkCaseSensitiveLogin(String authPlugin) throws SQLException {
