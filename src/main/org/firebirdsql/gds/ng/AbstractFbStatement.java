@@ -19,6 +19,7 @@
 package org.firebirdsql.gds.ng;
 
 import org.firebirdsql.gds.ISCConstants;
+import org.firebirdsql.gds.JaybirdErrorCodes;
 import org.firebirdsql.gds.ng.fields.RowDescriptor;
 import org.firebirdsql.gds.ng.fields.RowValue;
 import org.firebirdsql.gds.ng.listeners.*;
@@ -181,6 +182,16 @@ public abstract class AbstractFbStatement implements FbStatement {
         } catch (SQLException e) {
             exceptionListenerDispatcher.errorOccurred(e);
             throw e;
+        }
+    }
+
+    @Override
+    public final void ensureClosedCursor(boolean transactionEnd) throws SQLException {
+        if (getState().isCursorOpen()) {
+            if (log.isDebugEnabled()) {
+                log.debug("ensureClosedCursor has to close a cursor at", new RuntimeException("debugging stacktrace"));
+            }
+            closeCursor(transactionEnd);
         }
     }
 
@@ -404,6 +415,28 @@ public abstract class AbstractFbStatement implements FbStatement {
     public final String getExecutionPlan() throws SQLException {
         final ExecutionPlanProcessor processor = createExecutionPlanProcessor();
         return getSqlInfo(processor.getDescribePlanInfoItems(), getDefaultSqlInfoSize(), processor);
+    }
+
+    @Override
+    public final String getExplainedExecutionPlan() throws SQLException {
+        synchronized (getSynchronizationObject()) {
+            checkExplainedExecutionPlanSupport();
+            final ExecutionPlanProcessor processor = createExecutionPlanProcessor();
+            return getSqlInfo(processor.getDescribeExplainedPlanInfoItems(), getDefaultSqlInfoSize(), processor);
+        }
+    }
+
+    private void checkExplainedExecutionPlanSupport() throws SQLException {
+        try {
+            checkStatementValid();
+            if (!getDatabase().getServerVersion().isEqualOrAbove(3, 0)) {
+                throw FbExceptionBuilder.forException(JaybirdErrorCodes.jb_explainedExecutionPlanNotSupported)
+                        .toFlatSQLException();
+            }
+        } catch (SQLException e) {
+            exceptionListenerDispatcher.errorOccurred(e);
+            throw e;
+        }
     }
 
     /**

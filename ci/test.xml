@@ -23,7 +23,7 @@
           <pathelement location="${srcdir}/src/lib/jna-4.5.0.jar" />
           <pathelement location="${srcdir}/src/lib/log4j-1.2.17.jar" />
           <pathelement location="${srcdir}/src/lib/platform-4.5.0.jar" />
-          <pathelement location="${srcdir}/src/lib/antlr-runtime-4.7.jar" />
+          <pathelement location="${srcdir}/src/lib/antlr-runtime-4.7.2.jar" />
           <fileset dir="${srcdir}/lib/test/" includes="*.jar" />
         </classpath>
         <batchtest haltonfailure="false" todir="${test.report.dir}">

@@ -114,6 +114,7 @@ test:jdk18:
     name: redsoftru/rdbtestenv-centos7:7.4.1708-20180910
   stage: test
   before_script:
+    - /opt/cprocsp/sbin/amd64/cpconfig -license -set $LICENSE_CRYPTOPRO
     - yum install -y krb5-server krb5-workstation expect
     - ./ci/configure_kerberos.sh
     - export JAYBIRD_VERSION=`cat .ci/version`

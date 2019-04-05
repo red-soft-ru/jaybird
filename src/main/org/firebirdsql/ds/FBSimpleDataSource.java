@@ -423,6 +423,16 @@ public class FBSimpleDataSource extends RootCommonDataSource implements DataSour
         mcf.setAuthPlugins(authPlugins);
     }
 
+    @Override
+    public String getGeneratedKeysEnabled() {
+        return mcf.getGeneratedKeysEnabled();
+    }
+
+    @Override
+    public void setGeneratedKeysEnabled(String generatedKeysEnabled) {
+        mcf.setGeneratedKeysEnabled(generatedKeysEnabled);
+    }
+
 	
 	@Override
     public String getCertificate() {

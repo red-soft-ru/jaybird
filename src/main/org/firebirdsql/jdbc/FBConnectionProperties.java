@@ -62,6 +62,7 @@ public class FBConnectionProperties implements FirebirdConnectionProperties, Ser
     public static final String WIRE_CRYPT_LEVEL = "wireCrypt";
     public static final String DB_CRYPT_CONFIG = "dbCryptConfig";
     public static final String AUTH_PLUGINS = "authPlugins";
+    public static final String GENERATED_KEYS_ENABLED = "generatedKeysEnabled";
     public static final String CERTIFICATE = "certificate";
     public static final String REPOSITORY_PIN = "repository_pin";
     public static final String SERVER_CERTIFICATE = "serverCertificate";
@@ -397,6 +398,16 @@ public class FBConnectionProperties implements FirebirdConnectionProperties, Ser
     @Override
     public void setAuthPlugins(String authPlugins) {
         setStringProperty(AUTH_PLUGINS, authPlugins);
+    }
+
+    @Override
+    public String getGeneratedKeysEnabled() {
+        return getStringProperty(GENERATED_KEYS_ENABLED);
+    }
+
+    @Override
+    public void setGeneratedKeysEnabled(String generatedKeysEnabled) {
+        setStringProperty(GENERATED_KEYS_ENABLED, generatedKeysEnabled);
     }
 
     @Override

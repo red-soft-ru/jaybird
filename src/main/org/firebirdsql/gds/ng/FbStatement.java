@@ -228,6 +228,13 @@ public interface FbStatement extends ExceptionListenable {
     String getExecutionPlan() throws SQLException;
 
     /**
+     * @return The detailed execution plan of the currently prepared statement
+     * @throws SQLException
+     *         If this statement is closed.
+     */
+    String getExplainedExecutionPlan() throws SQLException;
+
+    /**
      * Retrieves the SQL counts for the last execution of this statement.
      * <p>
      * The retrieved SQL counts are also notified to all registered {@link StatementListener}s.
@@ -258,4 +265,20 @@ public interface FbStatement extends ExceptionListenable {
      * @return A potentially cached empty row descriptor for this statement or database.
      */
     RowDescriptor emptyRowDescriptor();
+
+    /**
+     * Ensures that the statement cursor is closed. Resets a statement so it is ready to be reused for re-execute or
+     * prepare.
+     * <p>
+     * Implementations should only close an open cursor and log this fact with a stacktrace on debug. This is a stopgap
+     * measure for situations where the code using this statement handle has not been able to properly close the
+     * cursor.
+     * </p>
+     *
+     * @param transactionEnd Close is in response to a transaction end
+     *
+     * @throws SQLException If this statement is closed or the cursor could not be closed.
+     * @since 3.0.6
+     */
+    void ensureClosedCursor(boolean transactionEnd) throws SQLException;
 }
