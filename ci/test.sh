@@ -32,7 +32,7 @@ REPORTS_DIR="${CI_PROJECT_DIR}/results/jdk${JDK_VERSION}"
 INSTALLDIR=/opt/RedDatabase
 SOURCES=$(readlink -f $(dirname $0)/..)
 OS=linux
-RDB_VERSION=4.0.0.1013
+RDB_VERSION=4.0.0.1343
 TEST_DIR=/tmp/jaybird_test
 TMPFS=/tmpfs
 export FIREBIRD="$INSTALLDIR"
@@ -83,9 +83,9 @@ echo "Installing RedDatabase"
 rm -f /tmp/installer.bin
 chmod 777 $TEST_DIR
 
-sed -i 's/#AuthServer = Srp256/AuthServer = Srp, Srp256, Legacy_Auth, Gss /g' "${INSTALLDIR}"/firebird.conf
-sed -i 's/#AuthClient = Srp256, Srp, Legacy_Auth, Gss\s*#Non Windows clients/AuthClient = Srp256, Srp, Legacy_Auth, Gss/g' "${INSTALLDIR}"/firebird.conf
-sed -i 's/#UserManager = Srp/UserManager = Srp, Legacy_UserManager /g' "${INSTALLDIR}"/firebird.conf
+sed -i 's/#AuthServer = Srp256/AuthServer = Srp256, Srp, Legacy_Auth, Gss, GostPassword, Certificate, Policy/g' "${INSTALLDIR}"/firebird.conf
+sed -i 's/#AuthClient = Srp256, Srp, Legacy_Auth, Gss\s*#Non Windows clients/AuthClient = Srp256, Srp, Legacy_Auth, Gss, GostPassword, Certificate/g' "${INSTALLDIR}"/firebird.conf
+sed -i 's/#UserManager = Srp/UserManager = Srp, Legacy_UserManager, GostPassword_Manager /g' "${INSTALLDIR}"/firebird.conf
 sed -i 's/#WireCrypt = Enabled (for client) \/ Required (for server)/WireCrypt = Disabled/g' "${INSTALLDIR}"/firebird.conf
 
 sed -i 's/#KrbServerKeyfile/KrbServerKeyfile/g' "${INSTALLDIR}"/firebird.conf

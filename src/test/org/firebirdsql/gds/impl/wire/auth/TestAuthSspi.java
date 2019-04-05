@@ -29,7 +29,7 @@ public class TestAuthSspi extends FBJUnit4TestBase {
         BasicConfigurator.configure();
     }
 
-    @Test
+    @Test @Ignore
     public void testMultifactorAuthCertificateOnly() throws Exception {
         initLogger();
 
@@ -62,7 +62,7 @@ public class TestAuthSspi extends FBJUnit4TestBase {
         }
     }
 
-    @Test
+    @Test @Ignore
     public void testMultifactorAuthPasswordOnly() throws Exception {
         initLogger();
 
@@ -108,10 +108,7 @@ public class TestAuthSspi extends FBJUnit4TestBase {
         fbDataSource.setNonStandardProperty("isc_dpb_user_name", "artyom.smirnov@red-soft.ru");
         fbDataSource.setNonStandardProperty("isc_dpb_password", "q3rgu7Ah");
         fbDataSource.setNonStandardProperty("isc_dpb_certificate", "testuser.cer");
-        fbDataSource.setNonStandardProperty("isc_dpb_repository_pin", "12345678");
-        fbDataSource.setNonStandardProperty("isc_dpb_trusted_auth", "1");
-        fbDataSource.setNonStandardProperty("isc_dpb_multi_factor_auth", "1");
-
+        
         Connection conn = null;
         try {
             conn = fbDataSource.getConnection();
@@ -130,7 +127,7 @@ public class TestAuthSspi extends FBJUnit4TestBase {
         }
     }
 
-    @Test
+    @Test @Ignore
     public void testVerifyServerCertificate() throws Exception {
         initLogger();
 
