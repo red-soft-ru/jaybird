@@ -55,8 +55,6 @@ public class CertificateAuthenticationPlugin implements AuthenticationPlugin {
                 } catch (GDSException e) {
                     throw new SQLException(e);
                 }
-//                authSspi.addFactor(authFactorCertificate);
-//                data.add((byte) AuthFactor.TYPE_CERT_X509);
             }
 
             if (clientAuthBlock.getVerifyServerCertificate()) {
