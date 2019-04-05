@@ -190,14 +190,8 @@ public interface ISCConstants {
     int isc_dpb_db_crypt_config         = 145;
     int isc_dpb_generated_keys_enabled  = 146;
 
-    // Lowest Jaybird DPB extension value
-    int jaybirdMinIscDpbValue = isc_dpb_socket_buffer_size;
-    // NOTE: Update this when adding new Jaybird specific DPB items
-    int jaybirdMaxIscDpbValue = isc_dpb_generated_keys_enabled;
-
     // TODO Check it out in rdb 4
     /* Red Database security parameters */
-    int isc_dpb_certificate_base64      = 146;
     int isc_dpb_mac_plugin				= 148;
     int isc_dpb_krb5					= 149;
     int isc_dpb_multi_factor_auth       = 150;
@@ -217,6 +211,8 @@ public interface ISCConstants {
     int isc_dpb_gss                     = 164;
     int isc_dpb_security_authentication = 165;
 
+    // Lowest Jaybird DPB extension value
+    int jaybirdMinIscDpbValue = isc_dpb_socket_buffer_size;
     // NOTE: Update this when adding new Jaybird specific DPB items
     int jaybirdMaxIscDpbValue = isc_dpb_security_authentication;
 
