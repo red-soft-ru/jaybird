@@ -633,6 +633,16 @@ public class FBSADataSource implements DataSource, Serializable, Referenceable, 
     }
 
     @Override
+    public boolean isIgnoreProcedureType() {
+        return mcf.isIgnoreProcedureType();
+    }
+
+    @Override
+    public void setIgnoreProcedureType(boolean ignoreProcedureType) {
+        mcf.setIgnoreProcedureType(ignoreProcedureType);
+    }
+
+    @Override
     public boolean isUseGSSAuth() {
         return mcf.isUseGSSAuth();
     }

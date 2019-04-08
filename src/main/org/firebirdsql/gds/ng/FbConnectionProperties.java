@@ -175,7 +175,8 @@ public final class FbConnectionProperties extends AbstractAttachProperties<IConn
     @Deprecated
     public void fromDpb(DatabaseParameterBuffer dpb) throws SQLException {
         for (Parameter parameter : dpb) {
-            switch (parameter.getType()) {
+            final int parameterType = parameter.getType();
+            switch (parameterType) {
             case isc_dpb_user_name:
                 setUser(parameter.getValueAsString());
                 break;
@@ -254,7 +255,11 @@ public final class FbConnectionProperties extends AbstractAttachProperties<IConn
                 parameter.copyTo(getExtraDatabaseParameters(), null);
                 break;
             default:
-                log.warn(String.format("Unknown or unsupported parameter with type %d added to extra database parameters", parameter.getType()));
+                if (parameterType < jaybirdMinIscDpbValue || parameterType > jaybirdMaxIscDpbValue) {
+                    log.warn(String.format(
+                            "Unknown or unsupported parameter with type %d added to extra database parameters",
+                            parameterType));
+                }
                 parameter.copyTo(getExtraDatabaseParameters(), null);
                 dirtied();
             }

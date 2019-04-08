@@ -49,7 +49,7 @@ public interface DatabaseParameterBufferExtension extends DatabaseParameterBuffe
     int NO_RESULT_SET_TRACKING          = ISCConstants.isc_dpb_no_result_set_tracking;
     int RESULT_SET_HOLDABLE             = ISCConstants.isc_dpb_result_set_holdable;
     int FILENAME_CHARSET                = ISCConstants.isc_dpb_filename_charset;
-    int CERTIFICATE_BASE64              = ISCConstants.isc_dpb_certificate_base64;
+    int CERTIFICATE                     = ISCConstants.isc_dpb_certificate;
     @Deprecated
     int OCTETS_AS_BYTES                 = ISCConstants.isc_dpb_octets_as_bytes;
     int SO_TIMEOUT                      = ISCConstants.isc_dpb_so_timeout;
@@ -57,6 +57,7 @@ public interface DatabaseParameterBufferExtension extends DatabaseParameterBuffe
     int USE_FIREBIRD_AUTOCOMMIT         = ISCConstants.isc_dpb_use_firebird_autocommit;
     int WIRE_CRYPT_LEVEL                = ISCConstants.isc_dpb_wire_crypt_level;
     int DB_CRYPT_CONFIG                 = ISCConstants.isc_dpb_db_crypt_config;
+    int IGNORE_PROCEDURE_TYPE           = ISCConstants.isc_dpb_ignore_procedure_type;
     
     /**
      * List of the DPB extensions. This array is used to filter the parameters
@@ -82,7 +83,9 @@ public interface DatabaseParameterBufferExtension extends DatabaseParameterBuffe
         USE_FIREBIRD_AUTOCOMMIT,
         WIRE_CRYPT_LEVEL,
         DB_CRYPT_CONFIG,
-        CERTIFICATE_BASE64
+        IGNORE_PROCEDURE_TYPE,
+        DB_CRYPT_CONFIG,
+        CERTIFICATE
     };
 
     /**

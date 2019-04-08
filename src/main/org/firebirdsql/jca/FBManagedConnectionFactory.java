@@ -436,6 +436,16 @@ public class FBManagedConnectionFactory implements ManagedConnectionFactory, Fir
     }
 
     @Override
+    public boolean isIgnoreProcedureType() {
+        return connectionProperties.isIgnoreProcedureType();
+    }
+
+    @Override
+    public void setIgnoreProcedureType(boolean ignoreProcedureType) {
+        connectionProperties.setIgnoreProcedureType(ignoreProcedureType);
+    }
+
+    @Override
     public boolean isUseGSSAuth() {
         return connectionProperties.isUseGSSAuth();
     }

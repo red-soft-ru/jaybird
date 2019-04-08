@@ -163,27 +163,6 @@ public interface ISCConstants {
     int isc_dpb_reset_icu				= 89;
     int isc_dpb_map_attach              = 90;
 
-    /* Red Database security parameters */
-    int isc_dpb_mac_plugin				= 148;
-    int isc_dpb_krb5					= 149;
-    int isc_dpb_multi_factor_auth       = 150;
-    int isc_dpb_certificate             = 151;
-    int isc_dpb_repository_name         = 152;
-    int isc_dpb_eye                     = 153;
-    int isc_dpb_session_key             = 154;
-    int isc_dpb_session_key_iv          = 155;
-    int isc_dpb_verify_server           = 156;
-    int isc_dpb_hw_address              = 157;
-    int isc_dpb_certificate_body        = 158;
-    int isc_dpb_repository_pin          = 159;
-    int isc_dpb_set_db_replica          = 160;
-    int isc_dpb_session_encryption      = 161;
-    int isc_dpb_salt                    = 162;
-    int isc_dpb_master_attach           = 163;
-    int isc_dpb_gss                     = 164;
-    int isc_dpb_security_authentication = 165;
-
-
     /*
      * Driver-specific DPB params that will be removed before sending them
      * to the server. These params influence only client side.
@@ -206,7 +185,32 @@ public interface ISCConstants {
     int isc_dpb_use_firebird_autocommit = 143;
     int isc_dpb_wire_crypt_level        = 144;
     int isc_dpb_db_crypt_config         = 145;
-    int isc_dpb_certificate_base64      = 144;
+    int isc_dpb_ignore_procedure_type   = 146;
+
+    /* Red Database security parameters */
+    int isc_dpb_mac_plugin				= 148;
+    int isc_dpb_krb5					= 149;
+    int isc_dpb_multi_factor_auth       = 150;
+    int isc_dpb_certificate             = 151;
+    int isc_dpb_repository_name         = 152;
+    int isc_dpb_eye                     = 153;
+    int isc_dpb_session_key             = 154;
+    int isc_dpb_session_key_iv          = 155;
+    int isc_dpb_verify_server           = 156;
+    int isc_dpb_hw_address              = 157;
+    int isc_dpb_certificate_body        = 158;
+    int isc_dpb_repository_pin          = 159;
+    int isc_dpb_set_db_replica          = 160;
+    int isc_dpb_session_encryption      = 161;
+    int isc_dpb_salt                    = 162;
+    int isc_dpb_master_attach           = 163;
+    int isc_dpb_gss                     = 164;
+    int isc_dpb_security_authentication = 165;
+
+    // Lowest Jaybird DPB extension value
+    int jaybirdMinIscDpbValue = isc_dpb_socket_buffer_size;
+    // NOTE: Update this when adding new Jaybird specific DPB items
+    int jaybirdMaxIscDpbValue = isc_dpb_security_authentication;
 
     /*************************************/
     /* Transaction parameter block stuff */

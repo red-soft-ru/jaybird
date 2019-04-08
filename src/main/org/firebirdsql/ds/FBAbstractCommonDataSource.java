@@ -594,6 +594,20 @@ public abstract class FBAbstractCommonDataSource extends RootCommonDataSource im
     }
 
     @Override
+    public boolean isIgnoreProcedureType() {
+        synchronized (lock) {
+            return connectionProperties.isIgnoreProcedureType();
+        }
+    }
+
+    @Override
+    public void setIgnoreProcedureType(boolean ignoreProcedureType) {
+        synchronized (lock) {
+            connectionProperties.setIgnoreProcedureType(ignoreProcedureType);
+        }
+    }
+
+    @Override
     public boolean isUseGSSAuth() {
         synchronized (lock) {
             return connectionProperties.isUseGSSAuth();
