@@ -61,6 +61,8 @@ public interface DatabaseParameterBufferExtension extends DatabaseParameterBuffe
     int WIRE_CRYPT_LEVEL                = ISCConstants.isc_dpb_wire_crypt_level;
     int DB_CRYPT_CONFIG                 = ISCConstants.isc_dpb_db_crypt_config;
     int GENERATED_KEYS_ENABLED          = ISCConstants.isc_dpb_generated_keys_enabled;
+    int TIME_ZONE_BIND                  = ISCConstants.isc_dpb_time_zone_bind;
+    int IGNORE_PROCEDURE_TYPE           = ISCConstants.isc_dpb_ignore_procedure_type;
     
     /**
      * List of the DPB extensions. This array was used to filter the parameters
@@ -88,6 +90,9 @@ public interface DatabaseParameterBufferExtension extends DatabaseParameterBuffe
         USE_FIREBIRD_AUTOCOMMIT,
         WIRE_CRYPT_LEVEL,
         DB_CRYPT_CONFIG,
+        GENERATED_KEYS_ENABLED,
+        TIME_ZONE_BIND,
+        IGNORE_PROCEDURE_TYPE,
         GENERATED_KEYS_ENABLED,
         CERTIFICATE_BASE64
     };

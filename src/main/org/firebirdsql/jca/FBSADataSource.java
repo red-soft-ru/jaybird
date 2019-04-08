@@ -655,6 +655,36 @@ public class FBSADataSource implements DataSource, Serializable, Referenceable, 
     }
 
     @Override
+    public String getTimeZoneBind() {
+        return mcf.getTimeZoneBind();
+    }
+
+    @Override
+    public void setTimeZoneBind(String timeZoneBind) {
+        mcf.setTimeZoneBind(timeZoneBind);
+    }
+
+    @Override
+    public String getSessionTimeZone() {
+        return mcf.getSessionTimeZone();
+    }
+
+    @Override
+    public void setSessionTimeZone(String sessionTimeZone) {
+        mcf.setSessionTimeZone(sessionTimeZone);
+    }
+
+    @Override
+    public boolean isIgnoreProcedureType() {
+        return mcf.isIgnoreProcedureType();
+    }
+
+    @Override
+    public void setIgnoreProcedureType(boolean ignoreProcedureType) {
+        mcf.setIgnoreProcedureType(ignoreProcedureType);
+    }
+
+    @Override
     public String getCertificate() {
         return mcf.getCertificate();
     }

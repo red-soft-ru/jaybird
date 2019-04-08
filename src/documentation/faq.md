@@ -68,7 +68,7 @@ for each supported Java version.
 
 Groupid: `org.firebirdsql.jdbc`,  
 Artifactid: `jaybird-jdkXX` (where `XX` is `16`, `17` or `18`)  
-Version: `2.2.14`
+Version: `2.2.15`
 
 For example:
 
@@ -76,7 +76,7 @@ For example:
 <dependency>
     <groupId>org.firebirdsql.jdbc</groupId>
     <artifactId>jaybird-jdk18</artifactId>
-    <version>2.2.14</version>
+    <version>2.2.15</version>
 </dependency>
 ~~~
 
