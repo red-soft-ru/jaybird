@@ -22,7 +22,6 @@ import static org.junit.Assert.fail;
  * @author <a href="mailto:vasiliy.yashkov@red-soft.ru">Vasiliy Yashkov</a>
  * @since 3.0
  */
-@Ignore
 public class TestAuthSspi extends FBJUnit4TestBase {
 
     public static void initLogger() {
