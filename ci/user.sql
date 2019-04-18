@@ -6,8 +6,8 @@ commit;
 
 create policy TestPolicy AS
 AUTH_FACTORS = (certificate, gostpassword),
-PSWD_NEED_CHAR = 5,
-PSWD_NEED_DIGIT = 3,
+PSWD_NEED_CHAR = 6,
+PSWD_NEED_DIGIT = 2,
 PSWD_MIN_LEN = 8,
 PSWD_NEED_DIFF_CASE = true,
 PSWD_VALID_DAYS = 15,
