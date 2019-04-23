@@ -91,8 +91,6 @@ public interface DatabaseParameterBufferExtension extends DatabaseParameterBuffe
         DB_CRYPT_CONFIG,
         GENERATED_KEYS_ENABLED,
         IGNORE_PROCEDURE_TYPE,
-        GENERATED_KEYS_ENABLED,
-        CERTIFICATE_BASE64
         CERTIFICATE
     };
 
