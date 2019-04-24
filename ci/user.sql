@@ -18,6 +18,9 @@ MAX_IDLE_TIME = 1800,
 MAX_UNUSED_DAYS = 45;
 commit;
 
+grant policy "DEFAULT" to SYSDBA;
+commit;
+
 grant policy TestPolicy to "ARTYOM.SMIRNOV@RED-SOFT.RU";
 commit;
 
