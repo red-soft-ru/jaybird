@@ -38,7 +38,7 @@
                 <pathelement location="${build.lib}/connector-api-1.5.jar"/>
                 <pathelement location="${srcdir}/lib/jna-5.2.0.jar" />
                 <pathelement location="${srcdir}/lib/log4j-1.2.17.jar" />
-                <pathelement location="${srcdir}/lib/platform-4.5.0.jar" />
+                <pathelement location="${srcdir}/lib/platform-5.2.0.jar" />
 
                 <fileset dir="lib">
                     <include name="**/*.jar"/>
@@ -108,7 +108,7 @@
                 <pathelement location="${build.lib}/connector-api-1.5.jar"/>
                 <pathelement location="${srcdir}/lib/jna-5.2.0.jar" />
                 <pathelement location="${srcdir}/lib/log4j-1.2.17.jar" />
-                <pathelement location="${srcdir}/lib/platform-4.5.0.jar" />
+                <pathelement location="${srcdir}/lib/platform-5.2.0.jar" />
 
                 <fileset dir="lib">
                     <include name="**/*.jar"/>
@@ -181,7 +181,7 @@
                 <pathelement location="${build.lib}/connector-api-1.5.jar"/>
                 <pathelement location="${srcdir}/lib/jna-5.2.0.jar" />
                 <pathelement location="${srcdir}/lib/log4j-1.2.17.jar" />
-                <pathelement location="${srcdir}/lib/platform-4.5.0.jar" />
+                <pathelement location="${srcdir}/lib/platform-5.2.0.jar" />
 
                 <fileset dir="lib">
                     <include name="**/*.jar"/>
@@ -246,7 +246,7 @@
                 <pathelement location="${build.resources}"/>
                 <pathelement location="${srcdir}/lib/jna-5.2.0.jar" />
                 <pathelement location="${srcdir}/lib/log4j-1.2.17.jar" />
-                <pathelement location="${srcdir}/lib/platform-4.5.0.jar" />
+                <pathelement location="${srcdir}/lib/platform-5.2.0.jar" />
 
                 <fileset dir="lib">
                     <include name="**/*.jar"/>
@@ -304,7 +304,7 @@
                 <pathelement location="${build.resources}"/>
                 <pathelement location="${srcdir}/lib/jna-5.2.0.jar" />
                 <pathelement location="${srcdir}/lib/log4j-1.2.17.jar" />
-                <pathelement location="${srcdir}/lib/platform-4.5.0.jar" />
+                <pathelement location="${srcdir}/lib/platform-5.2.0.jar" />
 
                 <fileset dir="lib">
                     <include name="**/*.jar"/>
@@ -362,9 +362,9 @@
                 <pathelement location="${build.classes}"/>
                 <pathelement location="${build.test}"/>
                 <pathelement location="${build.resources}"/>
-                <pathelement location="${srcdir}/lib/jna-4.5.0.jar" />
+                <pathelement location="${srcdir}/lib/jna-5.2.0.jar" />
                 <pathelement location="${srcdir}/lib/log4j-1.2.17.jar" />
-                <pathelement location="${srcdir}/lib/platform-4.5.0.jar" />
+                <pathelement location="${srcdir}/lib/platform-5.2.0.jar" />
 
                 <fileset dir="lib">
                     <include name="**/*.jar"/>

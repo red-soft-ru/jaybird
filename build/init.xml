@@ -241,7 +241,7 @@
             <pathelement location="${lib.dir}/junit.jar"/>
             <pathelement location="${module.thirdparty}/fscontext.jar"/>
             <pathelement location="${module.thirdparty}/providerutil.jar"/>
-            <pathelement location="${module.thirdparty}/platform-4.5.0.jar"/>
+            <pathelement location="${module.thirdparty}/platform-5.2.0.jar"/>
             <pathelement location="${module.thirdparty}/log4j-1.2.17.jar"/>
             <pathelement location="${module.thirdparty}/jna-5.2.0.jar"/>
             <fileset dir="${lib_test.dir}" includes="*.jar"/>
@@ -251,7 +251,7 @@
             <pathelement location="${build.classes}"/>
             <pathelement location="${build.cryptoapi}"/>
             <pathelement location="${module.thirdparty}/log4j-1.2.17.jar"/>
-            <pathelement location="${module.thirdparty}/platform-4.5.0.jar"/>
+            <pathelement location="${module.thirdparty}/platform-5.2.0.jar"/>
             <pathelement location="${module.thirdparty}/jna-5.2.0.jar"/>
         </path>
 
@@ -260,7 +260,7 @@
             <pathelement location="${build.cryptoapi}"/>
             <pathelement location="${build.cryptoapi_security}"/>
             <pathelement location="${module.thirdparty}/log4j-1.2.17.jar"/>
-            <pathelement location="${module.thirdparty}/platform-4.5.0.jar"/>
+            <pathelement location="${module.thirdparty}/platform-5.2.0.jar"/>
             <pathelement location="${module.thirdparty}/jna-5.2.0.jar"/>
         </path>
 
