@@ -44,7 +44,7 @@ public class Win32Api {
         | WinBase.FORMAT_MESSAGE_IGNORE_INSERTS, null, errorCode, 0/*Win32Api.makeLangId(Win32Api.LANG_NEUTRAL, Win32Api.SUBLANG_DEFAULT)*/, buffer, 0, null);
     try {
       final Pointer value = buffer.getValue();
-      return value == null ? null : value.getString(0, !Boolean.getBoolean("w32.ascii"));
+      return value == null ? null : (!Boolean.getBoolean("w32.ascii") ? value.getWideString(0) : value.getString(0));
     } finally {
       if (buffer.getValue() != null)
         Kernel32.INSTANCE.LocalFree(buffer.getValue());
