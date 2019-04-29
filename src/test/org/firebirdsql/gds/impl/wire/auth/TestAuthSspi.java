@@ -4,6 +4,7 @@ import org.apache.log4j.BasicConfigurator;
 import org.firebirdsql.common.FBJUnit4TestBase;
 import org.firebirdsql.common.FBTestProperties;
 import org.firebirdsql.common.JdbcResourceHelper;
+import org.firebirdsql.common.rules.DatabaseUserRule;
 import org.firebirdsql.cryptoapi.AuthCryptoPluginImpl;
 import org.firebirdsql.gds.impl.GDSType;
 import org.firebirdsql.jca.FBSADataSource;
@@ -14,6 +15,8 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
+import static org.firebirdsql.common.FBTestProperties.getConnectionViaDriverManager;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 /**
@@ -28,53 +31,28 @@ public class TestAuthSspi extends FBJUnit4TestBase {
         BasicConfigurator.configure();
     }
 
-    @Test @Ignore
+    @Test
     public void testMultifactorAuthCertificateOnly() throws Exception {
         initLogger();
 
-        AuthCryptoPlugin.register(new AuthCryptoPluginImpl());
-
-        final FBSADataSource fbDataSource = new FBSADataSource(GDSType.getType("PURE_JAVA"));
-
-        fbDataSource.setDatabase(FBTestProperties.DB_DATASOURCE_URL);
-        fbDataSource.setNonStandardProperty("isc_dpb_lc_ctype", "WIN1251");
-        fbDataSource.setNonStandardProperty("isc_dpb_trusted_auth", "1");
-        fbDataSource.setNonStandardProperty("isc_dpb_multi_factor_auth", "1");
-        fbDataSource.setNonStandardProperty("isc_dpb_certificate", "/home/vasiliy/tmp/cert_user.cer");
-        fbDataSource.setNonStandardProperty("isc_dpb_repository_pin", "12345678");
-
-        Connection conn = null;
-        try {
-            conn = fbDataSource.getConnection();
-
-            Statement statement = conn.createStatement();
-            ResultSet resultSet = statement.executeQuery("select current_user from rdb$database");
-            resultSet.next();
-            System.out.println("Current user is " + resultSet.getString(1));
-            JdbcResourceHelper.closeQuietly(resultSet);
-            JdbcResourceHelper.closeQuietly(statement);
+        try (Connection connection = getConnectionViaDriverManager();
+            Statement statement = connection.createStatement()) {
+            statement.execute("grant policy \"DEFAULT\" to \"ARTYOM.SMIRNOV@RED-SOFT.RU\"");
         } catch (Exception e) {
             e.printStackTrace();
             fail("Statement should not fail");
-        } finally {
-            JdbcResourceHelper.closeQuietly(conn);
         }
-    }
-
-    @Test @Ignore
-    public void testMultifactorAuthPasswordOnly() throws Exception {
-        initLogger();
 
         AuthCryptoPlugin.register(new AuthCryptoPluginImpl());
 
         final FBSADataSource fbDataSource = new FBSADataSource(GDSType.getType("PURE_JAVA"));
 
         fbDataSource.setDatabase(FBTestProperties.DB_DATASOURCE_URL);
+        fbDataSource.setNonStandardProperty("isc_dpb_user_name", "artyom.smirnov@red-soft.ru");
         fbDataSource.setNonStandardProperty("isc_dpb_lc_ctype", "WIN1251");
-        fbDataSource.setNonStandardProperty("isc_dpb_user_name", "TEST@TEST.RU");
-        fbDataSource.setNonStandardProperty("isc_dpb_password", "test");
         fbDataSource.setNonStandardProperty("isc_dpb_trusted_auth", "1");
         fbDataSource.setNonStandardProperty("isc_dpb_multi_factor_auth", "1");
+        fbDataSource.setNonStandardProperty("isc_dpb_certificate", "/home/vasiliy/dev/fbt-repository/files/cert/Smirnov.cer");
 
         Connection conn = null;
         try {
@@ -95,8 +73,55 @@ public class TestAuthSspi extends FBJUnit4TestBase {
     }
 
     @Test
+    public void testMultifactorAuthPasswordOnly() throws Exception {
+        initLogger();
+
+        AuthCryptoPlugin.register(new AuthCryptoPluginImpl());
+
+        final FBSADataSource fbDataSource = new FBSADataSource(GDSType.getType("PURE_JAVA"));
+
+        final String username = "UserWithGostPassword";
+        final String password = "password";
+        DatabaseUserRule databaseUserRule = DatabaseUserRule.withDatabaseUser();
+        databaseUserRule.createUser(username, password, "GostPassword_Manager");
+
+        fbDataSource.setDatabase(FBTestProperties.DB_DATASOURCE_URL);
+        fbDataSource.setNonStandardProperty("isc_dpb_lc_ctype", "WIN1251");
+        fbDataSource.setNonStandardProperty("isc_dpb_user_name", username);
+        fbDataSource.setNonStandardProperty("isc_dpb_password", password);
+        fbDataSource.setNonStandardProperty("isc_dpb_trusted_auth", "1");
+        fbDataSource.setNonStandardProperty("isc_dpb_multi_factor_auth", "1");
+
+        Connection conn = null;
+        try {
+            conn = fbDataSource.getConnection();
+
+            Statement statement = conn.createStatement();
+            ResultSet resultSet = statement.executeQuery("select current_user from rdb$database");
+            resultSet.next();
+            System.out.println("Current user is " + resultSet.getString(1));
+            assertEquals(username.toUpperCase(), resultSet.getString(1));
+            JdbcResourceHelper.closeQuietly(resultSet);
+            JdbcResourceHelper.closeQuietly(statement);
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("Statement should not fail");
+        } finally {
+            JdbcResourceHelper.closeQuietly(conn);
+        }
+    }
+
+    @Test
     public void testMultifactorAuthPasswordAndCertificate() throws Exception {
         initLogger();
+
+        try (Connection connection = getConnectionViaDriverManager();
+             Statement statement = connection.createStatement()) {
+            statement.execute("grant policy TestPolicy to \"ARTYOM.SMIRNOV@RED-SOFT.RU\"");
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("Statement should not fail");
+        }
 
         AuthCryptoPlugin.register(new AuthCryptoPluginImpl());
 
@@ -108,42 +133,6 @@ public class TestAuthSspi extends FBJUnit4TestBase {
         fbDataSource.setNonStandardProperty("isc_dpb_password", "q3rgu7Ah");
         fbDataSource.setNonStandardProperty("isc_dpb_certificate", "testuser.cer");
         
-        Connection conn = null;
-        try {
-            conn = fbDataSource.getConnection();
-
-            Statement statement = conn.createStatement();
-            ResultSet resultSet = statement.executeQuery("select current_user from rdb$database");
-            resultSet.next();
-            System.out.println("Current user is " + resultSet.getString(1));
-            JdbcResourceHelper.closeQuietly(resultSet);
-            JdbcResourceHelper.closeQuietly(statement);
-        } catch (Exception e) {
-            e.printStackTrace();
-            fail("Statement should not fail");
-        } finally {
-            JdbcResourceHelper.closeQuietly(conn);
-        }
-    }
-
-    @Test @Ignore
-    public void testVerifyServerCertificate() throws Exception {
-        initLogger();
-
-        AuthCryptoPlugin.register(new AuthCryptoPluginImpl());
-
-        final FBSADataSource fbDataSource = new FBSADataSource(GDSType.getType("PURE_JAVA"));
-
-        fbDataSource.setDatabase(FBTestProperties.DB_DATASOURCE_URL);
-        fbDataSource.setNonStandardProperty("isc_dpb_lc_ctype", "WIN1251");
-        fbDataSource.setNonStandardProperty("isc_dpb_user_name", "artyom.smirnov@red-soft.ru");
-        fbDataSource.setNonStandardProperty("isc_dpb_password", "q3rgu7Ah");
-        fbDataSource.setNonStandardProperty("isc_dpb_certificate", "testuser.cer");
-        fbDataSource.setNonStandardProperty("isc_dpb_repository_pin", "12345678");
-        fbDataSource.setNonStandardProperty("isc_dpb_trusted_auth", "1");
-        fbDataSource.setNonStandardProperty("isc_dpb_multi_factor_auth", "1");
-        fbDataSource.setNonStandardProperty("isc_dpb_verify_server", "1");
-
         Connection conn = null;
         try {
             conn = fbDataSource.getConnection();
