@@ -67,7 +67,7 @@
         <property name="version.maven" value="${version.major}.${version.minor}.${version.revision}${version.tag}"/>
 
         <!-- Names for maven -->
-        <property name="maven.artifactId" value="${name}-${maven.jdkversion}"/>
+        <property name="maven.artifactId" value="${name}"/>
         <property name="archive.maven.simple" value="${maven.artifactId}-${version.maven}.jar"/>
         <property name="archive.maven.sources" value="${maven.artifactId}-${version.maven}-sources.jar"/>
         <property name="archive.maven.javadoc" value="${maven.artifactId}-${version.maven}-javadoc.jar"/>
@@ -77,8 +77,8 @@
         <property name="archive.name.sources" value="${archive.maven.sources}"/>
         <property name="archive.name.javadoc" value="${archive.maven.javadoc}"/>
         <property name="archive.name.rar" value="${maven.artifactId}-${version.maven}.rar"/>
-        <property name="archive.name.full" value="${name}-full-${maven.jdkversion}-${version.maven}.jar"/>
-        <property name="archive.name.test" value="${name}-test-${maven.jdkversion}-${version.maven}.jar"/>
+        <property name="archive.name.full" value="${name}-full-${version.maven}.jar"/>
+        <property name="archive.name.test" value="${name}-test-${version.maven}.jar"/>
 
         <!-- Manifest version info -->
         <property name="specification.title" value="JSR 221 JDBC API"/>
