@@ -32,8 +32,10 @@ import java.util.Set;
 
 import static org.firebirdsql.common.FBTestProperties.*;
 import static org.firebirdsql.util.FirebirdSupportInfo.supportInfoFor;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.*;
-import static org.junit.Assume.assumeTrue;
+import static org.junit.Assume.*;
 
 /**
  * Test for the {@link FBDatabaseMetaData} implementation of {@link java.sql.DatabaseMetaData}
@@ -829,7 +831,9 @@ public class TestFBDatabaseMetaData {
      */
     @Test
     public void testDriverVersionInformation() throws Exception {
-        String expectedVersion = String.format("%d.%d", dmd.getDriverMajorVersion(), dmd.getDriverMinorVersion());
+        assumeThat("Running with unfiltered org/firebirdsql/jaybird/version.properties; test ignored",
+                "@VERSION@", not(equalTo(dmd.getDriverVersion())));
+        String expectedVersion = String.format("%d.0.%d", dmd.getDriverMajorVersion(), dmd.getDriverMinorVersion());
         assertEquals(expectedVersion, dmd.getDriverVersion());
     }
 
@@ -858,6 +862,7 @@ public class TestFBDatabaseMetaData {
         case "9":
         case "10":
         case "11":
+        case "12":
             expectedMinor = 3;
             break;
         default:
