@@ -208,7 +208,6 @@ public interface ISCConstants {
     int isc_dpb_hw_address              = 157;
     int isc_dpb_certificate_body        = 158;
     int isc_dpb_repository_pin          = 159;
-    int isc_dpb_set_db_replica          = 160;
     int isc_dpb_session_encryption      = 161;
     int isc_dpb_salt                    = 162;
     int isc_dpb_master_attach           = 163;
