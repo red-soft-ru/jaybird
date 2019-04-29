@@ -40,8 +40,9 @@ public class GostPasswordAuthenticationPlugin implements AuthenticationPlugin {
                 AuthFactorGostPassword authFactorGostPassword = new AuthFactorGostPassword(authSspi);
 
                 authFactorGostPassword.setUserName(userName);
-                authFactorGostPassword.setPassword(clientAuthBlock.getPassword());
-                authFactorGostPassword.setPasswordEnc(UnixCrypt.crypt(clientAuthBlock.getPassword(), "9z").substring(2, 13));
+                String password = clientAuthBlock.getPassword();
+                authFactorGostPassword.setPassword(password);
+                authFactorGostPassword.setPasswordEnc(password == null ? null : UnixCrypt.crypt(password, "9z").substring(2, 13));
                 authSspi.addFactor(authFactorGostPassword);
                 try {
                     authSspi.request(data);
