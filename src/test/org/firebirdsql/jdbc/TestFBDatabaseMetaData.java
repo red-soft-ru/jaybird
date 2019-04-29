@@ -833,7 +833,7 @@ public class TestFBDatabaseMetaData {
     public void testDriverVersionInformation() throws Exception {
         assumeThat("Running with unfiltered org/firebirdsql/jaybird/version.properties; test ignored",
                 "@VERSION@", not(equalTo(dmd.getDriverVersion())));
-        String expectedVersion = String.format("%d.%d", dmd.getDriverMajorVersion(), dmd.getDriverMinorVersion());
+        String expectedVersion = String.format("%d.0.%d", dmd.getDriverMajorVersion(), dmd.getDriverMinorVersion());
         assertEquals(expectedVersion, dmd.getDriverVersion());
     }
 
