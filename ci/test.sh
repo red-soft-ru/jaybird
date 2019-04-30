@@ -32,7 +32,7 @@ REPORTS_DIR="${CI_PROJECT_DIR}/results/jdk${JDK_VERSION}"
 INSTALLDIR=/opt/RedDatabase
 SOURCES=$(readlink -f $(dirname $0)/..)
 OS=linux
-RDB_VERSION=4.0.0.1385
+RDB_VERSION=4.0.0.1391
 TEST_DIR=/tmp/jaybird_test
 TMPFS=/tmpfs
 export FIREBIRD="$INSTALLDIR"
@@ -91,6 +91,7 @@ sed -i 's/#WireCrypt = Enabled (for client) \/ Required (for server)/WireCrypt =
 sed -i 's/#KrbServerKeyfile/KrbServerKeyfile/g' "${INSTALLDIR}"/firebird.conf
 sed -i 's/#GssServiceName/GssServiceName/g' "${INSTALLDIR}"/firebird.conf
 sed -i 's/#GssHostName =/GssHostName = localhost/g' "${INSTALLDIR}"/firebird.conf
+sed -i 's/#TraceAuthentication = 0/TraceAuthentication = 1/g' "${INSTALLDIR}"/firebird.conf
 
 sed -i 's/#VerifyCertificateChain = 1/VerifyCertificateChain = 0/g' "${INSTALLDIR}"/firebird.conf
 sed -i 's/#CertUsernameDN = CN/CertUsernameDN = E/g' "${INSTALLDIR}"/firebird.conf
