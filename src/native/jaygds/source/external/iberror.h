@@ -723,6 +723,7 @@ const ISC_STATUS isc_instance_conflict                = 335544984L;
 const ISC_STATUS isc_out_of_temp_space                = 335544985L;
 const ISC_STATUS isc_eds_expl_tran_ctrl               = 335544986L;
 const ISC_STATUS isc_no_trusted_spb                   = 335544987L;
+const ISC_STATUS isc_cannot_make_not_null             = 335544989L;
 const ISC_STATUS isc_async_active                     = 335545017L;
 const ISC_STATUS isc_gfix_db_name                     = 335740929L;
 const ISC_STATUS isc_gfix_invalid_sw                  = 335740930L;
