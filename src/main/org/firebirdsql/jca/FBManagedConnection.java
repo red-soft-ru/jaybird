@@ -798,8 +798,8 @@ public class FBManagedConnection implements ManagedConnection, XAResource, Excep
             stmtHandle2.execute(RowValue.EMPTY_ROW_VALUE);
             stmtHandle2.fetchRows(10);
 
-            FBField field0 = FBField.createField(stmtHandle2.getFieldDescriptor().getFieldDescriptor(0), dataProvider0, gdsHelper2, false);
-            FBField field1 = FBField.createField(stmtHandle2.getFieldDescriptor().getFieldDescriptor(1), dataProvider1, gdsHelper2, false);
+            FBField field0 = FBField.createField(stmtHandle2.getRowDescriptor().getFieldDescriptor(0), dataProvider0, gdsHelper2, false);
+            FBField field1 = FBField.createField(stmtHandle2.getRowDescriptor().getFieldDescriptor(1), dataProvider1, gdsHelper2, false);
 
             int row = 0;
             while(row < dataProvider0.getRowCount()) {
@@ -986,8 +986,8 @@ public class FBManagedConnection implements ManagedConnection, XAResource, Excep
             stmtHandle2.execute(RowValue.EMPTY_ROW_VALUE);
             stmtHandle2.fetchRows(10);
 
-            FBField field0 = FBField.createField(stmtHandle2.getFieldDescriptor().getFieldDescriptor(0), dataProvider0, gdsHelper2, false);
-            FBField field1 = FBField.createField(stmtHandle2.getFieldDescriptor().getFieldDescriptor(1), dataProvider1, gdsHelper2, false);
+            FBField field0 = FBField.createField(stmtHandle2.getRowDescriptor().getFieldDescriptor(0), dataProvider0, gdsHelper2, false);
+            FBField field1 = FBField.createField(stmtHandle2.getRowDescriptor().getFieldDescriptor(1), dataProvider1, gdsHelper2, false);
 
             int row = 0;
             while(row < dataProvider0.getRowCount()) {
@@ -1053,8 +1053,8 @@ public class FBManagedConnection implements ManagedConnection, XAResource, Excep
             stmtHandle2.execute(parameters);
             stmtHandle2.fetchRows(1);
 
-            FBField field0 = FBField.createField(stmtHandle2.getFieldDescriptor().getFieldDescriptor(0), dataProvider0, gdsHelper2, false);
-            FBField field1 = FBField.createField(stmtHandle2.getFieldDescriptor().getFieldDescriptor(1), dataProvider1, gdsHelper2, false);
+            FBField field0 = FBField.createField(stmtHandle2.getRowDescriptor().getFieldDescriptor(0), dataProvider0, gdsHelper2, false);
+            FBField field1 = FBField.createField(stmtHandle2.getRowDescriptor().getFieldDescriptor(1), dataProvider1, gdsHelper2, false);
 
             FBXid xid = null;
             if (dataProvider0.getRowCount() > 0) {
