@@ -1,7 +1,5 @@
 package org.firebirdsql.gds.impl.wire.auth;
 
-import org.firebirdsql.gds.impl.wire.Bytes;
-
 /**
  * @author roman.kisluhin
  * @version 1.0
@@ -21,12 +19,12 @@ public abstract class AuthCryptoPlugin {
     _plugin = plugin;
   }
 
-  public abstract Object getSessionPublicKey(final Bytes publicKeyData, Bytes exchangeKeyData, final AuthPrivateKeyContext userKey)
+  public abstract Object getSessionPublicKey(final byte[] publicKeyData, byte[] exchangeKeyData, final AuthPrivateKeyContext userKey)
       throws AuthCryptoException;
 
   public abstract AuthPrivateKeyContext getUserKey(final String certBase64) throws AuthCryptoException;
 
-  public abstract void setIV(final Object keyHandle, final Bytes iVdata) throws AuthCryptoException;
+  public abstract void setIV(final Object keyHandle, final byte[] iVdata) throws AuthCryptoException;
 
   public abstract byte[] getIV(final Object keyHandle) throws AuthCryptoException;
 

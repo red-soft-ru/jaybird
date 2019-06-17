@@ -246,7 +246,9 @@ public final class ClientAuthBlock {
                         new SrpAuthenticationPluginSpi(),
                         new LegacyAuthenticationPluginSpi(),
                         new GssAuthenticationPluginSpi(),
-                        new MultifactorAuthenticationPluginSpi()));
+                        new MultifactorAuthenticationPluginSpi(),
+                        new GostPasswordAuthenticationPluginSpi(),
+                        new CertificateAuthenticationPluginSpi()));
     }
 
     public boolean switchPlugin(String pluginName) {

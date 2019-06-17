@@ -1,7 +1,5 @@
 package org.firebirdsql.gds.impl.wire.auth;
 
-import org.firebirdsql.gds.impl.wire.Bytes;
-
 /**
  * @author roman.kisluhin
  * @version 1.0
@@ -10,7 +8,7 @@ import org.firebirdsql.gds.impl.wire.Bytes;
  */
 public class AuthMethods {
   public static byte[] symmetricEncrypt(AuthSspi sspi,
-      final byte[] data, final Bytes serverKeyData, final Bytes sessionKeyData, final Bytes sessionKeyIVdata,
+      final byte[] data, final byte[] serverKeyData, final byte[] sessionKeyData, final byte[] sessionKeyIVdata,
       final String certBase64
   ) throws GDSAuthException {
     final AuthCryptoPlugin p = AuthCryptoPlugin.getPlugin();
@@ -91,7 +89,7 @@ public class AuthMethods {
     }
   }
 
-  public static void setIV(final Object sessionKey, final Bytes dataIV) throws GDSAuthException {
+  public static void setIV(final Object sessionKey, final byte[] dataIV) throws GDSAuthException {
     try {
       AuthCryptoPlugin.getPlugin().setIV(sessionKey, dataIV);
     } catch (AuthCryptoException e) {
@@ -99,14 +97,14 @@ public class AuthMethods {
     }
   }
 
-  public static byte[] decrypt(final Bytes cryptData, final Object sessionKey, final Bytes ivData)
+  public static byte[] decrypt(final byte[] cryptData, final Object sessionKey, final byte[] ivData)
       throws GDSAuthException {
     final AuthCryptoPlugin p = AuthCryptoPlugin.getPlugin();
     try {
       if (ivData != null)
         p.setIV(sessionKey, ivData);
 
-      final byte[] data = p.decrypt(sessionKey, cryptData.bytes());
+      final byte[] data = p.decrypt(sessionKey, cryptData);
       if (ivData != null)
         p.setIV(sessionKey, ivData);
 

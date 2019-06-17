@@ -101,10 +101,15 @@ public class ClumpletReader {
     }
 
     public ClumpletType getClumpletType(byte tag) throws SQLException {
+        int type = tag & 0xff;
         switch (kind) {
         case Tagged:
         case UnTagged:
         case SpbAttach:
+            switch(type) {
+            case isc_dpb_certificate_body:
+                return ClumpletType.Wide;
+            }
             return ClumpletType.TraditionalDpb;
         case WideTagged:
         case WideUnTagged:
