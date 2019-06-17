@@ -3,10 +3,13 @@ package org.firebirdsql.gds.impl.wire.auth;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.firebirdsql.gds.ClumpletReader;
 import org.firebirdsql.gds.DatabaseParameterBuffer;
 import org.firebirdsql.gds.GDSException;
 import org.firebirdsql.gds.ISCConstants;
 import org.firebirdsql.gds.impl.wire.ByteBuffer;
+
+import static org.firebirdsql.gds.ClumpletReader.Kind.WideTagged;
 
 /**
  * @author roman.kisluhin
@@ -15,14 +18,15 @@ import org.firebirdsql.gds.impl.wire.ByteBuffer;
  *          Time: 19:33
  */
 public class AuthSspi {
-  private List<AuthFactor> factors = new ArrayList<AuthFactor>();
-  private int currentFactor = -1;
+  protected List<AuthFactor> factors = new ArrayList<AuthFactor>();
+  protected int currentFactor = -1;
   private Object sessionKey;
   private boolean trusted;      // field is not used yet
   private boolean multifactor;  // field is not used yet
   private boolean freezeSessionKey;
   private boolean securityAuthentication;
   private boolean sessionEncyption;
+  private ClumpletReader.Kind clumpletReaderType = WideTagged;
 
   public AuthSspi() {
     // set the current factor
@@ -102,6 +106,7 @@ public class AuthSspi {
     // Certificate factor
     if (dpb.hasArgument(ISCConstants.isc_dpb_certificate)) {
       final AuthFactorCertificate f = new AuthFactorCertificate(this);
+      f.setClumpletReaderType(this.clumpletReaderType);
       if (dpb.hasArgument(ISCConstants.isc_dpb_certificate)) {
         final String filePath = dpb.getArgumentAsString(ISCConstants.isc_dpb_certificate);
         f.loadFromFile(filePath);
@@ -179,4 +184,8 @@ public class AuthSspi {
   public void setRepositoryPin(String pin) throws GDSAuthException {
     AuthCryptoPlugin.getPlugin().setRepositoryPin(pin);
   }
+
+    public void setClumpletReaderType(ClumpletReader.Kind type) {
+        this.clumpletReaderType = type;
+    }
 }
