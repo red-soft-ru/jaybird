@@ -54,16 +54,15 @@ dependency:
 ~~~
 
 If you want to use Type 2 support (native, local or embedded), you need to 
-explicitly include JNA as a dependency:
+explicitly include JNA 5.3.0 as a dependency:
 
 ~~~ {.xml}
 <dependency>
     <groupId>net.java.dev.jna</groupId>
     <artifactId>jna</artifactId>
+    <version>5.3.0</version>
 </dependency>
 ~~~
-
-The version can be left off, as it is already specified in the Jaybird pom.
 
 #### Jaybird 3.0 ####
 
@@ -71,7 +70,7 @@ Jaybird 3.0 is available from Maven central:
 
 Groupid: `org.firebirdsql.jdbc`,  
 Artifactid: `jaybird-XX` (where `XX` is `jdk17` or `jdk18`)  
-Version: `3.0.5`
+Version: `3.0.6`
 
 For ease of use, we also provide a Maven relocation artifact with artifact id
 `jaybird`. For Jaybird 3 this relocation artifact points to `jaybird-jdk18`.
@@ -82,7 +81,7 @@ For example, for Java 8:
 <dependency>
     <groupId>org.firebirdsql.jdbc</groupId>
     <artifactId>jaybird-jdk18</artifactId>
-    <version>3.0.5</version>
+    <version>3.0.6</version>
 </dependency>
 ~~~
 
@@ -94,7 +93,7 @@ dependency:
 <dependency>
     <groupId>org.firebirdsql.jdbc</groupId>
     <artifactId>jaybird-jdk18</artifactId>
-    <version>3.0.5</version>
+    <version>3.0.6</version>
     <exclusions>
         <exclusion>
             <groupId>javax.resource</groupId>
@@ -120,8 +119,6 @@ explicitly include JNA 5.2.0 as a dependency:
     <version>5.2.0</version>
 </dependency>
 ~~~
-
-The version can be left off, as it is already specified in the Jaybird pom.
 
 #### Jaybird 2.2 ####
 
@@ -281,6 +278,8 @@ Where to get help
     You can subscribe to the mailing list by sending an email to
     [firebird-java-subscribe@yahoogroups.com](mailto:firebird-java-subscribe@yahoogroups.com)
 
+*   Looking for professional support of Jaybird? Jaybird is now part of the [Tidelift subscription](https://tidelift.com/subscription/pkg/maven-org-firebirdsql-jdbc-jaybird?utm_source=maven-org-firebirdsql-jdbc-jaybird&utm_medium=referral&utm_campaign=docs).
+
 *   The [Firebird project home page](https://www.firebirdsql.org)
 
 *   Firebird support and other [Firebird mailing lists](https://www.firebirdsql.org/en/mailing-lists/)
@@ -409,7 +408,7 @@ library, or - for Jaybird 3.0 - the JNA jar file.
 Jaybird 4 and higher also support:
 
     jdbc:firebird:embedded:<database>
-
+    
 Character sets
 --------------
 
