@@ -19,8 +19,9 @@ import static org.firebirdsql.gds.ClumpletReader.Kind.WideTagged;
  *          Time: 22:56
  */
 public class AuthFactorCertificate extends AuthFactor {
-  public static final int sdRandomNumber = 1;//ISCConstants.isc_dpb_certificate_body;
+  private int sdRandomNumber = 1;
   private String certBase64;
+  private ClumpletReader.Kind clumpletReaderType = WideTagged;
 
   private final Stage CHALLENGE = new Stage() {
     @Override
@@ -55,7 +56,7 @@ public class AuthFactorCertificate extends AuthFactor {
   private final Stage TRANSFER = new Stage() {
     @Override
     public boolean stage(final ByteBuffer data) throws GDSAuthException {
-      final ClumpletReader serverData = new ClumpletReader(WideTagged, data.getData());
+      final ClumpletReader serverData = new ClumpletReader(clumpletReaderType, data.getData());
       try {
         if (!serverData.find(sdRandomNumber))
           throw new GDSAuthException("No random number found in server data");
@@ -128,5 +129,13 @@ public class AuthFactorCertificate extends AuthFactor {
     } catch (IOException e) {
       throw new GDSException("Error reading certificate from file " + filePath + ": " + e.getMessage());
     }
+  }
+
+  public void setSdRandomNumber(int sdRandomNumber) {
+    this.sdRandomNumber = sdRandomNumber;
+  }
+
+  public void setClumpletReaderType(ClumpletReader.Kind clumpletReaderType) {
+    this.clumpletReaderType = clumpletReaderType;
   }
 }

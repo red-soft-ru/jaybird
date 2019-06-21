@@ -15,12 +15,12 @@ import org.firebirdsql.gds.impl.wire.ByteBuffer;
  *          Time: 19:33
  */
 public class AuthSspi {
-  private List<AuthFactor> factors = new ArrayList<AuthFactor>();
-  private int currentFactor = -1;
-  private Object sessionKey;
+  protected List<AuthFactor> factors = new ArrayList<AuthFactor>();
+  protected int currentFactor = -1;
+  protected Object sessionKey;
   private boolean trusted;      // field is not used yet
   private boolean multifactor;  // field is not used yet
-  private boolean freezeSessionKey;
+  protected boolean freezeSessionKey;
   private boolean securityAuthentication;
   private boolean sessionEncyption;
 

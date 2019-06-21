@@ -7,3 +7,4 @@ org.firebirdsql.gds.ng.wire.auth.srp.Srp512AuthenticationPluginSpi
 org.firebirdsql.gds.ng.wire.auth.CertificateAuthenticationPluginSpi
 org.firebirdsql.gds.ng.wire.auth.GostPasswordAuthenticationPluginSpi
 org.firebirdsql.gds.ng.wire.auth.GssAuthenticationPluginSpi
+org.firebirdsql.gds.ng.wire.auth.MultifactorAuthenticationPluginSpi
