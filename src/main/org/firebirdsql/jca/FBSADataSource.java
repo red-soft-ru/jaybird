@@ -469,7 +469,7 @@ public class FBSADataSource implements DataSource, Serializable, Referenceable, 
      * Frees phisical connection
      * @throws ResourceException
      */
-    public synchronized void close()throws ResourceException 
+    public synchronized void close() throws ResourceException
     {
     	List<FBManagedConnection> connections = new ArrayList<FBManagedConnection>(this.connections);
     	for(FBManagedConnection mc1:connections)
@@ -483,8 +483,15 @@ public class FBSADataSource implements DataSource, Serializable, Referenceable, 
     	this.connections.clear();
         if (mc != null)
         {
-        	mc.destroy();
-        	mc = null;
+            try {
+                // Clean up method should cause the database to detach,
+                // but if this does not happen, then do it manually
+                if (mc.getGDSHelper().getCurrentDatabase().isAttached())
+                    mc.destroy();
+            } catch (SQLException e) {
+                throw new ResourceException(e.getMessage(), e);
+            }
+            mc = null;
         }
     }
     

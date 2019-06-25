@@ -69,6 +69,7 @@ public class TestAuthSspi extends FBJUnit4TestBase {
             fail("Statement should not fail");
         } finally {
             JdbcResourceHelper.closeQuietly(conn);
+            fbDataSource.close();
         }
     }
 
@@ -108,6 +109,7 @@ public class TestAuthSspi extends FBJUnit4TestBase {
             fail("Statement should not fail");
         } finally {
             JdbcResourceHelper.closeQuietly(conn);
+            fbDataSource.close();
         }
     }
 
@@ -148,6 +150,7 @@ public class TestAuthSspi extends FBJUnit4TestBase {
             fail("Statement should not fail");
         } finally {
             JdbcResourceHelper.closeQuietly(conn);
+            fbDataSource.close();
         }
     }
 }
