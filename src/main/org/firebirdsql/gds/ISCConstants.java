@@ -218,11 +218,12 @@ public interface ISCConstants {
     int isc_dpb_master_attach           = 163;
     int isc_dpb_gss                     = 164;
     int isc_dpb_security_authentication = 165;
+    int isc_dpb_exclude_crypto_plugins  = 166;
 
     // Lowest Jaybird DPB extension value
     int jaybirdMinIscDpbValue = isc_dpb_socket_buffer_size;
     // NOTE: Update this when adding new Jaybird specific DPB items
-    int jaybirdMaxIscDpbValue = isc_dpb_security_authentication;
+    int jaybirdMaxIscDpbValue = isc_dpb_exclude_crypto_plugins;
 
     /*************************************/
     /* Transaction parameter block stuff */

@@ -396,9 +396,14 @@ public final class ClientAuthBlock {
     private List<AuthenticationPluginSpi> getSupportedPluginProviders() throws SQLException {
         List<String> requestedPluginNames = getRequestedPluginNames();
         List<AuthenticationPluginSpi> pluginProviders = new ArrayList<>(requestedPluginNames.size());
+        List<String> excluded = null;
+        if (this.attachProperties.getExcludeCryptoPlugins() != null)
+            excluded = splitPluginList(this.attachProperties.getExcludeCryptoPlugins());
         for (String pluginName : requestedPluginNames) {
             AuthenticationPluginSpi pluginSpi = PLUGIN_MAPPING.get(pluginName);
             if (pluginSpi != null) {
+                if (excluded != null && excluded.contains(pluginName))
+                    continue;
                 pluginProviders.add(pluginSpi);
             } else {
                 log.warn("No authentication plugin available with name " + pluginName);
