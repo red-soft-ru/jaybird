@@ -38,6 +38,7 @@ public abstract class AbstractImmutableAttachProperties<T extends IAttachPropert
     private final int connectTimeout;
     private final WireCrypt wireCrypt;
     private final String dbCryptConfig;
+    private final String excludeCryptoPlugins;
     private final String certificate;
     private final String repositoryPin;
 
@@ -66,6 +67,7 @@ public abstract class AbstractImmutableAttachProperties<T extends IAttachPropert
         dbCryptConfig = src.getDbCryptConfig();
         certificate = src.getCertificate();
         repositoryPin = src.getRepositoryPin();
+        excludeCryptoPlugins = src.getExcludeCryptoPlugins();
     }
 
     @Override
@@ -205,6 +207,16 @@ public abstract class AbstractImmutableAttachProperties<T extends IAttachPropert
 
     @Override
     public void setRepositoryPin(final String pin) {
+        immutable();
+    }
+
+    @Override
+    public String getExcludeCryptoPlugins() {
+        return excludeCryptoPlugins;
+    }
+
+    @Override
+    public void setExcludeCryptoPlugins(String authPlugins) {
         immutable();
     }
 

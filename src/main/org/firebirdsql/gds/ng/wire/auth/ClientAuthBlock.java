@@ -148,6 +148,17 @@ public final class ClientAuthBlock {
         currentPlugin = null;
         pluginProviders = new LinkedList<>(getSupportedPluginProviders());
 
+        if (attachProperties.getExcludeCryptoPlugins() != null) {
+
+            List<String> plugins = Arrays.asList(AUTH_PLUGIN_LIST_SPLIT.split(attachProperties.getExcludeCryptoPlugins()));
+
+            for (Iterator<AuthenticationPluginSpi> i = pluginProviders.iterator(); i.hasNext(); ) {
+                AuthenticationPluginSpi pluginSpi = i.next();
+                if (plugins.contains(pluginSpi.getPluginName()))
+                    i.remove();
+            }
+        }
+
         if (!serverPlugins.isEmpty()) {
             LinkedList<AuthenticationPluginSpi> mergedProviderList = new LinkedList<>();
             for (AuthenticationPluginSpi clientProvider : pluginProviders) {
