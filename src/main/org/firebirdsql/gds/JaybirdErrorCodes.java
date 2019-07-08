@@ -75,6 +75,7 @@ public interface JaybirdErrorCodes {
     int jb_hashAlgorithmNotAvailable                     = 337248286;
     // Error codes backported from Jaybird 4 as needed
     int jb_blobClosed               = 337248295;
+    int jb_noKnownAuthPlugins       = 337248287;
 
     @SuppressWarnings("unused")
     int jb_range_end                = 337264639;

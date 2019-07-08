@@ -21,6 +21,7 @@ package org.firebirdsql.gds.ng.wire.auth;
 import org.firebirdsql.gds.ClumpletReader;
 import org.firebirdsql.gds.ConnectionParameterBuffer;
 import org.firebirdsql.gds.ISCConstants;
+import org.firebirdsql.gds.JaybirdErrorCodes;
 import org.firebirdsql.gds.ParameterTagMapping;
 import org.firebirdsql.gds.ng.FbExceptionBuilder;
 import org.firebirdsql.gds.ng.IAttachProperties;
@@ -51,9 +52,11 @@ public final class ClientAuthBlock {
     private static final Logger log = LoggerFactory.getLogger(ClientAuthBlock.class);
 
     private static final Pattern AUTH_PLUGIN_LIST_SPLIT = Pattern.compile("[ \t,;]+");
+    private static final String DEFAULT_AUTH_PLUGINS = "Srp256,Srp,Certificate,GostPassword,Gss,Multifactor";
+    private static final Map<String, AuthenticationPluginSpi> PLUGIN_MAPPING = getAvailableAuthenticationPlugins();
 
     private final IAttachProperties<?> attachProperties;
-    private LinkedList<AuthenticationPluginSpi> pluginProviders;
+    private List<AuthenticationPluginSpi> pluginProviders;
     private final Set<String> serverPlugins = new LinkedHashSet<>();
     private AuthenticationPlugin currentPlugin;
     private boolean authComplete;
@@ -146,18 +149,7 @@ public final class ClientAuthBlock {
 
         firstTime = true;
         currentPlugin = null;
-        pluginProviders = new LinkedList<>(getSupportedPluginProviders());
-
-        if (attachProperties.getExcludeCryptoPlugins() != null) {
-
-            List<String> plugins = Arrays.asList(AUTH_PLUGIN_LIST_SPLIT.split(attachProperties.getExcludeCryptoPlugins()));
-
-            for (Iterator<AuthenticationPluginSpi> i = pluginProviders.iterator(); i.hasNext(); ) {
-                AuthenticationPluginSpi pluginSpi = i.next();
-                if (plugins.contains(pluginSpi.getPluginName()))
-                    i.remove();
-            }
-        }
+        pluginProviders = getSupportedPluginProviders();
 
         if (!serverPlugins.isEmpty()) {
             LinkedList<AuthenticationPluginSpi> mergedProviderList = new LinkedList<>();
@@ -247,19 +239,6 @@ public final class ClientAuthBlock {
             remaining -= toWrite;
             position += toWrite;
         }
-    }
-
-    private static List<AuthenticationPluginSpi> getSupportedPluginProviders() {
-        // TODO Create from service provider interface; use properties?
-        return Collections.unmodifiableList(
-                Arrays.<AuthenticationPluginSpi>asList(
-                        new Srp256AuthenticationPluginSpi(),
-                        new SrpAuthenticationPluginSpi(),
-                        new LegacyAuthenticationPluginSpi(),
-                        new GssAuthenticationPluginSpi(),
-                        new MultifactorAuthenticationPluginSpi(),
-                        new GostPasswordAuthenticationPluginSpi(),
-                        new CertificateAuthenticationPluginSpi()));
     }
 
     public boolean switchPlugin(String pluginName) {
@@ -410,6 +389,112 @@ public final class ClientAuthBlock {
         pb.removeArgument(tagMapping.getGSSAuthTag());
     }
 
+    private List<AuthenticationPluginSpi> getSupportedPluginProviders() throws SQLException {
+        List<String> requestedPluginNames = getRequestedPluginNames();
+        List<AuthenticationPluginSpi> pluginProviders = new ArrayList<>(requestedPluginNames.size());
+        List<String> excluded = null;
+        if (this.attachProperties.getExcludeCryptoPlugins() != null)
+            excluded = splitPluginList(this.attachProperties.getExcludeCryptoPlugins());
+        for (String pluginName : requestedPluginNames) {
+            AuthenticationPluginSpi pluginSpi = PLUGIN_MAPPING.get(pluginName);
+            if (pluginSpi != null) {
+                if (excluded != null && excluded.contains(pluginName))
+                    continue;
+                pluginProviders.add(pluginSpi);
+            } else {
+                log.warn("No authentication plugin available with name " + pluginName);
+            }
+        }
+
+        if (pluginProviders.isEmpty()) {
+            throw new FbExceptionBuilder().exception(JaybirdErrorCodes.jb_noKnownAuthPlugins)
+                    .messageParameter(requestedPluginNames.toString())
+                    .toFlatSQLException();
+        }
+        return pluginProviders;
+    }
+
+    private List<String> getRequestedPluginNames() {
+
+        return splitPluginList(DEFAULT_AUTH_PLUGINS);
+    }
+
+    private static List<String> splitPluginList(String pluginList) {
+        return Arrays.asList(AUTH_PLUGIN_LIST_SPLIT.split(pluginList));
+    }
+
+    // TODO Move plugin loading to separate class?
+
+    private static Map<String, AuthenticationPluginSpi> getAvailableAuthenticationPlugins() {
+        Map<String, AuthenticationPluginSpi> pluginMapping = new HashMap<>();
+        for (AuthenticationPluginSpi pluginSpi : getAvailableAuthenticationPluginSpis()) {
+            String pluginName = pluginSpi.getPluginName();
+            if (pluginMapping.containsKey(pluginName)) {
+                log.warn("Authentication plugin provider for " + pluginName + " already registered. Skipping "
+                        + pluginSpi.getClass().getName());
+                continue;
+            }
+            pluginMapping.put(pluginName, pluginSpi);
+        }
+        return Collections.unmodifiableMap(pluginMapping);
+    }
+
+    @SuppressWarnings("WhileLoopReplaceableByForEach")
+    private static List<AuthenticationPluginSpi> getAvailableAuthenticationPluginSpis() {
+        try {
+            ServiceLoader<AuthenticationPluginSpi> pluginLoader =
+                    ServiceLoader.load(AuthenticationPluginSpi.class, ClientAuthBlock.class.getClassLoader());
+            List<AuthenticationPluginSpi> pluginList = new ArrayList<>();
+            // We can't use foreach here, because the plugins are lazily loaded, which might trigger a ServiceConfigurationError
+            Iterator<AuthenticationPluginSpi> pluginIterator = pluginLoader.iterator();
+            while (pluginIterator.hasNext()) {
+                try {
+                    AuthenticationPluginSpi plugin = pluginIterator.next();
+                    pluginList.add(plugin);
+                } catch (Exception | ServiceConfigurationError e) {
+                    log.warn("Can't register plugin, see debug level for more information (skipping): " + e);
+                    log.debug("Failed to load plugin with exception", e);
+                }
+            }
+
+            if (!pluginList.isEmpty()) {
+                return pluginList;
+            } else {
+                log.warn("No authentication plugins loaded through service loader, falling back to default list");
+            }
+        } catch (Exception e) {
+            String message =
+                    "Unable to load authentication plugins through ServiceLoader, using fallback list";
+            log.warn(message + ": " + e + "; see debug level for stacktrace");
+            log.debug(message, e);
+        }
+        return loadFallbackPluginProviders(ClientAuthBlock.class.getClassLoader());
+    }
+
+    private static List<AuthenticationPluginSpi> loadFallbackPluginProviders(ClassLoader classLoader) {
+        List<AuthenticationPluginSpi> fallbackPluginProviders = new ArrayList<>(6);
+        for (String providerName : new String[] {
+                "org.firebirdsql.gds.ng.wire.auth.legacy.LegacyAuthenticationPluginSpi",
+                "org.firebirdsql.gds.ng.wire.auth.srp.SrpAuthenticationPluginSpi",
+                "org.firebirdsql.gds.ng.wire.auth.srp.Srp256AuthenticationPluginSpi",
+                "org.firebirdsql.gds.ng.wire.auth.CertificateAuthenticationPluginSpi",
+                "org.firebirdsql.gds.ng.wire.auth.GostPasswordAuthenticationPluginSpi",
+                "org.firebirdsql.gds.ng.wire.auth.GssAuthenticationPluginSpi",
+                "org.firebirdsql.gds.ng.wire.auth.MultifactorAuthenticationPluginSpi",
+        }) {
+            try {
+                Class<?> clazz = Class.forName(providerName, true, classLoader);
+                AuthenticationPluginSpi provider =
+                        (AuthenticationPluginSpi) clazz.getDeclaredConstructor().newInstance();
+                fallbackPluginProviders.add(provider);
+            } catch (ReflectiveOperationException e) {
+                log.warn("Could not load plugin provider (see debug level for details) " + providerName + ", reason: "
+                        + e);
+                log.debug("Failed to load plugin provider " + providerName + " with exception", e);
+            }
+        }
+        return fallbackPluginProviders;
+    }
     public String getCertificate() {
         return attachProperties.getCertificate();
     }
