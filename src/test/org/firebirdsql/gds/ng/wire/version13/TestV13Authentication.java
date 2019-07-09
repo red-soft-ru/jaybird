@@ -84,7 +84,7 @@ public class TestV13Authentication {
                      "SELECT MON$AUTH_METHOD FROM MON$ATTACHMENTS WHERE MON$ATTACHMENT_ID = CURRENT_CONNECTION")
         ) {
             assertTrue("Expected a row with attachment information", resultSet.next());
-            assertEquals("Unexpected authentication method", "Legacy_Auth", resultSet.getString(1));
+            assertEquals("Unexpected authentication method", "User name in DPB", resultSet.getString(1));
         }
     }
 

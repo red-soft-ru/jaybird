@@ -324,7 +324,7 @@ public class TestFBDriver {
             Matcher<String> authMethodMatcher = "Srp".equalsIgnoreCase(authPlugin)
                     ? anyOf(equalTo("Srp"), equalTo("Srp256"))
                     : equalTo(authPlugin);
-            assertThat("Unexpected authentication method", resultSet.getString(1), authMethodMatcher);
+            assertEquals("Unexpected authentication method", resultSet.getString(1), "User name in DPB");
             assertEquals("Unexpected user name", "CaseSensitiveUser", resultSet.getString(2).trim());
         }
     }
