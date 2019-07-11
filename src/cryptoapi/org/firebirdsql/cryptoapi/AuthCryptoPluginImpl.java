@@ -92,7 +92,7 @@ public class AuthCryptoPluginImpl extends AuthCryptoPlugin {
       final WString containerName = info.pwszContainerName;
       if (containerName == null)
         return null;
-      provHandle = Advapi.cryptAcquireContext(containerName.toString(), null, CryptoProProvider.PROV_DEFAULT, /*CRYPT_SILENT*/0);
+      provHandle = Advapi.cryptAcquireContext(containerName.toString(), null, info.dwProvType/*CRYPTO_PROVIDER*/,0);
       final Pointer keyHandle = Advapi.cryptGetUserKey(provHandle, info.dwKeySpec);
       if (keyHandle != null)
         return new AuthPrivateKeyContext(provHandle, keyHandle);
@@ -274,7 +274,8 @@ public class AuthCryptoPluginImpl extends AuthCryptoPlugin {
     Pointer p = null;
     try {
       p = (Pointer)userKey.getProvHandle();
-      final Pointer hashHandle = Advapi.cryptCreateHash(p, Wincrypt.CALG_GR3411);
+      int algID = CertUtils.getAlgorithmIDByProvider(p);
+      final Pointer hashHandle = Advapi.cryptCreateHash(p, algID);
 //      Advapi.cryptGetHashParam(hashHandle, 0x000a, data);
       Advapi.cryptHashData(hashHandle, data, 0);
       Advapi.cryptGetHashParam(hashHandle, 0x000a, data);

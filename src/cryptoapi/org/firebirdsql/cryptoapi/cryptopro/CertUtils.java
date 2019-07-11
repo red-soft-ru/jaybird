@@ -9,6 +9,8 @@ import com.sun.jna.ptr.PointerByReference;
 import org.apache.log4j.Logger;
 import org.firebirdsql.cryptoapi.cryptopro.exception.CryptoException;
 import org.firebirdsql.cryptoapi.util.Base64;
+import org.firebirdsql.cryptoapi.windows.CryptoUtil;
+import org.firebirdsql.cryptoapi.windows.Win32Api;
 import org.firebirdsql.cryptoapi.windows.Wincrypt;
 import org.firebirdsql.cryptoapi.windows.advapi.Advapi;
 import org.firebirdsql.cryptoapi.windows.crypt32.Crypt32;
@@ -16,6 +18,7 @@ import org.firebirdsql.cryptoapi.windows.crypt32._CERT_CONTEXT;
 import org.firebirdsql.cryptoapi.windows.crypt32._CERT_CONTEXT.PCCERT_CONTEXT;
 import org.firebirdsql.cryptoapi.windows.crypt32._CERT_CONTEXT.PCERT_CONTEXT;
 import org.firebirdsql.cryptoapi.windows.crypt32._CRYPT_KEY_PROV_INFO.PCRYPT_KEY_PROV_INFO;
+import org.firebirdsql.cryptoapi.windows.crypt32._CRYPT_OID_INFO;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -29,6 +32,7 @@ import java.security.cert.X509Certificate;
 import java.util.*;
 
 import static org.firebirdsql.cryptoapi.windows.Wincrypt.*;
+import static org.firebirdsql.cryptoapi.windows.Winerror.ERROR_NO_MORE_ITEMS;
 
 /**
  * @author roman.kisluhin
@@ -282,6 +286,31 @@ public class CertUtils {
     } finally {
       Crypt32.certCloseStore(hStore);
     }
+  }
+
+  public static int getAlgorithmIDByProvider(Pointer provHandle) throws CryptoException {
+    int flags = CRYPT_FIRST;
+    for (int idx = 0; ; idx++) {
+      if (idx != 0)
+        flags = 0;
+
+      byte[] keyParam = Advapi.cryptGetProvParam(provHandle, PP_ENUMALGS, flags, 1000);
+      int errCode = Advapi.getLastError();
+      if (errCode == ERROR_NO_MORE_ITEMS)
+        break;
+      if (keyParam != null) {
+        int value = Win32Api.byteArrayToInt(keyParam);
+
+        _CRYPT_OID_INFO.PCCRYPT_OID_INFO cryptInfo = Crypt32.cryptFindOIDInfo(CRYPT_OID_INFO_ALGID_KEY, value, 1);
+
+        if (cryptInfo != null) {
+          cryptInfo = null;
+          return value;
+        }
+      }
+    }
+
+    return 0;
   }
 
   public static List<ContainerInfo> getAvailableContainersCertificatesList(Pointer provHandle) throws CryptoException, CertificateException {
