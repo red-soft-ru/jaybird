@@ -182,9 +182,9 @@ public class AuthCryptoPluginImpl extends AuthCryptoPlugin {
   }
 
   @Override
-  public byte[] hashData(final byte[] data, final int hashingCount) throws AuthCryptoException {
+  public byte[] hashData(final byte[] data, final int hashingCount, int hashMethod) throws AuthCryptoException {
     try {
-      return Advapi.hashData(provider, data, Wincrypt.CALG_GR3411, hashingCount);
+      return Advapi.hashData(provider, data, hashMethod, hashingCount);
     } catch (CryptoException e) {
       throw new AuthCryptoException(e);
     }

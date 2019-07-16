@@ -6,6 +6,8 @@ import org.firebirdsql.gds.impl.wire.TaggedClumpletReader;
 import org.firebirdsql.jca.FBDes;
 import sun.misc.BASE64Encoder;
 
+import java.util.Arrays;
+
 /**
  * @author roman.kisluhin
  * @version 1.0
@@ -115,13 +117,8 @@ public class AuthFactorPassword extends AuthFactor {
 
       if (!cr.find(rdHashMethod))
         throw new GDSAuthException("Can't find data (hash method) in server response");
-      // todo Kill the param from auth protocol. Replace by algId or OID.
-//      final Bytes hmBytes = cr.getBytes();
-//      try {
-//        final String hm = new String(hmBytes.getData(), hmBytes.getOffset(), hmBytes.getLength(), "UTF-16");
-//      } catch (UnsupportedEncodingException e) {
-//        throw new GDSAuthException("Can't find data (hash method) in server response");
-//      }
+      final Bytes hmBytes = cr.getBytes();
+      final int hashMethod = byteArrayToInt(Arrays.copyOfRange(hmBytes.getData(), hmBytes.getOffset(), hmBytes.getOffset() + hmBytes.getLength()));
 
       if (!cr.find(rdCryptData))
         throw new GDSAuthException("Can't find data (crypt data) in server response");
@@ -138,7 +135,7 @@ public class AuthFactorPassword extends AuthFactor {
       final Bytes saltData = cr.getBytes();
       final String salt = new String(saltData.getData(), saltData.getOffset(), saltData.getLength());
 
-      final String hash = hashMf(userName, password, salt);
+      final String hash = hashMf(userName, password, salt, hashMethod);
 
       final Object sessionKey = AuthMethods.createSessionKey(hash);
       final byte[] randomData;
@@ -164,18 +161,18 @@ public class AuthFactorPassword extends AuthFactor {
       final byte[] hashData = hash.getBytes();
       System.arraycopy(hashData, 0, sumData, randomData.length, hashData.length);
 
-      final byte[] hash2 = AuthMethods.hashData(sumData, 1);
+      final byte[] hash2 = AuthMethods.hashData(sumData, 1, hashMethod);
       data.clear();
       data.add(toHexString(hash2).getBytes());
     }
 
-    private String hashMf(final String userName, final String password, String salt) throws GDSAuthException {
+    private String hashMf(final String userName, final String password, String salt, final int hashMethod) throws GDSAuthException {
       for (int i = salt.length(); i < SALT_LENGTH; i++) {
         salt += "=";
       }
 
       final String allData = salt + userName + password;
-      final byte[] data = AuthMethods.hashData(allData.getBytes(), HASHING_COUNT);
+      final byte[] data = AuthMethods.hashData(allData.getBytes(), HASHING_COUNT, hashMethod);
       return salt + new BASE64Encoder().encode(data);
     }
 
@@ -210,5 +207,10 @@ public class AuthFactorPassword extends AuthFactor {
       buf.append(hexDigit[i & 0xf]);
     }
     return buf.toString();
+  }
+
+  private static int byteArrayToInt(final byte[] bytes) {
+    final int f = 0xFF;
+    return ((bytes[3] & f) << 24) + ((bytes[2] & f) << 16) + ((bytes[1] & f) << 8) + (bytes[0] & f);
   }
 }

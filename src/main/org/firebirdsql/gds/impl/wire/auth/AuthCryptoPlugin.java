@@ -42,7 +42,7 @@ public abstract class AuthCryptoPlugin {
 
   public abstract boolean destroyHash(Object hashHandle);
 
-  public abstract byte[] hashData(final byte[] data, final int hashingCount) throws AuthCryptoException;
+  public abstract byte[] hashData(final byte[] data, final int hashingCount, int hashMethod) throws AuthCryptoException;
 
   public abstract Object deriveKey(final Object hashHandle, boolean exportable) throws AuthCryptoException;
 
