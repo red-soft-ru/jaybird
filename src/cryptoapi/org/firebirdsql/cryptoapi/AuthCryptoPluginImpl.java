@@ -170,10 +170,15 @@ public class AuthCryptoPluginImpl extends AuthCryptoPlugin {
 
   @Override
   public Object createHash(final byte[] data) throws AuthCryptoException {
-    final Pointer hashHandle = Advapi.cryptCreateHash(provider, Wincrypt.CALG_GR3411);
-    if (!Advapi.cryptHashData(hashHandle, data, 0))
+    try {
+      final int algID = CertUtils.getAlgorithmIDByProvider(provider);
+      final Pointer hashHandle = Advapi.cryptCreateHash(provider, algID);
+      if (!Advapi.cryptHashData(hashHandle, data, 0))
+        throw new AuthCryptoException("Error hashing data.");
+      return hashHandle;
+    } catch (Exception e) {
       throw new AuthCryptoException("Error hashing data.");
-    return hashHandle;
+    }
   }
 
   @Override
@@ -274,7 +279,7 @@ public class AuthCryptoPluginImpl extends AuthCryptoPlugin {
     Pointer p = null;
     try {
       p = (Pointer)userKey.getProvHandle();
-      int algID = CertUtils.getAlgorithmIDByProvider(p);
+      final int algID = CertUtils.getAlgorithmIDByProvider(p);
       final Pointer hashHandle = Advapi.cryptCreateHash(p, algID);
 //      Advapi.cryptGetHashParam(hashHandle, 0x000a, data);
       Advapi.cryptHashData(hashHandle, data, 0);
