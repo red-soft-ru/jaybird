@@ -1697,6 +1697,29 @@ implementation have been removed (note that most are internal to Jaybird):
 -   `FirebirdConnectionProperties#setUseTranslation(String translationPath)` (and on data sources)
 -   `FirebirdConnectionProperties#getUseTranslation` (and on data sources)
 -   `IEncodingFactory#getCharacterTranslator(String mappingPath)`
+
+Removal of constants without deprecation
+----------------------------------------
+
+The following array constants in `FBDatabaseMetaData` have been made private or
+have been removed to avoid unintended side-effects of modification:
+
+-   `ALL_TYPES_2_5`
+-   `ALL_TYPES_2_1`
+-   `ALL_TYPES`
+
+Instead, use `DatabaseMetaData.getTableTypes()` (which returns a `ResultSet`),
+or `FirebirdDatabaseMetaData.getTableTypeNames()` (which returns a `String[]`).
+
+To access `getTableTypeNames()`, the `DatabaseMetaData` needs to be unwrapped to
+`FirebirdDatabaseMetaData` 
+
+```java
+DatabaseMetaData dbmd = connection.getDatabaseMetaData();
+String[] tableTypes = dbmd
+        .unwrap(FirebirdDatabaseMetaData.class)
+        .getTableTypeNames();
+```
     
 Removal of deprecated classes, packages and methods
 ---------------------------------------------------
@@ -1786,6 +1809,12 @@ The following methods will be removed in Jaybird 5:
 -   `FbStatement.getFieldDescriptor()`, use `FbStatement.getRowDescriptor()`
 -   `AbstractFbStatement.setFieldDescriptor(RowDescriptor fieldDescriptor)`, 
     use `AbstractFbStatement.setRowDescriptor(RowDescriptor rowDescriptor)`
+    
+### Removal of deprecated classes ###
+
+The following classes will be removed in Jaybird 5:
+
+-   `FBMissingParameterException`, exception is no longer used.
     
 ### Removal of deprecated constants ###
 
