@@ -20,6 +20,7 @@ package org.firebirdsql.gds.ng;
 
 import org.firebirdsql.gds.BatchParameterBuffer;
 import org.firebirdsql.gds.ISCConstants;
+import org.firebirdsql.gds.JaybirdErrorCodes;
 import org.firebirdsql.gds.ng.fields.RowDescriptor;
 import org.firebirdsql.gds.ng.fields.RowValue;
 import org.firebirdsql.gds.ng.listeners.*;
@@ -187,6 +188,16 @@ public abstract class AbstractFbStatement implements FbStatement {
     }
 
     @Override
+    public final void ensureClosedCursor(boolean transactionEnd) throws SQLException {
+        if (getState().isCursorOpen()) {
+            if (log.isDebugEnabled()) {
+                log.debug("ensureClosedCursor has to close a cursor at", new RuntimeException("debugging stacktrace"));
+            }
+            closeCursor(transactionEnd);
+        }
+    }
+
+    @Override
     public StatementState getState() {
         return state;
     }
@@ -310,7 +321,7 @@ public abstract class AbstractFbStatement implements FbStatement {
 
             if (resetAll) {
                 setParameterDescriptor(null);
-                setFieldDescriptor(null);
+                setRowDescriptor(null);
                 setType(StatementType.NONE);
             }
         }
@@ -346,8 +357,9 @@ public abstract class AbstractFbStatement implements FbStatement {
     }
 
     @Override
+    @Deprecated
     public final RowDescriptor getFieldDescriptor() {
-        return fieldDescriptor;
+        return getRowDescriptor();
     }
 
     /**
@@ -355,9 +367,26 @@ public abstract class AbstractFbStatement implements FbStatement {
      *
      * @param fieldDescriptor
      *         Field descriptor
+     * @deprecated Use {@link #setRowDescriptor(RowDescriptor)} instead; will be removed in Jaybird 5
      */
+    @Deprecated
     protected void setFieldDescriptor(RowDescriptor fieldDescriptor) {
-        this.fieldDescriptor = fieldDescriptor;
+        setRowDescriptor(fieldDescriptor);
+    }
+
+    @Override
+    public final RowDescriptor getRowDescriptor() {
+        return fieldDescriptor;
+    }
+
+    /**
+     * Sets the (result set) row descriptor.
+     *
+     * @param rowDescriptor
+     *         Row descriptor
+     */
+    protected void setRowDescriptor(RowDescriptor rowDescriptor) {
+        this.fieldDescriptor = rowDescriptor;
     }
 
     /**
@@ -406,6 +435,28 @@ public abstract class AbstractFbStatement implements FbStatement {
     public final String getExecutionPlan() throws SQLException {
         final ExecutionPlanProcessor processor = createExecutionPlanProcessor();
         return getSqlInfo(processor.getDescribePlanInfoItems(), getDefaultSqlInfoSize(), processor);
+    }
+
+    @Override
+    public final String getExplainedExecutionPlan() throws SQLException {
+        synchronized (getSynchronizationObject()) {
+            checkExplainedExecutionPlanSupport();
+            final ExecutionPlanProcessor processor = createExecutionPlanProcessor();
+            return getSqlInfo(processor.getDescribeExplainedPlanInfoItems(), getDefaultSqlInfoSize(), processor);
+        }
+    }
+
+    private void checkExplainedExecutionPlanSupport() throws SQLException {
+        try {
+            checkStatementValid();
+            if (!getDatabase().getServerVersion().isEqualOrAbove(3, 0)) {
+                throw FbExceptionBuilder.forException(JaybirdErrorCodes.jb_explainedExecutionPlanNotSupported)
+                        .toFlatSQLException();
+            }
+        } catch (SQLException e) {
+            exceptionListenerDispatcher.errorOccurred(e);
+            throw e;
+        }
     }
 
     /**
@@ -588,7 +639,7 @@ public abstract class AbstractFbStatement implements FbStatement {
         InfoProcessor.StatementInfo statementInfo = infoProcessor.process(statementInfoResponse);
 
         setType(statementInfo.getStatementType());
-        setFieldDescriptor(statementInfo.getFields());
+        setRowDescriptor(statementInfo.getFields());
         setParameterDescriptor(statementInfo.getParameters());
     }
 
@@ -603,7 +654,7 @@ public abstract class AbstractFbStatement implements FbStatement {
      * @return {@code true} if this statement has at least one output field (either singleton or result set)
      */
     protected final boolean hasFields() {
-        RowDescriptor fieldDescriptor = getFieldDescriptor();
+        RowDescriptor fieldDescriptor = getRowDescriptor();
         return fieldDescriptor != null && fieldDescriptor.getCount() > 0;
     }
 

@@ -36,9 +36,9 @@
                 <pathelement location="${build.lib}/${archive.name.simple}"/>
                 <pathelement location="${build.lib}/${archive.name.test}"/>
                 <pathelement location="${build.lib}/connector-api-1.5.jar"/>
-                <pathelement location="${srcdir}/lib/jna-4.5.0.jar" />
+                <pathelement location="${srcdir}/lib/jna-5.3.0.jar" />
                 <pathelement location="${srcdir}/lib/log4j-1.2.17.jar" />
-                <pathelement location="${srcdir}/lib/platform-4.5.0.jar" />
+                <pathelement location="${srcdir}/lib/platform-5.3.0.jar" />
 
                 <fileset dir="lib">
                     <include name="**/*.jar"/>
@@ -106,9 +106,9 @@
                 <pathelement location="${build.lib}/${archive.name.simple}"/>
                 <pathelement location="${build.lib}/${archive.name.test}"/>
                 <pathelement location="${build.lib}/connector-api-1.5.jar"/>
-                <pathelement location="${srcdir}/lib/jna-4.5.0.jar" />
+                <pathelement location="${srcdir}/lib/jna-5.3.0.jar" />
                 <pathelement location="${srcdir}/lib/log4j-1.2.17.jar" />
-                <pathelement location="${srcdir}/lib/platform-4.5.0.jar" />
+                <pathelement location="${srcdir}/lib/platform-5.3.0.jar" />
 
                 <fileset dir="lib">
                     <include name="**/*.jar"/>
@@ -179,9 +179,9 @@
                 <pathelement location="${build.lib}/${archive.name.simple}"/>
                 <pathelement location="${build.lib}/${archive.name.test}"/>
                 <pathelement location="${build.lib}/connector-api-1.5.jar"/>
-                <pathelement location="${srcdir}/lib/jna-4.5.0.jar" />
+                <pathelement location="${srcdir}/lib/jna-5.3.0.jar" />
                 <pathelement location="${srcdir}/lib/log4j-1.2.17.jar" />
-                <pathelement location="${srcdir}/lib/platform-4.5.0.jar" />
+                <pathelement location="${srcdir}/lib/platform-5.3.0.jar" />
 
                 <fileset dir="lib">
                     <include name="**/*.jar"/>
@@ -244,9 +244,9 @@
                 <pathelement location="${build.classes}"/>
                 <pathelement location="${build.test}"/>
                 <pathelement location="${build.resources}"/>
-                <pathelement location="${srcdir}/lib/jna-4.5.0.jar" />
+                <pathelement location="${srcdir}/lib/jna-5.3.0.jar" />
                 <pathelement location="${srcdir}/lib/log4j-1.2.17.jar" />
-                <pathelement location="${srcdir}/lib/platform-4.5.0.jar" />
+                <pathelement location="${srcdir}/lib/platform-5.3.0.jar" />
 
                 <fileset dir="lib">
                     <include name="**/*.jar"/>
@@ -302,9 +302,9 @@
                 <pathelement location="${build.classes}"/>
                 <pathelement location="${build.test}"/>
                 <pathelement location="${build.resources}"/>
-                <pathelement location="${srcdir}/lib/jna-4.5.0.jar" />
+                <pathelement location="${srcdir}/lib/jna-5.3.0.jar" />
                 <pathelement location="${srcdir}/lib/log4j-1.2.17.jar" />
-                <pathelement location="${srcdir}/lib/platform-4.5.0.jar" />
+                <pathelement location="${srcdir}/lib/platform-5.3.0.jar" />
 
                 <fileset dir="lib">
                     <include name="**/*.jar"/>
@@ -332,6 +332,10 @@
 
     <target name="one-test-embedded" depends="jars"
             description="Execute a single test.">
+
+        <!-- Override JUnit defaults -->
+        <property name="test.gds_type" value="EMBEDDED"/>
+        
         <mkdir dir="${test.db.dir}"/>
         <mkdir dir="${build.reports.embedded}"/>
         <mkdir dir="${build.testlog}"/>
@@ -345,20 +349,22 @@
                jvm="${junit.jvm}">
 
             <jvmarg line="${junit.jvm.options}"/>
-            <j line="${java.module.arg}"/>
+            <jvmarg line="${java.module.arg}"/>
             <sysproperty key="jbosstest.deploy.dir" file="${build.lib}"/>
             <sysproperty key="test.db.dir" value="${test.db.dir}"/>
             <sysproperty key="test.db.host" value="${test.db.host}"/>
             <sysproperty key="test.db.port" value="${test.db.port}"/>
             <sysproperty key="test.db.lc_ctype" value="${test.db.lc_ctype}"/>
+            <sysproperty key="test.gds_type" value="EMBEDDED"/>
+            <sysproperty key="jna.library.path" value="${test.jna.library.path}"/>
 
             <classpath>
                 <pathelement location="${build.classes}"/>
                 <pathelement location="${build.test}"/>
                 <pathelement location="${build.resources}"/>
-                <pathelement location="${srcdir}/lib/jna-4.5.0.jar" />
+                <pathelement location="${srcdir}/lib/jna-5.3.0.jar" />
                 <pathelement location="${srcdir}/lib/log4j-1.2.17.jar" />
-                <pathelement location="${srcdir}/lib/platform-4.5.0.jar" />
+                <pathelement location="${srcdir}/lib/platform-5.3.0.jar" />
 
                 <fileset dir="lib">
                     <include name="**/*.jar"/>

@@ -33,6 +33,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+import static org.firebirdsql.jdbc.FBDriverPropertyManager.getCanonicalName;
+
 public class FBConnectionProperties implements FirebirdConnectionProperties, Serializable, Cloneable {
 
     private static final long serialVersionUID = 611228437520889118L;
@@ -62,6 +64,10 @@ public class FBConnectionProperties implements FirebirdConnectionProperties, Ser
     public static final String WIRE_CRYPT_LEVEL = "wireCrypt";
     public static final String DB_CRYPT_CONFIG = "dbCryptConfig";
     public static final String AUTH_PLUGINS = "authPlugins";
+    public static final String GENERATED_KEYS_ENABLED = "generatedKeysEnabled";
+    public static final String TIME_ZONE_BIND = "timeZoneBind";
+    public static final String SESSION_TIME_ZONE = "sessionTimeZone";
+    public static final String IGNORE_PROCEDURE_TYPE = "ignoreProcedureType";
     public static final String CERTIFICATE = "certificate";
     public static final String REPOSITORY_PIN = "repository_pin";
     public static final String SERVER_CERTIFICATE = "serverCertificate";
@@ -78,10 +84,6 @@ public class FBConnectionProperties implements FirebirdConnectionProperties, Ser
     private int getIntProperty(String name) {
         Integer value = (Integer) properties.get(getCanonicalName(name));
         return value != null ? value : 0;
-    }
-
-    private String getCanonicalName(String propertyName) {
-        return FBDriverPropertyManager.getCanonicalName(propertyName);
     }
 
     private String getStringProperty(String name) {
@@ -112,10 +114,11 @@ public class FBConnectionProperties implements FirebirdConnectionProperties, Ser
     }
 
     private void setBooleanProperty(String name, boolean value) {
+        String canonicalName = getCanonicalName(name);
         if (value) {
-            properties.put(getCanonicalName(name), Boolean.TRUE);
+            properties.put(canonicalName, Boolean.TRUE);
         } else {
-            properties.remove(name);
+            properties.remove(canonicalName);
         }
     }
 
@@ -397,6 +400,46 @@ public class FBConnectionProperties implements FirebirdConnectionProperties, Ser
     @Override
     public void setAuthPlugins(String authPlugins) {
         setStringProperty(AUTH_PLUGINS, authPlugins);
+    }
+
+    @Override
+    public String getGeneratedKeysEnabled() {
+        return getStringProperty(GENERATED_KEYS_ENABLED);
+    }
+
+    @Override
+    public void setGeneratedKeysEnabled(String generatedKeysEnabled) {
+        setStringProperty(GENERATED_KEYS_ENABLED, generatedKeysEnabled);
+    }
+
+    @Override
+    public String getTimeZoneBind() {
+        return getStringProperty(TIME_ZONE_BIND);
+    }
+
+    @Override
+    public void setTimeZoneBind(String timeZoneBind) {
+        setStringProperty(TIME_ZONE_BIND, timeZoneBind);
+    }
+
+    @Override
+    public String getSessionTimeZone() {
+        return getStringProperty(SESSION_TIME_ZONE);
+    }
+
+    @Override
+    public void setSessionTimeZone(String sessionTimeZone) {
+        setStringProperty(SESSION_TIME_ZONE, sessionTimeZone);
+    }
+
+    @Override
+    public boolean isIgnoreProcedureType() {
+        return getBooleanProperty(IGNORE_PROCEDURE_TYPE);
+    }
+
+    @Override
+    public void setIgnoreProcedureType(boolean ignoreProcedureType) {
+        setBooleanProperty(IGNORE_PROCEDURE_TYPE, ignoreProcedureType);
     }
 
     @Override

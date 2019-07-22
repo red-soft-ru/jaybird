@@ -26,13 +26,17 @@ import org.junit.*;
 
 import java.sql.*;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
 import static org.firebirdsql.common.FBTestProperties.*;
+import static org.firebirdsql.jdbc.FBDatabaseMetaData.*;
 import static org.firebirdsql.util.FirebirdSupportInfo.supportInfoFor;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.*;
-import static org.junit.Assume.assumeTrue;
+import static org.junit.Assume.*;
 
 /**
  * Test for the {@link FBDatabaseMetaData} implementation of {@link java.sql.DatabaseMetaData}
@@ -45,6 +49,9 @@ public class TestFBDatabaseMetaData {
 
     @ClassRule
     public static final UsesDatabase usesDatabase = UsesDatabase.usesDatabase();
+
+    // TODO Temporary fix for RDB$TIME_ZONE_UTIL.TRANSITIONS in Firebird 4
+    private static final Set<String> PROCEDURES_TO_IGNORE = Collections.singleton("TRANSITIONS");
 
     private static final Logger log = LoggerFactory.getLogger(TestFBDatabaseMetaData.class);
 
@@ -83,8 +90,8 @@ public class TestFBDatabaseMetaData {
     public void testGetTableTypes() throws Exception {
         final Set<String> expected = new HashSet<>(Arrays.asList(
                 getDefaultSupportInfo().supportsGlobalTemporaryTables()
-                        ? FBDatabaseMetaData.ALL_TYPES_2_5
-                        : FBDatabaseMetaData.ALL_TYPES_2_1));
+                        ? new String[] {TABLE, SYSTEM_TABLE, VIEW, GLOBAL_TEMPORARY}
+                        : new String[] {TABLE, SYSTEM_TABLE, VIEW}));
         final Set<String> retrieved = new HashSet<>();
 
         ResultSet rs = dmd.getTableTypes();
@@ -348,6 +355,11 @@ public class TestFBDatabaseMetaData {
                 assertEquals("result set from getProcedures schema mismatch: field 8 should be PROCEDURE_TYPE",
                         type, lit_type);
                 if (log != null) log.info(" got procedure " + name);
+                
+                if (PROCEDURES_TO_IGNORE.contains(name)) {
+                    // TODO Temporary workaround
+                    continue;
+                }
                 if (name.equals("TESTPROC1")) {
                     assertFalse("result set from getProcedures had duplicate entry for TESTPROC1", gotproc1);
                     gotproc1 = true;
@@ -382,8 +394,12 @@ public class TestFBDatabaseMetaData {
         try (ResultSet rs = dmd.getProcedureColumns(null, null, "%", "%")) {
             int rownum = 0;
             while (rs.next()) {
-                rownum++;
                 String procname = rs.getString(3);
+                if (PROCEDURES_TO_IGNORE.contains(procname)) {
+                    // TODO Temporary workaround
+                    continue;
+                }
+                rownum++;
                 String colname = rs.getString(4);
                 short coltype = rs.getShort(5);
                 short datatype = rs.getShort(6);
@@ -816,7 +832,9 @@ public class TestFBDatabaseMetaData {
      */
     @Test
     public void testDriverVersionInformation() throws Exception {
-        String expectedVersion = String.format("%d.%d", dmd.getDriverMajorVersion(), dmd.getDriverMinorVersion());
+        assumeThat("Running with unfiltered org/firebirdsql/jaybird/version.properties; test ignored",
+                "@VERSION@", not(equalTo(dmd.getDriverVersion())));
+        String expectedVersion = String.format("%d.0.%d", dmd.getDriverMajorVersion(), dmd.getDriverMinorVersion());
         assertEquals(expectedVersion, dmd.getDriverVersion());
     }
 
@@ -845,6 +863,7 @@ public class TestFBDatabaseMetaData {
         case "9":
         case "10":
         case "11":
+        case "12":
             expectedMinor = 3;
             break;
         default:

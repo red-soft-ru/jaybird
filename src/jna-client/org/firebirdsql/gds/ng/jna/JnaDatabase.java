@@ -368,6 +368,18 @@ public class JnaDatabase extends AbstractFbDatabase<JnaDatabaseConnection>
         return handle.getValue();
     }
 
+    @Override
+    public void setNetworkTimeout(int milliseconds) throws SQLException {
+        throw new FBDriverNotCapableException(
+                "Setting network timeout not supported in native implementation");
+    }
+
+    @Override
+    public int getNetworkTimeout() throws SQLException {
+        throw new FBDriverNotCapableException(
+                "Getting network timeout not supported in native implementation");
+    }
+
     public IntByReference getJnaHandle() {
         return handle;
     }

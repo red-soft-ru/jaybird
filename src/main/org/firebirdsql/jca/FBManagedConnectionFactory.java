@@ -23,7 +23,6 @@ import org.firebirdsql.gds.GDSException;
 import org.firebirdsql.gds.ISCConstants;
 import org.firebirdsql.gds.TransactionParameterBuffer;
 import org.firebirdsql.gds.impl.GDSFactory;
-import org.firebirdsql.gds.impl.GDSHelper;
 import org.firebirdsql.gds.impl.GDSType;
 import org.firebirdsql.gds.ng.FbDatabase;
 import org.firebirdsql.gds.ng.FbDatabaseFactory;
@@ -37,8 +36,8 @@ import org.firebirdsql.jdbc.FirebirdConnectionProperties;
 
 import javax.resource.NotSupportedException;
 import javax.resource.ResourceException;
-import javax.resource.spi.*;
 import javax.resource.spi.SecurityException;
+import javax.resource.spi.*;
 import javax.security.auth.Subject;
 import javax.transaction.xa.XAException;
 import javax.transaction.xa.XAResource;
@@ -477,6 +476,46 @@ public class FBManagedConnectionFactory implements ManagedConnectionFactory, Fir
         connectionProperties.setAuthPlugins(authPlugins);
     }
 
+    @Override
+    public String getGeneratedKeysEnabled() {
+        return connectionProperties.getGeneratedKeysEnabled();
+    }
+
+    @Override
+    public void setGeneratedKeysEnabled(String generatedKeysEnabled) {
+        connectionProperties.setGeneratedKeysEnabled(generatedKeysEnabled);
+    }
+
+    @Override
+    public String getTimeZoneBind() {
+        return connectionProperties.getTimeZoneBind();
+    }
+
+    @Override
+    public void setTimeZoneBind(String timeZoneBind) {
+        connectionProperties.setTimeZoneBind(timeZoneBind);
+    }
+
+    @Override
+    public String getSessionTimeZone() {
+        return connectionProperties.getSessionTimeZone();
+    }
+
+    @Override
+    public void setSessionTimeZone(String sessionTimeZone) {
+        connectionProperties.setSessionTimeZone(sessionTimeZone);
+    }
+
+    @Override
+    public boolean isIgnoreProcedureType() {
+        return connectionProperties.isIgnoreProcedureType();
+    }
+
+    @Override
+    public void setIgnoreProcedureType(boolean ignoreProcedureType) {
+        connectionProperties.setIgnoreProcedureType(ignoreProcedureType);
+    }
+
     public int hashCode() {
         if (hashCode != 0) 
             return hashCode;
@@ -839,11 +878,8 @@ public class FBManagedConnectionFactory implements ManagedConnectionFactory, Fir
                     // remove heuristic data from rdb$transactions (only possible in versions before Firebird 3)
                     try {
                         String query = "delete from rdb$transactions where rdb$transaction_id = " + fbTransactionId;
-                        GDSHelper gdsHelper = new GDSHelper(dbHandle);
 
                         FbTransaction trHandle2 = dbHandle.startTransaction(getDefaultTpb().getTransactionParameterBuffer());
-                        gdsHelper.setCurrentTransaction(trHandle2);
-
                         FbStatement stmtHandle2 = dbHandle.createStatement(trHandle2);
 
                         stmtHandle2.prepare(query);

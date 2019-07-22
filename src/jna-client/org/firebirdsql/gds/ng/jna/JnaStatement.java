@@ -71,11 +71,11 @@ public class JnaStatement extends AbstractFbStatement {
     }
 
     @Override
-    protected void setFieldDescriptor(RowDescriptor fieldDescriptor) {
+    protected void setRowDescriptor(RowDescriptor fieldDescriptor) {
         final XSQLDA xsqlda = allocateXSqlDa(fieldDescriptor);
         synchronized (getSynchronizationObject()) {
             outXSqlDa = xsqlda;
-            super.setFieldDescriptor(fieldDescriptor);
+            super.setRowDescriptor(fieldDescriptor);
         }
     }
 
@@ -186,7 +186,7 @@ public class JnaStatement extends AbstractFbStatement {
                      */
                     statementListenerDispatcher.statementExecuted(this, false, true);
                     processStatusVector();
-                    queueRowData(toRowValue(getFieldDescriptor(), outXSqlDa));
+                    queueRowData(toRowValue(getRowDescriptor(), outXSqlDa));
                     setAllRowsFetched(true);
                 } else {
                     // A normal execute is never a singleton result (even if it only produces a single result)
@@ -246,7 +246,7 @@ public class JnaStatement extends AbstractFbStatement {
                     xSqlVar.writeField("sqllen");
                     if (fieldDescriptor.getSubType() != ISCConstants.CS_BINARY) {
                         // Non-binary CHAR field: fill with spaces
-                        xSqlVar.sqldata.setMemory(0, xSqlVar.sqllen & 0xff, (byte) ' ');
+                        xSqlVar.sqldata.setMemory(0, xSqlVar.sqllen & 0xffff, (byte) ' ');
                     }
                 }
                 xSqlVar.sqldata.write(bufferOffset, fieldData, 0, fieldData.length);
@@ -324,7 +324,7 @@ public class JnaStatement extends AbstractFbStatement {
                     bufferLength = xSqlVar.sqldata.getShort(0) & 0xffff;
                 } else {
                     bufferOffset = 0;
-                    bufferLength = xSqlVar.sqllen;
+                    bufferLength = xSqlVar.sqllen & 0xffff;
                 }
 
                 byte[] data = new byte[bufferLength];
@@ -359,7 +359,7 @@ public class JnaStatement extends AbstractFbStatement {
 
                 int fetchStatusInt = fetchStatus.intValue();
                 if (fetchStatusInt == ISCConstants.FETCH_OK) {
-                    queueRowData(toRowValue(getFieldDescriptor(), outXSqlDa));
+                    queueRowData(toRowValue(getRowDescriptor(), outXSqlDa));
                 } else if (fetchStatusInt == ISCConstants.FETCH_NO_MORE_ROWS) {
                     setAllRowsFetched(true);
                     // Note: we are not explicitly 'closing' the cursor here
