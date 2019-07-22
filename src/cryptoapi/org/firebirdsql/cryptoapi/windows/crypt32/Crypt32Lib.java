@@ -251,4 +251,35 @@ public interface Crypt32Lib extends Library {
       IntByReference cbDecrypted,
       _CERT_CONTEXT.PCCERT_CONTEXT pXchgCert
   );
+
+  /**
+   *  Find OID information. Returns NULL if unable to find any information
+   *  for the specified key and group. Note, returns a pointer to a constant
+   *  data structure. The returned pointer MUST NOT be freed.
+   *
+   *  dwKeyType's:
+   *    CRYPT_OID_INFO_OID_KEY, pvKey points to a szOID
+   *    CRYPT_OID_INFO_NAME_KEY, pvKey points to a wszName
+   *    CRYPT_OID_INFO_ALGID_KEY, pvKey points to an ALG_ID
+   *    CRYPT_OID_INFO_SIGN_KEY, pvKey points to an array of two ALG_ID's:
+   *      ALG_ID[0] - Hash Algid
+   *      ALG_ID[1] - PubKey Algid
+   *
+   *  Setting dwGroupId to 0, searches all groups according to the dwKeyType.
+   *  Otherwise, only the dwGroupId is searched.
+   *
+   *  WINCRYPT32API
+   *          PCCRYPT_OID_INFO
+   *  WINAPI
+   *  CryptFindOIDInfo(
+   *          IN DWORD dwKeyType,
+   *          IN void *pvKey,
+   *          IN DWORD dwGroupId
+   *          );
+   */
+  public _CRYPT_OID_INFO.PCCRYPT_OID_INFO CryptFindOIDInfo(
+          int dwKeyType,
+          Pointer pvKey,
+          int dwGroupId
+  );
 }
