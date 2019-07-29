@@ -1,6 +1,7 @@
 package org.firebirdsql.cryptoapi;
 
 import com.sun.jna.Pointer;
+import com.sun.jna.WString;
 import org.firebirdsql.cryptoapi.cryptopro.CertUtils;
 import org.firebirdsql.cryptoapi.cryptopro.ContainerInfo;
 import org.firebirdsql.cryptoapi.cryptopro.CryptoProProvider;
@@ -87,7 +88,10 @@ public class AuthCryptoPluginImpl extends AuthCryptoPlugin {
     try {
       prov = Crypt32.certGetCertificateContextProperty(cert, CERT_KEY_PROV_INFO_PROP_ID);
       _CRYPT_KEY_PROV_INFO info = new _CRYPT_KEY_PROV_INFO(prov);
-      provHandle = Advapi.cryptAcquireContext(info.pwszContainerName.toString(), null, CryptoProProvider.PROV_DEFAULT, /*CRYPT_SILENT*/0);
+      final WString containerName = info.pwszContainerName;
+      if (containerName == null)
+        return null;
+      provHandle = Advapi.cryptAcquireContext(containerName.toString(), null, info.dwProvType/*CRYPTO_PROVIDER*/,0);
       final Pointer keyHandle = Advapi.cryptGetUserKey(provHandle, info.dwKeySpec);
       if (keyHandle != null)
         return new AuthPrivateKeyContext(provHandle, keyHandle);
@@ -165,10 +169,15 @@ public class AuthCryptoPluginImpl extends AuthCryptoPlugin {
 
   @Override
   public Object createHash(final byte[] data) throws AuthCryptoException {
-    final Pointer hashHandle = Advapi.cryptCreateHash(provider, Wincrypt.CALG_GR3411);
-    if (!Advapi.cryptHashData(hashHandle, data, 0))
+    try {
+      final int algID = CertUtils.getAlgorithmIDByProvider(provider);
+      final Pointer hashHandle = Advapi.cryptCreateHash(provider, algID);
+      if (!Advapi.cryptHashData(hashHandle, data, 0))
+        throw new AuthCryptoException("Error hashing data.");
+      return hashHandle;
+    } catch (Exception e) {
       throw new AuthCryptoException("Error hashing data.");
-    return hashHandle;
+    }
   }
 
   @Override
@@ -177,9 +186,9 @@ public class AuthCryptoPluginImpl extends AuthCryptoPlugin {
   }
 
   @Override
-  public byte[] hashData(final byte[] data, final int hashingCount) throws AuthCryptoException {
+  public byte[] hashData(final byte[] data, final int hashingCount, int hashMethod) throws AuthCryptoException {
     try {
-      return Advapi.hashData(provider, data, Wincrypt.CALG_GR3411, hashingCount);
+      return Advapi.hashData(provider, data, hashMethod, hashingCount);
     } catch (CryptoException e) {
       throw new AuthCryptoException(e);
     }
@@ -269,8 +278,8 @@ public class AuthCryptoPluginImpl extends AuthCryptoPlugin {
     Pointer p = null;
     try {
       p = (Pointer)userKey.getProvHandle();
-      final Pointer hashHandle = Advapi.cryptCreateHash(p, Wincrypt.CALG_GR3411);
-//      Advapi.cryptGetHashParam(hashHandle, 0x000a, data);
+      final int algID = CertUtils.getAlgorithmIDByProvider(p);
+      final Pointer hashHandle = Advapi.cryptCreateHash(p, algID);
       Advapi.cryptHashData(hashHandle, data, 0);
       Advapi.cryptGetHashParam(hashHandle, 0x000a, data);
 
