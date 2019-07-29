@@ -73,6 +73,8 @@ chmod 700 $KEYS_DIR/root/RaUser-d.000
 
 cp fbt-repository/files/cert/Smirnov.cer ./testuser.cer
 
+sed -i '/\[Parameters\]/a warning_time_gen_2001=ll:9223372036854775807\nwarning_time_sign_2001=ll:9223372036854775807\n' /etc/opt/cprocsp/config64.ini
+
 echo Will use build $RDB_VERSION for testing
 
 echo "Downloading RedDatabase $RDB_BUILD_ID"
