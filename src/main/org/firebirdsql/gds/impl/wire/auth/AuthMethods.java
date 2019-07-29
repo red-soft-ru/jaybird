@@ -114,9 +114,9 @@ public class AuthMethods {
     }
   }
 
-  public static byte[] hashData(final byte[] data, final int hashingCount) throws GDSAuthException {
+  public static byte[] hashData(final byte[] data, final int hashingCount, int hashMethod) throws GDSAuthException {
     try {
-      return AuthCryptoPlugin.getPlugin().hashData(data, hashingCount);
+      return AuthCryptoPlugin.getPlugin().hashData(data, hashingCount, hashMethod);
     } catch (AuthCryptoException e) {
       throw new GDSAuthException("Error hashing data: " + e.getMessage(), e);
     }

@@ -121,18 +121,18 @@ public class AuthFactorPassword extends AuthFactor {
 //      }
 
       try {
-        if (!cr.find(rdHashMethod))
-          throw new GDSAuthException("Can't find data (hash method) in server response");
+      if (!cr.find(rdHashMethod))
+        throw new GDSAuthException("Can't find data (hash method) in server response");
       } catch (SQLException e) {
         throw new GDSAuthException(e.getMessage(), e);
       }
-      // todo Kill the param from auth protocol. Replace by algId or OID.
-//      final Bytes hmBytes = cr.getBytes();
-//      try {
-//        final String hm = new String(hmBytes.getData(), hmBytes.getOffset(), hmBytes.getLength(), "UTF-16");
-//      } catch (UnsupportedEncodingException e) {
-//        throw new GDSAuthException("Can't find data (hash method) in server response");
-//      }
+      final byte[] hmBytes;
+      try {
+        hmBytes = cr.getBytes();
+      } catch (SQLException e) {
+        throw new GDSAuthException(e.getMessage(), e);
+      }
+      final int hashMethod = byteArrayToInt(hmBytes);
 
       try {
         if (!cr.find(rdCryptData))
@@ -172,7 +172,7 @@ public class AuthFactorPassword extends AuthFactor {
 //      byte[] bytesSalt = Arrays.copyOfRange(saltData.getData(), saltData.getOffset(), saltData.getOffset() + saltData.getLength());
 //      ByteBuffer saltBuffer = new ByteBuffer(0);
 //      saltBuffer.add(bytesSalt);
-      final byte[] hash = hashMf(userName, password, saltData);
+      final byte[] hash = hashMf(userName, password, saltData, hashMethod);
 
       final Object sessionKey = AuthMethods.createSessionKey(hash);
       final byte[] randomData;
@@ -200,8 +200,7 @@ public class AuthFactorPassword extends AuthFactor {
       byte[] hashData = hash;
       System.arraycopy(hashData, 0, sumData, randomData.length, hashData.length);
 
-      AuthMethods.hashData(sumData, 1);
-      final byte[] hash2 = AuthMethods.hashData(sumData, 1);
+      final byte[] hash2 = AuthMethods.hashData(sumData, 1, hashMethod);
       data.clear();
 
       String hex = toHexString(hash2);
@@ -209,7 +208,7 @@ public class AuthFactorPassword extends AuthFactor {
       data.add(bytes);
     }
 
-    private byte[] hashMf(final String userName, final String password, byte[] salt) throws GDSAuthException {
+    private byte[] hashMf(final String userName, final String password, byte[] salt, int hashMethod) throws GDSAuthException {
       ByteBuffer buffer = new ByteBuffer(0);
       buffer.add(salt);
       for (int i = buffer.getLength(); i < SALT_LENGTH; i++) {
@@ -223,7 +222,7 @@ public class AuthFactorPassword extends AuthFactor {
       buffer.add(password.getBytes());
       byte[] data = buffer.getData();
       for (int i = 0; i < HASHING_COUNT; i++) {
-        data = AuthMethods.hashData(data, 1);
+        data = AuthMethods.hashData(data, 1, hashMethod);
       }
 
       final byte[] enc64 = new BASE64Encoder().encode(data).getBytes();
@@ -262,5 +261,10 @@ public class AuthFactorPassword extends AuthFactor {
       buf.append(hexDigit[i & 0xf]);
     }
     return buf.toString();
+  }
+
+  private static int byteArrayToInt(final byte[] bytes) {
+    final int f = 0xFF;
+    return ((bytes[3] & f) << 24) + ((bytes[2] & f) << 16) + ((bytes[1] & f) << 8) + (bytes[0] & f);
   }
 }
