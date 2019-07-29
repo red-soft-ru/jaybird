@@ -111,7 +111,7 @@ test:jdk18:
     JDK_VERSION: 18
     JAVA_HOME: /usr/lib/jvm/jre-1.8.0
   image:
-    name: redsoftru/rdbtestenv-centos7:7.4.1708-20180910
+    name: registry.red-soft.biz:5000/docker-images/rdbtestenv/centos7:7.6.1810-cpro-4.0-0
   stage: test
   before_script:
     - /opt/cprocsp/sbin/amd64/cpconfig -license -set $LICENSE_CRYPTOPRO
