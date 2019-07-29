@@ -114,7 +114,7 @@ test:jdk18:
     name: registry.red-soft.biz:5000/docker-images/rdbtestenv/centos7:7.6.1810-cpro-4.0-0
   stage: test
   before_script:
-    - /opt/cprocsp/sbin/amd64/cpconfig -license -set $LICENSE_CRYPTOPRO
+    - /opt/cprocsp/sbin/amd64/cpconfig -license -set $LICENSE_CRYPTOPRO4
     - yum install -y krb5-server krb5-workstation expect
     - ./ci/configure_kerberos.sh
     - export JAYBIRD_VERSION=`cat .ci/version`
