@@ -53,6 +53,7 @@ public class TestAuthSspi extends FBJUnit4TestBase {
         fbDataSource.setNonStandardProperty("isc_dpb_trusted_auth", "1");
         fbDataSource.setNonStandardProperty("isc_dpb_multi_factor_auth", "1");
         fbDataSource.setNonStandardProperty("isc_dpb_certificate", "testuser.cer");
+        fbDataSource.setNonStandardProperty("isc_dpb_repository_pin", "12345678");
 
         Connection conn = null;
         try {
@@ -134,6 +135,7 @@ public class TestAuthSspi extends FBJUnit4TestBase {
         fbDataSource.setNonStandardProperty("isc_dpb_user_name", "artyom.smirnov@red-soft.ru");
         fbDataSource.setNonStandardProperty("isc_dpb_password", "q3rgu7Ah");
         fbDataSource.setNonStandardProperty("isc_dpb_certificate", "testuser.cer");
+        fbDataSource.setNonStandardProperty("isc_dpb_repository_pin", "12345678");
         
         Connection conn = null;
         try {
