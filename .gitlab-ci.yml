@@ -119,7 +119,7 @@ test:jdk18:rdb4:
     - ./ci/configure_kerberos.sh
     - export JAYBIRD_VERSION=`cat .ci/version`
     - export SRCDIR=`pwd`/jaybird-${JAYBIRD_VERSION}
-    - export RDB_VERSION=4.0.0.1494
+    - export RDB_VERSION=4.0.0.1498
     - archive_prefix=jaybird-${JAYBIRD_VERSION}
     - tar xf dist-src/${archive_prefix}.tar.gz
   script:
