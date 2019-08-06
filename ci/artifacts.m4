@@ -54,5 +54,6 @@ file dist/jdk18/sources/jaybird-cryptoapi-security-VERSION-sources.jar jar sourc
 end
 
 testpack jdk18
-dir results/jdk18
+dir results/jdk18_rdb3
+dir results/jdk18_rdb4
 end
