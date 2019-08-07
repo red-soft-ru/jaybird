@@ -86,6 +86,14 @@ file dist/jdk18/bin/jaybird-full-jdk18-VERSION.jar jar
 file dist/jdk18/sources/jaybird-full-jdk18-VERSION-sources.jar jar sources
 end
 
-testpack jdk18
-dir results/jdk18
+testpack jdk18_rdb2_6
+dir results/jdk18_rdb2_6
+end
+
+testpack jdk18_rdb3
+dir results/jdk18_rdb3
+end
+
+testpack jdk18_rdb4
+dir results/jdk18_rdb4
 end
