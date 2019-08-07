@@ -174,6 +174,42 @@ test:jdk18:rdb3:
     - sources
     - build:jdk18
 
+test:jdk18:rdb2_6:
+  tags:
+    - docker
+    - tester
+  variables:
+    BINDIR: ${CI_PROJECT_DIR}/dist/jdk18
+    JDK_VERSION: 18
+    JAVA_HOME: /usr/lib/jvm/jre-1.8.0
+  image:
+    name: registry.red-soft.biz:5000/docker-images/rdbtestenv/centos7:7.6.1810-cpro-4.0-0
+  stage: test
+  before_script:
+    - /opt/cprocsp/sbin/amd64/cpconfig -license -set $LICENSE_CRYPTOPRO4
+    - yum install -y krb5-server krb5-workstation expect icu xinetd
+    - ./ci/configure_kerberos.sh
+    - export JAYBIRD_VERSION=`cat .ci/version`
+    - export SRCDIR=`pwd`/jaybird-${JAYBIRD_VERSION}
+    - export RDB_VERSION=2.6.0.13439
+    - archive_prefix=jaybird-${JAYBIRD_VERSION}
+    - tar xf dist-src/${archive_prefix}.tar.gz
+  script:
+    - cd ${archive_prefix}
+    - ./ci/test.sh
+  artifacts:
+    expire_in: 1 day
+    paths:
+      - results
+    reports:
+      junit:
+        - results/jdk${JDK_VERSION}_rdb2_6/TEST-*.xml
+  dependencies:
+    - prepare:snapshot
+    - prepare:release
+    - sources
+    - build:jdk18
+
 deploy:
   tags:
     - docker
