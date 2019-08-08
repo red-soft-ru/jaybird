@@ -64,3 +64,7 @@ end
 testpack jdk18_rdb4
 dir results/jdk18_rdb4
 end
+
+testpack jdk18_fb3
+dir results/jdk18_fb3
+end

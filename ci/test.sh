@@ -40,6 +40,10 @@ if [[ "${RDB_VERSION:0:1}" -eq "3" ]]; then
 elif [[ "${RDB_VERSION:0:1}" -eq "2" ]]; then
   RDB_MAJOR_VERSION="2"
   REPORTS_DIR="${CI_PROJECT_DIR}/results/jdk${JDK_VERSION}_rdb2_6"
+elif [[ "${RDB_VERSION:0:7}" == "FB3.0.4" ]]; then
+  RDB_MAJOR_VERSION="FB3.0.4"
+  REPORTS_DIR="${CI_PROJECT_DIR}/results/jdk${JDK_VERSION}_fb3"
+  INSTALLDIR=/opt/firebird
 fi
 TEST_DIR=/tmp/jaybird_test
 TMPFS=/tmpfs
@@ -101,11 +105,22 @@ if [[ "$RDB_MAJOR_VERSION" == "2" ]]; then
   RDB_URL=http://builds.red-soft.biz/release_hub/rdb26/${RDB_VERSION}/download/red-database:linux-${ARCH}:${RDB_VERSION}:bin:installer
   ARCHITECTURE=super
 fi
-(curl -s "$RDB_URL" -o /tmp/installer.bin && chmod +x /tmp/installer.bin) || die "Unable to download RedDatabase"
+
+if [[ "$RDB_MAJOR_VERSION" == "FB3.0.4" ]]; then
+  FB_URL=http://github.com/FirebirdSQL/firebird/releases/download/R3_0_4/Firebird-3.0.4.33054-0.amd64.tar.gz
+  (curl -LJO "$FB_URL") || die "Unable to download Firebird 3.0.4"
+else
+  (curl -s "$RDB_URL" -o /tmp/installer.bin && chmod +x /tmp/installer.bin) || die "Unable to download RedDatabase"
+fi
 
 echo "Installing RedDatabase"
 if [[ "$RDB_MAJOR_VERSION" == "2" ]]; then
   /tmp/installer.bin --DBAPasswd masterkey --mode unattended --architecture $ARCHITECTURE || die "Unable to install RedDatabase"
+elif [[ "$RDB_MAJOR_VERSION" == "FB3.0.4" ]]; then
+  tar xf Firebird-3.0.4.33054-0.amd64.tar.gz
+  cd Firebird-3.0.4.33054-0.amd64
+  ./install.sh -silent
+  cd ..
 else
   /tmp/installer.bin --mode unattended --sysdba_password masterkey --debuglevel 4 || die "Unable to install RedDatabase"
 fi
@@ -146,6 +161,12 @@ elif [[ "$RDB_MAJOR_VERSION" == "3" ]]; then
   sed -i 's/#GSSLibrary = libgssapi_krb5.so/GSSLibrary = \/usr\/lib64\/libgssapi_krb5.so.2/g' "${INSTALLDIR}"/firebird.conf
 
   "${INSTALLDIR}"/bin/isql -user SYSDBA -password masterkey "${INSTALLDIR}"/security3.fdb -i "${SOURCES}"/ci/user3.sql
+elif [[ "$RDB_MAJOR_VERSION" == "FB3.0.4" ]]; then
+  sed -i 's/#AuthServer = Srp/AuthServer = Srp, Srp256, Legacy_Auth/g' "${INSTALLDIR}"/firebird.conf
+  sed -i 's/#AuthClient = Srp, Srp256, Legacy_Auth\s*#Non Windows clients/AuthClient = Srp, Srp256, Legacy_Auth/g' "${INSTALLDIR}"/firebird.conf
+  sed -i 's/#UserManager = Srp/UserManager = Srp, Legacy_UserManager/g' "${INSTALLDIR}"/firebird.conf
+  sed -i 's/#WireCrypt = Enabled (for client) \/ Required (for server)/WireCrypt = Disabled/g' "${INSTALLDIR}"/firebird.conf
+
 else
   sed -i 's/#VerifyCertChain = 1/VerifyCertChain = 0/g' "${INSTALLDIR}/firebird.conf"
   sed -i 's/#CertUsernameDN = CN/CertUsernameDN = E/g' "${INSTALLDIR}/firebird.conf"
@@ -153,6 +174,7 @@ else
   sed -i 's/#PrivateKeyPin = /PrivateKeyPin = 12345678/g' "${INSTALLDIR}/firebird.conf"
   sed -i 's/#TrustedCertificate =/TrustedCertificate = %D0%A1%D0%BC%D0%B8%D1%80%D0%BD%D0%BE%D0%B2%20%D0%90%D1%80%D1%82%D0%B5%D0%BC%20%D0%92%D1%8F%D1%87%D0%B5%D1%81%D0%BB%D0%B0%D0%B2%D0%BE%D0%B2%D0%B8%D1%87,%D0%A4%D0%B5%D0%B4%D0%B5%D1%80%D0%B0%D0%BB%D1%8C%D0%BD%D0%B0%D1%8F%20%D1%81%D0%BB%D1%83%D0%B6%D0%B1%D0%B0%20%D1%81%D1%83%D0%B4%D0%B5%D0%B1%D0%BD%D1%8B%D1%85%20%D0%BF%D1%80%D0%B8%D1%81%D1%82%D0%B0%D0%B2%D0%BE%D0%B2,071085DA7AC40C79ABE811F872541896CB/g' "${INSTALLDIR}/firebird.conf"
   sed -i 's/#TraceAuthentication = 0/TraceAuthentication = 1/g' "${INSTALLDIR}/firebird.conf"
+
 fi
 
 echo "Start RDB..."
@@ -161,6 +183,9 @@ if [[ "$RDB_MAJOR_VERSION" == "2" ]]; then
   /etc/init.d/firebird restart
 
   "$INSTALLDIR/bin/gsec" -user SYSDBA -password masterkey -add artyom.smirnov@red-soft.ru -pw q3rgu7Ah
+elif [[ "$RDB_MAJOR_VERSION" == "FB3.0.4" ]]; then
+  /etc/init.d/firebird restart
+  "$INSTALLDIR/bin/gsec" -modify SYSDBA -password masterkey -user SYSDBA
 else
   "$INSTALLDIR"/bin/rdbguard -daemon -forever
 fi
