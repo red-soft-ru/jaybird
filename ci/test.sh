@@ -183,6 +183,7 @@ if [[ "$RDB_MAJOR_VERSION" == "2" ]]; then
   /etc/init.d/firebird restart
 
   "$INSTALLDIR/bin/gsec" -user SYSDBA -password masterkey -add artyom.smirnov@red-soft.ru -pw q3rgu7Ah
+  "$INSTALLDIR/bin/gsec" -user SYSDBA -password masterkey -add trusted_user -pw trusted
 elif [[ "$RDB_MAJOR_VERSION" == "FB3.0.4" ]]; then
   /etc/init.d/firebird restart
   "$INSTALLDIR/bin/gsec" -modify SYSDBA -password masterkey -user SYSDBA
