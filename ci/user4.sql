@@ -4,6 +4,9 @@ commit;
 create user "ARTYOM.SMIRNOV@RED-SOFT.RU" password '1q2w3e4r' using plugin GostPassword_Manager;
 commit;
 
+create user "RDB_SERVER/LOCALHOST" password '1q2w3e4r';
+commit;
+
 create policy TestPolicy AS
 AUTH_FACTORS = (certificate, gostpassword),
 PSWD_NEED_CHAR = 6,
@@ -16,6 +19,9 @@ MAX_FAILED_COUNT = 5,
 MAX_SESSIONS = 10,
 MAX_IDLE_TIME = 1800,
 MAX_UNUSED_DAYS = 45;
+commit;
+
+grant policy "DEFAULT" to "RDB_SERVER/LOCALHOST";
 commit;
 
 grant policy "DEFAULT" to SYSDBA;
