@@ -10,6 +10,9 @@ commit;
 create user trusted_user password 'trusted' using plugin GostPassword_Manager;
 commit;
 
+create user UserWithGostPassword password 'password' using plugin GostPassword_Manager;
+commit;
+
 create policy TestPolicy AS
 AUTH_FACTORS = (certificate, gostpassword),
 PSWD_NEED_CHAR = 6,
@@ -31,6 +34,9 @@ grant policy "DEFAULT" to SYSDBA;
 commit;
 
 grant policy "DEFAULT" to trusted_user;
+commit;
+
+grant policy "DEFAULT" to UserWithGostPassword;
 commit;
 
 grant policy TestPolicy to "ARTYOM.SMIRNOV@RED-SOFT.RU";

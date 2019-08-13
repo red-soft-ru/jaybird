@@ -6,3 +6,5 @@ create user "ARTYOM.SMIRNOV@RED-SOFT.RU" password 'q3rgu7Ah' using plugin Multif
 commit;
 create user trusted_user password 'trusted' using plugin Multifactor_Manager;
 commit;
+create user UserWithGostPassword password 'password' using plugin Multifactor_Manager;
+commit;
