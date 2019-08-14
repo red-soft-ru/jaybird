@@ -23,7 +23,7 @@ import org.firebirdsql.gds.*;
 import org.firebirdsql.gds.impl.DatabaseParameterBufferExtension;
 import org.firebirdsql.gds.impl.wire.XdrOutputStream;
 import org.firebirdsql.gds.impl.wire.auth.AuthSspi;
-import org.firebirdsql.gds.impl.wire.auth.AuthSspi3;
+import org.firebirdsql.gds.impl.wire.auth.AuthSspiFactory;
 import org.firebirdsql.gds.ng.FbExceptionBuilder;
 import org.firebirdsql.gds.ng.FbStatement;
 import org.firebirdsql.gds.ng.FbTransaction;
@@ -161,7 +161,7 @@ public class V10Database extends AbstractFbWireDatabase implements FbWireDatabas
         if (multifactor) {
             if (!newDpb.hasArgument(ISCConstants.isc_dpb_password) && connection.getAttachProperties().getPassword() != null)
                 newDpb.addArgument(ISCConstants.isc_dpb_password, connection.getAttachProperties().getPassword());
-            sspi = new AuthSspi3();
+            sspi = AuthSspiFactory.createAuthSspi(AuthSspiFactory.Type.TYPE3);
             try {
                 sspi.setClumpletReaderType(ClumpletReader.Kind.Tagged);
                 if (newDpb.hasArgument(ISCConstants.isc_dpb_repository_pin))

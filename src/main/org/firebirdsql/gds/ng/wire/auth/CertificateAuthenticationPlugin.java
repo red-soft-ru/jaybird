@@ -31,7 +31,7 @@ public class CertificateAuthenticationPlugin implements AuthenticationPlugin {
     public AuthStatus authenticate(ClientAuthBlock clientAuthBlock) throws SQLException {
         if (authSspi == null) {
             log.debug("Certificate phase 1");
-            authSspi = new AuthSspi();
+            authSspi = AuthSspiFactory.createAuthSspi(AuthSspiFactory.Type.TYPE4);
 
             String repositoryPin = clientAuthBlock.getRepositoryPin();
 

@@ -35,7 +35,7 @@ public class MultifactorAuthenticationPlugin implements AuthenticationPlugin {
     public AuthStatus authenticate(ClientAuthBlock clientAuthBlock) throws SQLException {
         if (authSspi == null) {
             log.debug("Multifactor phase 1");
-            authSspi = new AuthSspi3();
+            authSspi = AuthSspiFactory.createAuthSspi(AuthSspiFactory.Type.TYPE3);
 
             String repositoryPin = clientAuthBlock.getRepositoryPin();
 

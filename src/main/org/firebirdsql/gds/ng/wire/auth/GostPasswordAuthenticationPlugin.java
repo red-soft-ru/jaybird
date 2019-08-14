@@ -31,7 +31,7 @@ public class GostPasswordAuthenticationPlugin implements AuthenticationPlugin {
     public AuthStatus authenticate(ClientAuthBlock clientAuthBlock) throws SQLException {
         if (authSspi == null) {
             log.debug("GostPassword phase 1");
-            authSspi = new AuthSspi();
+            authSspi = AuthSspiFactory.createAuthSspi(AuthSspiFactory.Type.TYPE4);
 
             ByteBuffer data = new ByteBuffer(0);
 
