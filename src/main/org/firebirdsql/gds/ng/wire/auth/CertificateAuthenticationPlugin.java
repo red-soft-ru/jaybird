@@ -48,6 +48,7 @@ public class CertificateAuthenticationPlugin implements AuthenticationPlugin {
             String certificate = clientAuthBlock.getCertificate();
             if (certificate != null && !certificate.isEmpty()) {
                 AuthFactorCertificate authFactorCertificate = new AuthFactorCertificate(authSspi);
+                authFactorCertificate.setSdRandomNumber(1);
                 try {
                     authFactorCertificate.loadFromFile(certificate);
                     authSspi.addFactor(authFactorCertificate);

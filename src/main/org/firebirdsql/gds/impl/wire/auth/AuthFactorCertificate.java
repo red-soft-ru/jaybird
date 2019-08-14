@@ -19,7 +19,7 @@ import static org.firebirdsql.gds.ClumpletReader.Kind.WideTagged;
  *          Time: 22:56
  */
 public class AuthFactorCertificate extends AuthFactor {
-  private int sdRandomNumber = 1;
+  private int sdRandomNumber = ISCConstants.isc_dpb_certificate_body;
   private String certBase64;
   private ClumpletReader.Kind clumpletReaderType = WideTagged;
 

@@ -52,7 +52,7 @@ public final class DatabaseParameterBufferImp extends ParameterBufferBase implem
     public DatabaseParameterBuffer removeExtensionParams() {
         final DatabaseParameterBuffer copy = deepCopy();
 
-        for (int extensionDpb = jaybirdMinIscDpbValue; extensionDpb <= jaybirdMaxIscDpbValue; extensionDpb++) {
+        for (int extensionDpb = jaybirdMinIscDpbValue; extensionDpb <= ISCConstants.isc_dpb_ignore_procedure_type; extensionDpb++) {
             copy.removeArgument(extensionDpb);
         }
 
