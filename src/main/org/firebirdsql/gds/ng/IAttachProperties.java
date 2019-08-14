@@ -301,6 +301,26 @@ public interface IAttachProperties<T extends IAttachProperties> {
     void setAuthPlugins(String authPlugins);
 
     /**
+     *  Get the list of excluded authentication plugins using crypto library.
+     *
+     * @return comma-separated list of excluded authentication plugins, or {@code null} for driver default
+     * @since 4.0
+     */
+    String getExcludeCryptoPlugins();
+
+    /**
+     * Sets the excluded authentication plugins using crypto library.
+     * <p>
+     * Invalid names are skipped during authentication.
+     * </p>
+     *
+     * @param authPlugins
+     *         comma-separated list of excluded authentication plugins, or {@code null} for driver default
+     * @since 4.0
+     */
+    void setExcludeCryptoPlugins(String authPlugins);
+
+    /**
      * @return An immutable version of this instance as an implementation of {@link IAttachProperties}
      */
     T asImmutable();

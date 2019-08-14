@@ -225,4 +225,14 @@ public class Crypt32 {
 
     return Win32Api.getActualData(data, pdwDataLen.getValue());
   }
+
+  public static _CRYPT_OID_INFO.PCCRYPT_OID_INFO cryptFindOIDInfo(int type, int methodID, int kind) throws CryptoException {
+    if (LOGGING)
+      LOG.debug("cryptFindOIDInfo " + type + " " + methodID + " " + kind);
+    final IntByReference refID = new IntByReference(methodID);
+    _CRYPT_OID_INFO.PCCRYPT_OID_INFO methodInfo = lib.CryptFindOIDInfo(type, refID.getPointer(), kind);
+
+    return methodInfo;
+
+  }
 }

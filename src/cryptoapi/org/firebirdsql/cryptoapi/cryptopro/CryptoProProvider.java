@@ -18,6 +18,8 @@ public class CryptoProProvider extends Provider {
 
   public static int PROV_GOST_94_DH       = 71;
   public static int PROV_GOST_2001_DH     = 75;
+  public static int PROV_GOST_2012_256_DH     = 80;
+  public static int PROV_GOST_2012_512_DH     = 81;
   public static int PROV_DEFAULT = PROV_GOST_2001_DH;
 
   public static String NAME = "RedSoftCryptoProProvider";
@@ -35,6 +37,6 @@ public class CryptoProProvider extends Provider {
   }
 
   public static Pointer acquireContext() throws CryptoException {
-    return Advapi.cryptAcquireContext(null, null, CryptoProProvider.PROV_DEFAULT, Wincrypt.CRYPT_VERIFYCONTEXT);
+    return Advapi.cryptAcquireContext(null, null, PROV_DEFAULT, Wincrypt.CRYPT_VERIFYCONTEXT);
   }
 }

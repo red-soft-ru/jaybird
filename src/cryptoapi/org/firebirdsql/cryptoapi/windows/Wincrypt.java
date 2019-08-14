@@ -1174,4 +1174,11 @@ public class Wincrypt {
   public static final int CRYPT_ACQUIRE_ALLOW_NCRYPT_KEY_FLAG    = 0x00010000;
   public static final int CRYPT_ACQUIRE_PREFER_NCRYPT_KEY_FLAG   = 0x00020000;
   public static final int CRYPT_ACQUIRE_ONLY_NCRYPT_KEY_FLAG     = 0x00040000;
+
+  public static final int CRYPT_OID_INFO_OID_KEY                 = 1;
+  public static final int CRYPT_OID_INFO_NAME_KEY                = 2;
+  public static final int CRYPT_OID_INFO_ALGID_KEY               = 3;
+  public static final int CRYPT_OID_INFO_SIGN_KEY                = 4;
+  public static final int CRYPT_OID_INFO_PUBKEY_SIGN_KEY_FLAG    = 0x80000000;
+  public static final int CRYPT_OID_INFO_PUBKEY_ENCRYPT_KEY_FLAG = 0x40000000;
 }

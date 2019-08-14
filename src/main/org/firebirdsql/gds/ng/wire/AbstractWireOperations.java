@@ -187,9 +187,9 @@ public abstract class AbstractWireOperations implements FbWireOperations {
                     operation = readNextOperation();
                 }
             } catch (GDSAuthException e) {
-                throw new SQLException(e.getMessage());
+                throw new SQLException(e);
             } catch (GDSException e) {
-                throw new SQLException(e.getMessage());
+                throw new SQLException(e);
             } catch (IOException e) {
                 e.printStackTrace();
             } finally {
@@ -197,7 +197,7 @@ public abstract class AbstractWireOperations implements FbWireOperations {
                     sspi.free();
                     connection.setSspi(null);
                 } catch (GDSAuthException e) {
-                    throw new SQLException(e.getMessage());
+                    throw new SQLException(e);
                 }
             }
         }

@@ -52,7 +52,7 @@ public final class ClientAuthBlock {
     private static final Logger log = LoggerFactory.getLogger(ClientAuthBlock.class);
 
     private static final Pattern AUTH_PLUGIN_LIST_SPLIT = Pattern.compile("[ \t,;]+");
-    private static final String DEFAULT_AUTH_PLUGINS = "Srp256,Srp,Gss";
+    private static final String DEFAULT_AUTH_PLUGINS = "Srp256,Srp,Certificate,GostPassword,Gss,Multifactor";
     private static final Map<String, AuthenticationPluginSpi> PLUGIN_MAPPING = getAvailableAuthenticationPlugins();
 
     private final IAttachProperties<?> attachProperties;
@@ -115,6 +115,7 @@ public final class ClientAuthBlock {
         while (providerIterator.hasNext()) {
             AuthenticationPluginSpi provider = providerIterator.next();
             AuthenticationPlugin plugin = provider.createPlugin();
+
             log.debug("Trying authentication plugin " + plugin);
             try {
                 switch (plugin.authenticate(this)) {
@@ -395,9 +396,14 @@ public final class ClientAuthBlock {
     private List<AuthenticationPluginSpi> getSupportedPluginProviders() throws SQLException {
         List<String> requestedPluginNames = getRequestedPluginNames();
         List<AuthenticationPluginSpi> pluginProviders = new ArrayList<>(requestedPluginNames.size());
+        List<String> excluded = null;
+        if (this.attachProperties.getExcludeCryptoPlugins() != null)
+            excluded = splitPluginList(this.attachProperties.getExcludeCryptoPlugins());
         for (String pluginName : requestedPluginNames) {
             AuthenticationPluginSpi pluginSpi = PLUGIN_MAPPING.get(pluginName);
             if (pluginSpi != null) {
+                if (excluded != null && excluded.contains(pluginName))
+                    continue;
                 pluginProviders.add(pluginSpi);
             } else {
                 log.warn("No authentication plugin available with name " + pluginName);
@@ -481,7 +487,8 @@ public final class ClientAuthBlock {
                 "org.firebirdsql.gds.ng.wire.auth.srp.Srp256AuthenticationPluginSpi",
                 "org.firebirdsql.gds.ng.wire.auth.srp.Srp384AuthenticationPluginSpi",
                 "org.firebirdsql.gds.ng.wire.auth.srp.Srp512AuthenticationPluginSpi",
-                "org.firebirdsql.gds.ng.wire.auth.MultifactorAuthenticationPluginSpi",
+                "org.firebirdsql.gds.ng.wire.auth.CertificateAuthenticationPluginSpi",
+                "org.firebirdsql.gds.ng.wire.auth.GostPasswordAuthenticationPluginSpi",
                 "org.firebirdsql.gds.ng.wire.auth.GssAuthenticationPluginSpi",
         }) {
             try {

@@ -44,6 +44,7 @@ public abstract class AbstractAttachProperties<T extends IAttachProperties> impl
     private WireCrypt wireCrypt = WireCrypt.DEFAULT;
     private String dbCryptConfig;
     private String authPlugins;
+    private String excludeCryptoPlugins;
     private boolean verifyServerCertificate = IAttachProperties.DEFAULT_SERVER_CERTIFICATE;
 
     /**
@@ -74,6 +75,7 @@ public abstract class AbstractAttachProperties<T extends IAttachProperties> impl
             certificate = src.getCertificate();
             repositoryPin = src.getRepositoryPin();
             verifyServerCertificate = src.getVerifyServerCertificate();
+            excludeCryptoPlugins = src.getExcludeCryptoPlugins();
         }
     }
 
@@ -268,6 +270,17 @@ public abstract class AbstractAttachProperties<T extends IAttachProperties> impl
     @Override
     public void setAuthPlugins(String authPlugins) {
         this.authPlugins = authPlugins;
+        dirtied();
+    }
+
+    @Override
+    public String getExcludeCryptoPlugins() {
+        return excludeCryptoPlugins;
+    }
+
+    @Override
+    public void setExcludeCryptoPlugins(String authPlugins) {
+        this.excludeCryptoPlugins = authPlugins;
         dirtied();
     }
 
