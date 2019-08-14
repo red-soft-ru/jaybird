@@ -185,7 +185,7 @@ public class AuthSspi {
     AuthCryptoPlugin.getPlugin().setRepositoryPin(pin);
   }
 
-    public void setClumpletReaderType(ClumpletReader.Kind type) {
-        this.clumpletReaderType = type;
-    }
+  public void setClumpletReaderType(ClumpletReader.Kind type) {
+    this.clumpletReaderType = type;
+  }
 }
