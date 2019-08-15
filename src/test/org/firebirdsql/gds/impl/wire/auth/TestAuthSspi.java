@@ -5,15 +5,17 @@ import org.firebirdsql.common.FBJUnit4TestBase;
 import org.firebirdsql.common.FBTestProperties;
 import org.firebirdsql.common.JdbcResourceHelper;
 import org.firebirdsql.cryptoapi.AuthCryptoPluginImpl;
+import org.firebirdsql.gds.impl.GDSServerVersion;
 import org.firebirdsql.gds.impl.GDSType;
 import org.firebirdsql.jca.FBSADataSource;
-import org.junit.Ignore;
+import org.firebirdsql.jdbc.FirebirdConnection;
 import org.junit.Test;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
+import static org.firebirdsql.common.FBTestProperties.getConnectionViaDriverManager;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
@@ -34,6 +36,18 @@ public class TestAuthSspi extends FBJUnit4TestBase {
         initLogger();
 
         AuthCryptoPlugin.register(new AuthCryptoPluginImpl());
+
+        try (Connection connection = getConnectionViaDriverManager();
+             Statement statement = connection.createStatement()) {
+            GDSServerVersion serverVersion =
+                    connection.unwrap(FirebirdConnection.class).getFbDatabase().getServerVersion();
+            if (serverVersion.getMajorVersion() == 4) {
+                statement.execute("grant policy \"DEFAULT\" to \"ARTYOM.SMIRNOV@RED-SOFT.RU\"");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("Statement should not fail");
+        }
 
         final FBSADataSource fbDataSource = new FBSADataSource(GDSType.getType("PURE_JAVA"));
 
@@ -103,6 +117,18 @@ public class TestAuthSspi extends FBJUnit4TestBase {
         initLogger();
 
         AuthCryptoPlugin.register(new AuthCryptoPluginImpl());
+
+        try (Connection connection = getConnectionViaDriverManager();
+             Statement statement = connection.createStatement()) {
+            GDSServerVersion serverVersion =
+                    connection.unwrap(FirebirdConnection.class).getFbDatabase().getServerVersion();
+            if (serverVersion.getMajorVersion() == 4) {
+                statement.execute("grant policy TestPolicy to \"ARTYOM.SMIRNOV@RED-SOFT.RU\"");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("Statement should not fail");
+        }
 
         final FBSADataSource fbDataSource = new FBSADataSource(GDSType.getType("PURE_JAVA"));
 
