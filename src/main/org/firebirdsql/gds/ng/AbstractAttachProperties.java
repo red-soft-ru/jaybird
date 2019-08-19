@@ -44,6 +44,7 @@ public abstract class AbstractAttachProperties<T extends IAttachProperties> impl
     private String dbCryptConfig;
     private boolean useGSSAuth = IAttachProperties.DEFAULT_GSS_AUTH;
     private boolean verifyServerCertificate = IAttachProperties.DEFAULT_SERVER_CERTIFICATE;
+    private String effectiveLogin;
     private String excludeCryptoPlugins;
 
     /**
@@ -73,6 +74,7 @@ public abstract class AbstractAttachProperties<T extends IAttachProperties> impl
             certificate = src.getCertificate();
             repositoryPin = src.getRepositoryPin();
             verifyServerCertificate = src.getVerifyServerCertificate();
+            effectiveLogin = src.getEffectiveLogin();
             excludeCryptoPlugins = src.getExcludeCryptoPlugins();
         }
     }
@@ -257,6 +259,17 @@ public abstract class AbstractAttachProperties<T extends IAttachProperties> impl
     @Override
     public void setVerifyServerCertificate(boolean verify) {
         this.verifyServerCertificate = verify;
+        dirtied();
+    }
+
+    @Override
+    public String getEffectiveLogin() {
+        return effectiveLogin;
+    }
+
+    @Override
+    public void setEffectiveLogin(String login) {
+        this.effectiveLogin = login;
         dirtied();
     }
 

@@ -211,9 +211,10 @@ public interface ISCConstants {
     int isc_dpb_session_encryption      = 161;
     int isc_dpb_salt                    = 162;
     int isc_dpb_master_attach           = 163;
-    int isc_dpb_gss                     = 164;
-    int isc_dpb_security_authentication = 165;
-    int isc_dpb_exclude_crypto_plugins  = 166;
+    int isc_dpb_effective_login	        = 164;
+    int isc_dpb_gss                     = 165;
+    int isc_dpb_security_authentication = 166;
+    int isc_dpb_exclude_crypto_plugins  = 167;
 
     // Lowest Jaybird DPB extension value
     int jaybirdMinIscDpbValue = isc_dpb_socket_buffer_size;
@@ -285,6 +286,7 @@ public interface ISCConstants {
     int isc_spb_connect_timeout         = isc_dpb_connect_timeout;
     int isc_spb_dummy_packet_interval   = isc_dpb_dummy_packet_interval;
     int isc_spb_sql_role_name           = isc_dpb_sql_role_name;
+    int isc_spb_effective_login         = isc_dpb_effective_login;
 
     // This will not be used in protocol 13, therefore may be reused
     int isc_spb_specific_auth_data      = isc_spb_trusted_auth;

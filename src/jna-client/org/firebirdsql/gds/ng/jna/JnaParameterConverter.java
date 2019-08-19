@@ -46,6 +46,9 @@ public class JnaParameterConverter extends AbstractParameterConverter<JnaDatabas
         if (props.getPassword() != null) {
             pb.addArgument(tagMapping.getPasswordTag(), props.getPassword());
         }
+        if (props.getEffectiveLogin() != null) {
+            pb.addArgument(tagMapping.getEffectiveLoginTag(), props.getEffectiveLogin());
+        }
 
         if (props.getWireCrypt() != WireCrypt.DEFAULT) {
             // Need to do this differently when having to add multiple configs

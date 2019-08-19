@@ -7,6 +7,9 @@ commit;
 create user "RDB_SERVER/LOCALHOST" password '1q2w3e4r';
 commit;
 
+create user effective_user password 'effective';
+commit;
+
 create user trusted_user password 'trusted' using plugin GostPassword_Manager;
 commit;
 
@@ -37,6 +40,9 @@ grant policy "DEFAULT" to trusted_user;
 commit;
 
 grant policy "DEFAULT" to UserWithGostPassword;
+commit;
+
+grant policy "DEFAULT" to effective_user;
 commit;
 
 grant policy TestPolicy to "ARTYOM.SMIRNOV@RED-SOFT.RU";

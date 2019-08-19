@@ -323,6 +323,17 @@ public interface IAttachProperties<T extends IAttachProperties> {
     void setVerifyServerCertificate(boolean verify);
 
     /**
+     * Get the effective login of trusted user.
+     */
+    String getEffectiveLogin();
+
+    /**
+     * @param login
+     *         Login of the trusted user.
+     */
+    void setEffectiveLogin(String login);
+
+    /**
      *  Get the list of excluded authentication plugins using crypto library.
      *
      * @return comma-separated list of excluded authentication plugins, or {@code null} for driver default
