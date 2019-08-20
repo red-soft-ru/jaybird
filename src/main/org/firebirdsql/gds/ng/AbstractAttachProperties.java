@@ -46,6 +46,7 @@ public abstract class AbstractAttachProperties<T extends IAttachProperties> impl
     private String authPlugins;
     private String excludeCryptoPlugins;
     private boolean verifyServerCertificate = IAttachProperties.DEFAULT_SERVER_CERTIFICATE;
+    private String effectiveLogin;
 
     /**
      * Copy constructor for IAttachProperties.
@@ -75,6 +76,7 @@ public abstract class AbstractAttachProperties<T extends IAttachProperties> impl
             certificate = src.getCertificate();
             repositoryPin = src.getRepositoryPin();
             verifyServerCertificate = src.getVerifyServerCertificate();
+            effectiveLogin = src.getEffectiveLogin();
             excludeCryptoPlugins = src.getExcludeCryptoPlugins();
         }
     }
@@ -248,6 +250,17 @@ public abstract class AbstractAttachProperties<T extends IAttachProperties> impl
     @Override
     public void setVerifyServerCertificate(boolean verify) {
         this.verifyServerCertificate = verify;
+        dirtied();
+    }
+
+    @Override
+    public String getEffectiveLogin() {
+        return effectiveLogin;
+    }
+
+    @Override
+    public void setEffectiveLogin(String login) {
+        this.effectiveLogin = login;
         dirtied();
     }
 

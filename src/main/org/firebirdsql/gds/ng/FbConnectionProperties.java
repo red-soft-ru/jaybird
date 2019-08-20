@@ -273,6 +273,9 @@ public final class FbConnectionProperties extends AbstractAttachProperties<IConn
             case isc_dpb_repository_pin:
                 setRepositoryPin(parameter.getValueAsString());
                 break;
+            case isc_dpb_effective_login:
+                setEffectiveLogin(parameter.getValueAsString());
+                break;
             case isc_dpb_verify_server:
                 parameter.copyTo(getExtraDatabaseParameters(), null);
                 setVerifyServerCertificate(true);

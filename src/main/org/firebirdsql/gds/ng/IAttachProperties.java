@@ -363,4 +363,18 @@ public interface IAttachProperties<T extends IAttachProperties> {
      */
     void setVerifyServerCertificate(boolean verify);
 
+    /**
+     * Get the effective login of trusted user.
+     *
+     * @return Effective user login
+     * @since 3.0.7
+     */
+    String getEffectiveLogin();
+
+    /**
+     * @param login
+     *         Login of the trusted user.
+     * @since 3.0.7
+     */
+    void setEffectiveLogin(String login);
 }

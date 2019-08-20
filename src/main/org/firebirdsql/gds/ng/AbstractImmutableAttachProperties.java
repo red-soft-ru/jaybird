@@ -42,6 +42,7 @@ public abstract class AbstractImmutableAttachProperties<T extends IAttachPropert
     private final String excludeCryptoPlugins;
     private final String certificate;
     private final String repositoryPin;
+    private final String effectiveLogin;
 
     /**
      * Copy constructor for IAttachProperties.
@@ -70,6 +71,7 @@ public abstract class AbstractImmutableAttachProperties<T extends IAttachPropert
         excludeCryptoPlugins = src.getExcludeCryptoPlugins();
         certificate = src.getCertificate();
         repositoryPin = src.getRepositoryPin();
+        effectiveLogin = src.getEffectiveLogin();
     }
 
     @Override
@@ -219,6 +221,16 @@ public abstract class AbstractImmutableAttachProperties<T extends IAttachPropert
 
     @Override
     public void setAuthPlugins(String authPlugins) {
+        immutable();
+    }
+
+    @Override
+    public String getEffectiveLogin() {
+        return effectiveLogin;
+    }
+
+    @Override
+    public void setEffectiveLogin(final String login) {
         immutable();
     }
 
