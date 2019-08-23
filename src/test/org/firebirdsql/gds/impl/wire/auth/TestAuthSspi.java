@@ -11,6 +11,8 @@ import org.firebirdsql.jca.FBSADataSource;
 import org.firebirdsql.jdbc.FirebirdConnection;
 import org.junit.Test;
 
+import java.io.*;
+import java.nio.file.Files;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
@@ -173,7 +175,7 @@ public class TestAuthSspi extends FBJUnit4TestBase {
         fbDataSource.setNonStandardProperty("isc_dpb_lc_ctype", "WIN1251");
         fbDataSource.setNonStandardProperty("isc_dpb_user_name", "artyom.smirnov@red-soft.ru");
         fbDataSource.setNonStandardProperty("isc_dpb_password", "q3rgu7Ah");
-        fbDataSource.setNonStandardProperty("isc_dpb_certificate", "testuser.cer");
+        fbDataSource.setNonStandardProperty("isc_dpb_certificate_base64", loadFromFile("testuser.cer"));
         fbDataSource.setNonStandardProperty("isc_dpb_repository_pin", "12345678");
         fbDataSource.setNonStandardProperty("isc_dpb_trusted_auth", "1");
         fbDataSource.setNonStandardProperty("isc_dpb_multi_factor_auth", "1");
@@ -266,6 +268,24 @@ public class TestAuthSspi extends FBJUnit4TestBase {
         } finally {
             JdbcResourceHelper.closeQuietly(conn);
             fbDataSource.close();
+        }
+    }
+
+    private String loadFromFile(String filePath) throws IOException {
+        final byte buf[] = new byte[4096];
+        final StringBuilder res = new StringBuilder();
+        final InputStream is = new FileInputStream(filePath);
+        try {
+            int c;
+            while ((c = is.read(buf)) > 0) {
+                res.append(new String(buf, 0, c));
+            }
+            return res.toString();
+        } finally {
+            try {
+                is.close();
+            } catch (IOException ignored) {
+            }
         }
     }
 }

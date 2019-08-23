@@ -499,6 +499,10 @@ public final class ClientAuthBlock {
         return attachProperties.getCertificate();
     }
 
+    public String getCertificateBase64() {
+        return attachProperties.getCertificateBase64();
+    }
+
     public String getRepositoryPin() {
         return attachProperties.getRepositoryPin();
     }

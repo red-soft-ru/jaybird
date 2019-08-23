@@ -214,7 +214,8 @@ public interface ISCConstants {
     int isc_dpb_effective_login	        = 164;
     int isc_dpb_gss                     = 165;
     int isc_dpb_security_authentication = 166;
-    int isc_dpb_exclude_crypto_plugins  = 167;
+    int isc_dpb_certificate_base64      = 167;
+    int isc_dpb_exclude_crypto_plugins  = 168;
 
     // Lowest Jaybird DPB extension value
     int jaybirdMinIscDpbValue = isc_dpb_socket_buffer_size;

@@ -7,7 +7,7 @@ public class AuthSspi4 extends AuthSspi {
     @Override
     public boolean request(ByteBuffer data) throws GDSAuthException {
         if (factors.isEmpty())
-        return false;
+            return false;
 
         // Skip first call for leaving the clumplet less 256 byte
         if (currentFactor == -1) {
