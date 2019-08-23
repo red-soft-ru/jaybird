@@ -46,11 +46,16 @@ public class CertificateAuthenticationPlugin implements AuthenticationPlugin {
             ByteBuffer data = new ByteBuffer(0);
 
             String certificate = clientAuthBlock.getCertificate();
-            if (certificate != null && !certificate.isEmpty()) {
+            String certificateBase64 = clientAuthBlock.getCertificateBase64();
+            if ((certificate != null && !certificate.isEmpty()) ||
+                    (certificateBase64 != null && !certificateBase64.isEmpty())) {
                 AuthFactorCertificate authFactorCertificate = new AuthFactorCertificate(authSspi);
                 authFactorCertificate.setSdRandomNumber(1);
                 try {
-                    authFactorCertificate.loadFromFile(certificate);
+                    if (certificate != null && !certificate.isEmpty())
+                        authFactorCertificate.loadFromFile(certificate);
+                    else
+                        authFactorCertificate.setCertBase64(certificateBase64);
                     authSspi.addFactor(authFactorCertificate);
                     authSspi.request(data);
                 } catch (GDSException e) {
@@ -64,7 +69,7 @@ public class CertificateAuthenticationPlugin implements AuthenticationPlugin {
                 data.add((byte) AuthFactor.TYPE_SERVER_CERT);
             }
 
-            if (certificate == null)
+            if (certificate == null && certificateBase64 == null)
                 return  AuthStatus.AUTH_CONTINUE;
 
             clientData = Arrays.copyOf(data.getData(), data.getLength());

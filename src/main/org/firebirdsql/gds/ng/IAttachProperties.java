@@ -342,6 +342,17 @@ public interface IAttachProperties<T extends IAttachProperties> {
     void setCertificate(String certificate);
 
     /**
+     * @return the certificate in base64 format.
+     */
+    String getCertificateBase64();
+
+    /**
+     * @param certificateBase64
+     *         Set the certificate body in base64 format.
+     */
+    void setCertificateBase64(String certificateBase64);
+
+    /**
      * @return Pin-code for the cryptopro container.
      */
     String getRepositoryPin();
