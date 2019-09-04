@@ -288,7 +288,7 @@ public class AuthCryptoPluginImpl extends AuthCryptoPlugin {
       byte[] res = null;
       try {
         res = Advapi.cryptSignHash(hashHandle, AT_SIGNATURE, 0);
-      } catch (CryptoException e) {
+      } catch (Exception e) {
         // todo if NTE_BAD_KEYS
         res = Advapi.cryptSignHash(hashHandle, AT_KEYEXCHANGE, 0);
       }
@@ -343,7 +343,7 @@ public class AuthCryptoPluginImpl extends AuthCryptoPlugin {
         }
         try {
           // Acquire a hash object handle.
-          final Pointer hashHandle = Advapi.cryptCreateHash(provHandle, Wincrypt.CALG_GR3411);
+          final Pointer hashHandle = Advapi.cryptCreateHash(provHandle, 32801);
           if (hashHandle == null)
             throw new CryptoException("Error acquiring digest handle. Error code: " + Advapi.getLastError());
           try {
