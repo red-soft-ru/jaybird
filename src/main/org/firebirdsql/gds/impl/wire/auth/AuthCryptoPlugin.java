@@ -50,7 +50,7 @@ public abstract class AuthCryptoPlugin {
 
   public abstract byte[] ccfiDecrypt(final AuthPrivateKeyContext userKey, final byte[] data, String certBase64) throws AuthCryptoException;
 
-  public abstract byte[] ccfiSign(final AuthPrivateKeyContext userKey, final byte[] data, final String certBase64) throws AuthCryptoException;
+  public abstract byte[] ccfiSign(final AuthPrivateKeyContext userKey, final byte[] data, final String certBase64, final int keySpec) throws AuthCryptoException;
 
   public abstract void setRepositoryPin(String pin);
 

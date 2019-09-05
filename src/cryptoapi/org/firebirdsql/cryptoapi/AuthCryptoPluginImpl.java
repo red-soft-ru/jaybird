@@ -275,7 +275,7 @@ public class AuthCryptoPluginImpl extends AuthCryptoPlugin {
   }
 
   @Override
-  public byte[] ccfiSign(final AuthPrivateKeyContext userKey, byte[] data, String certBase64) throws AuthCryptoException {
+  public byte[] ccfiSign(final AuthPrivateKeyContext userKey, byte[] data, String certBase64, final int keySpec) throws AuthCryptoException {
     Pointer p = null;
     try {
       p = (Pointer)userKey.getProvHandle();
@@ -286,11 +286,15 @@ public class AuthCryptoPluginImpl extends AuthCryptoPlugin {
       Advapi.cryptGetHashParam(hashHandle, 0x000a, data);
 
       byte[] res = null;
-      try {
-        res = Advapi.cryptSignHash(hashHandle, AT_SIGNATURE, 0);
-      } catch (Exception e) {
-        // todo if NTE_BAD_KEYS
-        res = Advapi.cryptSignHash(hashHandle, AT_KEYEXCHANGE, 0);
+      if (keySpec != 0) {
+        res = Advapi.cryptSignHash(hashHandle, keySpec, 0);
+      } else {
+        try {
+          res = Advapi.cryptSignHash(hashHandle, AT_SIGNATURE, 0);
+        } catch (CryptoException e) {
+          // todo if NTE_BAD_KEYS
+          res = Advapi.cryptSignHash(hashHandle, AT_KEYEXCHANGE, 0);
+        }
       }
       return res;
     } catch (Exception e) {
