@@ -37,10 +37,13 @@ public class AuthCryptoPluginImpl extends AuthCryptoPlugin {
 
   public AuthCryptoPluginImpl() throws CryptoException {
     try {
+      initializeProvider(CryptoProProvider.PROV_DEFAULT);
       myStore = Crypt32.certOpenSystemStore(null, "MY");
       repositoryPin = null;
     } catch (CryptoException e) {
       throw e;
+    } catch (AuthCryptoException e) {
+      throw new CryptoException(e);
     }
   }
 
