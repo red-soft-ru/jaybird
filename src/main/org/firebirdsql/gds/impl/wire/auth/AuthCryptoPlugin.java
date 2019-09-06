@@ -21,6 +21,8 @@ public abstract class AuthCryptoPlugin {
     _plugin = plugin;
   }
 
+  public abstract void initializeProvider(final int providerType) throws AuthCryptoException;
+
   public abstract Object getSessionPublicKey(final Bytes publicKeyData, Bytes exchangeKeyData, final AuthPrivateKeyContext userKey)
       throws AuthCryptoException;
 

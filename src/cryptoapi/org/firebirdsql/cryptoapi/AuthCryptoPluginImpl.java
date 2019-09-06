@@ -37,11 +37,20 @@ public class AuthCryptoPluginImpl extends AuthCryptoPlugin {
 
   public AuthCryptoPluginImpl() throws CryptoException {
     try {
-      provider = Advapi.cryptAcquireContext(null, null, CryptoProProvider.PROV_DEFAULT, Wincrypt.CRYPT_VERIFYCONTEXT);
       myStore = Crypt32.certOpenSystemStore(null, "MY");
       repositoryPin = null;
     } catch (CryptoException e) {
       throw e;
+    }
+  }
+
+  public void initializeProvider(final int providerType) throws AuthCryptoException {
+    try {
+      if (provider != null)
+        Advapi.cryptReleaseContext(provider);
+      provider = Advapi.cryptAcquireContext(null, null, providerType, Wincrypt.CRYPT_VERIFYCONTEXT);
+    } catch (CryptoException e) {
+      throw new AuthCryptoException(e);
     }
   }
 
