@@ -102,7 +102,7 @@ public class CertUtils {
   }
 
   public static String getProvName(String container) throws CryptoException {
-    final Pointer provHandle= Advapi.cryptAcquireContext(container, null, CryptoProProvider.PROV_DEFAULT, 0);
+    final Pointer provHandle = Advapi.cryptAcquireContext(container, null, CryptoProProvider.PROV_DEFAULT, 0);
     try {
       if (provHandle == null)
         throw new CryptoException("Container " + container + " not found", Advapi.getLastError());
@@ -269,8 +269,11 @@ public class CertUtils {
                   byte[] keyParam = Advapi.cryptGetProvParam(provHandle.getValue(), Wincrypt.PP_CONTAINER, 0);
                   if (keyParam != null) {
                     String containerName = Native.toString(keyParam);
-                    if (!res.containsKey(containerName))
-                      res.put(containerName, new ContainerInfo(containerName, certEncoded, keySpec.getValue()));
+                    if (!res.containsKey(containerName)) {
+                      byte[] provParam = Advapi.cryptGetProvParam(provHandle.getValue(), PP_PROVTYPE, 0);
+                      int provType = Win32Api.byteArrayToInt(provParam);
+                      res.put(containerName, new ContainerInfo(containerName, certEncoded, keySpec.getValue(), provType));
+                    }
                   }
                 } finally {
                   Advapi.cryptDestroyKey(userKeyHandle);
@@ -328,8 +331,11 @@ public class CertUtils {
       p = Advapi.cryptGetUserKey(prov, flag);
       if (p != null) {
         byte[] certData;
+        int provType = 0;
         try {
           certData = Advapi.cryptGetKeyParam(p, KP_CERTIFICATE);
+          byte[] data = Advapi.cryptGetProvParam(p, PP_PROVTYPE, 0);
+          provType = Win32Api.byteArrayToInt(data);
         } catch (CryptoException ignored) {
           if (certShouldExists)
             return null;
@@ -338,7 +344,7 @@ public class CertUtils {
         } finally {
           Advapi.cryptDestroyKey(p);
         }
-        return new ContainerInfo(container, certData, flag);
+        return new ContainerInfo(container, certData, flag, provType);
       }
     } catch (CryptoException ignored) {
     }
@@ -369,19 +375,28 @@ public class CertUtils {
     return getCertificateByContainerName(containerName, null);
   }
 
-  public static void setCertificateContainerNameParam(PCCERT_CONTEXT certContext, String containerName)
+  public static void setCertificateContainerNameParam(PCCERT_CONTEXT certContext, String containerName, int provType)
           throws CryptoException {
     // Add container name to certificate
     if (!isEmpty(containerName)) {
       final PCRYPT_KEY_PROV_INFO keyProvInfo = new PCRYPT_KEY_PROV_INFO();
       keyProvInfo.pwszContainerName = new WString(containerName);
       keyProvInfo.pwszProvName =  Platform.isLinux() ? new WString(CertUtils.getProvName(containerName)) : null;// (Roman: on linux we got SIGSEGV with null value)
-      keyProvInfo.dwProvType = CryptoProProvider.PROV_DEFAULT;
+      keyProvInfo.dwProvType = provType;
       keyProvInfo.dwFlags = 0;
       keyProvInfo.cProvParam = 0;
       keyProvInfo.rgProvParam = null;
       keyProvInfo.dwKeySpec = Wincrypt.AT_KEYEXCHANGE;
       Crypt32.certSetCertificateContextProperty(certContext, Wincrypt.CERT_KEY_PROV_INFO_PROP_ID, 0, keyProvInfo);
     }
+  }
+
+  public static int getAlgorithmIDByContext(PCCERT_CONTEXT context) {
+    if (context.pCertInfo.SubjectPublicKeyInfo.Algorithm.pszObjId.equals(szOID_CP_GOST_R3410_12_256)) {
+      return Wincrypt.CALG_GR3411_12_256;
+    } else if (context.pCertInfo.SubjectPublicKeyInfo.Algorithm.pszObjId.equals(szOID_CP_GOST_R3410_12_512)) {
+      return Wincrypt.CALG_GR3411_12_512;
+    }
+    return Wincrypt.CALG_GR3411;
   }
 }

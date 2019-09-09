@@ -281,6 +281,8 @@ public class Wincrypt {
   public static int ALG_TYPE_GR3410         = (7 << 9);
   /* GR3411 sub-ids */
   public static int ALG_SID_GR3411          = 30;
+  public static int ALG_SID_GR3411_12_256   = 33;
+  public static int ALG_SID_GR3411_12_512   = 34;
   public static int ALG_SID_GR3411_HASH     = 39;
   public static int ALG_SID_GR3411_HASH34   = 40;
 
@@ -304,6 +306,8 @@ public class Wincrypt {
 
   // crypto pro alg
   public static final int CALG_GR3411 = Wincrypt.ALG_CLASS_HASH | Wincrypt.ALG_TYPE_ANY | ALG_SID_GR3411;
+  public static final int CALG_GR3411_12_256 = Wincrypt.ALG_CLASS_HASH | Wincrypt.ALG_TYPE_ANY | ALG_SID_GR3411_12_256;
+  public static final int CALG_GR3411_12_512 = Wincrypt.ALG_CLASS_HASH | Wincrypt.ALG_TYPE_ANY | ALG_SID_GR3411_12_512;
   public static final int CALG_GR3410 = (ALG_CLASS_SIGNATURE | ALG_TYPE_GR3410 | ALG_SID_GR3410);
 
   public static final int ALG_SID_PRO_EXP            = 31;
@@ -862,6 +866,8 @@ public class Wincrypt {
   public static final String szOID_CP_GOST_R3411            = "1.2.643.2.2.9";  // Encryption algorithm GOST Р 34.11-94
   public static final String szOID_CP_GOST_R3410            = "1.2.643.2.2.20"; // Algorithm GOST Р 34.10-94, used when exporting/importing keys
   public static final String szOID_CP_GOST_R3410EL          = "1.2.643.2.2.19"; // Algorithm GOST Р 34.10-2001, used when exporting/importing keys
+  public static final String szOID_CP_GOST_R3410_12_256     = "1.2.643.7.1.1.1.1"; // Algorithm GOST Р 34.10-2012 for 256-bit keys, used when exporting/importing keys
+  public static final String szOID_CP_GOST_R3410_12_512     = "1.2.643.7.1.1.1.2"; // Algorithm GOST Р 34.10-2012 for 512-bit keys, used when exporting/importing keys
   public static final String szOID_CP_DH_EX	                = "1.2.643.2.2.99"; // Diffie-Hellman algorithm based on a potential function
   public static final String szOID_CP_DH_EL	                = "1.2.643.2.2.98"; // Diffie-Hellman algorithm based on a elliptic curve
   public static final String szOID_CP_GOST_R3411_R3410      = "1.2.643.2.2.4";  // Digital signature algorithm GOST Р 34.10-94

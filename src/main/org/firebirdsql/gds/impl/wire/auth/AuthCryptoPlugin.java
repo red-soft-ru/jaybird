@@ -19,6 +19,8 @@ public abstract class AuthCryptoPlugin {
     _plugin = plugin;
   }
 
+  public abstract void initializeProvider(final int providerType) throws AuthCryptoException;
+
   public abstract Object getSessionPublicKey(final byte[] publicKeyData, byte[] exchangeKeyData, final AuthPrivateKeyContext userKey)
       throws AuthCryptoException;
 
@@ -48,7 +50,7 @@ public abstract class AuthCryptoPlugin {
 
   public abstract byte[] ccfiDecrypt(final AuthPrivateKeyContext userKey, final byte[] data, String certBase64) throws AuthCryptoException;
 
-  public abstract byte[] ccfiSign(final AuthPrivateKeyContext userKey, final byte[] data, final String certBase64) throws AuthCryptoException;
+  public abstract byte[] ccfiSign(final AuthPrivateKeyContext userKey, final byte[] data, final String certBase64, final int keySpec) throws AuthCryptoException;
 
   public abstract void setRepositoryPin(String pin);
 

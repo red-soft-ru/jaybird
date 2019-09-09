@@ -24,6 +24,7 @@ public class AuthFactorPassword extends AuthFactor {
   public static final byte rdSessionIV = 4;
   public static final byte rdPasswordEnc = 5;
   public static final byte rdSalt = 6;
+  public static final byte rdProviderMethod = 7;
   public static final int HASHING_COUNT = 200000;
 
   private String userName;
@@ -169,9 +170,23 @@ public class AuthFactorPassword extends AuthFactor {
       } catch (SQLException e) {
         throw new GDSAuthException(e.getMessage(), e);
       }
-//      byte[] bytesSalt = Arrays.copyOfRange(saltData.getData(), saltData.getOffset(), saltData.getOffset() + saltData.getLength());
-//      ByteBuffer saltBuffer = new ByteBuffer(0);
-//      saltBuffer.add(bytesSalt);
+
+      int providerType = 80; // Default PROV_GOST_2012_256_DH
+      try {
+        if (cr.find(rdProviderMethod)) {
+          final byte[] providerBytes = cr.getBytes();
+          providerType = byteArrayToInt(providerBytes);
+        }
+      } catch (SQLException e) {
+        throw new GDSAuthException(e.getMessage(), e);
+      }
+
+      try {
+        AuthCryptoPlugin.getPlugin().initializeProvider(providerType);
+      } catch (AuthCryptoException e) {
+        throw new GDSAuthException(String.format("Can't initialize provider with provider type %s", providerType), e);
+      }
+
       final byte[] hash = hashMf(userName, password, saltData, hashMethod);
 
       final Object sessionKey = AuthMethods.createSessionKey(hash);

@@ -23,6 +23,9 @@ public class AuthFactorCertificate extends AuthFactor {
   private String certBase64;
   private ClumpletReader.Kind clumpletReaderType = WideTagged;
 
+  public static int ksExchange = 1;
+  public static int ksSignature = 2;
+
   private final Stage CHALLENGE = new Stage() {
     @Override
     public boolean stage(final ByteBuffer data) {
@@ -80,7 +83,7 @@ public class AuthFactorCertificate extends AuthFactor {
       final byte[] signData;
       try {
         final byte[] number = AuthMethods.ccfiDecrypt(userKey, encryptNumber, certBase64);
-        signData = AuthMethods.ccfiSign(userKey, number, certBase64);
+        signData = AuthMethods.ccfiSign(userKey, number, certBase64, ksExchange);
       } finally {
         userKey.free(p);
       }
