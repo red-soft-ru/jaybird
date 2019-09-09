@@ -20,7 +20,7 @@ public class CryptoProProvider extends Provider {
   public static int PROV_GOST_2001_DH     = 75;
   public static int PROV_GOST_2012_256_DH     = 80;
   public static int PROV_GOST_2012_512_DH     = 81;
-  public static int PROV_DEFAULT = PROV_GOST_2001_DH;
+  public static int PROV_DEFAULT = PROV_GOST_2012_256_DH;
 
   public static String NAME = "RedSoftCryptoProProvider";
 
