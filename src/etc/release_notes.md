@@ -13,11 +13,21 @@ functionality. While similar to the JDBC `XADataSource` concept, the JCA
 specification is considerably clearer on the division of responsibility between
 the application server and driver.
 
+Jaybird 2.2.x End-Of-Life
+-------------------------
+
+Jaybird 2.2.15 is the last version of Jaybird 2.2.x, and we will not plan new 
+changes or fixes for 2.2.x. This effectively means that Jaybird 2.2.x is 
+End-Of-Life. 
+
+If you run into problems, we will recommend that you switch to Jaybird 3 (or 4 
+once it is released). Contact us on Firebird-Java for questions.
+
 Supported Firebird versions
 ---------------------------
 
-Jaybird @VERSION@ was tested against Firebird 2.5.7, and 
-Firebird 3.0.2, but should also support other Firebird versions from
+Jaybird @VERSION@ was tested against Firebird 2.5.8, and 
+Firebird 3.0.4, but should also support other Firebird versions from
 1.0 and up. The Type 2 and embedded server JDBC drivers require the appropriate
 JNI library. Precompiled JNI binaries for Windows and Linux platforms are 
 shipped in the default installation, other platforms require porting/building 
@@ -26,6 +36,11 @@ the JNI library for that platform.
 Connecting to Firebird 3 requires some additional configuration, see
 [Jaybird and Firebird 3.0](https://github.com/FirebirdSQL/jaybird/wiki/Jaybird-and-Firebird-3)
 for details.
+
+Firebird 4 is not formally supported in Jaybird 2.2.x, although connecting and 
+most functionality will work. We suggest that you use Jaybird 3.x or higher for 
+Firebird 4. Support for newer data types like `DECFLOAT` and `NUMERIC`/`DECIMAL` 
+with precision higher than 18 will be introduced in Jaybird 4. 
 
 This driver does not support InterBase servers due to Firebird-specific changes
 in the protocol and database attachment parameters.
@@ -36,7 +51,7 @@ Supported Java versions
 Jaybird @VERSION@ supports Java 6 (JDBC 4.0), Java 7 (JDBC 4.1) and Java 8 
 (JDBC 4.2). Support for earlier Java versions has been dropped.
 
-The upcoming Jaybird 3.0 will support Java 7, 8, and 9.
+Jaybird 3 supports Java 7, 8, and 11.
 
 Specification support
 ---------------------
@@ -59,6 +74,8 @@ Changelog
 ---------
 
 ### Changes and fixes in Jaybird 2.2.15
+
+Jaybird 2.2.15 is the final version of Jaybird 2.2.x, we recommend switching to Jaybird 3.
 
 The following has been changed or fixed in Jaybird 2.2.15:
 
@@ -807,6 +824,9 @@ Firebird support
 
 Jaybird 2.2 supports Firebird 1.0 and higher, but is only tested with Firebird
 2.1, 2.5 and 3.0. 
+
+Firebird 4 is not formally supported in Jaybird 2.2.x, although connecting and 
+most functionality will work.
 
 Firebird 1.0 and 1.5 support will be dropped with Jaybird 3.0. In general this 
 should not impact the use of the driver, but might have impact on the 

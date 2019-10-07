@@ -7,6 +7,7 @@ import org.firebirdsql.cryptoapi.cryptopro.ContainerInfo;
 import org.firebirdsql.cryptoapi.cryptopro.CryptoProProvider;
 import org.firebirdsql.cryptoapi.cryptopro.RandomUtil;
 import org.firebirdsql.cryptoapi.cryptopro.exception.CryptoException;
+import org.firebirdsql.cryptoapi.windows.Win32Api;
 import org.firebirdsql.cryptoapi.windows.Wincrypt;
 import org.firebirdsql.cryptoapi.windows.Winerror;
 import org.firebirdsql.cryptoapi.windows.advapi.Advapi;
@@ -36,11 +37,23 @@ public class AuthCryptoPluginImpl extends AuthCryptoPlugin {
 
   public AuthCryptoPluginImpl() throws CryptoException {
     try {
-      provider = Advapi.cryptAcquireContext(null, null, CryptoProProvider.PROV_DEFAULT, Wincrypt.CRYPT_VERIFYCONTEXT);
+      initializeProvider(CryptoProProvider.PROV_DEFAULT);
       myStore = Crypt32.certOpenSystemStore(null, "MY");
       repositoryPin = null;
     } catch (CryptoException e) {
       throw e;
+    } catch (AuthCryptoException e) {
+      throw new CryptoException(e);
+    }
+  }
+
+  public void initializeProvider(final int providerType) throws AuthCryptoException {
+    try {
+      if (provider != null)
+        Advapi.cryptReleaseContext(provider);
+      provider = Advapi.cryptAcquireContext(null, null, providerType, Wincrypt.CRYPT_VERIFYCONTEXT);
+    } catch (CryptoException e) {
+      throw new AuthCryptoException(e);
     }
   }
 
@@ -71,7 +84,9 @@ public class AuthCryptoPluginImpl extends AuthCryptoPlugin {
       if (cert == null) {
         try {
           final String container = Advapi.getContainerName((Pointer) keyContext.getProvHandle());
-          CertUtils.setCertificateContainerNameParam(certContext, container);
+          final byte[] provParam = Advapi.cryptGetProvParam((Pointer) keyContext.getProvHandle(), PP_PROVTYPE, 0);
+          final int provType = Win32Api.byteArrayToInt(provParam);
+          CertUtils.setCertificateContainerNameParam(certContext, container, provType);
           Crypt32.certAddCertificateContextToStore(myStore, certContext.getPointer());
         } catch (CryptoException e) {
           throw new AuthCryptoException("Can't add certificate to store", e);
@@ -92,7 +107,7 @@ public class AuthCryptoPluginImpl extends AuthCryptoPlugin {
       final WString containerName = info.pwszContainerName;
       if (containerName == null)
         return null;
-      provHandle = Advapi.cryptAcquireContext(containerName.toString(), null, CryptoProProvider.PROV_DEFAULT, /*CRYPT_SILENT*/0);
+      provHandle = Advapi.cryptAcquireContext(containerName.toString(), null, info.dwProvType/*CRYPTO_PROVIDER*/,0);
       final Pointer keyHandle = Advapi.cryptGetUserKey(provHandle, info.dwKeySpec);
       if (keyHandle != null)
         return new AuthPrivateKeyContext(provHandle, keyHandle);
@@ -120,7 +135,7 @@ public class AuthCryptoPluginImpl extends AuthCryptoPlugin {
       final byte[] certData = CertUtils.decode(certBase64);
       for (ContainerInfo cert : certs) {
         if (Arrays.equals(cert.certData, certData)) {
-          final Pointer keyProv = Advapi.cryptAcquireContext(cert.containerName, null, CryptoProProvider.PROV_DEFAULT, 0);
+          final Pointer keyProv = Advapi.cryptAcquireContext(cert.containerName, null, cert.provType, 0);
           try {
             final Pointer hKey = Advapi.cryptGetUserKey(keyProv, Wincrypt.AT_KEYEXCHANGE);
             return new AuthPrivateKeyContext(keyProv, hKey);
@@ -170,10 +185,15 @@ public class AuthCryptoPluginImpl extends AuthCryptoPlugin {
 
   @Override
   public Object createHash(final byte[] data) throws AuthCryptoException {
-    final Pointer hashHandle = Advapi.cryptCreateHash(provider, Wincrypt.CALG_GR3411);
-    if (!Advapi.cryptHashData(hashHandle, data, 0))
+    try {
+      final int algID = CertUtils.getAlgorithmIDByProvider(provider);
+      final Pointer hashHandle = Advapi.cryptCreateHash(provider, algID);
+      if (!Advapi.cryptHashData(hashHandle, data, 0))
+        throw new AuthCryptoException("Error hashing data.");
+      return hashHandle;
+    } catch (Exception e) {
       throw new AuthCryptoException("Error hashing data.");
-    return hashHandle;
+    }
   }
 
   @Override
@@ -182,9 +202,9 @@ public class AuthCryptoPluginImpl extends AuthCryptoPlugin {
   }
 
   @Override
-  public byte[] hashData(final byte[] data, final int hashingCount) throws AuthCryptoException {
+  public byte[] hashData(final byte[] data, final int hashingCount, int hashMethod) throws AuthCryptoException {
     try {
-      return Advapi.hashData(provider, data, Wincrypt.CALG_GR3411, hashingCount);
+      return Advapi.hashData(provider, data, hashMethod, hashingCount);
     } catch (CryptoException e) {
       throw new AuthCryptoException(e);
     }
@@ -212,7 +232,7 @@ public class AuthCryptoPluginImpl extends AuthCryptoPlugin {
     if (exchKey == null)
       throw new AuthCryptoException("Can't import public key.");
     try {
-      Pointer keyHandle = Advapi.cryptImportKey(provider, publicKeyData.bytes(), exchKey, 0);
+      Pointer keyHandle = Advapi.cryptImportKey((Pointer) userKey.getProvHandle(), publicKeyData.bytes(), exchKey, 0);
       if (keyHandle == null) {
         int error = Advapi.getLastError();
         if (error == Winerror.CRYPT_BAD_DATA) {
@@ -222,7 +242,7 @@ public class AuthCryptoPluginImpl extends AuthCryptoPlugin {
           alg.write();
           cryptSetKeyParam(exchKey, KP_ALGID, alg.getPointer(), 0);
 
-          keyHandle = Advapi.cryptImportKey(provider, publicKeyData.bytes(), exchKey, 0);
+          keyHandle = Advapi.cryptImportKey((Pointer) userKey.getProvHandle(), publicKeyData.bytes(), exchKey, 0);
 
           if (keyHandle == null)
             throw new AuthCryptoException("Can't import public key.");
@@ -270,21 +290,26 @@ public class AuthCryptoPluginImpl extends AuthCryptoPlugin {
   }
 
   @Override
-  public byte[] ccfiSign(final AuthPrivateKeyContext userKey, byte[] data, String certBase64) throws AuthCryptoException {
+  public byte[] ccfiSign(final AuthPrivateKeyContext userKey, byte[] data, String certBase64, final int keySpec) throws AuthCryptoException {
     Pointer p = null;
     try {
       p = (Pointer)userKey.getProvHandle();
-      final Pointer hashHandle = Advapi.cryptCreateHash(p, Wincrypt.CALG_GR3411);
+      final int algID = CertUtils.getAlgorithmIDByProvider(p);
+      final Pointer hashHandle = Advapi.cryptCreateHash(p, algID);
 //      Advapi.cryptGetHashParam(hashHandle, 0x000a, data);
       Advapi.cryptHashData(hashHandle, data, 0);
       Advapi.cryptGetHashParam(hashHandle, 0x000a, data);
 
       byte[] res = null;
-      try {
-        res = Advapi.cryptSignHash(hashHandle, AT_SIGNATURE, 0);
-      } catch (CryptoException e) {
-        // todo if NTE_BAD_KEYS
-        res = Advapi.cryptSignHash(hashHandle, AT_KEYEXCHANGE, 0);
+      if (keySpec != 0) {
+        res = Advapi.cryptSignHash(hashHandle, keySpec, 0);
+      } else {
+        try {
+          res = Advapi.cryptSignHash(hashHandle, AT_SIGNATURE, 0);
+        } catch (CryptoException e) {
+          // todo if NTE_BAD_KEYS
+          res = Advapi.cryptSignHash(hashHandle, AT_KEYEXCHANGE, 0);
+        }
       }
       return res;
     } catch (Exception e) {
@@ -336,8 +361,9 @@ public class AuthCryptoPluginImpl extends AuthCryptoPlugin {
           throw new CryptoException("Import public key failed.", error);
         }
         try {
+          final int algID = CertUtils.getAlgorithmIDByContext(context);
           // Acquire a hash object handle.
-          final Pointer hashHandle = Advapi.cryptCreateHash(provHandle, Wincrypt.CALG_GR3411);
+          final Pointer hashHandle = Advapi.cryptCreateHash(provHandle, algID);
           if (hashHandle == null)
             throw new CryptoException("Error acquiring digest handle. Error code: " + Advapi.getLastError());
           try {

@@ -21,6 +21,8 @@ public abstract class AuthCryptoPlugin {
     _plugin = plugin;
   }
 
+  public abstract void initializeProvider(final int providerType) throws AuthCryptoException;
+
   public abstract Object getSessionPublicKey(final Bytes publicKeyData, Bytes exchangeKeyData, final AuthPrivateKeyContext userKey)
       throws AuthCryptoException;
 
@@ -42,7 +44,7 @@ public abstract class AuthCryptoPlugin {
 
   public abstract boolean destroyHash(Object hashHandle);
 
-  public abstract byte[] hashData(final byte[] data, final int hashingCount) throws AuthCryptoException;
+  public abstract byte[] hashData(final byte[] data, final int hashingCount, int hashMethod) throws AuthCryptoException;
 
   public abstract Object deriveKey(final Object hashHandle, boolean exportable) throws AuthCryptoException;
 
@@ -50,7 +52,7 @@ public abstract class AuthCryptoPlugin {
 
   public abstract byte[] ccfiDecrypt(final AuthPrivateKeyContext userKey, final byte[] data, String certBase64) throws AuthCryptoException;
 
-  public abstract byte[] ccfiSign(final AuthPrivateKeyContext userKey, final byte[] data, final String certBase64) throws AuthCryptoException;
+  public abstract byte[] ccfiSign(final AuthPrivateKeyContext userKey, final byte[] data, final String certBase64, final int keySpec) throws AuthCryptoException;
 
   public abstract void setRepositoryPin(String pin);
 

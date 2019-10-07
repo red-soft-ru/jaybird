@@ -116,9 +116,9 @@ public class AuthMethods {
     }
   }
 
-  public static byte[] hashData(final byte[] data, final int hashingCount) throws GDSAuthException {
+  public static byte[] hashData(final byte[] data, final int hashingCount, int hashMethod) throws GDSAuthException {
     try {
-      return AuthCryptoPlugin.getPlugin().hashData(data, hashingCount);
+      return AuthCryptoPlugin.getPlugin().hashData(data, hashingCount, hashMethod);
     } catch (AuthCryptoException e) {
       throw new GDSAuthException("Error hashing data: " + e.getMessage(), e);
     }
@@ -143,11 +143,11 @@ public class AuthMethods {
     return res;
   }
 
-  public static byte[] ccfiSign(final AuthPrivateKeyContext userKey, final byte[] data, String certBase64) throws GDSAuthException {
+  public static byte[] ccfiSign(final AuthPrivateKeyContext userKey, final byte[] data, String certBase64, int keySpec) throws GDSAuthException {
     final AuthCryptoPlugin p = AuthCryptoPlugin.getPlugin();
     final byte[] res;
     try {
-      res = p.ccfiSign(userKey, data, certBase64);
+      res = p.ccfiSign(userKey, data, certBase64, keySpec);
     } catch (AuthCryptoException e) {
       throw new GDSAuthException("Error signing data: " + e.getMessage(), e);
     }

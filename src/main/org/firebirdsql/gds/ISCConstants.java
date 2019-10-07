@@ -1317,6 +1317,7 @@ public interface ISCConstants {
     public final static int isc_exec_sql_max_call_exceeded       = 335544830;
     public final static int isc_conf_access_denied               = 335544831;
     public final static int isc_concurrent_transaction           = 335544878;
+    public final static int isc_cannot_make_not_null             = 335544989;
     public final static int isc_miss_wirecrypt                   = 335545065;
     public final static int isc_wirecrypt_key                    = 335545066;
     public final static int isc_wirecrypt_plugin                 = 335545067;
