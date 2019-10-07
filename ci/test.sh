@@ -105,7 +105,8 @@ if [[ "$RDB_MAJOR_VERSION" == "2" ]]; then
   RDB_URL=http://builds.red-soft.biz/release_hub/rdb26/${RDB_VERSION}/download/red-database:linux-${ARCH}:${RDB_VERSION}:bin:installer
   ARCHITECTURE=super
 elif [[ "$RDB_MAJOR_VERSION" == "3" ]]; then
-  RDB_URL=http://builds.red-soft.biz/release_hub/rdb30/3.0.4.75/download/red-database:windows-${ARCH}-enterprise:${RDB_VERSION}:exe
+  RDB_URL=http://builds.red-soft.biz/release_hub/rdb30/${RDB_VERSION}/download/red-database:windows-${ARCH}-enterprise:${RDB_VERSION}:exe
+  chmod +x /tmp/installer.bin 
 fi
 
 if [[ "$RDB_MAJOR_VERSION" == "FB3.0.4" ]]; then
