@@ -108,10 +108,10 @@ public interface Crypt32Lib extends Library {
    * );
    */
   public _CERT_CONTEXT.PCCERT_CONTEXT CertFindCertificateInStore(Pointer hCertStore, int dwCertEncodingType, int dwFindFlags,
-                                                                 int dwFindType, byte[] pvFindPara, _CERT_CONTEXT.PCERT_CONTEXT pPrevCertContext);
+                                                                 int dwFindType, byte[] pvFindPara, Pointer pPrevCertContext);
 
   public _CERT_CONTEXT.PCCERT_CONTEXT CertFindCertificateInStore(Pointer hCertStore, int dwCertEncodingType, int dwFindFlags,
-                                                                 int dwFindType, Pointer pvFindPara, _CERT_CONTEXT.PCERT_CONTEXT pPrevCertContext);
+                                                                 int dwFindType, Pointer pvFindPara, Pointer pPrevCertContext);
 
   /**
    * The CryptAcquireCertificatePrivateKey function obtains the private key for a certificate. This function is used
