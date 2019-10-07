@@ -5,9 +5,9 @@ import com.sun.jna.platform.win32.WinError;
 import com.sun.jna.ptr.IntByReference;
 import com.sun.jna.ptr.PointerByReference;
 import org.apache.log4j.Logger;
+import org.firebirdsql.cryptoapi.cryptopro.exception.CryptoException;
 import org.firebirdsql.cryptoapi.windows.CryptoUtil;
 import org.firebirdsql.cryptoapi.windows.JnaUtils;
-import org.firebirdsql.cryptoapi.cryptopro.exception.CryptoException;
 import org.firebirdsql.cryptoapi.windows.Win32Api;
 import org.firebirdsql.cryptoapi.windows.Wincrypt;
 import org.firebirdsql.cryptoapi.windows.advapi.Advapi;
@@ -110,7 +110,7 @@ public class Crypt32 {
     if (LOGGING)
       LOG.debug("certFindCertificateInStore " + certStoreHandle + " " + encodingType + " " + findFlags + " " + findType + " " +
           Arrays.toString(findPara) + " " + toString(prevCertContext));
-    _CERT_CONTEXT.PCCERT_CONTEXT res = lib.CertFindCertificateInStore(certStoreHandle, encodingType, findFlags, findType, findPara, prevCertContext);
+    _CERT_CONTEXT.PCCERT_CONTEXT res = lib.CertFindCertificateInStore(certStoreHandle, encodingType, findFlags, findType, findPara, prevCertContext == null ? null : prevCertContext.getPointer());
     if (LOGGING)
       LOG.debug("certFindCertificateInStore " + toString(res));
     return res;
@@ -120,7 +120,7 @@ public class Crypt32 {
                                                                         int findType, Pointer findPara, _CERT_CONTEXT.PCERT_CONTEXT prevCertContext) {
     if (LOGGING)
       LOG.debug("certFindCertificateInStore " + certStoreHandle + " " + encodingType + " " + findFlags + " " + findType + " " + findPara + " " + toString(prevCertContext));
-    _CERT_CONTEXT.PCCERT_CONTEXT res = lib.CertFindCertificateInStore(certStoreHandle, encodingType, findFlags, findType, findPara, prevCertContext);
+    _CERT_CONTEXT.PCCERT_CONTEXT res = lib.CertFindCertificateInStore(certStoreHandle, encodingType, findFlags, findType, findPara, prevCertContext == null ? null : prevCertContext.getPointer());
     if (LOGGING)
       LOG.debug("certFindCertificateInStore " + toString(res));
     return res;
