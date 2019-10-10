@@ -9,7 +9,6 @@ import com.sun.jna.ptr.PointerByReference;
 import org.apache.log4j.Logger;
 import org.firebirdsql.cryptoapi.cryptopro.exception.CryptoException;
 import org.firebirdsql.cryptoapi.util.Base64;
-import org.firebirdsql.cryptoapi.windows.CryptoUtil;
 import org.firebirdsql.cryptoapi.windows.Win32Api;
 import org.firebirdsql.cryptoapi.windows.Wincrypt;
 import org.firebirdsql.cryptoapi.windows.advapi.Advapi;
@@ -53,7 +52,7 @@ public class CertUtils {
     return Crypt32.certCreateCertificateContext(Wincrypt.X509_ASN_ENCODING | Wincrypt.PKCS_7_ASN_ENCODING, decode(base64cert));
   }
 
-  public static PCCERT_CONTEXT findCertificate(Pointer certStore, PCERT_CONTEXT certificate) {
+  public static Pointer findCertificate(Pointer certStore, PCERT_CONTEXT certificate) {
     return Crypt32.certFindCertificateInStore(certStore, X509_ASN_ENCODING | PKCS_7_ASN_ENCODING, 0, CERT_FIND_EXISTING, certificate.getPointer(), null);
   }
 
@@ -253,14 +252,14 @@ public class CertUtils {
   private static void readAvailableCertificatesFromSystemStore(String storeName, Map<String, ContainerInfo> res) throws CryptoException, CertificateException {
     Pointer hStore = Crypt32.certOpenSystemStore(Pointer.NULL, storeName);
     try {
-      PCCERT_CONTEXT certContext = null;
+      Pointer certContext = null;
       do {
         final PointerByReference provHandle = new PointerByReference();
         final IntByReference keySpec = new IntByReference();
         final IntByReference callerFreeProv = new IntByReference();
         certContext = Crypt32.certEnumCertificatesInStore(hStore, certContext);
         if (certContext != null) {
-          byte[] certEncoded = getCertEncoded(certContext);
+          byte[] certEncoded = getCertEncoded(new _CERT_CONTEXT(certContext));
           if (Crypt32.cryptAcquireCertificatePrivateKey(certContext, CRYPT_ACQUIRE_SILENT_FLAG, provHandle, keySpec, callerFreeProv))
             try {
               final Pointer userKeyHandle = Advapi.cryptGetUserKey(provHandle.getValue(), keySpec.getValue());
