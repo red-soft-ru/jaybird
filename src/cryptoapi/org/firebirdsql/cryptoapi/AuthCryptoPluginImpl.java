@@ -65,13 +65,13 @@ public class AuthCryptoPluginImpl extends AuthCryptoPlugin {
       throw new AuthCryptoException(e);
     }
     try {
-      final _CERT_CONTEXT.PCCERT_CONTEXT cert = CertUtils.findCertificate(myStore, certContext);
+      final Pointer cert = CertUtils.findCertificate(myStore, certContext);
       AuthPrivateKeyContext keyContext = null;
       if (cert != null) {
         try {
           keyContext = getUserKey(cert);
         } finally {
-          Crypt32.certFreeCertificateContext(cert.getPointer());
+          Crypt32.certFreeCertificateContext(cert);
         }
       }
       if (keyContext != null)
@@ -97,7 +97,7 @@ public class AuthCryptoPluginImpl extends AuthCryptoPlugin {
     }
   }
 
-  protected AuthPrivateKeyContext getUserKey(_CERT_CONTEXT.PCCERT_CONTEXT cert) throws AuthCryptoException {
+  protected AuthPrivateKeyContext getUserKey(Pointer cert) throws AuthCryptoException {
     Pointer provHandle = null;
     final Pointer prov;
     try {
