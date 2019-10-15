@@ -1,7 +1,7 @@
 CREATE GLOBAL MAPPING GSS_AUTH USING PLUGIN GSS FROM ANY USER TO USER;
 commit;
 
-create user "ARTYOM.SMIRNOV@RED-SOFT.RU" password '1q2w3e4r' using plugin GostPassword_Manager;
+create user "TEST@RED-SOFT.RU" password '1q2w3e4r' using plugin GostPassword_Manager;
 commit;
 
 create user "RDB_SERVER/LOCALHOST" password '1q2w3e4r';
@@ -45,8 +45,8 @@ commit;
 grant policy "DEFAULT" to effective_user;
 commit;
 
-grant policy TestPolicy to "ARTYOM.SMIRNOV@RED-SOFT.RU";
+grant policy TestPolicy to "TEST@RED-SOFT.RU";
 commit;
 
-alter user "ARTYOM.SMIRNOV@RED-SOFT.RU" set password 'q3rgu7Ah' using plugin GostPassword_Manager;
+alter user "TEST@RED-SOFT.RU" set password 'q3rgu7Ah' using plugin GostPassword_Manager;
 commit;

@@ -44,7 +44,7 @@ public class TestAuthSspi extends FBJUnit4TestBase {
             GDSServerVersion serverVersion =
                     connection.unwrap(FirebirdConnection.class).getFbDatabase().getServerVersion();
             if (serverVersion.getMajorVersion() == 4) {
-                statement.execute("grant policy \"DEFAULT\" to \"ARTYOM.SMIRNOV@RED-SOFT.RU\"");
+                statement.execute("grant policy \"DEFAULT\" to \"TEST@RED-SOFT.RU\"");
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -89,7 +89,7 @@ public class TestAuthSspi extends FBJUnit4TestBase {
 
         fbDataSource.setDatabase(FBTestProperties.DB_DATASOURCE_URL);
         fbDataSource.setNonStandardProperty("isc_dpb_lc_ctype", "WIN1251");
-        fbDataSource.setNonStandardProperty("isc_dpb_user_name", "artyom.smirnov@red-soft.ru");
+        fbDataSource.setNonStandardProperty("isc_dpb_user_name", "TEST@RED-SOFT.RU");
         fbDataSource.setNonStandardProperty("isc_dpb_password", "q3rgu7Ah");
         fbDataSource.setNonStandardProperty("isc_dpb_trusted_auth", "1");
         fbDataSource.setNonStandardProperty("isc_dpb_multi_factor_auth", "1");
@@ -102,7 +102,7 @@ public class TestAuthSspi extends FBJUnit4TestBase {
             ResultSet resultSet = statement.executeQuery("select current_user from rdb$database");
             resultSet.next();
             System.out.println("Current user is " + resultSet.getString(1));
-            assertEquals("artyom.smirnov@red-soft.ru", resultSet.getString(1).toLowerCase());
+            assertEquals("test@red-soft.ru", resultSet.getString(1).toLowerCase());
             JdbcResourceHelper.closeQuietly(resultSet);
             JdbcResourceHelper.closeQuietly(statement);
         } catch (Exception e) {
@@ -125,7 +125,7 @@ public class TestAuthSspi extends FBJUnit4TestBase {
             GDSServerVersion serverVersion =
                     connection.unwrap(FirebirdConnection.class).getFbDatabase().getServerVersion();
             if (serverVersion.getMajorVersion() == 4) {
-                statement.execute("grant policy TestPolicy to \"ARTYOM.SMIRNOV@RED-SOFT.RU\"");
+                statement.execute("grant policy TestPolicy to \"TEST@RED-SOFT.RU\"");
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -136,7 +136,7 @@ public class TestAuthSspi extends FBJUnit4TestBase {
 
         fbDataSource.setDatabase(FBTestProperties.DB_DATASOURCE_URL);
         fbDataSource.setNonStandardProperty("isc_dpb_lc_ctype", "WIN1251");
-        fbDataSource.setNonStandardProperty("isc_dpb_user_name", "artyom.smirnov@red-soft.ru");
+        fbDataSource.setNonStandardProperty("isc_dpb_user_name", "TEST@RED-SOFT.RU");
         fbDataSource.setNonStandardProperty("isc_dpb_password", "q3rgu7Ah");
         fbDataSource.setNonStandardProperty("isc_dpb_certificate", "testuser.cer");
         fbDataSource.setNonStandardProperty("isc_dpb_repository_pin", "12345678");
@@ -151,7 +151,7 @@ public class TestAuthSspi extends FBJUnit4TestBase {
             ResultSet resultSet = statement.executeQuery("select current_user from rdb$database");
             resultSet.next();
             System.out.println("Current user is " + resultSet.getString(1));
-            assertEquals("artyom.smirnov@red-soft.ru", resultSet.getString(1).toLowerCase());
+            assertEquals("test@red-soft.ru", resultSet.getString(1).toLowerCase());
             JdbcResourceHelper.closeQuietly(resultSet);
             JdbcResourceHelper.closeQuietly(statement);
         } catch (Exception e) {
@@ -173,7 +173,7 @@ public class TestAuthSspi extends FBJUnit4TestBase {
 
         fbDataSource.setDatabase(FBTestProperties.DB_DATASOURCE_URL);
         fbDataSource.setNonStandardProperty("isc_dpb_lc_ctype", "WIN1251");
-        fbDataSource.setNonStandardProperty("isc_dpb_user_name", "artyom.smirnov@red-soft.ru");
+        fbDataSource.setNonStandardProperty("isc_dpb_user_name", "TEST@RED-SOFT.RU");
         fbDataSource.setNonStandardProperty("isc_dpb_password", "q3rgu7Ah");
         fbDataSource.setNonStandardProperty("isc_dpb_certificate_base64", loadFromFile("testuser.cer"));
         fbDataSource.setNonStandardProperty("isc_dpb_repository_pin", "12345678");
@@ -189,7 +189,7 @@ public class TestAuthSspi extends FBJUnit4TestBase {
             ResultSet resultSet = statement.executeQuery("select current_user from rdb$database");
             resultSet.next();
             System.out.println("Current user is " + resultSet.getString(1));
-            assertEquals("artyom.smirnov@red-soft.ru", resultSet.getString(1).toLowerCase());
+            assertEquals("test@red-soft.ru", resultSet.getString(1).toLowerCase());
             JdbcResourceHelper.closeQuietly(resultSet);
             JdbcResourceHelper.closeQuietly(statement);
         } catch (Exception e) {

@@ -79,22 +79,22 @@ useradd firebird
 KEYS_DIR=/var/opt/cprocsp/keys
 mkdir -p $KEYS_DIR/root
 chmod 700 $KEYS_DIR/root
-cp fbt-repository/files/cert/RaUser-d.000/ $KEYS_DIR/root -rfv
-chmod 700 $KEYS_DIR/root/RaUser-d.000
+cp fbt-repository/files/cert/REDSOFT.000/ $KEYS_DIR/root -rfv
+chmod 700 $KEYS_DIR/root/REDSOFT.000
 
-/opt/cprocsp/bin/$CPROCSP_ARCH/certmgr -inst -cont '\\.\HDIMAGE\c6bb7811-a370-4de7-91fb-536a1b8b4017'
-/opt/cprocsp/bin/$CPROCSP_ARCH/csptest -passwd -cont '\\.\HDIMAGE\c6bb7811-a370-4de7-91fb-536a1b8b4017' -change 12345678
+/opt/cprocsp/bin/$CPROCSP_ARCH/certmgr -inst -cont '\\.\HDIMAGE\REDSOFT'
+/opt/cprocsp/bin/$CPROCSP_ARCH/csptest -passwd -cont '\\.\HDIMAGE\REDSOFT' -change 12345678
 
 mkdir -p $KEYS_DIR/firebird
 chmod 700 $KEYS_DIR/firebird
-cp fbt-repository/files/cert/RaUser-d.000/ $KEYS_DIR/firebird -rfv
-chmod 700 $KEYS_DIR/firebird/RaUser-d.000
+cp fbt-repository/files/cert/REDSOFT.000/ $KEYS_DIR/firebird -rfv
+chmod 700 $KEYS_DIR/firebird/REDSOFT.000
 chown firebird:firebird -R $KEYS_DIR/firebird
 
-sudo -u firebird /opt/cprocsp/bin/$CPROCSP_ARCH/certmgr -inst -cont '\\.\HDIMAGE\c6bb7811-a370-4de7-91fb-536a1b8b4017'
-sudo -u firebird /opt/cprocsp/bin/$CPROCSP_ARCH/csptest -passwd -cont '\\.\HDIMAGE\c6bb7811-a370-4de7-91fb-536a1b8b4017' -change 12345678
+sudo -u firebird /opt/cprocsp/bin/$CPROCSP_ARCH/certmgr -inst -cont '\\.\HDIMAGE\REDSOFT'
+sudo -u firebird /opt/cprocsp/bin/$CPROCSP_ARCH/csptest -passwd -cont '\\.\HDIMAGE\REDSOFT' -change 12345678
 
-cp fbt-repository/files/cert/Smirnov.cer ./testuser.cer
+cp fbt-repository/files/cert/REDSOFT.cer ./testuser.cer
 
 sed -i '/\[Parameters\]/a warning_time_gen_2001=ll:9223372036854775807\nwarning_time_sign_2001=ll:9223372036854775807\n' /etc/opt/cprocsp/config64.ini
 
@@ -160,9 +160,9 @@ elif [[ "$RDB_MAJOR_VERSION" == "3" ]]; then
 
   sed -i 's/#CertVerifyChain = 1/CertVerifyChain = 0/g' "${INSTALLDIR}"/firebird.conf
   sed -i 's/#CertUsernameDN = CN/CertUsernameDN = E/g' "${INSTALLDIR}"/firebird.conf
-  sed -i 's/#ServerCertificate =/ServerCertificate = %D0%A1%D0%BC%D0%B8%D1%80%D0%BD%D0%BE%D0%B2%20%D0%90%D1%80%D1%82%D0%B5%D0%BC%20%D0%92%D1%8F%D1%87%D0%B5%D1%81%D0%BB%D0%B0%D0%B2%D0%BE%D0%B2%D0%B8%D1%87,%D0%A4%D0%B5%D0%B4%D0%B5%D1%80%D0%B0%D0%BB%D1%8C%D0%BD%D0%B0%D1%8F%20%D1%81%D0%BB%D1%83%D0%B6%D0%B1%D0%B0%20%D1%81%D1%83%D0%B4%D0%B5%D0%B1%D0%BD%D1%8B%D1%85%20%D0%BF%D1%80%D0%B8%D1%81%D1%82%D0%B0%D0%B2%D0%BE%D0%B2,071085DA7AC40C79ABE811F872541896CB/g' "${INSTALLDIR}"/firebird.conf
+  sed -i 's/#ServerCertificate =/ServerCertificate = %D0%A2%D0%B5%D1%81%D1%82%20%D0%A2%D0%B5%D1%81%D1%82%20%D0%A2%D0%B5%D1%81%D1%82,%D0%A4%D0%B5%D0%B4%D0%B5%D1%80%D0%B0%D0%BB%D1%8C%D0%BD%D0%B0%D1%8F%20%D1%81%D0%BB%D1%83%D0%B6%D0%B1%D0%B0%20%D1%81%D1%83%D0%B4%D0%B5%D0%B1%D0%BD%D1%8B%D1%85%20%D0%BF%D1%80%D0%B8%D1%81%D1%82%D0%B0%D0%B2%D0%BE%D0%B2,1085DA7AC40CE4ABE91189EE414A7114/g' "${INSTALLDIR}"/firebird.conf
   sed -i 's/#ServerPrivatePin =/ServerPrivatePin = 12345678/g' "${INSTALLDIR}"/firebird.conf
-  sed -i 's/#TrustedCertificate =/TrustedCertificate = %D0%A1%D0%BC%D0%B8%D1%80%D0%BD%D0%BE%D0%B2%20%D0%90%D1%80%D1%82%D0%B5%D0%BC%20%D0%92%D1%8F%D1%87%D0%B5%D1%81%D0%BB%D0%B0%D0%B2%D0%BE%D0%B2%D0%B8%D1%87,%D0%A4%D0%B5%D0%B4%D0%B5%D1%80%D0%B0%D0%BB%D1%8C%D0%BD%D0%B0%D1%8F%20%D1%81%D0%BB%D1%83%D0%B6%D0%B1%D0%B0%20%D1%81%D1%83%D0%B4%D0%B5%D0%B1%D0%BD%D1%8B%D1%85%20%D0%BF%D1%80%D0%B8%D1%81%D1%82%D0%B0%D0%B2%D0%BE%D0%B2,071085DA7AC40C79ABE811F872541896CB/g' "${INSTALLDIR}"/firebird.conf
+  sed -i 's/#TrustedCertificate =/TrustedCertificate = %D0%A2%D0%B5%D1%81%D1%82%20%D0%A2%D0%B5%D1%81%D1%82%20%D0%A2%D0%B5%D1%81%D1%82,%D0%A4%D0%B5%D0%B4%D0%B5%D1%80%D0%B0%D0%BB%D1%8C%D0%BD%D0%B0%D1%8F%20%D1%81%D0%BB%D1%83%D0%B6%D0%B1%D0%B0%20%D1%81%D1%83%D0%B4%D0%B5%D0%B1%D0%BD%D1%8B%D1%85%20%D0%BF%D1%80%D0%B8%D1%81%D1%82%D0%B0%D0%B2%D0%BE%D0%B2,1085DA7AC40CE4ABE91189EE414A7114/g' "${INSTALLDIR}"/firebird.conf
   sed -i 's/#TrustedUser =/TrustedUser = trusted_user/g' "${INSTALLDIR}"/firebird.conf
 
   sed -i 's/#TraceAuthentication = 0/TraceAuthentication = 1/g' "${INSTALLDIR}"/firebird.conf
@@ -179,9 +179,9 @@ elif [[ "$RDB_MAJOR_VERSION" == "FB3.0.4" ]]; then
 else
   sed -i 's/#VerifyCertChain = 1/VerifyCertChain = 0/g' "${INSTALLDIR}/firebird.conf"
   sed -i 's/#CertUsernameDN = CN/CertUsernameDN = E/g' "${INSTALLDIR}/firebird.conf"
-  sed -i 's/#ServerCertificate =/ServerCertificate = %D0%A1%D0%BC%D0%B8%D1%80%D0%BD%D0%BE%D0%B2%20%D0%90%D1%80%D1%82%D0%B5%D0%BC%20%D0%92%D1%8F%D1%87%D0%B5%D1%81%D0%BB%D0%B0%D0%B2%D0%BE%D0%B2%D0%B8%D1%87,%D0%A4%D0%B5%D0%B4%D0%B5%D1%80%D0%B0%D0%BB%D1%8C%D0%BD%D0%B0%D1%8F%20%D1%81%D0%BB%D1%83%D0%B6%D0%B1%D0%B0%20%D1%81%D1%83%D0%B4%D0%B5%D0%B1%D0%BD%D1%8B%D1%85%20%D0%BF%D1%80%D0%B8%D1%81%D1%82%D0%B0%D0%B2%D0%BE%D0%B2,071085DA7AC40C79ABE811F872541896CB/g' "${INSTALLDIR}/firebird.conf"
+  sed -i 's/#ServerCertificate =/ServerCertificate = %D0%A2%D0%B5%D1%81%D1%82%20%D0%A2%D0%B5%D1%81%D1%82%20%D0%A2%D0%B5%D1%81%D1%82,%D0%A4%D0%B5%D0%B4%D0%B5%D1%80%D0%B0%D0%BB%D1%8C%D0%BD%D0%B0%D1%8F%20%D1%81%D0%BB%D1%83%D0%B6%D0%B1%D0%B0%20%D1%81%D1%83%D0%B4%D0%B5%D0%B1%D0%BD%D1%8B%D1%85%20%D0%BF%D1%80%D0%B8%D1%81%D1%82%D0%B0%D0%B2%D0%BE%D0%B2,1085DA7AC40CE4ABE91189EE414A7114/g' "${INSTALLDIR}/firebird.conf"
   sed -i 's/#PrivateKeyPin = /PrivateKeyPin = 12345678/g' "${INSTALLDIR}/firebird.conf"
-  sed -i 's/#TrustedCertificate =/TrustedCertificate = %D0%A1%D0%BC%D0%B8%D1%80%D0%BD%D0%BE%D0%B2%20%D0%90%D1%80%D1%82%D0%B5%D0%BC%20%D0%92%D1%8F%D1%87%D0%B5%D1%81%D0%BB%D0%B0%D0%B2%D0%BE%D0%B2%D0%B8%D1%87,%D0%A4%D0%B5%D0%B4%D0%B5%D1%80%D0%B0%D0%BB%D1%8C%D0%BD%D0%B0%D1%8F%20%D1%81%D0%BB%D1%83%D0%B6%D0%B1%D0%B0%20%D1%81%D1%83%D0%B4%D0%B5%D0%B1%D0%BD%D1%8B%D1%85%20%D0%BF%D1%80%D0%B8%D1%81%D1%82%D0%B0%D0%B2%D0%BE%D0%B2,071085DA7AC40C79ABE811F872541896CB/g' "${INSTALLDIR}/firebird.conf"
+  sed -i 's/#TrustedCertificate =/TrustedCertificate = %D0%A2%D0%B5%D1%81%D1%82%20%D0%A2%D0%B5%D1%81%D1%82%20%D0%A2%D0%B5%D1%81%D1%82,%D0%A4%D0%B5%D0%B4%D0%B5%D1%80%D0%B0%D0%BB%D1%8C%D0%BD%D0%B0%D1%8F%20%D1%81%D0%BB%D1%83%D0%B6%D0%B1%D0%B0%20%D1%81%D1%83%D0%B4%D0%B5%D0%B1%D0%BD%D1%8B%D1%85%20%D0%BF%D1%80%D0%B8%D1%81%D1%82%D0%B0%D0%B2%D0%BE%D0%B2,1085DA7AC40CE4ABE91189EE414A7114/g' "${INSTALLDIR}/firebird.conf"
   sed -i 's/#TraceAuthentication = 0/TraceAuthentication = 1/g' "${INSTALLDIR}/firebird.conf"
 
 fi
@@ -191,7 +191,7 @@ echo "Start RDB..."
 if [[ "$RDB_MAJOR_VERSION" == "2" ]]; then
   /etc/init.d/firebird restart
 
-  "$INSTALLDIR/bin/gsec" -user SYSDBA -password masterkey -add artyom.smirnov@red-soft.ru -pw q3rgu7Ah
+  "$INSTALLDIR/bin/gsec" -user SYSDBA -password masterkey -add TEST@RED-SOFT.RU -pw q3rgu7Ah
   "$INSTALLDIR/bin/gsec" -user SYSDBA -password masterkey -add trusted_user -pw trusted
 elif [[ "$RDB_MAJOR_VERSION" == "FB3.0.4" ]]; then
   /etc/init.d/firebird restart
