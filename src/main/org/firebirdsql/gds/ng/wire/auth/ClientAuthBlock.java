@@ -52,7 +52,7 @@ public final class ClientAuthBlock {
     private static final Logger log = LoggerFactory.getLogger(ClientAuthBlock.class);
 
     private static final Pattern AUTH_PLUGIN_LIST_SPLIT = Pattern.compile("[ \t,;]+");
-    private static final String DEFAULT_AUTH_PLUGINS = "Srp256,Srp,Legacy_Auth,Certificate,GostPassword,Gss,Multifactor";
+    private static final String DEFAULT_AUTH_PLUGINS = "Srp256,Srp,Legacy_Auth,Certificate,GostPassword,Multifactor,Gss";
     private static final Map<String, AuthenticationPluginSpi> PLUGIN_MAPPING = getAvailableAuthenticationPlugins();
 
     private final IAttachProperties<?> attachProperties;
@@ -479,8 +479,8 @@ public final class ClientAuthBlock {
                 "org.firebirdsql.gds.ng.wire.auth.srp.Srp256AuthenticationPluginSpi",
                 "org.firebirdsql.gds.ng.wire.auth.CertificateAuthenticationPluginSpi",
                 "org.firebirdsql.gds.ng.wire.auth.GostPasswordAuthenticationPluginSpi",
-                "org.firebirdsql.gds.ng.wire.auth.GssAuthenticationPluginSpi",
                 "org.firebirdsql.gds.ng.wire.auth.MultifactorAuthenticationPluginSpi",
+                "org.firebirdsql.gds.ng.wire.auth.GssAuthenticationPluginSpi"
         }) {
             try {
                 Class<?> clazz = Class.forName(providerName, true, classLoader);
