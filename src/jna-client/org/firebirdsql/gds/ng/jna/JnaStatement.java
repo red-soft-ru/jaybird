@@ -23,7 +23,6 @@ import com.sun.jna.ptr.IntByReference;
 import com.sun.jna.ptr.ShortByReference;
 import org.firebirdsql.gds.ISCConstants;
 import org.firebirdsql.gds.JaybirdErrorCodes;
-import org.firebirdsql.gds.impl.GDSHelperOperation;
 import org.firebirdsql.gds.ng.*;
 import org.firebirdsql.gds.ng.fields.*;
 import org.firebirdsql.jna.fbclient.FbClientLibrary;
@@ -174,10 +173,11 @@ public class JnaStatement extends AbstractFbStatement {
                 final StatementType statementType = getType();
                 final boolean hasSingletonResult = hasSingletonResult();
 
-                // Register the start of the operation
-                final GDSHelperOperation op = new GDSHelperOperation(getDatabase());
-                StatementOperationAware.startStatementOperation(op);
-                try {
+                try (OperationCloseHandle operationCloseHandle = signalExecute()) {
+                    if (operationCloseHandle.isCancelled()) {
+                        // operation was synchronously cancelled from an OperationAware implementation
+                        throw FbExceptionBuilder.forException(ISCConstants.isc_cancelled).toFlatSQLException();
+                    }
                     if (hasSingletonResult) {
                         /* A type with a singleton result (ie an execute procedure with return fields), doesn't actually
                          * have a result set that will be fetched, instead we have a singleton result if we have fields
@@ -191,9 +191,6 @@ public class JnaStatement extends AbstractFbStatement {
                         statementListenerDispatcher.statementExecuted(this, hasFields(), false);
                         processStatusVector();
                     }
-                } finally {
-                    // Register the finish of the operation
-                    StatementOperationAware.finishStatementOperation(op);
                 }
 
                 if (getState() != StatementState.ERROR) {
@@ -355,10 +352,11 @@ public class JnaStatement extends AbstractFbStatement {
                 }
                 if (isAllRowsFetched()) return;
 
-                // Register the start of the operation
-                final GDSHelperOperation op = new GDSHelperOperation(getDatabase());
-                StatementOperationAware.startStatementOperation(op);
-                try {
+                try (OperationCloseHandle operationCloseHandle = signalFetch()) {
+                    if (operationCloseHandle.isCancelled()) {
+                        // operation was synchronously cancelled from an OperationAware implementation
+                        throw FbExceptionBuilder.forException(ISCConstants.isc_cancelled).toFlatSQLException();
+                    }
                     final ISC_STATUS fetchStatus = clientLibrary.isc_dsql_fetch(statusVector, handle, outXSqlDa.version,
                             outXSqlDa);
                     processStatusVector();
@@ -374,9 +372,6 @@ public class JnaStatement extends AbstractFbStatement {
                         log.error(message);
                         throw new SQLException(message);
                     }
-                } finally {
-                    // Register the finish of the operation
-                    StatementOperationAware.finishStatementOperation(op);
                 }
             }
         } catch (SQLException e) {

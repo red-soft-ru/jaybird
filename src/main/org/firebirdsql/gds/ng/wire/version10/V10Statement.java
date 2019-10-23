@@ -19,12 +19,11 @@
 package org.firebirdsql.gds.ng.wire.version10;
 
 import org.firebirdsql.gds.ISCConstants;
-import org.firebirdsql.gds.impl.GDSHelperOperation;
 import org.firebirdsql.gds.impl.wire.WireProtocolConstants;
 import org.firebirdsql.gds.impl.wire.XdrInputStream;
 import org.firebirdsql.gds.impl.wire.XdrOutputStream;
 import org.firebirdsql.gds.ng.FbExceptionBuilder;
-import org.firebirdsql.gds.ng.StatementOperationAware;
+import org.firebirdsql.gds.ng.OperationCloseHandle;
 import org.firebirdsql.gds.ng.StatementState;
 import org.firebirdsql.gds.ng.StatementType;
 import org.firebirdsql.gds.ng.WarningMessageCallback;
@@ -306,10 +305,11 @@ public class V10Statement extends AbstractFbWireStatement implements FbWireState
                 final boolean hasSingletonResult = hasSingletonResult();
                 int expectedResponseCount = 0;
 
-                // Register the start of the statement
-                final GDSHelperOperation op = new GDSHelperOperation(getDatabase());
-                StatementOperationAware.startStatementOperation(op);
-                try {
+                try (OperationCloseHandle operationCloseHandle = signalExecute()){
+                    if (operationCloseHandle.isCancelled()) {
+                        // operation was synchronously cancelled from an OperationAware implementation
+                        throw FbExceptionBuilder.forException(ISCConstants.isc_cancelled).toFlatSQLException();
+                    }
                     try {
                         if (hasSingletonResult) {
                             expectedResponseCount++;
@@ -363,13 +363,15 @@ public class V10Statement extends AbstractFbWireStatement implements FbWireState
                         if (getState() != StatementState.ERROR) {
                             switchState(statementType.isTypeWithCursor() ? StatementState.CURSOR_OPEN : StatementState.PREPARED);
                         }
+                    } catch (SQLException e) {
+                        if (e.getErrorCode() == ISCConstants.isc_cancelled) {
+                            expectedResponseCount = 0;
+                        }
+                        throw e;
                     } catch (IOException ex) {
                         switchState(StatementState.ERROR);
                         throw new FbExceptionBuilder().exception(ISCConstants.isc_net_read_err).cause(ex).toSQLException();
                     }
-                } finally {
-                    // Register the finish of the operation
-                    StatementOperationAware.finishStatementOperation(op);
                 }
             }
         } catch (SQLException e) {
@@ -451,10 +453,11 @@ public class V10Statement extends AbstractFbWireStatement implements FbWireState
                 }
                 if (isAllRowsFetched()) return;
 
-                // Register the start of the operation
-                final GDSHelperOperation op = new GDSHelperOperation(getDatabase());
-                StatementOperationAware.startStatementOperation(op);
-                try {
+                try (OperationCloseHandle operationCloseHandle = signalFetch()) {
+                    if (operationCloseHandle.isCancelled()) {
+                        // operation was synchronously cancelled from an OperationAware implementation
+                        throw FbExceptionBuilder.forException(ISCConstants.isc_cancelled).toFlatSQLException();
+                    }
                     try {
                         sendFetch(fetchSize);
                         getXdrOut().flush();
@@ -468,9 +471,6 @@ public class V10Statement extends AbstractFbWireStatement implements FbWireState
                         switchState(StatementState.ERROR);
                         throw new FbExceptionBuilder().exception(ISCConstants.isc_net_read_err).cause(ex).toSQLException();
                     }
-                } finally {
-                    // Register the finish of the operation
-                    StatementOperationAware.finishStatementOperation(op);
                 }
             }
         } catch (SQLException e) {
