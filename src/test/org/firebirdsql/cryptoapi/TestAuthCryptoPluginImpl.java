@@ -70,7 +70,13 @@ public class TestAuthCryptoPluginImpl extends FBJUnit4TestBase {
     @Test
     public void testAuthCryptoPluginImpl_hashData() throws Exception {
         AuthCryptoPlugin plugin = AuthCryptoPlugin.getPlugin();
-        byte[] bytes = plugin.hashData(testbuf, 200000);
+        byte[] bytes = plugin.hashData(testbuf, 200000, 32798); // GOST R 34.11/34.10-2001
+        assertNotNull(bytes);
+        bytes = null;
+        bytes = plugin.hashData(testbuf, 200000, 32801); // GOST R 34.11-2012/34.10-2012 256 bit
+        assertNotNull(bytes);
+        bytes = null;
+        bytes = plugin.hashData(testbuf, 200000, 32802); // GOST R 34.11-2012/34.10-2012 512 bit
         assertNotNull(bytes);
     }
 

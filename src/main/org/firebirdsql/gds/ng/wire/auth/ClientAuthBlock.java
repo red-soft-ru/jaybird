@@ -21,8 +21,8 @@ package org.firebirdsql.gds.ng.wire.auth;
 import org.firebirdsql.gds.ClumpletReader;
 import org.firebirdsql.gds.ConnectionParameterBuffer;
 import org.firebirdsql.gds.ISCConstants;
+import org.firebirdsql.gds.JaybirdErrorCodes;
 import org.firebirdsql.gds.ParameterTagMapping;
-import org.firebirdsql.gds.impl.wire.auth.AuthSspi;
 import org.firebirdsql.gds.ng.FbExceptionBuilder;
 import org.firebirdsql.gds.ng.IAttachProperties;
 import org.firebirdsql.logging.Logger;
@@ -52,14 +52,15 @@ public final class ClientAuthBlock {
     private static final Logger log = LoggerFactory.getLogger(ClientAuthBlock.class);
 
     private static final Pattern AUTH_PLUGIN_LIST_SPLIT = Pattern.compile("[ \t,;]+");
+    private static final String DEFAULT_AUTH_PLUGINS = "Srp256,Srp,Legacy_Auth,Certificate,GostPassword,Multifactor,Gss";
+    private static final Map<String, AuthenticationPluginSpi> PLUGIN_MAPPING = getAvailableAuthenticationPlugins();
 
     private final IAttachProperties<?> attachProperties;
-    private LinkedList<AuthenticationPluginSpi> pluginProviders;
+    private List<AuthenticationPluginSpi> pluginProviders;
     private final Set<String> serverPlugins = new LinkedHashSet<>();
     private AuthenticationPlugin currentPlugin;
     private boolean authComplete;
     private boolean firstTime = true;
-    private AuthSspi sspi = null;
 
     public ClientAuthBlock(IAttachProperties<?> attachProperties) throws SQLException {
         this.attachProperties = attachProperties;
@@ -68,6 +69,10 @@ public final class ClientAuthBlock {
 
     public String getLogin() {
         return attachProperties.getUser();
+    }
+
+    public String getNormalizedLogin() {
+        return normalizeLogin(getLogin());
     }
 
     public String getPassword() {
@@ -144,7 +149,7 @@ public final class ClientAuthBlock {
 
         firstTime = true;
         currentPlugin = null;
-        pluginProviders = new LinkedList<>(getSupportedPluginProviders());
+        pluginProviders = getSupportedPluginProviders();
 
         if (!serverPlugins.isEmpty()) {
             LinkedList<AuthenticationPluginSpi> mergedProviderList = new LinkedList<>();
@@ -236,13 +241,6 @@ public final class ClientAuthBlock {
         }
     }
 
-    private static List<AuthenticationPluginSpi> getSupportedPluginProviders() {
-        // TODO Create from service provider interface; use properties?
-        return Collections.unmodifiableList(
-                Arrays.<AuthenticationPluginSpi>asList(new SrpAuthenticationPluginSpi(), new LegacyAuthenticationPluginSpi(),
-                    new GssAuthenticationPluginSpi(), new MultifactorAuthenticationPluginSpi()));
-    }
-
     public boolean switchPlugin(String pluginName) {
         if (hasPlugin() && Objects.equals(getCurrentPluginName(), pluginName)) {
             return false;
@@ -253,7 +251,9 @@ public final class ClientAuthBlock {
                 currentPlugin = pluginProvider.createPlugin();
                 return true;
             }
-            iterator.remove();
+            // Do not remove the plugin from the list, if it does not match the server plugin.
+            // Perhaps, he is still needed.
+            // iterator.remove();
         }
         return false;
     }
@@ -298,6 +298,70 @@ public final class ClientAuthBlock {
         }
     }
 
+    /**
+     * TODO Need to handle this differently
+     * @return {@code true} if the encryption is supported
+     * @throws SQLException If it is impossible to determine if encryption is supported (eg there is no current auth plugin)
+     */
+    public boolean supportsEncryption() throws SQLException {
+        if (currentPlugin == null) {
+            throw new SQLException("No authentication plugin available");
+        }
+        return currentPlugin.generatesSessionKey();
+    }
+
+    /**
+     * @return Session key
+     * @throws SQLException If a session key cannot be provided
+     */
+    public byte[] getSessionKey() throws SQLException {
+        if (currentPlugin == null) {
+            throw new SQLException("No authentication plugin available");
+        }
+        return currentPlugin.getSessionKey();
+    }
+
+    /**
+     * Normalizes a login by uppercasing unquoted user names, or stripping and unescaping (double) quoted user names.
+     *
+     * @param login Login to process
+     * @return Normalized login
+     */
+    static String normalizeLogin(String login) {
+        if (login == null || login.isEmpty()) {
+            return login;
+        }
+        // Contrary to Firebird, check if login is enclosed in double quotes, not just starting with a double quote
+        if (login.length() > 2 && login.charAt(0) == '"' && login.charAt(login.length() - 1) == '"') {
+            return normalizeQuotedLogin(login);
+        }
+        return login.toUpperCase(Locale.ROOT);
+    }
+
+    private static String normalizeQuotedLogin(String login) {
+        final StringBuilder sb = new StringBuilder(login.length() - 2);
+        sb.append(login, 1, login.length() - 1);
+
+        for (int idx = 0; idx < sb.length(); idx++) {
+            // Double double quotes ("") escape a double quote in a quoted string
+            if (sb.charAt(idx) == '"') {
+                // Strip double quote escape
+                sb.deleteCharAt(idx);
+                if (idx < sb.length() && sb.charAt(idx) == '"') {
+                    // Retain escaped double quote
+                    idx += 1;
+                } else {
+                    // The character after escape is not a double quote, we terminate the conversion and truncate.
+                    // Firebird does this as well (see common/utils.cpp#dpbItemUpper)
+                    sb.setLength(idx);
+                    return sb.toString();
+                }
+            }
+        }
+
+        return sb.toString();
+    }
+
     private void extractDataToParameterBuffer(ConnectionParameterBuffer pb) {
         byte[] clientData = getClientData();
         if (clientData == null || clientData.length == 0) {
@@ -325,19 +389,125 @@ public final class ClientAuthBlock {
         pb.removeArgument(tagMapping.getGSSAuthTag());
     }
 
+    private List<AuthenticationPluginSpi> getSupportedPluginProviders() throws SQLException {
+        List<String> requestedPluginNames = getRequestedPluginNames();
+        List<AuthenticationPluginSpi> pluginProviders = new ArrayList<>(requestedPluginNames.size());
+        List<String> excluded = null;
+        if (this.attachProperties.getExcludeCryptoPlugins() != null)
+            excluded = splitPluginList(this.attachProperties.getExcludeCryptoPlugins());
+        for (String pluginName : requestedPluginNames) {
+            AuthenticationPluginSpi pluginSpi = PLUGIN_MAPPING.get(pluginName);
+            if (pluginSpi != null) {
+                if (excluded != null && excluded.contains(pluginName))
+                    continue;
+                pluginProviders.add(pluginSpi);
+            } else {
+                log.warn("No authentication plugin available with name " + pluginName);
+            }
+        }
+
+        if (pluginProviders.isEmpty()) {
+            throw new FbExceptionBuilder().exception(JaybirdErrorCodes.jb_noKnownAuthPlugins)
+                    .messageParameter(requestedPluginNames.toString())
+                    .toFlatSQLException();
+        }
+        return pluginProviders;
+    }
+
+    private List<String> getRequestedPluginNames() {
+
+        return splitPluginList(DEFAULT_AUTH_PLUGINS);
+    }
+
+    private static List<String> splitPluginList(String pluginList) {
+        return Arrays.asList(AUTH_PLUGIN_LIST_SPLIT.split(pluginList));
+    }
+
+    // TODO Move plugin loading to separate class?
+
+    private static Map<String, AuthenticationPluginSpi> getAvailableAuthenticationPlugins() {
+        Map<String, AuthenticationPluginSpi> pluginMapping = new HashMap<>();
+        for (AuthenticationPluginSpi pluginSpi : getAvailableAuthenticationPluginSpis()) {
+            String pluginName = pluginSpi.getPluginName();
+            if (pluginMapping.containsKey(pluginName)) {
+                log.warn("Authentication plugin provider for " + pluginName + " already registered. Skipping "
+                        + pluginSpi.getClass().getName());
+                continue;
+            }
+            pluginMapping.put(pluginName, pluginSpi);
+        }
+        return Collections.unmodifiableMap(pluginMapping);
+    }
+
+    @SuppressWarnings("WhileLoopReplaceableByForEach")
+    private static List<AuthenticationPluginSpi> getAvailableAuthenticationPluginSpis() {
+        try {
+            ServiceLoader<AuthenticationPluginSpi> pluginLoader =
+                    ServiceLoader.load(AuthenticationPluginSpi.class, ClientAuthBlock.class.getClassLoader());
+            List<AuthenticationPluginSpi> pluginList = new ArrayList<>();
+            // We can't use foreach here, because the plugins are lazily loaded, which might trigger a ServiceConfigurationError
+            Iterator<AuthenticationPluginSpi> pluginIterator = pluginLoader.iterator();
+            while (pluginIterator.hasNext()) {
+                try {
+                    AuthenticationPluginSpi plugin = pluginIterator.next();
+                    pluginList.add(plugin);
+                } catch (Exception | ServiceConfigurationError e) {
+                    log.warn("Can't register plugin, see debug level for more information (skipping): " + e);
+                    log.debug("Failed to load plugin with exception", e);
+                }
+            }
+
+            if (!pluginList.isEmpty()) {
+                return pluginList;
+            } else {
+                log.warn("No authentication plugins loaded through service loader, falling back to default list");
+            }
+        } catch (Exception e) {
+            String message =
+                    "Unable to load authentication plugins through ServiceLoader, using fallback list";
+            log.warn(message + ": " + e + "; see debug level for stacktrace");
+            log.debug(message, e);
+        }
+        return loadFallbackPluginProviders(ClientAuthBlock.class.getClassLoader());
+    }
+
+    private static List<AuthenticationPluginSpi> loadFallbackPluginProviders(ClassLoader classLoader) {
+        List<AuthenticationPluginSpi> fallbackPluginProviders = new ArrayList<>(6);
+        for (String providerName : new String[] {
+                "org.firebirdsql.gds.ng.wire.auth.legacy.LegacyAuthenticationPluginSpi",
+                "org.firebirdsql.gds.ng.wire.auth.srp.SrpAuthenticationPluginSpi",
+                "org.firebirdsql.gds.ng.wire.auth.srp.Srp256AuthenticationPluginSpi",
+                "org.firebirdsql.gds.ng.wire.auth.CertificateAuthenticationPluginSpi",
+                "org.firebirdsql.gds.ng.wire.auth.GostPasswordAuthenticationPluginSpi",
+                "org.firebirdsql.gds.ng.wire.auth.MultifactorAuthenticationPluginSpi",
+                "org.firebirdsql.gds.ng.wire.auth.GssAuthenticationPluginSpi"
+        }) {
+            try {
+                Class<?> clazz = Class.forName(providerName, true, classLoader);
+                AuthenticationPluginSpi provider =
+                        (AuthenticationPluginSpi) clazz.getDeclaredConstructor().newInstance();
+                fallbackPluginProviders.add(provider);
+            } catch (ReflectiveOperationException e) {
+                log.warn("Could not load plugin provider (see debug level for details) " + providerName + ", reason: "
+                        + e);
+                log.debug("Failed to load plugin provider " + providerName + " with exception", e);
+            }
+        }
+        return fallbackPluginProviders;
+    }
     public String getCertificate() {
         return attachProperties.getCertificate();
+    }
+
+    public String getCertificateBase64() {
+        return attachProperties.getCertificateBase64();
     }
 
     public String getRepositoryPin() {
         return attachProperties.getRepositoryPin();
     }
 
-    public AuthSspi getSspi() {
-        return sspi;
-    }
-
-    public void setSspi(AuthSspi sspi) {
-        this.sspi = sspi;
+    public boolean getVerifyServerCertificate() {
+        return attachProperties.getVerifyServerCertificate();
     }
 }

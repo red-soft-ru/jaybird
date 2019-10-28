@@ -91,6 +91,38 @@ public interface FBManagerMBean {
     void setPassword(final String password);
 
     /**
+     * Set the page size that will be used for the database. The value for {@code pageSize} must be one
+     * of {@link PageSizeConstants}. The default value depends on the Firebird version.
+     * <p>
+     * Some values are not valid on all Firebird versions.
+     * </p>
+     *
+     * @param pageSize
+     *         The page size to be used in the created database, see {@link PageSizeConstants}
+     * @see PageSizeConstants
+     */
+    void setPageSize(int pageSize);
+
+    /**
+     * @return The page size to be used when creating a database, or {@code -1} if the database default is used.
+     */
+    int getPageSize();
+
+    /**
+     * Set the default database character set.
+     *
+     * @param firebirdCharsetName
+     *         Character set name, use Firebird names only; {@code null} will use Firebird default ({@code NONE}).
+     *         Specifying an invalid name will result in an exception during database creation.
+     */
+    void setDefaultCharacterSet(String firebirdCharsetName);
+
+    /**
+     * @return The default character set name, {@code null} means not set.
+     */
+    String getDefaultCharacterSet();
+
+    /**
      * mbean get-set pair for field createOnStart
      * Get the value of createOnStart
      *

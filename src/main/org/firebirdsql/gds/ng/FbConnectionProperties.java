@@ -20,10 +20,13 @@ package org.firebirdsql.gds.ng;
 
 import org.firebirdsql.encodings.EncodingFactory;
 import org.firebirdsql.gds.DatabaseParameterBuffer;
+import org.firebirdsql.gds.JaybirdErrorCodes;
 import org.firebirdsql.gds.Parameter;
 import org.firebirdsql.gds.impl.DatabaseParameterBufferImp;
 import org.firebirdsql.logging.Logger;
 import org.firebirdsql.logging.LoggerFactory;
+
+import java.sql.SQLException;
 
 import static org.firebirdsql.gds.ISCConstants.*;
 
@@ -170,9 +173,10 @@ public final class FbConnectionProperties extends AbstractAttachProperties<IConn
      * @deprecated TODO: This method is only intended to simplify migration of the protocol implementation and needs to be removed.
      */
     @Deprecated
-    public void fromDpb(DatabaseParameterBuffer dpb) {
+    public void fromDpb(DatabaseParameterBuffer dpb) throws SQLException {
         for (Parameter parameter : dpb) {
-            switch (parameter.getType()) {
+            final int parameterType = parameter.getType();
+            switch (parameterType) {
             case isc_dpb_user_name:
                 setUser(parameter.getValueAsString());
                 break;
@@ -209,28 +213,69 @@ public final class FbConnectionProperties extends AbstractAttachProperties<IConn
             case isc_dpb_column_label_for_name:
                 setColumnLabelForName(true);
                 break;
+            case isc_dpb_wire_crypt_level:
+                String propertyValue = parameter.getValueAsString();
+                try {
+                    setWireCrypt(WireCrypt.fromString(propertyValue));
+                } catch (IllegalArgumentException e) {
+                    throw FbExceptionBuilder.forException(JaybirdErrorCodes.jb_invalidConnectionPropertyValue)
+                            .messageParameter(propertyValue)
+                            .messageParameter("wireCrypt")
+                            .toFlatSQLException();
+                }
+                break;
+            case isc_dpb_db_crypt_config:
+                setDbCryptConfig(parameter.getValueAsString());
+                break;
+            case isc_dpb_exclude_crypto_plugins:
+                setExcludeCryptoPlugins(parameter.getValueAsString());
+                break;
             case isc_dpb_utf8_filename:
                 // Filter out, handled explicitly in protocol implementation
                 break;
             case isc_dpb_specific_auth_data:
+                break;
+            case isc_dpb_process_id:
+            case isc_dpb_process_name:
+            case isc_dpb_session_time_zone:
+            case isc_dpb_time_zone_bind:
+            case isc_dpb_decfloat_bind:
+            case isc_dpb_decfloat_round:
+            case isc_dpb_decfloat_traps:
+                parameter.copyTo(getExtraDatabaseParameters(), null);
+                dirtied();
                 break;
             case isc_dpb_gss:
                 break;
             case isc_dpb_certificate:
                 setCertificate(parameter.getValueAsString());
                 break;
+            case isc_dpb_certificate_base64:
+                setCertificateBase64(parameter.getValueAsString());
+                break;
             case isc_dpb_repository_pin:
                 setRepositoryPin(parameter.getValueAsString());
                 break;
+            case isc_dpb_effective_login:
+                setEffectiveLogin(parameter.getValueAsString());
+                break;
+            case isc_dpb_verify_server:
+                parameter.copyTo(getExtraDatabaseParameters(), null);
+                setVerifyServerCertificate(true);
+                break;
             case isc_dpb_trusted_auth:
             case isc_dpb_multi_factor_auth:
-            case isc_dpb_verify_server:
                 parameter.copyTo(getExtraDatabaseParameters(), null);
                 break;
             default:
-                log.warn(String.format("Unknown or unsupported parameter with type %d added to extra database parameters", parameter.getType()));
+                if (parameterType < jaybirdMinIscDpbValue || parameterType > jaybirdMaxIscDpbValue) {
+                    log.warn(String.format(
+                            "Unknown or unsupported parameter with type %d added to extra database parameters",
+                            parameterType));
+                }
                 parameter.copyTo(getExtraDatabaseParameters(), null);
                 dirtied();
+                break;
             }
         }
     }

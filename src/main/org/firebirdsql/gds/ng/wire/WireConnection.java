@@ -26,11 +26,13 @@ import org.firebirdsql.gds.VaxEncoding;
 import org.firebirdsql.gds.impl.wire.WireProtocolConstants;
 import org.firebirdsql.gds.impl.wire.XdrInputStream;
 import org.firebirdsql.gds.impl.wire.XdrOutputStream;
+import org.firebirdsql.gds.impl.wire.auth.AuthSspi;
 import org.firebirdsql.gds.ng.AbstractConnection;
 import org.firebirdsql.gds.ng.FbExceptionBuilder;
 import org.firebirdsql.gds.ng.IAttachProperties;
 import org.firebirdsql.gds.ng.IConnectionProperties;
 import org.firebirdsql.gds.ng.wire.auth.ClientAuthBlock;
+import org.firebirdsql.gds.ng.wire.crypt.EncryptionIdentifier;
 import org.firebirdsql.gds.ng.wire.crypt.KnownServerKey;
 import org.firebirdsql.logging.Logger;
 import org.firebirdsql.logging.LoggerFactory;
@@ -38,7 +40,6 @@ import org.firebirdsql.logging.LoggerFactory;
 import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.net.*;
 import java.nio.charset.StandardCharsets;
 import java.security.AccessController;
@@ -46,6 +47,7 @@ import java.security.PrivilegedAction;
 import java.sql.SQLException;
 import java.sql.SQLTimeoutException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -68,13 +70,15 @@ public abstract class WireConnection<T extends IAttachProperties<T>, C extends F
 
     private static final Logger log = LoggerFactory.getLogger(WireConnection.class);
 
-    private final ClientAuthBlock clientAuthBlock;
-    private final List<KnownServerKey> knownServerKeys = new ArrayList<>();
+    // Micro-optimization: we usually expect at most 1 (Firebird 3), and usually 0 (Firebird 2.5 and earlier)
+    private final List<KnownServerKey> knownServerKeys = new ArrayList<>(1);
+    private ClientAuthBlock clientAuthBlock;
     private Socket socket;
     private ProtocolCollection protocols;
     private int protocolVersion;
     private int protocolArchitecture;
     private int protocolMinimumType;
+    private AuthSspi sspi = null;
 
     private XdrOutputStream xdrOut;
     private XdrInputStream xdrIn;
@@ -332,6 +336,14 @@ public abstract class WireConnection<T extends IAttachProperties<T>, C extends F
         }
     }
 
+    /**
+     * Clear authentication data.
+     */
+    public final void clearAuthData() {
+        clientAuthBlock = null;
+        clearServerKeys();
+    }
+
     private byte[] createUserIdentificationBlock() throws IOException, SQLException {
         // Here we identify the user to the engine.
         // This may or may not be used as login info to a database.
@@ -343,10 +355,8 @@ public abstract class WireConnection<T extends IAttachProperties<T>, C extends F
         clientAuthBlock.authenticateStep0();
         clientAuthBlock.writePluginDataTo(userId);
 
-        // TODO Make configurable using connection property
-        int wireCrypt = WIRE_CRYPT_DISABLED;
         userId.write(CNCT_client_crypt);
-        VaxEncoding.encodeVaxInteger(userId, wireCrypt);
+        VaxEncoding.encodeVaxInteger(userId, attachProperties.getWireCrypt().getWireProtocolCryptLevel());
 
         userId.write(CNCT_user);
         int userLength = Math.min(userBytes.length, 255);
@@ -387,6 +397,10 @@ public abstract class WireConnection<T extends IAttachProperties<T>, C extends F
             String keyPlugins = newKeys.getString(StandardCharsets.US_ASCII);
             knownServerKeys.add(new KnownServerKey(keyType, keyPlugins));
         }
+    }
+
+    void clearServerKeys() {
+        knownServerKeys.clear();
     }
 
     private AbstractWireOperations getDefaultWireOperations() {
@@ -505,10 +519,25 @@ public abstract class WireConnection<T extends IAttachProperties<T>, C extends F
      *         If there is no socket, the socket is closed, or for errors writing to the socket.
      */
     public final void writeDirect(byte[] data) throws IOException {
-        if (!isConnected()) throw new SocketException("Socket closed");
-        final OutputStream outputStream = socket.getOutputStream();
-        outputStream.write(data);
-        outputStream.flush();
+        xdrOut.writeDirect(data);
     }
 
+    final List<EncryptionIdentifier> getEncryptionIdentifiers() {
+        if (knownServerKeys.isEmpty()) {
+            return Collections.emptyList();
+        }
+        List<EncryptionIdentifier> encryptionIdentifiers = new ArrayList<>();
+        for (KnownServerKey knownServerKey : knownServerKeys) {
+            encryptionIdentifiers.addAll(knownServerKey.getIdentifiers());
+        }
+        return encryptionIdentifiers;
+    }
+
+    public AuthSspi getSspi() {
+        return sspi;
+    }
+
+    public void setSspi(AuthSspi sspi) {
+        this.sspi = sspi;
+    }
 }

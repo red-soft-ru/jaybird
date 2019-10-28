@@ -186,6 +186,16 @@ public abstract class AbstractFbStatement implements FbStatement {
     }
 
     @Override
+    public final void ensureClosedCursor(boolean transactionEnd) throws SQLException {
+        if (getState().isCursorOpen()) {
+            if (log.isDebugEnabled()) {
+                log.debug("ensureClosedCursor has to close a cursor at", new RuntimeException("debugging stacktrace"));
+            }
+            closeCursor(transactionEnd);
+        }
+    }
+
+    @Override
     public StatementState getState() {
         return state;
     }
@@ -612,5 +622,23 @@ public abstract class AbstractFbStatement implements FbStatement {
     protected final boolean hasFields() {
         RowDescriptor fieldDescriptor = getFieldDescriptor();
         return fieldDescriptor != null && fieldDescriptor.getCount() > 0;
+    }
+
+    /**
+     * Signals the start of an execute for this statement.
+     *
+     * @return {@code OperationCloseHandle} handle for the operation
+     */
+    protected final OperationCloseHandle signalExecute() {
+        return FbDatabaseOperation.signalExecute(getDatabase());
+    }
+
+    /**
+     * Signals the start of a fetch for this statement.
+     *
+     * @return {@code OperationCloseHandle} handle for the operation
+     */
+    protected final OperationCloseHandle signalFetch() {
+        return FbDatabaseOperation.signalFetch(getDatabase());
     }
 }

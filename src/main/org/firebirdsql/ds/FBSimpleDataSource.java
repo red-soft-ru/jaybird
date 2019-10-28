@@ -110,7 +110,7 @@ public class FBSimpleDataSource extends RootCommonDataSource implements DataSour
      * prefix ({@code "//localhost:3050/c:/database/employee.fdb"}) for
      * example).
      * 
-     * @deprecated use {@link #setDatabase(String)} instead for the sake of 
+     * @deprecated use {@link #setDatabase(String)} instead for the sake of
      * naming compatibility.
      */
     @Deprecated
@@ -392,6 +392,37 @@ public class FBSimpleDataSource extends RootCommonDataSource implements DataSour
     }
 
     @Override
+    public String getWireCrypt() {
+        return mcf.getWireCrypt();
+    }
+
+    @Override
+    public void setWireCrypt(String wireCrypt) {
+        mcf.setWireCrypt(wireCrypt);
+    }
+
+    @Override
+    public String getDbCryptConfig() {
+        return mcf.getDbCryptConfig();
+    }
+
+    @Override
+    public void setDbCryptConfig(String dbCryptConfig) {
+        mcf.setDbCryptConfig(dbCryptConfig);
+    }
+
+    @Override
+    public boolean isIgnoreProcedureType() {
+        return mcf.isIgnoreProcedureType();
+    }
+
+    @Override
+    public void setIgnoreProcedureType(boolean ignoreProcedureType) {
+        mcf.setIgnoreProcedureType(ignoreProcedureType);
+    }
+
+
+    @Override
     public boolean isUseGSSAuth() {
         return mcf.isUseGSSAuth();
     }
@@ -419,6 +450,16 @@ public class FBSimpleDataSource extends RootCommonDataSource implements DataSour
     @Override
     public void setRepositoryPin(String pin) {
         mcf.setRepositoryPin(pin);
+    }
+
+    @Override
+    public boolean getVerifyServerCertificate() {
+        return mcf.getVerifyServerCertificate();
+    }
+
+    @Override
+    public void setVerifyServerCertificate(boolean verify) {
+        mcf.setVerifyServerCertificate(verify);
     }
     
     /*

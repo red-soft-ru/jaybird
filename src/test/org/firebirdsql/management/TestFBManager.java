@@ -20,6 +20,7 @@
  */
 package org.firebirdsql.management;
 
+import org.firebirdsql.common.StringHelper;
 import org.firebirdsql.gds.ISCConstants;
 import org.firebirdsql.gds.ng.FbDatabase;
 import org.firebirdsql.jdbc.FBConnection;
@@ -27,11 +28,15 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.Statement;
 
 import static org.firebirdsql.common.FBTestProperties.*;
 import static org.firebirdsql.gds.VaxEncoding.iscVaxInteger;
 import static org.firebirdsql.gds.VaxEncoding.iscVaxInteger2;
+import static org.firebirdsql.management.PageSizeConstants.*;
 import static org.junit.Assert.*;
 
 /**
@@ -96,20 +101,15 @@ public class TestFBManager {
 
             // check create
             m.createDatabase(databasePath, DB_USER, DB_PASSWORD);
-            try {
-                FBConnection connection = (FBConnection) DriverManager.getConnection(getUrl() + ".fdb",
-                        getDefaultPropertiesForConnection());
-                try {
-                    final FbDatabase currentDatabase = connection.getGDSHelper().getCurrentDatabase();
-                    final byte[] databaseInfo = currentDatabase.getDatabaseInfo(
-                            new byte[] { ISCConstants.isc_info_page_size }, 10);
-                    assertEquals("Unexpected info item", ISCConstants.isc_info_page_size, databaseInfo[0]);
-                    int length = iscVaxInteger2(databaseInfo, 1);
-                    int pageSize = iscVaxInteger(databaseInfo, 3, length);
-                    assertEquals("Unexpected page size", 16384, pageSize);
-                } finally {
-                    connection.close();
-                }
+            try (FBConnection connection = (FBConnection) DriverManager.getConnection(getUrl() + ".fdb",
+                    getDefaultPropertiesForConnection())) {
+                final FbDatabase currentDatabase = connection.getGDSHelper().getCurrentDatabase();
+                final byte[] databaseInfo = currentDatabase.getDatabaseInfo(
+                        new byte[] { ISCConstants.isc_info_page_size }, 10);
+                assertEquals("Unexpected info item", ISCConstants.isc_info_page_size, databaseInfo[0]);
+                int length = iscVaxInteger2(databaseInfo, 1);
+                int pageSize = iscVaxInteger(databaseInfo, 3, length);
+                assertEquals("Unexpected page size", 16384, pageSize);
             } finally {
                 m.dropDatabase(databasePath, DB_USER, DB_PASSWORD);
             }
@@ -130,7 +130,7 @@ public class TestFBManager {
     public void testSetPageSize_ValidValues() {
         FBManager m = createFBManager();
 
-        final int[] pageSizes = {1024, 2048, 4096, 8192, 16384};
+        final int[] pageSizes = { SIZE_1K, SIZE_2K, SIZE_4K, SIZE_8K, SIZE_16K, SIZE_32K };
         for (int pageSize : pageSizes) {
             m.setPageSize(pageSize);
         }
@@ -150,15 +150,10 @@ public class TestFBManager {
 
             // check create
             m.createDatabase(databasePath, DB_USER, DB_PASSWORD);
-            try {
-                FBConnection connection = (FBConnection) DriverManager.getConnection(getUrl() + ".fdb",
-                        getDefaultPropertiesForConnection());
-                try {
-                    final FbDatabase currentDatabase = connection.getGDSHelper().getCurrentDatabase();
-                    assertEquals("Unexpected database dialect", 3, currentDatabase.getDatabaseDialect());
-                } finally {
-                    connection.close();
-                }
+            try (FBConnection connection = (FBConnection) DriverManager.getConnection(getUrl() + ".fdb",
+                    getDefaultPropertiesForConnection())) {
+                final FbDatabase currentDatabase = connection.getGDSHelper().getCurrentDatabase();
+                assertEquals("Unexpected database dialect", 3, currentDatabase.getDatabaseDialect());
             } finally {
                 m.dropDatabase(databasePath, DB_USER, DB_PASSWORD);
             }
@@ -181,14 +176,39 @@ public class TestFBManager {
 
             // check create
             m.createDatabase(databasePath, DB_USER, DB_PASSWORD);
+            try (FBConnection connection = (FBConnection) DriverManager.getConnection(getUrl() + ".fdb",
+                    getDefaultPropertiesForConnection())) {
+                final FbDatabase currentDatabase = connection.getGDSHelper().getCurrentDatabase();
+                assertEquals("Unexpected database dialect", 1, currentDatabase.getDatabaseDialect());
+            } finally {
+                m.dropDatabase(databasePath, DB_USER, DB_PASSWORD);
+            }
+        } finally {
+            m.stop();
+        }
+    }
+
+    @Test
+    public void testCreate_withDefaultCharacterSet() throws Exception {
+        FBManager m = createFBManager();
+        try {
+            m.setServer(DB_SERVER_URL);
+            m.setPort(DB_SERVER_PORT);
+            m.start();
+
+            // Adding .fdb suffix to prevent conflicts with other tests if drop fails
+            final String databasePath = getDatabasePath() + ".fdb";
             try {
-                FBConnection connection = (FBConnection) DriverManager.getConnection(getUrl() + ".fdb",
+                m.setDefaultCharacterSet("UTF8");
+                m.createDatabase(databasePath, DB_USER, DB_PASSWORD);
+
+                try (Connection connection = DriverManager.getConnection(getUrl() + ".fdb",
                         getDefaultPropertiesForConnection());
-                try {
-                    final FbDatabase currentDatabase = connection.getGDSHelper().getCurrentDatabase();
-                    assertEquals("Unexpected database dialect", 1, currentDatabase.getDatabaseDialect());
-                } finally {
-                    connection.close();
+                     Statement stmt = connection.createStatement();
+                     ResultSet rs = stmt.executeQuery("select RDB$CHARACTER_SET_NAME from rdb$database")) {
+
+                    assertTrue("expected a row", rs.next());
+                    assertEquals("Unexpected default character set", "UTF8", StringHelper.trim(rs.getString(1)));
                 }
             } finally {
                 m.dropDatabase(databasePath, DB_USER, DB_PASSWORD);

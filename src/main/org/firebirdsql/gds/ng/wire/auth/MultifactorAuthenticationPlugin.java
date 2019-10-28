@@ -54,23 +54,40 @@ public class MultifactorAuthenticationPlugin implements AuthenticationPlugin {
                 AuthFactorPassword authFactorPassword = new AuthFactorPassword(authSspi);
 
                 authFactorPassword.setUserName(userName);
-                authFactorPassword.setPassword(clientAuthBlock.getPassword());
-                authFactorPassword.setPasswordEnc(UnixCrypt.crypt(clientAuthBlock.getPassword(), "9z").substring(2, 13));
+                if (clientAuthBlock.getPassword() != null && !clientAuthBlock.getPassword().isEmpty()) {
+                    authFactorPassword.setPassword(clientAuthBlock.getPassword());
+                    authFactorPassword.setPasswordEnc(UnixCrypt.crypt(clientAuthBlock.getPassword(), "9z").substring(2, 13));
+                }
                 authSspi.addFactor(authFactorPassword);
                 data.add((byte) AuthFactor.TYPE_PASSWORD);
             }
 
             String certificate = clientAuthBlock.getCertificate();
-            if (certificate != null && !certificate.isEmpty()) {
+            String certificateBase64 = clientAuthBlock.getCertificateBase64();
+            if ((certificate != null && !certificate.isEmpty()) ||
+                    (certificateBase64 != null && !certificateBase64.isEmpty())) {
                 AuthFactorCertificate authFactorCertificate = new AuthFactorCertificate(authSspi);
                 try {
-                    authFactorCertificate.loadFromFile(certificate);
+                    if (certificate != null && !certificate.isEmpty())
+                        authFactorCertificate.loadFromFile(certificate);
+                    else
+                        authFactorCertificate.setCertBase64(certificateBase64);
                 } catch (GDSException e) {
                     throw new SQLException(e.getMessage(), e);
                 }
                 authSspi.addFactor(authFactorCertificate);
                 data.add((byte) AuthFactor.TYPE_CERT_X509);
             }
+
+            if (clientAuthBlock.getVerifyServerCertificate()) {
+                AuthFactorServerCertificate authFactorServerCertificate = new AuthFactorServerCertificate(authSspi);
+                authSspi.addFactor(authFactorServerCertificate);
+                data.add((byte) AuthFactor.TYPE_SERVER_CERT);
+            }
+
+            if (userName == null && certificate == null && certificateBase64 == null)
+                return  AuthStatus.AUTH_CONTINUE;
+
             clientData = Arrays.copyOf(data.getData(), data.getLength());
 
             return AuthStatus.AUTH_MORE_DATA;
@@ -103,6 +120,16 @@ public class MultifactorAuthenticationPlugin implements AuthenticationPlugin {
     @Override
     public boolean hasServerData() {
         return serverData != null && serverData.length > 0;
+    }
+
+    @Override
+    public boolean generatesSessionKey() {
+        return false;
+    }
+
+    @Override
+    public byte[] getSessionKey() throws SQLException {
+        throw new SQLException("MultifactorAuthenticationPlugin cannot generate a session key");
     }
 
     @Override

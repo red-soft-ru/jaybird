@@ -37,6 +37,7 @@ public interface IAttachProperties<T extends IAttachProperties> {
     int DEFAULT_SO_TIMEOUT = -1;
     int DEFAULT_CONNECT_TIMEOUT = -1;
     boolean DEFAULT_GSS_AUTH = false;
+    boolean DEFAULT_SERVER_CERTIFICATE = false;
 
     /**
      * @return The name of the object to attach to (either a database or service name).
@@ -239,6 +240,46 @@ public interface IAttachProperties<T extends IAttachProperties> {
     void setUseGSSAuth(boolean useGSSAuth);
 
     /**
+     * Get the wire encryption level.
+     * <p>
+     * NOTE: Implementer should take care to return {@link WireCrypt#DEFAULT} if
+     * the value hasn't been set yet.
+     * </p>
+     *
+     * @return Wire encryption level
+     * @since 3.0.4
+     */
+    WireCrypt getWireCrypt();
+
+    /**
+     * Set the wire encryption level.
+     * <p>
+     * NOTE: Implementer should take care to use {@link WireCrypt#DEFAULT} if
+     * the value hasn't been set yet.
+     * </p>
+     *
+     * @param wireCrypt Wire encryption level ({@code null} not allowed)
+     * @since 3.0.4
+     */
+    void setWireCrypt(WireCrypt wireCrypt);
+
+    /**
+     * Get the database encryption plugin configuration.
+     *
+     * @return Database encryption plugin configuration, meaning plugin specific
+     * @since 3.0.4
+     */
+    String getDbCryptConfig();
+
+    /**
+     * Sets the database encryption plugin configuration.
+     *
+     * @param dbCryptConfig Database encryption plugin configuration, meaning plugin specific
+     * @since 3.0.4
+     */
+    void setDbCryptConfig(String dbCryptConfig);
+
+    /**
      * @return An immutable version of this instance as an implementation of {@link IAttachProperties}
      */
     T asImmutable();
@@ -260,6 +301,17 @@ public interface IAttachProperties<T extends IAttachProperties> {
     void setCertificate(String certificate);
 
     /**
+     * @return the certificate in base64 format.
+     */
+    String getCertificateBase64();
+
+    /**
+     * @param certificateBase64
+     *         Set the certificate body in base64 format.
+     */
+    void setCertificateBase64(String certificateBase64);
+
+    /**
      * @return Pin-code for the cryptopro container.
      */
     String getRepositoryPin();
@@ -269,4 +321,46 @@ public interface IAttachProperties<T extends IAttachProperties> {
      *         Set pin-code for the cryptopro container.
      */
     void setRepositoryPin(String pin);
+
+    /**
+     * Get the server certificate verification.
+     */
+    boolean getVerifyServerCertificate();
+
+    /**
+     * @param verify
+     *         Set server certificate verification.
+     */
+    void setVerifyServerCertificate(boolean verify);
+
+    /**
+     * Get the effective login of trusted user.
+     */
+    String getEffectiveLogin();
+
+    /**
+     * @param login
+     *         Login of the trusted user.
+     */
+    void setEffectiveLogin(String login);
+
+    /**
+     *  Get the list of excluded authentication plugins using crypto library.
+     *
+     * @return comma-separated list of excluded authentication plugins, or {@code null} for driver default
+     * @since 4.0
+     */
+    String getExcludeCryptoPlugins();
+
+    /**
+     * Sets the excluded authentication plugins using crypto library.
+     * <p>
+     * Invalid names are skipped during authentication.
+     * </p>
+     *
+     * @param authPlugins
+     *         comma-separated list of excluded authentication plugins, or {@code null} for driver default
+     * @since 4.0
+     */
+    void setExcludeCryptoPlugins(String authPlugins);
 }

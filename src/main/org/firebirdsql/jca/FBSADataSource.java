@@ -613,6 +613,36 @@ public class FBSADataSource implements DataSource, Serializable, Referenceable, 
     }
 
     @Override
+    public String getWireCrypt() {
+        return mcf.getWireCrypt();
+    }
+
+    @Override
+    public void setWireCrypt(String wireCrypt) {
+        mcf.setWireCrypt(wireCrypt);
+    }
+
+    @Override
+    public String getDbCryptConfig() {
+        return mcf.getDbCryptConfig();
+    }
+
+    @Override
+    public void setDbCryptConfig(String dbCryptConfig) {
+        mcf.setDbCryptConfig(dbCryptConfig);
+    }
+
+    @Override
+    public boolean isIgnoreProcedureType() {
+        return mcf.isIgnoreProcedureType();
+    }
+
+    @Override
+    public void setIgnoreProcedureType(boolean ignoreProcedureType) {
+        mcf.setIgnoreProcedureType(ignoreProcedureType);
+    }
+
+    @Override
     public boolean isUseGSSAuth() {
         return mcf.isUseGSSAuth();
     }
@@ -640,6 +670,16 @@ public class FBSADataSource implements DataSource, Serializable, Referenceable, 
     @Override
     public void setRepositoryPin(String pin) {
         mcf.setRepositoryPin(pin);
+    }
+
+    @Override
+    public boolean getVerifyServerCertificate() {
+        return mcf.getVerifyServerCertificate();
+    }
+
+    @Override
+    public void setVerifyServerCertificate(boolean verify) {
+        mcf.setVerifyServerCertificate(verify);
     }
 
     public int getSoTimeout() {

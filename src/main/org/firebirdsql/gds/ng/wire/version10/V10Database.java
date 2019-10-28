@@ -33,6 +33,7 @@ import org.firebirdsql.gds.ng.FbTransaction;
 import org.firebirdsql.gds.ng.TransactionState;
 import org.firebirdsql.gds.ng.fields.BlrCalculator;
 import org.firebirdsql.gds.ng.wire.*;
+import org.firebirdsql.gds.ng.dbcrypt.DbCryptCallback;
 import org.firebirdsql.gds.ng.wire.auth.GSSClient;
 import org.firebirdsql.jdbc.SQLStateConstants;
 import org.firebirdsql.logging.Logger;
@@ -172,6 +173,7 @@ public class V10Database extends AbstractFbWireDatabase implements FbWireDatabas
                 newDpb.addArgument(ISCConstants.isc_dpb_password, connection.getAttachProperties().getPassword());
             sspi = new AuthSspi();
             try {
+                sspi.setClumpletReaderType(ClumpletReader.Kind.Tagged);
                 if (newDpb.hasArgument(ISCConstants.isc_dpb_repository_pin))
                     sspi.setRepositoryPin(connection.getAttachProperties().getRepositoryPin());
                 sspi.fillFactors(newDpb);
@@ -181,7 +183,7 @@ public class V10Database extends AbstractFbWireDatabase implements FbWireDatabas
         }
         else sspi = null;
 
-        connection.getClientAuthBlock().setSspi(sspi);
+        connection.setSspi(sspi);
 
         xdrOut.writeInt(operation);
         xdrOut.writeInt(0); // Database object ID
@@ -227,6 +229,7 @@ public class V10Database extends AbstractFbWireDatabase implements FbWireDatabas
      *         For errors reading or writing database information.
      */
     protected final void afterAttachActions() throws SQLException {
+        connection.clearAuthData();
         getDatabaseInfo(getDescribeDatabaseInfoBlock(), 1024, getDatabaseInformationProcessor());
         // During connect and attach the socketTimeout might be set to the connectTimeout, now reset to 'normal' socketTimeout
         connection.resetSocketTimeout();
@@ -606,7 +609,8 @@ public class V10Database extends AbstractFbWireDatabase implements FbWireDatabas
 
     @Override
     public final void authReceiveResponse(AcceptPacket acceptPacket) throws IOException, SQLException {
-        wireOperations.authReceiveResponse(acceptPacket, new FbWireOperations.ProcessAttachCallback() {
+        final DbCryptCallback dbCryptCallback = createDbCryptCallback();
+        wireOperations.authReceiveResponse(acceptPacket, dbCryptCallback, new FbWireOperations.ProcessAttachCallback() {
             @Override
             public void processAttachResponse(GenericResponse response) {
                 processAttachOrCreateResponse(response);

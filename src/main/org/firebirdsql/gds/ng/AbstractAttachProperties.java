@@ -18,6 +18,8 @@
  */
 package org.firebirdsql.gds.ng;
 
+import static java.util.Objects.requireNonNull;
+
 /**
  * Abstract mutable implementation of {@link IAttachProperties}.
  *
@@ -34,11 +36,17 @@ public abstract class AbstractAttachProperties<T extends IAttachProperties> impl
     private String charSet;
     private String encoding;
     private String certificate;
+    private String certificateBase64;
     private String repositoryPin;
     private int socketBufferSize = IAttachProperties.DEFAULT_SOCKET_BUFFER_SIZE;
     private int soTimeout = IAttachProperties.DEFAULT_SO_TIMEOUT;
     private int connectTimeout = IAttachProperties.DEFAULT_CONNECT_TIMEOUT;
+    private WireCrypt wireCrypt = WireCrypt.DEFAULT;
+    private String dbCryptConfig;
     private boolean useGSSAuth = IAttachProperties.DEFAULT_GSS_AUTH;
+    private boolean verifyServerCertificate = IAttachProperties.DEFAULT_SERVER_CERTIFICATE;
+    private String effectiveLogin;
+    private String excludeCryptoPlugins;
 
     /**
      * Copy constructor for IAttachProperties.
@@ -61,9 +69,15 @@ public abstract class AbstractAttachProperties<T extends IAttachProperties> impl
             socketBufferSize = src.getSocketBufferSize();
             soTimeout = src.getSoTimeout();
             connectTimeout = src.getConnectTimeout();
+            wireCrypt = src.getWireCrypt();
+            dbCryptConfig = src.getDbCryptConfig();
             useGSSAuth = src.isUseGSSAuth();
             certificate = src.getCertificate();
+            certificateBase64 = src.getCertificateBase64();
             repositoryPin = src.getRepositoryPin();
+            verifyServerCertificate = src.getVerifyServerCertificate();
+            effectiveLogin = src.getEffectiveLogin();
+            excludeCryptoPlugins = src.getExcludeCryptoPlugins();
         }
     }
 
@@ -184,6 +198,28 @@ public abstract class AbstractAttachProperties<T extends IAttachProperties> impl
     }
 
     @Override
+    public WireCrypt getWireCrypt() {
+        return wireCrypt;
+    }
+
+    @Override
+    public void setWireCrypt(WireCrypt wireCrypt) {
+        this.wireCrypt = requireNonNull(wireCrypt, "wireCrypt");
+        dirtied();
+    }
+
+    @Override
+    public String getDbCryptConfig() {
+        return dbCryptConfig;
+    }
+
+    @Override
+    public void setDbCryptConfig(String dbCryptConfig) {
+        this.dbCryptConfig = dbCryptConfig;
+        dirtied();
+    }
+
+    @Override
     public boolean isUseGSSAuth() {
         return useGSSAuth;
     }
@@ -207,6 +243,17 @@ public abstract class AbstractAttachProperties<T extends IAttachProperties> impl
     }
 
     @Override
+    public String getCertificateBase64() {
+        return certificateBase64;
+    }
+
+    @Override
+    public void setCertificateBase64(String certificateBase64) {
+        this.certificateBase64 = certificateBase64;
+        dirtied();
+    }
+
+    @Override
     public String getRepositoryPin() {
         return repositoryPin;
     }
@@ -214,6 +261,39 @@ public abstract class AbstractAttachProperties<T extends IAttachProperties> impl
     @Override
     public void setRepositoryPin(String pin) {
         this.repositoryPin = pin;
+        dirtied();
+    }
+
+    @Override
+    public boolean getVerifyServerCertificate() {
+        return verifyServerCertificate;
+    }
+
+    @Override
+    public void setVerifyServerCertificate(boolean verify) {
+        this.verifyServerCertificate = verify;
+        dirtied();
+    }
+
+    @Override
+    public String getEffectiveLogin() {
+        return effectiveLogin;
+    }
+
+    @Override
+    public void setEffectiveLogin(String login) {
+        this.effectiveLogin = login;
+        dirtied();
+    }
+
+    @Override
+    public String getExcludeCryptoPlugins() {
+        return excludeCryptoPlugins;
+    }
+
+    @Override
+    public void setExcludeCryptoPlugins(String authPlugins) {
+        this.excludeCryptoPlugins = authPlugins;
         dirtied();
     }
 

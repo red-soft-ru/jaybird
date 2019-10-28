@@ -24,13 +24,18 @@ import org.firebirdsql.gds.impl.GDSServerVersion;
 import org.firebirdsql.gds.impl.GDSServerVersionException;
 import org.firebirdsql.gds.ng.listeners.ExceptionListener;
 import org.firebirdsql.gds.ng.listeners.ExceptionListenerDispatcher;
+import org.firebirdsql.gds.ng.dbcrypt.DbCryptCallback;
+import org.firebirdsql.gds.ng.dbcrypt.DbCryptCallbackSpi;
+import org.firebirdsql.gds.ng.dbcrypt.simple.StaticValueDbCryptCallbackSpi;
 import org.firebirdsql.logging.Logger;
 import org.firebirdsql.logging.LoggerFactory;
 
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static java.util.Objects.requireNonNull;
+import static org.firebirdsql.gds.JaybirdErrorCodes.jb_dbCryptCallbackInitError;
 
 /**
  * Common behavior for {@link AbstractFbService} and {@link AbstractFbDatabase}.
@@ -62,20 +67,20 @@ public abstract class AbstractFbAttachment<T extends AbstractConnection<? extend
     }
 
     /**
-     * Sets the Firebird version string.
+     * Sets the Firebird version from one or more version string elements.
      * <p>
      * This method should only be called by this instance.
      * </p>
      *
-     * @param versionString
-     *         Raw version string
+     * @param versionStrings
+     *         Raw version strings
      */
-    protected final void setServerVersion(String versionString) {
+    protected final void setServerVersion(String... versionStrings) {
         try {
-            serverVersion = GDSServerVersion.parseRawVersion(versionString);
+            serverVersion = GDSServerVersion.parseRawVersion(versionStrings);
         } catch (GDSServerVersionException e) {
             log.error(String.format("Received unsupported server version \"%s\", replacing with dummy invalid version ",
-                    versionString), e);
+                    Arrays.toString(versionStrings)), e);
             serverVersion = GDSServerVersion.INVALID_VERSION;
         }
         serverVersionInformation = ServerVersionInformation.getForVersion(serverVersion);
@@ -157,4 +162,26 @@ public abstract class AbstractFbAttachment<T extends AbstractConnection<? extend
             log.debug("Exception on safely detach", ex);
         }
     }
+
+    private static final DbCryptCallbackSpi DEFAULT_DB_CRYPT_CALLBACK_SPI = new StaticValueDbCryptCallbackSpi();
+
+    /**
+     * Creates an instance of {@link DbCryptCallback} for this attachment.
+     *
+     * @return Database encryption callback.
+     * @throws SQLException For errors initializing the callback
+     */
+    protected final DbCryptCallback createDbCryptCallback() throws SQLException {
+        // TODO Make plugin selectable from config
+        try {
+            final String dbCryptConfig = connection.getAttachProperties().getDbCryptConfig();
+            return DEFAULT_DB_CRYPT_CALLBACK_SPI.createDbCryptCallback(dbCryptConfig);
+        } catch (RuntimeException e) {
+            throw new FbExceptionBuilder()
+                    .nonTransientConnectionException(jb_dbCryptCallbackInitError)
+                    .cause(e)
+                    .toSQLException();
+        }
+    }
+    
 }

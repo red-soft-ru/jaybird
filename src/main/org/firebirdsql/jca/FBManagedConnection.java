@@ -146,6 +146,12 @@ public class FBManagedConnection implements ManagedConnection, XAResource, Excep
                     connectionProperties.setUseGSSAuth(true);
             }
 
+            if (dpb.hasArgument(DatabaseParameterBuffer.VERIFY_SERVER_CERTIFICATE)) {
+                int verify = dpb.getArgumentAsInt(DatabaseParameterBuffer.VERIFY_SERVER_CERTIFICATE);
+                if(verify == 1)
+                    connectionProperties.setVerifyServerCertificate(true);
+            }
+
             database = mcf.getDatabaseFactory().connect(connectionProperties);
             database.addDatabaseListener(new MCDatabaseListener());
             database.addExceptionListener(this);

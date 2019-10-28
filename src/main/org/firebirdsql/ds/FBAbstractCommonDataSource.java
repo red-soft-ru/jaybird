@@ -18,16 +18,15 @@
  */
 package org.firebirdsql.ds;
 
-import java.sql.SQLException;
-
-import javax.naming.BinaryRefAddr;
-import javax.naming.Reference;
-import javax.naming.StringRefAddr;
-
 import org.firebirdsql.gds.DatabaseParameterBuffer;
 import org.firebirdsql.gds.TransactionParameterBuffer;
 import org.firebirdsql.jdbc.FBConnectionProperties;
 import org.firebirdsql.jdbc.FirebirdConnectionProperties;
+
+import javax.naming.BinaryRefAddr;
+import javax.naming.Reference;
+import javax.naming.StringRefAddr;
+import java.sql.SQLException;
 
 /**
  * Abstract class for properties and behaviour common to DataSources,
@@ -193,6 +192,21 @@ public abstract class FBAbstractCommonDataSource extends RootCommonDataSource im
         synchronized (lock) {
             checkNotStarted();
             connectionProperties.setRepositoryPin(pin);
+        }
+    }
+
+    @Override
+    public boolean getVerifyServerCertificate() {
+        synchronized (lock) {
+            return connectionProperties.getVerifyServerCertificate();
+        }
+    }
+
+    @Override
+    public void setVerifyServerCertificate(boolean verify) {
+        synchronized (lock) {
+            checkNotStarted();
+            connectionProperties.setVerifyServerCertificate(verify);
         }
     }
 
@@ -546,6 +560,50 @@ public abstract class FBAbstractCommonDataSource extends RootCommonDataSource im
         synchronized (lock) {
             checkNotStarted();
             connectionProperties.setUseFirebirdAutocommit(useFirebirdAutocommit);
+        }
+    }
+
+    @Override
+    public String getWireCrypt() {
+        synchronized (lock) {
+            return connectionProperties.getWireCrypt();
+        }
+    }
+
+    @Override
+    public void setWireCrypt(String wireCrypt) {
+        synchronized (lock) {
+            checkNotStarted();
+            connectionProperties.setWireCrypt(wireCrypt);
+        }
+    }
+
+    @Override
+    public String getDbCryptConfig() {
+        synchronized (lock) {
+            return connectionProperties.getDbCryptConfig();
+        }
+    }
+
+    @Override
+    public void setDbCryptConfig(String dbCryptConfig) {
+        synchronized (lock) {
+            checkNotStarted();
+            connectionProperties.setDbCryptConfig(dbCryptConfig);
+        }
+    }
+
+    @Override
+    public boolean isIgnoreProcedureType() {
+        synchronized (lock) {
+            return connectionProperties.isIgnoreProcedureType();
+        }
+    }
+
+    @Override
+    public void setIgnoreProcedureType(boolean ignoreProcedureType) {
+        synchronized (lock) {
+            connectionProperties.setIgnoreProcedureType(ignoreProcedureType);
         }
     }
 

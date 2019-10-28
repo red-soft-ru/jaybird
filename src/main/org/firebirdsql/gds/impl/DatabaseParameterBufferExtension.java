@@ -28,7 +28,7 @@ import org.firebirdsql.gds.DatabaseParameterBuffer;
 import org.firebirdsql.gds.ISCConstants;
 
 /**
- * Extension of the {@link org.firebirdsql.gds.DatabaseParameterBuffer} 
+ * Extension of the {@link org.firebirdsql.gds.DatabaseParameterBuffer}
  * interface that allows GDS implementations remove the DPB extension parameters
  * that driver implementation uses for client-side configuration.
  */
@@ -36,7 +36,7 @@ public interface DatabaseParameterBufferExtension extends DatabaseParameterBuffe
 
     /*
      * Driver-specific DPB params that must be removed before sending them
-     * to the server. These params influence only the client side.
+     * to the server. These params are not sent to the server.
      */
     int SOCKET_BUFFER_SIZE              = ISCConstants.isc_dpb_socket_buffer_size;
     int BLOB_BUFFER_SIZE                = ISCConstants.isc_dpb_blob_buffer_size;
@@ -49,18 +49,23 @@ public interface DatabaseParameterBufferExtension extends DatabaseParameterBuffe
     int NO_RESULT_SET_TRACKING          = ISCConstants.isc_dpb_no_result_set_tracking;
     int RESULT_SET_HOLDABLE             = ISCConstants.isc_dpb_result_set_holdable;
     int FILENAME_CHARSET                = ISCConstants.isc_dpb_filename_charset;
+    int CERTIFICATE                     = ISCConstants.isc_dpb_certificate;
     int CERTIFICATE_BASE64              = ISCConstants.isc_dpb_certificate_base64;
     @Deprecated
     int OCTETS_AS_BYTES                 = ISCConstants.isc_dpb_octets_as_bytes;
     int SO_TIMEOUT                      = ISCConstants.isc_dpb_so_timeout;
     int COLUMN_LABEL_FOR_NAME           = ISCConstants.isc_dpb_column_label_for_name;
     int USE_FIREBIRD_AUTOCOMMIT         = ISCConstants.isc_dpb_use_firebird_autocommit;
+    int WIRE_CRYPT_LEVEL                = ISCConstants.isc_dpb_wire_crypt_level;
+    int DB_CRYPT_CONFIG                 = ISCConstants.isc_dpb_db_crypt_config;
+    int IGNORE_PROCEDURE_TYPE           = ISCConstants.isc_dpb_ignore_procedure_type;
     
     /**
      * List of the DPB extensions. This array is used to filter the parameters
      * from the DPB before sending it to Firebird. Any new extension code MUST
      * be listed here.
      */
+    @SuppressWarnings("deprecation")
     int[] EXTENSION_PARAMETERS = new int[] {
         SOCKET_BUFFER_SIZE,
         BLOB_BUFFER_SIZE, 
@@ -77,6 +82,11 @@ public interface DatabaseParameterBufferExtension extends DatabaseParameterBuffe
         SO_TIMEOUT,
         COLUMN_LABEL_FOR_NAME,
         USE_FIREBIRD_AUTOCOMMIT,
+        WIRE_CRYPT_LEVEL,
+        DB_CRYPT_CONFIG,
+        IGNORE_PROCEDURE_TYPE,
+        DB_CRYPT_CONFIG,
+        CERTIFICATE,
         CERTIFICATE_BASE64
     };
 

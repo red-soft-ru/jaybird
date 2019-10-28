@@ -66,6 +66,17 @@ public interface JaybirdErrorCodes {
     int jb_unsupportedFieldType     = 337248277;
     int jb_invalidFetchDirection    = 337248278;
     int jb_operationNotAllowedOnForwardOnly              = 337248279;
+    int jb_cryptNoCryptKeyAvailable = 337248280;
+    int jb_cryptAlgorithmNotAvailable                    = 337248281;
+    int jb_cryptInvalidKey          = 337248282;
+    int jb_invalidConnectionPropertyValue                = 337248283;
+    int jb_dbCryptCallbackInitError = 337248284;
+    int jb_dbCryptDataError         = 337248285;
+    int jb_hashAlgorithmNotAvailable                     = 337248286;
+    // Error codes backported from Jaybird 4 as needed
+    int jb_blobClosed               = 337248295;
+    int jb_noKnownAuthPlugins       = 337248287;
+    int jb_operationClosed          = 337248298;
 
     @SuppressWarnings("unused")
     int jb_range_end                = 337264639;

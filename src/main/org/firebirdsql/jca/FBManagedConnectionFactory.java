@@ -182,7 +182,7 @@ public class FBManagedConnectionFactory implements ManagedConnectionFactory, Fir
     }
 
     /**
-     * @deprecated use {@link #setDefaultIsolation(String)} 
+     * @deprecated use {@link #setDefaultIsolation(String)}
      */
     @Deprecated
     public void setTransactionIsolationName(String name) {
@@ -374,7 +374,7 @@ public class FBManagedConnectionFactory implements ManagedConnectionFactory, Fir
     }
 
     public void setUseTranslation(String translationPath) {
-        connectionProperties.setUseTranslation(translationPath);        
+        connectionProperties.setUseTranslation(translationPath);
     }
 
     public boolean isDefaultResultSetHoldable() {
@@ -416,6 +416,36 @@ public class FBManagedConnectionFactory implements ManagedConnectionFactory, Fir
     }
 
     @Override
+    public String getWireCrypt() {
+        return connectionProperties.getWireCrypt();
+    }
+
+    @Override
+    public void setWireCrypt(String wireCrypt) {
+        connectionProperties.setWireCrypt(wireCrypt);
+    }
+
+    @Override
+    public String getDbCryptConfig() {
+        return connectionProperties.getDbCryptConfig();
+    }
+
+    @Override
+    public void setDbCryptConfig(String dbCryptConfig) {
+        connectionProperties.setDbCryptConfig(dbCryptConfig);
+    }
+
+    @Override
+    public boolean isIgnoreProcedureType() {
+        return connectionProperties.isIgnoreProcedureType();
+    }
+
+    @Override
+    public void setIgnoreProcedureType(boolean ignoreProcedureType) {
+        connectionProperties.setIgnoreProcedureType(ignoreProcedureType);
+    }
+
+    @Override
     public boolean isUseGSSAuth() {
         return connectionProperties.isUseGSSAuth();
     }
@@ -443,6 +473,16 @@ public class FBManagedConnectionFactory implements ManagedConnectionFactory, Fir
     @Override
     public void setRepositoryPin(String pin) {
         connectionProperties.setRepositoryPin(pin);
+    }
+
+    @Override
+    public boolean getVerifyServerCertificate() {
+        return connectionProperties.getVerifyServerCertificate();
+    }
+
+    @Override
+    public void setVerifyServerCertificate(boolean verify) {
+        connectionProperties.setVerifyServerCertificate(verify);
     }
 
     public int hashCode() {

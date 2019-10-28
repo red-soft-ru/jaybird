@@ -24,9 +24,13 @@ package org.firebirdsql.gds.ng.wire.auth;
  * @author <a href="mailto:mrotteveel@users.sourceforge.net">Mark Rotteveel</a>
  */
 public class LegacyAuthenticationPluginSpi implements AuthenticationPluginSpi {
+
+    @SuppressWarnings("WeakerAccess")
+    public static final String LEGACY_AUTH_NAME = "Legacy_Auth";
+
     @Override
     public String getPluginName() {
-        return LegacyAuthenticationPlugin.LEGACY_AUTH_NAME;
+        return LEGACY_AUTH_NAME;
     }
 
     @Override

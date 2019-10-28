@@ -31,6 +31,10 @@ public class GssAuthenticationPlugin implements AuthenticationPlugin {
     if (firstStage) {
       log.debug("Gss phase 1");
       firstStage = false;
+      if (clientAuthBlock.getLogin() != null || clientAuthBlock.getCertificate() != null ||
+              clientAuthBlock.getCertificateBase64() != null)
+        return AuthStatus.AUTH_CONTINUE;
+
       return AuthStatus.AUTH_MORE_DATA;
     }
     log.debug("Gss phase 2");
@@ -57,6 +61,16 @@ public class GssAuthenticationPlugin implements AuthenticationPlugin {
   @Override
   public boolean hasServerData() {
     return serverData != null && serverData.length > 0;
+  }
+
+  @Override
+  public boolean generatesSessionKey() {
+    return false;
+  }
+
+  @Override
+  public byte[] getSessionKey() throws SQLException {
+    throw new SQLException("GssAuthenticationPlugin cannot generate a session key");
   }
 
   @Override

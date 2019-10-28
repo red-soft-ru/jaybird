@@ -20,6 +20,7 @@ package org.firebirdsql.jdbc;
 
 import org.firebirdsql.gds.DatabaseParameterBuffer;
 import org.firebirdsql.gds.TransactionParameterBuffer;
+import org.firebirdsql.gds.ng.WireCrypt;
 
 import java.sql.SQLException;
 
@@ -403,7 +404,7 @@ public interface FirebirdConnectionProperties {
     /**
      * Get whether to use Firebird autocommit (experimental).
      *
-     * @return {@code} use Firebird autocommit
+     * @return {@code true} use Firebird autocommit
      */
     boolean isUseFirebirdAutocommit();
 
@@ -414,6 +415,67 @@ public interface FirebirdConnectionProperties {
      *         {@code true} Use Firebird autocommit
      */
     void setUseFirebirdAutocommit(boolean useFirebirdAutocommit);
+
+    /**
+     * Get the wire encryption level value.
+     *
+     * @return Wire encryption level ({@code null} implies {@code DEFAULT})
+     * @since 3.0.4
+     */
+    String getWireCrypt();
+
+    /**
+     * Sets the wire encryption level.
+     * <p>
+     * Values are defined by {@link WireCrypt}, values are handled case insensitive.
+     * Invalid values are accepted, but will cause an error when a connection is established.
+     * </p>
+     *
+     * @param wireCrypt
+     *         Wire encryption level
+     * @since 3.0.4
+     */
+    void setWireCrypt(String wireCrypt);
+
+    /**
+     * Get the database encryption plugin configuration.
+     *
+     * @return Database encryption plugin configuration, meaning plugin specific
+     * @since 3.0.4
+     */
+    String getDbCryptConfig();
+
+    /**
+     * Sets the database encryption plugin configuration.
+     *
+     * @param dbCryptConfig
+     *         Database encryption plugin configuration, meaning plugin specific
+     * @since 3.0.4
+     */
+    void setDbCryptConfig(String dbCryptConfig);
+
+    /**
+     * Get the value for {@code ignoreProcedureType}.
+     *
+     * @return value for {@code ignoreProcedureType}
+     * @since 3.0.6
+     */
+    boolean isIgnoreProcedureType();
+
+    /**
+     * Sets the value {@code ignoreProcedureType}.
+     * <p>
+     * When set to true, the {@link java.sql.CallableStatement} implementation in Jaybird will ignore metadata
+     * information about the stored procedure type and default to using {@code EXECUTE PROCEDURE}, unless the type is
+     * explicitly set using {@link FirebirdCallableStatement#setSelectableProcedure(boolean)}. This can be useful in
+     * situations where a stored procedure is selectable, but tooling or code expects an executable stored procedure.
+     * </p>
+     *
+     * @param ignoreProcedureType
+     *         {@code true} Ignore procedure type
+     * @since 3.0.6
+     */
+    void setIgnoreProcedureType(boolean ignoreProcedureType);
 
     boolean isUseGSSAuth();
 
@@ -440,4 +502,15 @@ public interface FirebirdConnectionProperties {
      *         Set pin-code for the cryptopro container.
      */
     void setRepositoryPin(String pin);
+
+    /**
+     * Get the server certificate verification.
+     */
+    boolean getVerifyServerCertificate();
+
+    /**
+     * @param verify
+     *         Set server certificate verification.
+     */
+    void setVerifyServerCertificate(boolean verify);
 }

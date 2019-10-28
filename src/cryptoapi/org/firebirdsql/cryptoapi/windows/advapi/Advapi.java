@@ -243,6 +243,18 @@ public class Advapi {
     return Win32Api.getActualData(data, len.getValue());
   }
 
+  public static byte[] cryptGetProvParam(Pointer provHandle, int paramCode, int flags, int bufferSize) throws CryptoException {
+    if (LOGGING)
+      LOG.debug("cryptGetProvParam " + paramCode + " " + paramCode + " " + flags + " " + bufferSize);
+    final IntByReference len = new IntByReference(bufferSize);
+    final byte data[] = new byte[len.getValue()];
+    if (!lib.CryptGetProvParam(provHandle, paramCode, data, len, flags))
+      throw CryptoUtil.raiseCryptoError("CryptGetProvParam", getLastError());
+    if (LOGGING)
+      LOG.debug("cryptGetProvParam " + Arrays.toString(data));
+    return Win32Api.getActualData(data, len.getValue());
+  }
+
   public static synchronized List<String> enumContainers(Pointer provHandle) throws CryptoException {
     int flag = CRYPT_FIRST;
     final List<String> containers = new ArrayList<String>();

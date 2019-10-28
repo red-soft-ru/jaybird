@@ -163,26 +163,13 @@ public interface ISCConstants {
     int isc_dpb_reset_icu				= 89;
     int isc_dpb_map_attach              = 90;
 
-    /* Red Database security parameters */
-    int isc_dpb_mac_plugin				= 148;
-    int isc_dpb_krb5					= 149;
-    int isc_dpb_multi_factor_auth       = 150;
-    int isc_dpb_certificate             = 151;
-    int isc_dpb_repository_name         = 152;
-    int isc_dpb_eye                     = 153;
-    int isc_dpb_session_key             = 154;
-    int isc_dpb_session_key_iv          = 155;
-    int isc_dpb_verify_server           = 156;
-    int isc_dpb_hw_address              = 157;
-    int isc_dpb_certificate_body        = 158;
-    int isc_dpb_repository_pin          = 159;
-    int isc_dpb_set_db_replica          = 160;
-    int isc_dpb_session_encryption      = 161;
-    int isc_dpb_salt                    = 162;
-    int isc_dpb_master_attach           = 163;
-    int isc_dpb_gss                     = 164;
-    int isc_dpb_security_authentication = 165;
-
+    // Firebird 4 constants
+    int isc_dpb_session_time_zone       = 91;
+    int isc_dpb_set_db_replica          = 92;
+    int isc_dpb_time_zone_bind          = 93;
+    int isc_dpb_decfloat_bind           = 94;
+    int isc_dpb_decfloat_round          = 95;
+    int isc_dpb_decfloat_traps          = 96;
 
     /*
      * Driver-specific DPB params that will be removed before sending them
@@ -204,7 +191,36 @@ public interface ISCConstants {
     int isc_dpb_so_timeout              = 141;
     int isc_dpb_column_label_for_name   = 142;
     int isc_dpb_use_firebird_autocommit = 143;
-    int isc_dpb_certificate_base64      = 144;
+    int isc_dpb_wire_crypt_level        = 144;
+    int isc_dpb_db_crypt_config         = 145;
+    int isc_dpb_ignore_procedure_type   = 146;
+
+    /* Red Database security parameters */
+    int isc_dpb_mac_plugin				= 148;
+    int isc_dpb_krb5					= 149;
+    int isc_dpb_multi_factor_auth       = 150;
+    int isc_dpb_certificate             = 151;
+    int isc_dpb_repository_name         = 152;
+    int isc_dpb_eye                     = 153;
+    int isc_dpb_session_key             = 154;
+    int isc_dpb_session_key_iv          = 155;
+    int isc_dpb_verify_server           = 156;
+    int isc_dpb_hw_address              = 157;
+    int isc_dpb_certificate_body        = 158;
+    int isc_dpb_repository_pin          = 159;
+    int isc_dpb_session_encryption      = 161;
+    int isc_dpb_salt                    = 162;
+    int isc_dpb_master_attach           = 163;
+    int isc_dpb_effective_login	        = 164;
+    int isc_dpb_gss                     = 165;
+    int isc_dpb_security_authentication = 166;
+    int isc_dpb_certificate_base64      = 167;
+    int isc_dpb_exclude_crypto_plugins  = 168;
+
+    // Lowest Jaybird DPB extension value
+    int jaybirdMinIscDpbValue = isc_dpb_socket_buffer_size;
+    // NOTE: Update this when adding new Jaybird specific DPB items
+    int jaybirdMaxIscDpbValue = isc_dpb_exclude_crypto_plugins;
 
     /*************************************/
     /* Transaction parameter block stuff */
@@ -271,6 +287,7 @@ public interface ISCConstants {
     int isc_spb_connect_timeout         = isc_dpb_connect_timeout;
     int isc_spb_dummy_packet_interval   = isc_dpb_dummy_packet_interval;
     int isc_spb_sql_role_name           = isc_dpb_sql_role_name;
+    int isc_spb_effective_login         = isc_dpb_effective_login;
 
     // This will not be used in protocol 13, therefore may be reused
     int isc_spb_specific_auth_data      = isc_spb_trusted_auth;
@@ -1634,6 +1651,39 @@ public interface ISCConstants {
     int isc_crdb_load                        = 335545097;
     int isc_crdb_nodb                        = 335545098;
     int isc_crdb_notable                     = 335545099;
+    int isc_interface_version_too_old        = 335545100;
+    int isc_fun_param_mismatch               = 335545101;
+    int isc_savepoint_backout_err            = 335545102;
+    int isc_domain_primary_key_notnull       = 335545103;
+    int isc_invalid_attachment_charset       = 335545104;
+    int isc_map_down                         = 335545105;
+    int isc_login_error                      = 335545106;
+    int isc_already_opened                   = 335545107;
+    int isc_bad_crypt_key                    = 335545108;
+    int isc_encrypt_error                    = 335545109;
+    int isc_bad_ext_file                     = 335546320;
+    int isc_wrong_adp_fields_def             = 335546321;
+    int isc_wrong_adp_field_name             = 335546322;
+    int isc_wrong_adp_field_type             = 335546323;
+    int isc_bad_ext_record                   = 335546324;
+    int isc_bad_adp_type                     = 335546325;
+    int isc_dir_resolve_error                = 335546326;
+    int isc_read_file_error                  = 335546327;
+    int isc_create_file_error                = 335546328;
+    int isc_delete_file_error                = 335546329;
+    int isc_blob_io_error                    = 335546330;
+    int isc_cant_connect_to_ldap             = 335546331;
+    int isc_cant_bind_to_ldap                = 335546332;
+    int isc_no_ldap_init                     = 335546333;
+    int isc_sysf_ldap_attr                   = 335546334;
+    int isc_no_ext_file                      = 335546335;
+    int isc_no_gss_init                      = 335546336;
+    int isc_hash_error                       = 335546337;
+    int isc_policy_already_exists            = 335546338;
+    int isc_policy_not_exists                = 335546339;
+    int isc_user_not_exists                  = 335546340;
+    int isc_policy_is_granted                = 335546341;
+    int isc_bad_trig_BLR                     = 335546342;
     int isc_gfix_db_name                     = 335740929;
     int isc_gfix_invalid_sw                  = 335740930;
     int isc_gfix_incmp_sw                    = 335740932;

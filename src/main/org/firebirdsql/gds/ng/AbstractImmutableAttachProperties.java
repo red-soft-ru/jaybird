@@ -36,8 +36,13 @@ public abstract class AbstractImmutableAttachProperties<T extends IAttachPropert
     private final int socketBufferSize;
     private final int soTimeout;
     private final int connectTimeout;
+    private final WireCrypt wireCrypt;
+    private final String dbCryptConfig;
+    private final String excludeCryptoPlugins;
     private final String certificate;
+    private final String certificateBase64;
     private final String repositoryPin;
+    private final String effectiveLogin;
 
     /**
      * Copy constructor for IAttachProperties.
@@ -60,8 +65,13 @@ public abstract class AbstractImmutableAttachProperties<T extends IAttachPropert
         socketBufferSize = src.getSocketBufferSize();
         soTimeout = src.getSoTimeout();
         connectTimeout = src.getConnectTimeout();
+        wireCrypt = src.getWireCrypt();
+        dbCryptConfig = src.getDbCryptConfig();
         certificate = src.getCertificate();
+        certificateBase64 = src.getCertificateBase64();
         repositoryPin = src.getRepositoryPin();
+        excludeCryptoPlugins = src.getExcludeCryptoPlugins();
+        effectiveLogin = src.getEffectiveLogin();
     }
 
     @Override
@@ -165,6 +175,26 @@ public abstract class AbstractImmutableAttachProperties<T extends IAttachPropert
     }
 
     @Override
+    public WireCrypt getWireCrypt() {
+        return wireCrypt;
+    }
+
+    @Override
+    public void setWireCrypt(final WireCrypt wireCrypt) {
+        immutable();
+    }
+
+    @Override
+    public String getDbCryptConfig() {
+        return dbCryptConfig;
+    }
+
+    @Override
+    public void setDbCryptConfig(String dbCryptConfig) {
+        immutable();
+    }
+
+    @Override
     public String getCertificate() {
         return certificate;
     }
@@ -175,12 +205,42 @@ public abstract class AbstractImmutableAttachProperties<T extends IAttachPropert
     }
 
     @Override
+    public String getCertificateBase64() {
+        return certificateBase64;
+    }
+
+    @Override
+    public void setCertificateBase64(final String certificateBase64) {
+        immutable();
+    }
+
+    @Override
     public String getRepositoryPin() {
         return repositoryPin;
     }
 
     @Override
     public void setRepositoryPin(final String pin) {
+        immutable();
+    }
+
+    @Override
+    public String getEffectiveLogin() {
+        return effectiveLogin;
+    }
+
+    @Override
+    public void setEffectiveLogin(final String login) {
+        immutable();
+    }
+
+    @Override
+    public String getExcludeCryptoPlugins() {
+        return excludeCryptoPlugins;
+    }
+
+    @Override
+    public void setExcludeCryptoPlugins(String authPlugins) {
         immutable();
     }
 

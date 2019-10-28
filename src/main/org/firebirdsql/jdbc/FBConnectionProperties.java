@@ -59,9 +59,13 @@ public class FBConnectionProperties implements FirebirdConnectionProperties, Ser
     public static final String SO_TIMEOUT = "soTimeout";
     public static final String CONNECT_TIMEOUT = "connectTimeout";
     public static final String USE_FIREBIRD_AUTOCOMMIT = "useFirebirdAutocommit";
+    public static final String WIRE_CRYPT_LEVEL = "wireCrypt";
+    public static final String DB_CRYPT_CONFIG = "dbCryptConfig";
+    public static final String IGNORE_PROCEDURE_TYPE = "ignoreProcedureType";
     public static final String USE_GSS_AUTH = "useGSSAuth";
     public static final String CERTIFICATE = "certificate";
     public static final String REPOSITORY_PIN = "repository_pin";
+    public static final String SERVER_CERTIFICATE = "serverCertificate";
 
     private Map<String, Object> properties = new HashMap<>();
     private String type;
@@ -372,6 +376,36 @@ public class FBConnectionProperties implements FirebirdConnectionProperties, Ser
     }
 
     @Override
+    public String getWireCrypt() {
+        return getStringProperty(WIRE_CRYPT_LEVEL);
+    }
+
+    @Override
+    public void setWireCrypt(String wireCrypt) {
+        setStringProperty(WIRE_CRYPT_LEVEL, wireCrypt);
+    }
+
+    @Override
+    public String getDbCryptConfig() {
+        return getStringProperty(DB_CRYPT_CONFIG);
+    }
+
+    @Override
+    public void setDbCryptConfig(String dbCryptConfig) {
+        setStringProperty(DB_CRYPT_CONFIG, dbCryptConfig);
+    }
+
+    @Override
+    public boolean isIgnoreProcedureType() {
+        return getBooleanProperty(IGNORE_PROCEDURE_TYPE);
+    }
+
+    @Override
+    public void setIgnoreProcedureType(boolean ignoreProcedureType) {
+        setBooleanProperty(IGNORE_PROCEDURE_TYPE, ignoreProcedureType);
+    }
+
+    @Override
     public String getCertificate() {
         return getStringProperty(CERTIFICATE);
     }
@@ -389,6 +423,16 @@ public class FBConnectionProperties implements FirebirdConnectionProperties, Ser
     @Override
     public void setRepositoryPin(String pin) {
         setStringProperty(REPOSITORY_PIN, pin);
+    }
+
+    @Override
+    public boolean getVerifyServerCertificate() {
+        return getBooleanProperty(SERVER_CERTIFICATE);
+    }
+
+    @Override
+    public void setVerifyServerCertificate(boolean verify) {
+        setBooleanProperty(SERVER_CERTIFICATE, verify);
     }
 
     public void setNonStandardProperty(String propertyMapping) {

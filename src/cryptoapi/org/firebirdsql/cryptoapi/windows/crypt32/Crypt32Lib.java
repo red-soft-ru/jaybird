@@ -90,7 +90,7 @@ public interface Crypt32Lib extends Library {
    *   __in  PCCERT_CONTEXT pPrevCertContext
    * );
    */
-  public _CERT_CONTEXT.PCCERT_CONTEXT CertEnumCertificatesInStore(Pointer hCertStore, Pointer pPrevCertContext);
+  public Pointer CertEnumCertificatesInStore(Pointer hCertStore, Pointer pPrevCertContext);
 
   /**
    * The CertFindCertificateInStore function finds the first or next certificate context in a certificate store that
@@ -107,11 +107,11 @@ public interface Crypt32Lib extends Library {
    *   __in  PCCERT_CONTEXT pPrevCertContext
    * );
    */
-  public _CERT_CONTEXT.PCCERT_CONTEXT CertFindCertificateInStore(Pointer hCertStore, int dwCertEncodingType, int dwFindFlags,
-                                                                 int dwFindType, byte[] pvFindPara, _CERT_CONTEXT.PCERT_CONTEXT pPrevCertContext);
+  public Pointer CertFindCertificateInStore(Pointer hCertStore, int dwCertEncodingType, int dwFindFlags,
+                                                                 int dwFindType, byte[] pvFindPara, Pointer pPrevCertContext);
 
-  public _CERT_CONTEXT.PCCERT_CONTEXT CertFindCertificateInStore(Pointer hCertStore, int dwCertEncodingType, int dwFindFlags,
-                                                                 int dwFindType, Pointer pvFindPara, _CERT_CONTEXT.PCERT_CONTEXT pPrevCertContext);
+  public Pointer CertFindCertificateInStore(Pointer hCertStore, int dwCertEncodingType, int dwFindFlags,
+                                                                 int dwFindType, Pointer pvFindPara, Pointer pPrevCertContext);
 
   /**
    * The CryptAcquireCertificatePrivateKey function obtains the private key for a certificate. This function is used
@@ -131,6 +131,10 @@ public interface Crypt32Lib extends Library {
    * );
    */
   public boolean CryptAcquireCertificatePrivateKey(_CERT_CONTEXT.PCERT_CONTEXT pCert, int dwFlags, Pointer pvReserved,
+                                                   PointerByReference phCryptProvOrNCryptKey,
+                                                   IntByReference pdwKeySpec, IntByReference pfCallerFreeProvOrNCryptKey);
+
+  public boolean CryptAcquireCertificatePrivateKey(Pointer pCert, int dwFlags, Pointer pvReserved,
                                                    PointerByReference phCryptProvOrNCryptKey,
                                                    IntByReference pdwKeySpec, IntByReference pfCallerFreeProvOrNCryptKey);
 
@@ -218,6 +222,14 @@ public interface Crypt32Lib extends Library {
       IntByReference pcbData
   );
 
+  public boolean CertGetCertificateContextProperty(
+          Pointer pCertContext,
+          int dwPropId,
+          //Structure pvData,
+          Pointer pvData,
+          IntByReference pcbData
+  );
+
   /**
    * The CryptImportPublicKeyInfo function converts and imports the public key information into the provider and
    * returns a handle of the public key. CryptImportPublicKeyInfoEx provides a revised version of this function.
@@ -250,5 +262,36 @@ public interface Crypt32Lib extends Library {
       byte[] pbDecrypted,
       IntByReference cbDecrypted,
       _CERT_CONTEXT.PCCERT_CONTEXT pXchgCert
+  );
+
+  /**
+   *  Find OID information. Returns NULL if unable to find any information
+   *  for the specified key and group. Note, returns a pointer to a constant
+   *  data structure. The returned pointer MUST NOT be freed.
+   *
+   *  dwKeyType's:
+   *    CRYPT_OID_INFO_OID_KEY, pvKey points to a szOID
+   *    CRYPT_OID_INFO_NAME_KEY, pvKey points to a wszName
+   *    CRYPT_OID_INFO_ALGID_KEY, pvKey points to an ALG_ID
+   *    CRYPT_OID_INFO_SIGN_KEY, pvKey points to an array of two ALG_ID's:
+   *      ALG_ID[0] - Hash Algid
+   *      ALG_ID[1] - PubKey Algid
+   *
+   *  Setting dwGroupId to 0, searches all groups according to the dwKeyType.
+   *  Otherwise, only the dwGroupId is searched.
+   *
+   *  WINCRYPT32API
+   *          PCCRYPT_OID_INFO
+   *  WINAPI
+   *  CryptFindOIDInfo(
+   *          IN DWORD dwKeyType,
+   *          IN void *pvKey,
+   *          IN DWORD dwGroupId
+   *          );
+   */
+  public _CRYPT_OID_INFO.PCCRYPT_OID_INFO CryptFindOIDInfo(
+          int dwKeyType,
+          Pointer pvKey,
+          int dwGroupId
   );
 }
