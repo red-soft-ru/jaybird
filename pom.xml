@@ -17,8 +17,12 @@
 	<modules>
 		<module>modules/jaybird-jdk18</module>
 		<module>modules/jaybird-jdk17</module>
-		<module>modules/cryptoapi</module>
-		<module>modules/cryptoapi-security</module>
+		<module>modules/cryptoapi-jdk18</module>
+		<module>modules/cryptoapi-jdk17</module>
+		<module>modules/cryptoapi-security-jdk18</module>
+		<module>modules/cryptoapi-security-jdk17</module>
+		<module>modules/jaybird-test-jdk18</module>
+		<module>modules/jaybird-test-jdk17</module>
 	</modules>
 	<profiles>
 		<profile>
