@@ -82,7 +82,7 @@ sources:
     - builder
   stage: build
   before_script:
-    - apk --update add apache-ant bash zip tar
+    - apk --update add maven apache-ant bash zip tar
     - export VERSION=`cat .ci/version`
     - archive_prefix=jaybird-${VERSION}
     - tar xf dist-src/${archive_prefix}.tar.gz
