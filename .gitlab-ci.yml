@@ -115,7 +115,7 @@ test:jdk18:rdb4:
   stage: test
   before_script:
     - /opt/cprocsp/sbin/amd64/cpconfig -license -set $LICENSE_CRYPTOPRO4
-    - yum install -y krb5-server krb5-workstation expect
+    - yum install -y maven krb5-server krb5-workstation expect
     - ./ci/configure_kerberos.sh
     - export JAYBIRD_VERSION=`cat .ci/version`
     - export SRCDIR=`pwd`/jaybird-${JAYBIRD_VERSION}
@@ -151,7 +151,7 @@ test:jdk18:rdb3:
   stage: test
   before_script:
     - /opt/cprocsp/sbin/amd64/cpconfig -license -set $LICENSE_CRYPTOPRO4
-    - yum install -y krb5-server krb5-workstation expect icu
+    - yum install -y maven krb5-server krb5-workstation expect icu
     - ./ci/configure_kerberos.sh
     - export JAYBIRD_VERSION=`cat .ci/version`
     - export SRCDIR=`pwd`/jaybird-${JAYBIRD_VERSION}
@@ -187,7 +187,7 @@ test:jdk18:rdb2_6:
   stage: test
   before_script:
     - /opt/cprocsp/sbin/amd64/cpconfig -license -set $LICENSE_CRYPTOPRO4
-    - yum install -y krb5-server krb5-workstation expect icu xinetd
+    - yum install -y maven krb5-server krb5-workstation expect icu xinetd
     - ./ci/configure_kerberos.sh
     - export JAYBIRD_VERSION=`cat .ci/version`
     - export SRCDIR=`pwd`/jaybird-${JAYBIRD_VERSION}
@@ -223,7 +223,7 @@ test:jdk18:fb3:
   stage: test
   before_script:
     - /opt/cprocsp/sbin/amd64/cpconfig -license -set $LICENSE_CRYPTOPRO4
-    - yum install -y krb5-server krb5-workstation expect icu xinetd libtommath
+    - yum install -y maven krb5-server krb5-workstation expect icu xinetd libtommath
     - ./ci/configure_kerberos.sh
     - export JAYBIRD_VERSION=`cat .ci/version`
     - export SRCDIR=`pwd`/jaybird-${JAYBIRD_VERSION}
