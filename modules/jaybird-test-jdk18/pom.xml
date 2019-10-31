@@ -9,6 +9,13 @@
 	<artifactId>jaybird-test-jdk18</artifactId>
 	<name>jaybird-test-jdk18</name>
 	<packaging>jar</packaging>
+	<properties>
+		<test.db.host>localhost</test.db.host>
+		<test.db.port>3050</test.db.port>
+		<test.db.dir>/tmp/db</test.db.dir>
+		<test.db.lc_ctype>NONE</test.db.lc_ctype>
+		<test.report.dir>${basedir}/../../def_reports</test.report.dir>
+	</properties>
 	<dependencies>
 		<dependency>
 			<groupId>ru.red-soft.jaybird</groupId>
@@ -80,6 +87,12 @@
 	</dependencies>
 	<build>
 		<sourceDirectory>../../src/</sourceDirectory>
+		<resources>
+			<resource>
+				<directory>../../src/test</directory>
+				<filtering>false</filtering>
+			</resource>
+		</resources>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -99,12 +112,76 @@
 			<plugin>
 				<artifactId>maven-source-plugin</artifactId>
 			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
+				<version>3.0.0</version>
+				<executions>
+					<execution>
+						<id>add-test-source</id>
+						<phase>generate-test-sources</phase>
+						<goals>
+							<goal>add-test-source</goal>
+						</goals>
+						<configuration>
+							<sources>
+								<source>../../src/cryptoapi/</source>
+								<source>../../src/test/</source>
+								<source>../../src/jna-test/</source>
+								<source>../../src/test_42/</source>
+							</sources>
+						</configuration>
+					</execution>
+					<execution>
+						<id>add-test-resource</id>
+						<phase>generate-test-resource</phase>
+						<goals>
+							<goal>add-test-resource</goal>
+						</goals>
+						<configuration>
+							<resources>
+								<!--								<resource>../../src/cryptoapi/</resource>-->
+								<resource>../../src/test/unit_test_defaults.properties</resource>
+								<!--								<resource>../../src/jna-test/</resource>-->
+							</resources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.22.2</version>
+				<configuration>
+					<includes>
+						<include>**/Test*.java</include>
+						<exclude>**/jni/Test*.java</exclude>
+						<exclude>**/TestAll.java</exclude>
+						<exclude>**/TestXABase*.java</exclude>
+						<exclude>**/TestConst.java</exclude>
+						<exclude>**/*$$*.java</exclude>
+					</includes>
+					<reportsDirectory>${test.report.dir}</reportsDirectory>
+					<testFailureIgnore>true</testFailureIgnore>
+				</configuration>
+			</plugin>
 			<!-- 			<plugin>
               <artifactId>maven-javadoc-plugin</artifactId>
             </plugin>
-       -->			<plugin>
-			<artifactId>maven-deploy-plugin</artifactId>
-		</plugin>
+       -->
+			<plugin>
+				<artifactId>maven-deploy-plugin</artifactId>
+			</plugin>
 		</plugins>
+
 	</build>
+	<reporting>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-report-plugin</artifactId>
+				<version>2.22.2</version>
+			</plugin>
+		</plugins>
+	</reporting>
 </project>
