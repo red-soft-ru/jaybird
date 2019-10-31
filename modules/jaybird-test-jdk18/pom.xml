@@ -14,7 +14,7 @@
 		<test.db.port>3050</test.db.port>
 		<test.db.dir>/tmp/db</test.db.dir>
 		<test.db.lc_ctype>NONE</test.db.lc_ctype>
-		<test.report.dir>${basedir}/../../def_reports</test.report.dir>
+		<test.report.dir>${basedir}/../../reports</test.report.dir>
 	</properties>
 	<dependencies>
 		<dependency>
