@@ -27,6 +27,12 @@
 			<optional>true</optional>
 		</dependency>
 	</dependencies>
+	<properties>
+		<project.doc.name>Jaybird</project.doc.name>
+		<excludedPackages>org.firebirdsql.pool:org.firebirdsql.jdbc.oo</excludedPackages>
+		<module.thirdparty>../../src/lib</module.thirdparty>
+		<maven.build.timestamp.format>yyyy</maven.build.timestamp.format>
+	</properties>
 	<build>
 		<sourceDirectory>../../src/</sourceDirectory>
 		<resources>
@@ -86,10 +92,33 @@
 			<plugin>
 				<artifactId>maven-source-plugin</artifactId>
 			</plugin>
-<!-- 			<plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
+				<configuration>
+					<failOnError>false</failOnError>
+					<notimestamp>false</notimestamp>
+					<stylesheet>java</stylesheet>
+					<destDir>${project.build.outputDirectory}/docs</destDir>
+					<author>true</author>
+					<version>true</version>
+					<windowtitle>${project.doc.name} API</windowtitle>
+					<doctitle>${project.doc.name}</doctitle>
+					<extdirs>${module.thirdparty}</extdirs>
+					<bottom>Copyright &amp;copy; 2001-${maven.build.timestamp} Jaybird (Firebird JDBC/JCA) team. All rights reserved.</bottom>
+					<sourcepath>
+						../../src/main:
+						../../src/jna-client:
+						../../src/jdbc_41:
+						../../src/openoffice
+					</sourcepath>
+					<excludePackageNames>${excludedPackages}</excludePackageNames>
+					<links>
+						<link>http://docs.oracle.com/javase/8/docs/api/</link>
+					</links>
+				</configuration>
 			</plugin>
- -->			<plugin>
+			<plugin>
 				<artifactId>maven-deploy-plugin</artifactId>
 			</plugin>
 		</plugins>
