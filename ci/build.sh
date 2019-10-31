@@ -21,14 +21,23 @@ JDK_VERSION=`$JAVA -version 2>&1|head -n 1|awk -F\" '{split($2, v, ".");printf("
 SOURCES=$(readlink -f $(dirname $0)/..)
 
 cd $SOURCES
-./build.sh jars
+mvn clean compile package -Dmaven.test.skip=true
 
-mkdir -p ${CI_PROJECT_DIR}/dist/jdk${JDK_VERSION}/bin \
-		 ${CI_PROJECT_DIR}/dist/jdk${JDK_VERSION}/sources \
-		 ${CI_PROJECT_DIR}/dist/jdk${JDK_VERSION}/javadoc \
-		 ${CI_PROJECT_DIR}/dist/jdk${JDK_VERSION}/test
+mkdir -p ${CI_PROJECT_DIR}/dist/jdk18/bin \
+		 ${CI_PROJECT_DIR}/dist/jdk18/sources \
+		 ${CI_PROJECT_DIR}/dist/jdk18/javadoc \
+		 ${CI_PROJECT_DIR}/dist/jdk17/bin \
+		 ${CI_PROJECT_DIR}/dist/jdk17/sources \
+		 ${CI_PROJECT_DIR}/dist/jdk17/javadoc
 
-cp output/lib/jaybird-*javadoc* ${CI_PROJECT_DIR}/dist/jdk${JDK_VERSION}/javadoc
-cp output/lib/jaybird-*sources* ${CI_PROJECT_DIR}/dist/jdk${JDK_VERSION}/sources
-cp output/lib/jaybird-*test* ${CI_PROJECT_DIR}/dist/jdk${JDK_VERSION}/test
-cp output/lib/* ${CI_PROJECT_DIR}/dist/jdk${JDK_VERSION}/bin
+cp modules/jaybird-jdk18/target/jaybird-*javadoc* ${CI_PROJECT_DIR}/dist/jdk18/javadoc
+cp modules/jaybird-jdk18/target/jaybird* ${CI_PROJECT_DIR}/dist/jdk18/bin
+cp modules/jaybird-full-jdk18/target/jaybird* ${CI_PROJECT_DIR}/dist/jdk18/bin
+cp modules/cryptoapi-security-jdk18/target/jaybird* ${CI_PROJECT_DIR}/dist/jdk18/bin
+cp modules/cryptoapi-jdk18/target/jaybird* ${CI_PROJECT_DIR}/dist/jdk18/bin
+
+cp modules/jaybird-jdk17/target/jaybird-*javadoc* ${CI_PROJECT_DIR}/dist/jdk17/javadoc
+cp modules/jaybird-jdk17/target/jaybird* ${CI_PROJECT_DIR}/dist/jdk17/bin
+cp modules/jaybird-full-jdk17/target/jaybird* ${CI_PROJECT_DIR}/dist/jdk17/bin
+cp modules/cryptoapi-security-jdk17/target/jaybird* ${CI_PROJECT_DIR}/dist/jdk17/bin
+cp modules/cryptoapi-jdk17/target/jaybird* ${CI_PROJECT_DIR}/dist/jdk17/bin
