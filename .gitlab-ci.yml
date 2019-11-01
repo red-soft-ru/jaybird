@@ -57,7 +57,7 @@ sources:
   stage: sources
   image: alpine:3.7
   before_script:
-    - apk --update add bash git zip tar
+    - apk --update add maven bash git zip tar
     - git config --global user.name "Dummy Name"
     - git config --global user.email "dummy@email.org"
     - export VERSION=`cat .ci/version`
