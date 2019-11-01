@@ -223,4 +223,6 @@ klist
 
 mvn -f "${SRCDIR}"/pom.xml clean test -DfailIfNoTests=false -Dtest.report.dir=$REPORTS_DIR -Dtest.db.dir=$TEST_DIR
 
+rm -rf $REPORTS_DIR/*.txt
+
 kdestroy
