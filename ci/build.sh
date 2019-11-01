@@ -34,6 +34,7 @@ cp modules/jaybird-jdk18/target/jaybird-*javadoc* ${CI_PROJECT_DIR}/dist/jdk18/j
 cp modules/jaybird-jdk18/target/jaybird* ${CI_PROJECT_DIR}/dist/jdk18/bin
 cp modules/jaybird-jdk18/target/jaybird-*sources* ${CI_PROJECT_DIR}/dist/jdk18/sources
 cp modules/jaybird-full-jdk18/target/jaybird* ${CI_PROJECT_DIR}/dist/jdk18/bin
+cp modules/jaybird-full-jdk18/target/jaybird-*sources* ${CI_PROJECT_DIR}/dist/jdk18/sources
 cp modules/cryptoapi-security-jdk18/target/jaybird* ${CI_PROJECT_DIR}/dist/jdk18/bin
 cp modules/cryptoapi-jdk18/target/jaybird* ${CI_PROJECT_DIR}/dist/jdk18/bin
 
@@ -41,5 +42,6 @@ cp modules/jaybird-jdk17/target/jaybird-*javadoc* ${CI_PROJECT_DIR}/dist/jdk17/j
 cp modules/jaybird-jdk17/target/jaybird* ${CI_PROJECT_DIR}/dist/jdk17/bin
 cp modules/jaybird-jdk17/target/jaybird-*sources* ${CI_PROJECT_DIR}/dist/jdk17/sources
 cp modules/jaybird-full-jdk17/target/jaybird* ${CI_PROJECT_DIR}/dist/jdk17/bin
+cp modules/jaybird-full-jdk17/target/jaybird-*sources* ${CI_PROJECT_DIR}/dist/jdk17/sources
 cp modules/cryptoapi-security-jdk17/target/jaybird* ${CI_PROJECT_DIR}/dist/jdk17/bin
 cp modules/cryptoapi-jdk17/target/jaybird* ${CI_PROJECT_DIR}/dist/jdk17/bin
