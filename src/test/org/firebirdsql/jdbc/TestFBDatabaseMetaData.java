@@ -45,6 +45,9 @@ import static org.junit.Assume.assumeTrue;
  */
 public class TestFBDatabaseMetaData extends FBJUnit4TestBase {
 
+    // Firebird 4 system (package) procedure that needs to be skipped
+    static final String FB4_TRANSITIONS_PROC_NAME = "TRANSITIONS";
+    
     private Connection connection;
     private boolean supportsComment;
     private DatabaseMetaData dmd;
@@ -166,7 +169,7 @@ public class TestFBDatabaseMetaData extends FBJUnit4TestBase {
                 else
                     sysTableCount = 50;
             } else if (databaseMajorVersion == 4 && databaseMinorVersion == 0) {
-                sysTableCount = 50;
+                sysTableCount = 51;
             } else {
                 fail(String.format("Unsupported database server version %d.%d for this test case: found table count %d", databaseMajorVersion, databaseMinorVersion, count));
 
@@ -350,6 +353,12 @@ public class TestFBDatabaseMetaData extends FBJUnit4TestBase {
                 String lit_name = rs.getString("PROCEDURE_NAME");
                 assertEquals("result set from getProcedures schema mismatch: field 3 should be PROCEDURE_NAME",
                         name, lit_name);
+
+                if (FB4_TRANSITIONS_PROC_NAME.equals(name)) {
+                    // Skip FB4 system procedure TRANSITIONS, returned as packages aren't excluded (fixed in Jaybird 4)
+                    continue;
+                }
+
                 String remarks = rs.getString(7);
                 String lit_remarks = rs.getString("REMARKS");
                 // TODO: Double check meaning and reason for this check
@@ -403,6 +412,11 @@ public class TestFBDatabaseMetaData extends FBJUnit4TestBase {
             while (rs.next()) {
                 rownum++;
                 String procname = rs.getString(3);
+                if (FB4_TRANSITIONS_PROC_NAME.equals(procname)) {
+                    // Skip FB4 system procedure TRANSITIONS, returned as packages aren't excluded (fixed in Jaybird 4)
+                    rownum--;
+                    continue;
+                }
                 String colname = rs.getString(4);
                 short coltype = rs.getShort(5);
                 short datatype = rs.getShort(6);
