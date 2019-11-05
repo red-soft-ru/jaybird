@@ -94,7 +94,7 @@ chown firebird:firebird -R $KEYS_DIR/firebird
 sudo -u firebird /opt/cprocsp/bin/$CPROCSP_ARCH/certmgr -inst -cont '\\.\HDIMAGE\REDSOFT'
 sudo -u firebird /opt/cprocsp/bin/$CPROCSP_ARCH/csptest -passwd -cont '\\.\HDIMAGE\REDSOFT' -change 12345678
 
-cp fbt-repository/files/cert/REDSOFT.cer ./testuser.cer
+cp fbt-repository/files/cert/REDSOFT.cer /tmp/testuser.cer
 
 sed -i '/\[Parameters\]/a warning_time_gen_2001=ll:9223372036854775807\nwarning_time_sign_2001=ll:9223372036854775807\n' /etc/opt/cprocsp/config64.ini
 
