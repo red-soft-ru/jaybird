@@ -117,6 +117,19 @@
 						<link>http://docs.oracle.com/javase/8/docs/api/</link>
 					</links>
 				</configuration>
+				<executions>
+					<execution>
+						<id>attach-javadocs</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+						<configuration>
+							<additionalOptions>
+								<additionalOption>${javadoc.opts}</additionalOption>
+							</additionalOptions>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 			<plugin>
 				<artifactId>maven-deploy-plugin</artifactId>

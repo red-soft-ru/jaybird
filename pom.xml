@@ -34,7 +34,7 @@
 				<jdk>[1.8,)</jdk>
 			</activation>
 			<properties>
-				<additionalparam>-Xdoclint:none</additionalparam>
+				<javadoc.opts>-Xdoclint:none</javadoc.opts>
 			</properties>
 		</profile>
 	</profiles>
