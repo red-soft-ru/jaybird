@@ -49,6 +49,16 @@ file dist/jdk18/bin/jaybird-cryptoapi-security-jdk18-VERSION.jar jar
 file dist/jdk18/sources/jaybird-cryptoapi-security-jdk18-VERSION-sources.jar jar sources
 end
 
+artifact jaybird-test-jdk17 VERSION
+file dist/jdk17/bin/jaybird-test-jdk17-VERSION.jar jar
+file dist/jdk17/sources/jaybird-test-jdk17-VERSION-sources.jar jar sources
+end
+
+artifact jaybird-test-jdk18 VERSION
+file dist/jdk18/bin/jaybird-test-jdk18-VERSION.jar jar
+file dist/jdk18/sources/jaybird-test-jdk18-VERSION-sources.jar jar sources
+end
+
 testpack jdk18_rdb2_6
 dir results/jdk18_rdb2_6
 end
