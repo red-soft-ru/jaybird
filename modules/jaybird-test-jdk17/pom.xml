@@ -95,24 +95,9 @@
 					</includes>
 				</configuration>
 			</plugin>
-<!--			<plugin>-->
-<!--				<artifactId>maven-source-plugin</artifactId>-->
-<!--			</plugin>-->
 			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-jar-plugin</artifactId>
-				<version>3.1.2</version>
-				<executions>
-					<execution>
-						<id>default-jar</id>
-						<phase>none</phase>
-					</execution>
-				</executions>
+				<artifactId>maven-source-plugin</artifactId>
 			</plugin>
-			<!-- 			<plugin>
-              <artifactId>maven-javadoc-plugin</artifactId>
-            </plugin>
-       -->
 			<plugin>
 				<artifactId>maven-deploy-plugin</artifactId>
 			</plugin>
