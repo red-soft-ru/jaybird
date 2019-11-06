@@ -17,18 +17,6 @@ file dist/jdk18/sources/jaybird-jdk18-VERSION-sources.jar jar sources
 file dist/jdk18/javadoc/jaybird-jdk18-VERSION-javadoc.jar jar javadoc
 end
 
-artifact jaybird-full-jdk17 VERSION
-file dist/jdk17/bin/jaybird-full-jdk17-VERSION.jar jar
-file dist/jdk17/sources/jaybird-full-jdk17-VERSION-sources.jar jar sources
-file dist/jdk17/javadoc/jaybird-full-jdk17-VERSION-javadoc.jar jar javadoc
-end
-
-artifact jaybird-full-jdk18 VERSION
-file dist/jdk18/bin/jaybird-full-jdk18-VERSION.jar jar
-file dist/jdk18/sources/jaybird-full-jdk18-VERSION-sources.jar jar sources
-file dist/jdk18/javadoc/jaybird-full-jdk18-VERSION-javadoc.jar jar javadoc
-end
-
 artifact jaybird-cryptoapi-jdk17 VERSION
 file dist/jdk17/bin/jaybird-cryptoapi-jdk17-VERSION.jar jar
 file dist/jdk17/sources/jaybird-cryptoapi-jdk17-VERSION-sources.jar jar sources
