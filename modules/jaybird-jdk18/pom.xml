@@ -34,7 +34,6 @@
 		<maven.build.timestamp.format>yyyy</maven.build.timestamp.format>
 	</properties>
 	<build>
-		<sourceDirectory>../../src/</sourceDirectory>
 		<resources>
 			<resource>
 				<directory>../../src/resources</directory>
@@ -57,18 +56,37 @@
 		</resources>
 		<plugins>
 			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
+				<version>3.0.0</version>
+				<executions>
+					<execution>
+						<id>add-source</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>add-source</goal>
+						</goals>
+						<configuration>
+							<sources>
+								<source>../../src/main</source>
+								<source>../../src/jdbc_42</source>
+								<source>../../src/jna-client</source>
+								<source>../../src/openoffice</source>
+							</sources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>${maven-compiler-plugin.version}</version>
 				<configuration>
 					<source>1.8</source>
 					<target>1.8</target>
-					<includes>
-						<include>main/**/*.java</include>
-						<include>jdbc_42/**/*.java</include>
-						<include>jna-client/**/*.java</include>
-						<include>openoffice/**/*.java</include>
-					</includes>
+					<compilerArgs>
+						<arg>-Xpkginfo:always</arg>
+					</compilerArgs>
 				</configuration>
 			</plugin>
 			<plugin>

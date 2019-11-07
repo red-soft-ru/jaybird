@@ -33,7 +33,6 @@
 		</dependency>
 	</dependencies>
 	<build>
-		<sourceDirectory>../../src/</sourceDirectory>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -43,12 +42,15 @@
 					<source>1.7</source>
 					<target>1.7</target>
 					<includes>
-						<include>cryptoapi/**/*.java</include>
-						<include>cryptoapi_sec/**/*.java</include>
+						<include>**/cryptoapi_sec/**/*.java</include>
+						<include>**/cryptoapi/**/*.java</include>
 					</includes>
 					<excludes>
-						<exclude>cryptoapi/org/firebirdsql/cryptoapi/windows/advapi/*.java</exclude>
+						<exclude>**/org/firebirdsql/cryptoapi/windows/advapi/*.java</exclude>
 					</excludes>
+					<compilerArgs>
+						<arg>-Xpkginfo:always</arg>
+					</compilerArgs>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -63,8 +65,8 @@
 						</goals>
 						<configuration>
 							<sources>
-								<source>../../src/cryptoapi</source>
 								<source>../../src/cryptoapi_sec</source>
+								<source>../../src/cryptoapi</source>
 							</sources>
 						</configuration>
 					</execution>
