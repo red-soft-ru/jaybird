@@ -164,6 +164,10 @@
 			<plugin>
 				<artifactId>maven-deploy-plugin</artifactId>
 			</plugin>
+			<plugin>
+				<groupId>ru.redsoft.maven.plugin</groupId>
+				<artifactId>releasehub-register-plugin</artifactId>
+			</plugin>
 		</plugins>
 
 	</build>

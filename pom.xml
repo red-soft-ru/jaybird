@@ -99,9 +99,52 @@
 						</execution>
 					</executions>
 				</plugin>
+				<plugin>
+					<groupId>ru.redsoft.maven.plugin</groupId>
+					<artifactId>releasehub-register-plugin</artifactId>
+					<executions>
+						<execution>
+							<phase>deploy</phase>
+							<goals>
+								<goal>register</goal>
+							</goals>
+						</execution>
+					</executions>
+					<configuration>
+						<project>jaybird</project>
+					</configuration>
+				</plugin>
 			</plugins>
 		</pluginManagement>
+		<plugins>
+			<plugin>
+				<groupId>ru.redsoft.maven.plugin</groupId>
+				<artifactId>releasehub-register-plugin</artifactId>
+			</plugin>
+		</plugins>
 	</build>
+
+	<pluginRepositories>
+		<pluginRepository>
+			<id>artifactory-plugins-snapshot</id>
+			<name>Red Soft plugins</name>
+			<url>http://artifactory.red-soft.biz/plugins-snapshot-local</url>
+			<layout>default</layout>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</pluginRepository>
+		<pluginRepository>
+			<id>artifactory-plugins-release</id>
+			<name>Red Soft plugins</name>
+			<url>http://artifactory.red-soft.biz/plugins-release-local</url>
+			<layout>default</layout>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</pluginRepository>
+	</pluginRepositories>
+
 	<distributionManagement>
 		<snapshotRepository>
 			<id>artifactory</id>
