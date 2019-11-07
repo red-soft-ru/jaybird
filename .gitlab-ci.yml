@@ -63,7 +63,8 @@ prepare:release:
     - builder
   stage: build
   before_script:
-    - apk --update add maven apache-ant bash zip tar
+    - export VERSION=`cat .ci/version`
+    - apk --update add maven
 
 build:jdk18:
   <<: *build_template
