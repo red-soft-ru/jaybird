@@ -134,4 +134,4 @@ deploy:
   <<: *build_template
   stage: deploy
   script:
-    - mvn $MAVEN_CLI_OPTS deploy
+    - mvn $MAVEN_CLI_OPTS deploy -Dmaven.test.skip=true
