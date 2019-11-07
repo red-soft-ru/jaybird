@@ -1,6 +1,5 @@
 stages:
 - prepare
-- sources
 - build
 - test
 - deploy
@@ -50,28 +49,6 @@ prepare:release:
   only:
     - tags
 
-sources:
-  tags:
-    - docker
-    - builder
-  stage: sources
-  image: alpine:3.7
-  before_script:
-    - apk --update add maven bash git zip tar
-    - git config --global user.name "Dummy Name"
-    - git config --global user.email "dummy@email.org"
-    - export VERSION=`cat .ci/version`
-    - export TAG=`cat .ci/tag`
-  script:
-    - ./ci/dist-src.sh
-  artifacts:
-    expire_in: 1 day
-    paths:
-      - dist-src/
-  dependencies:
-    - prepare:snapshot
-    - prepare:release
-
 .build_template: &build_template
   tags:
     - docker
@@ -79,11 +56,7 @@ sources:
   stage: build
   before_script:
     - apk --update add maven apache-ant bash zip tar
-    - export VERSION=`cat .ci/version`
-    - archive_prefix=jaybird-${VERSION}
-    - tar xf dist-src/${archive_prefix}.tar.gz
   script:
-    - cd ${archive_prefix}
     - ./ci/build.sh
   artifacts:
     expire_in: 1 day
@@ -98,149 +71,65 @@ build:jdk18:
 #  <<: *build_template
 #  image: openjdk:7-jdk-alpine
 
-test:jdk18:rdb4:
+.test_template: &test_template
   tags:
     - docker
     - tester
-  variables:
-    BINDIR: ${CI_PROJECT_DIR}/dist/jdk18
-    JDK_VERSION: 18
-    JAVA_HOME: /usr/lib/jvm/jre-1.8.0
-  image:
-    name: registry.red-soft.biz:5000/docker-images/rdbtestenv/centos7:7.6.1810-cpro-4.0.9963-0
   stage: test
-  before_script:
-    - /opt/cprocsp/sbin/amd64/cpconfig -license -set $LICENSE_CRYPTOPRO4
-    - yum install -y maven krb5-server krb5-workstation expect
-    - ./ci/configure_kerberos.sh
-    - export JAYBIRD_VERSION=`cat .ci/version`
-    - export SRCDIR=`pwd`/jaybird-${JAYBIRD_VERSION}
-    - export RDB_VERSION=4.0.0.1633
-    - archive_prefix=jaybird-${JAYBIRD_VERSION}
-    - tar xf dist-src/${archive_prefix}.tar.gz
-  script:
-    - cd ${archive_prefix}
-    - ./ci/test.sh
   artifacts:
     expire_in: 1 day
     paths:
       - results
     reports:
       junit:
-        - results/jdk${JDK_VERSION}_rdb4/TEST-*.xml
-  dependencies:
-    - prepare:snapshot
-    - prepare:release
-    - sources
-    - build:jdk18
+        - results/**/*.xml
+  before_script:
+    - yum install -y maven krb5-server krb5-workstation expect $EXTRA_DEPENDENCIES
+    - /opt/cprocsp/sbin/amd64/cpconfig -license -set $LICENSE_CRYPTOPRO4
+    - ./ci/configure_kerberos.sh
+  script:
+    - ./ci/test.sh
+
+test:jdk18:rdb4:
+  <<: *test_template
+  variables:
+    JDK_VERSION: 18
+    JAVA_HOME: /usr/lib/jvm/jre-1.8.0
+    RDB_VERSION: 4.0.0.1633
+  image:
+    name: registry.red-soft.biz:5000/docker-images/rdbtestenv/centos7:7.6.1810-cpro-4.0.9963-0
 
 test:jdk18:rdb3:
-  tags:
-    - docker
-    - tester
+  <<: *test_template
   variables:
-    BINDIR: ${CI_PROJECT_DIR}/dist/jdk18
     JDK_VERSION: 18
     JAVA_HOME: /usr/lib/jvm/jre-1.8.0
+    RDB_VERSION: 3.0.4.75
+    EXTRA_DEPENDENCIES: icu
   image:
     name: registry.red-soft.biz:5000/docker-images/rdbtestenv/centos7:7.6.1810-cpro-4.0.9963-0
-  stage: test
-  before_script:
-    - /opt/cprocsp/sbin/amd64/cpconfig -license -set $LICENSE_CRYPTOPRO4
-    - yum install -y maven krb5-server krb5-workstation expect icu
-    - ./ci/configure_kerberos.sh
-    - export JAYBIRD_VERSION=`cat .ci/version`
-    - export SRCDIR=`pwd`/jaybird-${JAYBIRD_VERSION}
-    - export RDB_VERSION=3.0.4.75
-    - archive_prefix=jaybird-${JAYBIRD_VERSION}
-    - tar xf dist-src/${archive_prefix}.tar.gz
-  script:
-    - cd ${archive_prefix}
-    - ./ci/test.sh
-  artifacts:
-    expire_in: 1 day
-    paths:
-      - results
-    reports:
-      junit:
-        - results/jdk${JDK_VERSION}_rdb3/TEST-*.xml
-  dependencies:
-    - prepare:snapshot
-    - prepare:release
-    - sources
-    - build:jdk18
+
 
 test:jdk18:rdb2_6:
-  tags:
-    - docker
-    - tester
+  <<: *test_template
   variables:
-    BINDIR: ${CI_PROJECT_DIR}/dist/jdk18
     JDK_VERSION: 18
     JAVA_HOME: /usr/lib/jvm/jre-1.8.0
+    RDB_VERSION: 2.6.0.13485
+    EXTRA_DEPENDENCIES: icu xinetd
   image:
     name: registry.red-soft.biz:5000/docker-images/rdbtestenv/centos7:7.6.1810-cpro-4.0.9963-0
-  stage: test
-  before_script:
-    - /opt/cprocsp/sbin/amd64/cpconfig -license -set $LICENSE_CRYPTOPRO4
-    - yum install -y maven krb5-server krb5-workstation expect icu xinetd
-    - ./ci/configure_kerberos.sh
-    - export JAYBIRD_VERSION=`cat .ci/version`
-    - export SRCDIR=`pwd`/jaybird-${JAYBIRD_VERSION}
-    - export RDB_VERSION=2.6.0.13485
-    - archive_prefix=jaybird-${JAYBIRD_VERSION}
-    - tar xf dist-src/${archive_prefix}.tar.gz
-  script:
-    - cd ${archive_prefix}
-    - ./ci/test.sh
-  artifacts:
-    expire_in: 1 day
-    paths:
-      - results
-    reports:
-      junit:
-        - results/jdk${JDK_VERSION}_rdb2_6/TEST-*.xml
-  dependencies:
-    - prepare:snapshot
-    - prepare:release
-    - sources
-    - build:jdk18
 
 test:jdk18:fb3:
-  tags:
-    - docker
-    - tester
+  <<: *test_template
   variables:
     BINDIR: ${CI_PROJECT_DIR}/dist/jdk18
     JDK_VERSION: 18
     JAVA_HOME: /usr/lib/jvm/jre-1.8.0
+    RDB_VERSION: FB3.0.4
+    EXTRA_DEPENDENCIES: icu xinetd libtommath
   image:
     name: registry.red-soft.biz:5000/docker-images/rdbtestenv/centos7:7.6.1810-cpro-4.0.9963-0
-  stage: test
-  before_script:
-    - /opt/cprocsp/sbin/amd64/cpconfig -license -set $LICENSE_CRYPTOPRO4
-    - yum install -y maven krb5-server krb5-workstation expect icu xinetd libtommath
-    - ./ci/configure_kerberos.sh
-    - export JAYBIRD_VERSION=`cat .ci/version`
-    - export SRCDIR=`pwd`/jaybird-${JAYBIRD_VERSION}
-    - export RDB_VERSION=FB3.0.4
-    - archive_prefix=jaybird-${JAYBIRD_VERSION}
-    - tar xf dist-src/${archive_prefix}.tar.gz
-  script:
-    - cd ${archive_prefix}
-    - ./ci/test.sh
-  artifacts:
-    expire_in: 1 day
-    paths:
-      - results
-    reports:
-      junit:
-        - results/jdk${JDK_VERSION}_fb3/TEST-*.xml
-  dependencies:
-    - prepare:snapshot
-    - prepare:release
-    - sources
-    - build:jdk18
 
 deploy:
   tags:

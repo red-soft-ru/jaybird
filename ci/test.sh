@@ -20,11 +20,9 @@ function fail()
 
 trap "fail" ERR INT QUIT KILL TERM
 
-check_variable BINDIR
-check_variable SRCDIR
-check_variable JAYBIRD_VERSION
 check_variable JAVA_HOME
 check_variable CI_PROJECT_DIR
+check_variable RDB_VERSION
 
 JAVA="${JAVA_HOME}/bin/java"
 JDK_VERSION=`$JAVA -version 2>&1|head -n 1|awk -F\" '{split($2, v, ".");printf("%s%s", v[1], v[2])}'`
@@ -221,7 +219,7 @@ done
 echo rdb_server | kinit rdb_server/localhost
 klist
 
-mvn -f "${SRCDIR}"/pom.xml clean test -DfailIfNoTests=false -Dtest.report.dir=$REPORTS_DIR -Dtest.db.dir=$TEST_DIR
+mvn -f "${CI_PROJECT_DIR}"/pom.xml clean test -DfailIfNoTests=false -Dtest.report.dir=$REPORTS_DIR -Dtest.db.dir=$TEST_DIR
 
 rm -rf $REPORTS_DIR/*.txt
 

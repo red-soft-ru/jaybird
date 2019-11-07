@@ -1,10 +1,5 @@
 group ru.red-soft.jdbc
 
-artifact jaybird-src VERSION
-file dist-src/jaybird-VERSION.tar.gz tar.gz
-file dist-src/jaybird-VERSION.zip zip
-end
-
 artifact jaybird-jdk17 VERSION
 file dist/jdk17/bin/jaybird-jdk17-VERSION.jar jar
 file dist/jdk17/sources/jaybird-jdk17-VERSION-sources.jar jar sources
