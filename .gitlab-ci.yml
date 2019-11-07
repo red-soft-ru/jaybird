@@ -4,10 +4,16 @@ stages:
 - test
 - deploy
 
+cache:
+  paths:
+    - .m2/repository/
+    - target/
+
 variables:
   RELEASE_HUB_PROJECT: jaybird
   CI_URL: ${CI_PROJECT_URL}/pipelines/${CI_PIPELINE_ID}
   TAG_BRANCH: master
+  MAVEN_OPTS: "-Dmaven.repo.local=.m2/repository -s .m2/settings.xml --batch-mode"
 
 .prepare_template: &prepare_template
   tags:
@@ -50,26 +56,18 @@ prepare:release:
     - tags
 
 .build_template: &build_template
+  image: openjdk:8-jdk-alpine
   tags:
     - docker
     - builder
   stage: build
   before_script:
     - apk --update add maven apache-ant bash zip tar
-  script:
-    - ./ci/build.sh
-  artifacts:
-    expire_in: 1 day
-    paths:
-      - dist/
 
 build:jdk18:
   <<: *build_template
-  image: openjdk:8-jdk-alpine
-
-#build:jdk17:
-#  <<: *build_template
-#  image: openjdk:7-jdk-alpine
+  script:
+    - mvn package -Dmaven.test.skip=true
 
 .test_template: &test_template
   tags:
@@ -79,7 +77,7 @@ build:jdk18:
   artifacts:
     expire_in: 1 day
     paths:
-      - results
+      - results/**/*.xml
     reports:
       junit:
         - results/**/*.xml
@@ -109,7 +107,6 @@ test:jdk18:rdb3:
   image:
     name: registry.red-soft.biz:5000/docker-images/rdbtestenv/centos7:7.6.1810-cpro-4.0.9963-0
 
-
 test:jdk18:rdb2_6:
   <<: *test_template
   variables:
@@ -132,14 +129,7 @@ test:jdk18:fb3:
     name: registry.red-soft.biz:5000/docker-images/rdbtestenv/centos7:7.6.1810-cpro-4.0.9963-0
 
 deploy:
-  tags:
-    - docker
-    - builder
+  <<: *build_template
   stage: deploy
-  image: redsoftru/relmanager_client
   script:
-    - find dist*
-    - relmanager_client deploy ${RELEASE_HUB_PROJECT} $(cat .ci/version) --artifacts .ci/artifacts --ci_url ${CI_URL} --context $(cat .ci/context) --branch $(cat .ci/branch) --commit ${CI_COMMIT_SHA}
-  only:
-    variables:
-      - "$RELEASE_HUB_KEY"
+    - mvn deploy
