@@ -12,7 +12,7 @@ cache:
 variables:
   RELEASE_HUB_PROJECT: jaybird
   CI_URL: ${CI_PROJECT_URL}/pipelines/${CI_PIPELINE_ID}
-  TAG_BRANCH: master
+  TAG_BRANCH: branch_3_0
   MAVEN_CLI_OPTS: "-s .m2/settings.xml --batch-mode -U"
   MAVEN_OPTS: "-Dmaven.repo.local=.m2/repository"
 
