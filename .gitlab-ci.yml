@@ -27,7 +27,6 @@ variables:
     - m4 -DVERSION=${VERSION} ci/artifacts.m4 > .ci/artifacts
     - echo ${VERSION} > .ci/version
     - echo ${BRANCH} > .ci/branch
-    - echo ${TAG} > .ci/tag
     - echo ${CONTEXT} > .ci/context
   artifacts:
     expire_in: 1 day
@@ -64,6 +63,8 @@ prepare:release:
   stage: build
   before_script:
     - export VERSION=`cat .ci/version`
+    - export BRANCH=`cat .ci/branch`
+    - export CONTEXT=`cat .ci/context`
     - apk --update add maven
 
 build:jdk18:
@@ -134,6 +135,6 @@ deploy:
   <<: *build_template
   stage: deploy
   script:
-    - mvn $MAVEN_CLI_OPTS deploy -Dmaven.test.skip.exec -Dreleasehub.build.version=$VERSION
+    - mvn $MAVEN_CLI_OPTS deploy -Dmaven.test.skip.exec -Dreleasehub.build.version=$VERSION -Dreleasehub.build.context=${CONTEXT} -Dreleasehub.build.branch=${BRANCH} -Dreleasehub.build.commit=${CI_COMMIT_SHA} -Dreleasehub.build.ci_url=${CI_URL}
     - for p in jdk18_rdb2_6 jdk18_rdb3 jdk18_rdb4 jdk18_fb3; do mvn $MAVEN_CLI_OPTS --non-recursive releasehub-register:upload-tests -Dtest.report.dir=results/$p -Dtest.report.name=$p -Dreleasehub.build.version=$VERSION; done
     - mvn $MAVEN_CLI_OPTS --non-recursive releasehub-register:publish -Dreleasehub.build.version=$VERSION
