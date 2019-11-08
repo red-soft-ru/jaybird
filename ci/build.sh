@@ -21,7 +21,7 @@ JDK_VERSION=`$JAVA -version 2>&1|head -n 1|awk -F\" '{split($2, v, ".");printf("
 SOURCES=$(readlink -f $(dirname $0)/..)
 
 cd $SOURCES
-mvn clean compile package -Dmaven.test.skip=true
+mvn clean compile package -Dmaven.test.skip.exec
 
 mkdir -p ${CI_PROJECT_DIR}/dist/jdk18/bin \
 		 ${CI_PROJECT_DIR}/dist/jdk18/sources \
@@ -37,8 +37,6 @@ cp modules/cryptoapi-security-jdk18/target/jaybird* ${CI_PROJECT_DIR}/dist/jdk18
 cp modules/cryptoapi-security-jdk18/target/jaybird-*sources* ${CI_PROJECT_DIR}/dist/jdk18/sources
 cp modules/cryptoapi-jdk18/target/jaybird* ${CI_PROJECT_DIR}/dist/jdk18/bin
 cp modules/cryptoapi-jdk18/target/jaybird-*sources* ${CI_PROJECT_DIR}/dist/jdk18/sources
-cp modules/jaybird-test-jdk18/target/jaybird* ${CI_PROJECT_DIR}/dist/jdk18/bin
-cp modules/jaybird-test-jdk18/target/jaybird-*sources* ${CI_PROJECT_DIR}/dist/jdk18/sources
 
 cp modules/jaybird-jdk17/target/jaybird-*javadoc* ${CI_PROJECT_DIR}/dist/jdk17/javadoc
 cp modules/jaybird-jdk17/target/jaybird* ${CI_PROJECT_DIR}/dist/jdk17/bin
@@ -47,5 +45,3 @@ cp modules/cryptoapi-security-jdk17/target/jaybird* ${CI_PROJECT_DIR}/dist/jdk17
 cp modules/cryptoapi-security-jdk17/target/jaybird-*sources* ${CI_PROJECT_DIR}/dist/jdk17/sources
 cp modules/cryptoapi-jdk17/target/jaybird* ${CI_PROJECT_DIR}/dist/jdk17/bin
 cp modules/cryptoapi-jdk17/target/jaybird-*sources* ${CI_PROJECT_DIR}/dist/jdk17/sources
-cp modules/jaybird-test-jdk17/target/jaybird* ${CI_PROJECT_DIR}/dist/jdk17/bin
-cp modules/jaybird-test-jdk17/target/jaybird-*sources* ${CI_PROJECT_DIR}/dist/jdk17/sources
