@@ -69,7 +69,7 @@ prepare:release:
 build:jdk18:
   <<: *build_template
   script:
-    - mvn $MAVEN_CLI_OPTS package -Dmaven.test.skip=true
+    - mvn $MAVEN_CLI_OPTS package -Dmaven.test.skip.exec
 
 .test_template: &test_template
   tags:
@@ -134,6 +134,6 @@ deploy:
   <<: *build_template
   stage: deploy
   script:
-    - mvn $MAVEN_CLI_OPTS deploy -Dmaven.test.skip=true -Dreleasehub.build.version=$VERSION
+    - mvn $MAVEN_CLI_OPTS deploy -Dmaven.test.skip.exec -Dreleasehub.build.version=$VERSION
     - for p in jdk18_rdb2_6 jdk18_rdb3 jdk18_rdb4 jdk18_fb3; do mvn $MAVEN_CLI_OPTS --non-recursive releasehub-register:upload-tests -Dtest.report.dir=results/$p -Dtest.report.name=$p -Dreleasehub.build.version=$VERSION; done
     - mvn $MAVEN_CLI_OPTS --non-recursive releasehub-register:publish -Dreleasehub.build.version=$VERSION
