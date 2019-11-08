@@ -130,7 +130,7 @@
 		<pluginRepository>
 			<id>artifactory-plugins-snapshot</id>
 			<name>Red Soft plugins</name>
-			<url>http://artifactory.red-soft.biz/plugins-snapshot-local</url>
+			<url>http://artifactory.red-soft.biz/plugins-snapshot</url>
 			<layout>default</layout>
 			<snapshots>
 				<enabled>true</enabled>
@@ -139,7 +139,7 @@
 		<pluginRepository>
 			<id>artifactory-plugins-release</id>
 			<name>Red Soft plugins</name>
-			<url>http://artifactory.red-soft.biz/plugins-release-local</url>
+			<url>http://artifactory.red-soft.biz/plugins-release</url>
 			<layout>default</layout>
 			<snapshots>
 				<enabled>false</enabled>
