@@ -24,7 +24,55 @@
 			<groupId>net.java.dev.jna</groupId>
 			<artifactId>jna</artifactId>
 			<version>4.5.0</version>
-			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>net.java.dev.jna</groupId>
+			<artifactId>jna-platform</artifactId>
+			<version>4.5.0</version>
+		</dependency>
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>1.2.17</version>
+		</dependency>
+		<dependency>
+			<groupId>org.ow2.asm</groupId>
+			<artifactId>asm</artifactId>
+			<version>6.1</version>
+		</dependency>
+		<dependency>
+			<groupId>cglib</groupId>
+			<artifactId>cglib</artifactId>
+			<version>3.2.6</version>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.12</version>
+			<!--			<scope>test</scope>-->
+		</dependency>
+		<dependency>
+			<groupId>org.jmock</groupId>
+			<artifactId>jmock</artifactId>
+			<version>2.8.4</version>
+			<!--			<scope>test</scope>-->
+		</dependency>
+		<dependency>
+			<groupId>org.jmock</groupId>
+			<artifactId>jmock-junit4</artifactId>
+			<version>2.8.4</version>
+			<!--			<scope>test</scope>-->
+		</dependency>
+		<dependency>
+			<groupId>org.jmock</groupId>
+			<artifactId>jmock-legacy</artifactId>
+			<version>2.8.4</version>
+			<!--			<scope>test</scope>-->
+		</dependency>
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-core</artifactId>
+			<version>4.3.11.Final</version>
 		</dependency>
 	</dependencies>
 	<properties>
@@ -32,6 +80,11 @@
 		<excludedPackages>org.firebirdsql.pool:org.firebirdsql.jdbc.oo</excludedPackages>
 		<module.thirdparty>../../src/lib</module.thirdparty>
 		<maven.build.timestamp.format>yyyy</maven.build.timestamp.format>
+		<test.db.host>localhost</test.db.host>
+		<test.db.port>3050</test.db.port>
+		<test.db.dir>/tmp/db</test.db.dir>
+		<test.db.lc_ctype>NONE</test.db.lc_ctype>
+		<test.report.dir>${basedir}/../../reports</test.report.dir>
 	</properties>
 	<build>
 		<resources>
@@ -53,6 +106,10 @@
 					<include>org/firebirdsql/version_maven.properties</include>
 				</includes>
 			</resource>
+			<resource>
+				<directory>../../src/test</directory>
+				<filtering>false</filtering>
+			</resource>
 		</resources>
 		<plugins>
 			<plugin>
@@ -73,6 +130,34 @@
 								<source>../../src/jna-client</source>
 								<source>../../src/openoffice</source>
 							</sources>
+						</configuration>
+					</execution>
+					<execution>
+						<id>add-test-source</id>
+						<phase>generate-test-sources</phase>
+						<goals>
+							<goal>add-test-source</goal>
+						</goals>
+						<configuration>
+							<sources>
+								<source>../../src/cryptoapi/</source>
+								<source>../../src/test/</source>
+								<source>../../src/jna-test/</source>
+							</sources>
+						</configuration>
+					</execution>
+					<execution>
+						<id>add-test-resource</id>
+						<phase>generate-test-resource</phase>
+						<goals>
+							<goal>add-test-resource</goal>
+						</goals>
+						<configuration>
+							<resources>
+								<!--								<resource>../../src/cryptoapi/</resource>-->
+								<resource>../../src/test/unit_test_defaults.properties</resource>
+								<!--								<resource>../../src/jna-test/</resource>-->
+							</resources>
 						</configuration>
 					</execution>
 				</executions>
@@ -150,6 +235,36 @@
 				</executions>
 			</plugin>
 			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.22.2</version>
+				<configuration>
+					<includes>
+						<include>**/Test*.java</include>
+						<exclude>**/jni/Test*.java</exclude>
+						<exclude>**/TestAll.java</exclude>
+						<exclude>**/TestXABase*.java</exclude>
+						<exclude>**/TestConst.java</exclude>
+						<exclude>**/*$$*.java</exclude>
+					</includes>
+					<reportsDirectory>${test.report.dir}</reportsDirectory>
+					<testFailureIgnore>true</testFailureIgnore>
+					<skipTests>true</skipTests>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>3.2.0</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>test-jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
 				<artifactId>maven-deploy-plugin</artifactId>
 			</plugin>
 			<plugin>
@@ -159,4 +274,13 @@
 			</plugin>
 		</plugins>
 	</build>
+	<reporting>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-report-plugin</artifactId>
+				<version>2.22.2</version>
+			</plugin>
+		</plugins>
+	</reporting>
 </project>
