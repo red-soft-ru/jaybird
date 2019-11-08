@@ -106,11 +106,16 @@
 					<include>org/firebirdsql/version_maven.properties</include>
 				</includes>
 			</resource>
-			<resource>
+		</resources>
+		<testResources>
+			<testResource>
 				<directory>../../src/test</directory>
 				<filtering>false</filtering>
-			</resource>
-		</resources>
+				<excludes>
+					<exclude>**/*.java</exclude>
+				</excludes>
+			</testResource>
+		</testResources>
 		<plugins>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
@@ -144,20 +149,6 @@
 								<source>../../src/test/</source>
 								<source>../../src/jna-test/</source>
 							</sources>
-						</configuration>
-					</execution>
-					<execution>
-						<id>add-test-resource</id>
-						<phase>generate-test-resource</phase>
-						<goals>
-							<goal>add-test-resource</goal>
-						</goals>
-						<configuration>
-							<resources>
-								<!--								<resource>../../src/cryptoapi/</resource>-->
-								<resource>../../src/test/unit_test_defaults.properties</resource>
-								<!--								<resource>../../src/jna-test/</resource>-->
-							</resources>
 						</configuration>
 					</execution>
 				</executions>
@@ -194,6 +185,15 @@
 			</plugin>
 			<plugin>
 				<artifactId>maven-source-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<goals>
+							<goal>test-jar</goal>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
