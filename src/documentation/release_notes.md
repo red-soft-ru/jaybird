@@ -29,6 +29,16 @@ Bug reports about undocumented changes in behavior are appreciated. Feedback can
 be sent to the Firebird-java mailing list or reported on the issue tracker
 <http://tracker.firebirdsql.org/browse/JDBC>.
 
+Support
+=======
+
+If you need support with Jaybird, join the Firebird-Java mailing list. You can
+subscribe by sending an email to [firebird-java-subscribe@yahoogroups.com](mailto:firebird-java-subscribe@yahoogroups.com).
+
+Looking for professional support of Jaybird? Jaybird is now part of the [Tidelift subscription](https://tidelift.com/subscription/pkg/maven-org-firebirdsql-jdbc-jaybird?utm_source=maven-org-firebirdsql-jdbc-jaybird&utm_medium=referral&utm_campaign=docs).
+
+See also [Where to get help](https://www.firebirdsql.org/file/documentation/drivers_documentation/java/faq.html#where-to-get-help)
+
 Supported Firebird versions
 ---------------------------
 
@@ -528,7 +538,7 @@ For compatibility with Java 9+ modules, versions 2.2.14 and 3.0.3 introduced the
 automatic module name `org.firebirdsql.jaybird`. This guarantees a stable module 
 name for Jaybird, and allows for future modularization of Jaybird.  
 
-You can use the Java 8 driver under Java 9+, contrary to earlier Jaybird 3.0 test 
+You can use the Java 8 driver under Java 9+. Contrary to earlier Jaybird 3.0 test 
 releases, it is not necessary to add the `java.xml.bind` module using 
 `--add-modules java.xml.bind`, as we removed its use (see caveat below for the 
 Java 7 version of Jaybird).
@@ -613,8 +623,8 @@ following Firebird connection properties:
     `NUMERIC(18,n)`. This option cannot support the full range of values of 
     `DECFLOAT` and can result in errors on overflow.
 
-**Important**: this feature requires Firebird 4 beta 2 or higher (or a snapshot 
-build version 4.0.0.1481 or later). It will be ignored in earlier builds as the
+**Important**: These features requires Firebird 4 beta 2 or higher (or a snapshot 
+build version 4.0.0.1481 or later). They will be ignored in earlier builds as the
 necessary database parameter buffer items do not exist in earlier versions.
     
 These properties can be used as connection properties with `DriverManager`. For 
@@ -1104,8 +1114,8 @@ Other getters/setters/updaters or object types supported for
 ### Connection character set NONE ###
 
 Jaybird will now use the `(VAR)CHAR` or `BLOB SUB_TYPE TEXT` character set
-information for decoding. This means that when using connection character set 
-`NONE` that columns which have an explicit character set will be decoded and
+information for decoding. This means, when using connection character set 
+`NONE`, that columns with an explicit character set will be decoded and
 encoded using that character set instead of using the platform default encoding
 (or explicitly specified Java character set when specifying both `encoding=NONE` 
 **and** `charSet=<some java charset>`).
