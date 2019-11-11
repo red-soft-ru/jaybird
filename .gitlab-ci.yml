@@ -24,7 +24,6 @@ variables:
   image: redsoftru/relmanager_client
   script:
     - mkdir .ci
-    - m4 -DVERSION=${VERSION} ci/artifacts.m4 > .ci/artifacts
     - echo ${VERSION} > .ci/version
     - echo ${BRANCH} > .ci/branch
     - echo ${CONTEXT} > .ci/context
