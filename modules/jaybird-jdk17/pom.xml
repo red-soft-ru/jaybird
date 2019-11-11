@@ -248,7 +248,7 @@
 					</includes>
 					<reportsDirectory>${test.report.dir}</reportsDirectory>
 					<testFailureIgnore>true</testFailureIgnore>
-					<skipTests>true</skipTests>
+					<skipTests>${test.java7.skip}</skipTests>
 				</configuration>
 			</plugin>
 			<plugin>

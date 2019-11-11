@@ -130,6 +130,16 @@ test:jdk18:fb3:
   image:
     name: registry.red-soft.biz:5000/docker-images/rdbtestenv/centos7:7.6.1810-cpro-4.0.9963-0
 
+test:jdk17:rdb3:
+  <<: *test_template
+  variables:
+    JDK_VERSION: 17
+    JAVA_HOME: /usr/lib/jvm/jre-1.7.0
+    RDB_VERSION: 3.0.4.75
+    EXTRA_DEPENDENCIES: icu
+  image:
+    name: registry.red-soft.biz:5000/docker-images/rdbtestenv/centos7:7.6.1810-cpro-4.0.9963-0
+
 deploy:internal:
   <<: *build_template
   stage: deploy
