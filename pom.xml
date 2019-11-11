@@ -69,7 +69,7 @@
 				<pluginManagement>
 					<plugins>
 						<plugin>
-							<groupId>ru.redsoft.maven.plugin</groupId>
+							<groupId>ru.red-soft.maven.plugin</groupId>
 							<artifactId>releasehub-register-plugin</artifactId>
 							<version>1.0-SNAPSHOT</version>
 							<executions>
@@ -88,7 +88,7 @@
 				</pluginManagement>
 				<plugins>
 					<plugin>
-						<groupId>ru.redsoft.maven.plugin</groupId>
+						<groupId>ru.red-soft.maven.plugin</groupId>
 						<artifactId>releasehub-register-plugin</artifactId>
 						<version>1.0-SNAPSHOT</version>
 					</plugin>
