@@ -247,7 +247,7 @@
 						<exclude>**/TestConst.java</exclude>
 						<exclude>**/*$$*.java</exclude>
 					</includes>
-					<reportsDirectory>${test.report.dir}</reportsDirectory>
+					<reportsDirectory>${test.report.dir}/jdk18</reportsDirectory>
 					<testFailureIgnore>true</testFailureIgnore>
 				</configuration>
 			</plugin>

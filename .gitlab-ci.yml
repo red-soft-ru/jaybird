@@ -95,6 +95,7 @@ test:jdk18:rdb4:
   variables:
     JDK_VERSION: 18
     JAVA_HOME: /usr/lib/jvm/jre-1.8.0
+    SKIP_JAVA7_TEST: true
     RDB_VERSION: 4.0.0.1633
   image:
     name: registry.red-soft.biz:5000/docker-images/rdbtestenv/centos7:7.6.1810-cpro-4.0.9963-0
@@ -105,6 +106,7 @@ test:jdk18:rdb3:
     JDK_VERSION: 18
     JAVA_HOME: /usr/lib/jvm/jre-1.8.0
     RDB_VERSION: 3.0.4.75
+    SKIP_JAVA7_TEST: false
     EXTRA_DEPENDENCIES: icu
   image:
     name: registry.red-soft.biz:5000/docker-images/rdbtestenv/centos7:7.6.1810-cpro-4.0.9963-0
@@ -115,6 +117,7 @@ test:jdk18:rdb2_6:
     JDK_VERSION: 18
     JAVA_HOME: /usr/lib/jvm/jre-1.8.0
     RDB_VERSION: 2.6.0.13485
+    SKIP_JAVA7_TEST: true
     EXTRA_DEPENDENCIES: icu xinetd
   image:
     name: registry.red-soft.biz:5000/docker-images/rdbtestenv/centos7:7.6.1810-cpro-4.0.9963-0
@@ -126,6 +129,7 @@ test:jdk18:fb3:
     JDK_VERSION: 18
     JAVA_HOME: /usr/lib/jvm/jre-1.8.0
     RDB_VERSION: FB3.0.4
+    SKIP_JAVA7_TEST: true
     EXTRA_DEPENDENCIES: icu xinetd libtommath
   image:
     name: registry.red-soft.biz:5000/docker-images/rdbtestenv/centos7:7.6.1810-cpro-4.0.9963-0
@@ -135,7 +139,7 @@ deploy:internal:
   stage: deploy
   script:
     - mvn $MAVEN_CLI_OPTS deploy -Pdeploy-internal -Dmaven.test.skip.exec -Dreleasehub.build.version=$VERSION -Dreleasehub.build.context=${CONTEXT} -Dreleasehub.build.branch=${BRANCH} -Dreleasehub.build.commit=${CI_COMMIT_SHA} -Dreleasehub.build.ci_url=${CI_URL}
-    - for p in jdk18_rdb2_6 jdk18_rdb3 jdk18_rdb4 jdk18_fb3; do mvn $MAVEN_CLI_OPTS --non-recursive releasehub-register:upload-tests -Pdeploy-internal -Dtest.report.dir=results/$p -Dtest.report.name=$p -Dreleasehub.build.version=$VERSION; done
+    - for p in rdb2_6/jdk18 rdb3/jdk18 rdb3/jdk17 rdb4/jdk18 fb3/jdk18; do mvn $MAVEN_CLI_OPTS --non-recursive releasehub-register:upload-tests -Pdeploy-internal -Dtest.report.dir=results/$p -Dtest.report.name=$p -Dreleasehub.build.version=$VERSION; done
     - mvn $MAVEN_CLI_OPTS --non-recursive releasehub-register:publish -Pdeploy-internal -Dreleasehub.build.version=$VERSION
 
 

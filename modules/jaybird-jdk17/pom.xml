@@ -85,6 +85,8 @@
 		<test.db.dir>/tmp/db</test.db.dir>
 		<test.db.lc_ctype>NONE</test.db.lc_ctype>
 		<test.report.dir>${basedir}/../../reports</test.report.dir>
+		<test.java7.jvm>/usr/lib/jvm/jre-1.7.0/bin/java</test.java7.jvm>
+		<test.java7.skip>true</test.java7.skip>
 	</properties>
 	<build>
 		<resources>
@@ -246,9 +248,10 @@
 						<exclude>**/TestConst.java</exclude>
 						<exclude>**/*$$*.java</exclude>
 					</includes>
-					<reportsDirectory>${test.report.dir}</reportsDirectory>
+					<reportsDirectory>${test.report.dir}/jdk17</reportsDirectory>
 					<testFailureIgnore>true</testFailureIgnore>
-					<skipTests>true</skipTests>
+					<skipTests>${test.java7.skip}</skipTests>
+					<jvm>${test.java7.jvm}</jvm>
 				</configuration>
 			</plugin>
 			<plugin>

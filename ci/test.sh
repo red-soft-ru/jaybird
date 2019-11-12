@@ -26,7 +26,7 @@ check_variable RDB_VERSION
 
 JAVA="${JAVA_HOME}/bin/java"
 JDK_VERSION=`$JAVA -version 2>&1|head -n 1|awk -F\" '{split($2, v, ".");printf("%s%s", v[1], v[2])}'`
-REPORTS_DIR="${CI_PROJECT_DIR}/results/jdk${JDK_VERSION}_rdb4"
+REPORTS_DIR="${CI_PROJECT_DIR}/results/rdb4"
 INSTALLDIR=/opt/RedDatabase
 SOURCES=$(readlink -f $(dirname $0)/..)
 OS=linux
@@ -34,13 +34,13 @@ RDB_VERSION=${RDB_VERSION}
 RDB_MAJOR_VERSION="4"
 if [[ "${RDB_VERSION:0:1}" -eq "3" ]]; then
   RDB_MAJOR_VERSION="3"
-  REPORTS_DIR="${CI_PROJECT_DIR}/results/jdk${JDK_VERSION}_rdb3"
+  REPORTS_DIR="${CI_PROJECT_DIR}/results/rdb3"
 elif [[ "${RDB_VERSION:0:1}" -eq "2" ]]; then
   RDB_MAJOR_VERSION="2"
-  REPORTS_DIR="${CI_PROJECT_DIR}/results/jdk${JDK_VERSION}_rdb2_6"
+  REPORTS_DIR="${CI_PROJECT_DIR}/results/rdb2_6"
 elif [[ "${RDB_VERSION:0:7}" == "FB3.0.4" ]]; then
   RDB_MAJOR_VERSION="FB3.0.4"
-  REPORTS_DIR="${CI_PROJECT_DIR}/results/jdk${JDK_VERSION}_fb3"
+  REPORTS_DIR="${CI_PROJECT_DIR}/results/fb3"
   INSTALLDIR=/opt/firebird
 fi
 TEST_DIR=/tmp/jaybird_test
@@ -219,8 +219,8 @@ done
 echo rdb_server | kinit rdb_server/localhost
 klist
 
-mvn $MAVEN_CLI_OPTS -f "${CI_PROJECT_DIR}"/pom.xml test -DfailIfNoTests=false -Dtest.report.dir=$REPORTS_DIR -Dtest.db.dir=$TEST_DIR
+mvn $MAVEN_CLI_OPTS -f "${CI_PROJECT_DIR}"/pom.xml test -DfailIfNoTests=false -Dtest.report.dir=$REPORTS_DIR -Dtest.db.dir=$TEST_DIR -Dtest.java7.skip=$SKIP_JAVA7_TEST
 
-rm -rf $REPORTS_DIR/*.txt
+rm -rf $REPORTS_DIR/**/*.txt
 
 kdestroy
