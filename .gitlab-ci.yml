@@ -79,10 +79,10 @@ build:jdk18:
   artifacts:
     expire_in: 1 day
     paths:
-      - results/**/*.xml
+      - results/**/**/*.xml
     reports:
       junit:
-        - results/**/*.xml
+        - results/**/**/*.xml
   before_script:
     - yum install -y maven krb5-server krb5-workstation expect $EXTRA_DEPENDENCIES
     - /opt/cprocsp/sbin/amd64/cpconfig -license -set $LICENSE_CRYPTOPRO4
