@@ -54,7 +54,7 @@ prepare:release:
   only:
     - tags
 
-.build_template: &build_template
+.deploy_template: &deploy_template
   image: openjdk:8-jdk-alpine
   tags:
     - docker
@@ -66,12 +66,7 @@ prepare:release:
     - export CONTEXT=`cat .ci/context`
     - apk --update add maven
 
-build:jdk18:
-  <<: *build_template
-  script:
-    - mvn $MAVEN_CLI_OPTS package -Dmaven.test.skip.exec
-
-.test_template: &test_template
+.build_and_test_template: &build_and_test_template
   tags:
     - docker
     - tester
@@ -90,8 +85,8 @@ build:jdk18:
   script:
     - ./ci/test.sh
 
-test:jdk18:rdb4:
-  <<: *test_template
+build_and_test:jdk18:rdb4:
+  <<: *build_and_test_template
   variables:
     JDK_VERSION: 18
     JAVA_HOME: /usr/lib/jvm/jre-1.8.0
@@ -100,8 +95,8 @@ test:jdk18:rdb4:
   image:
     name: registry.red-soft.biz:5000/docker-images/rdbtestenv/centos7:7.6.1810-cpro-4.0.9963-0
 
-test:jdk18:rdb3:
-  <<: *test_template
+build_and_test:jdk18:rdb3:
+  <<: *build_and_test_template
   variables:
     JDK_VERSION: 18
     JAVA_HOME: /usr/lib/jvm/jre-1.8.0
@@ -111,8 +106,8 @@ test:jdk18:rdb3:
   image:
     name: registry.red-soft.biz:5000/docker-images/rdbtestenv/centos7:7.6.1810-cpro-4.0.9963-0
 
-test:jdk18:rdb2_6:
-  <<: *test_template
+build_and_test:jdk18:rdb2_6:
+  <<: *build_and_test_template
   variables:
     JDK_VERSION: 18
     JAVA_HOME: /usr/lib/jvm/jre-1.8.0
@@ -122,8 +117,8 @@ test:jdk18:rdb2_6:
   image:
     name: registry.red-soft.biz:5000/docker-images/rdbtestenv/centos7:7.6.1810-cpro-4.0.9963-0
 
-test:jdk18:fb3:
-  <<: *test_template
+build_and_test:jdk18:fb3:
+  <<: *build_and_test_template
   variables:
     BINDIR: ${CI_PROJECT_DIR}/dist/jdk18
     JDK_VERSION: 18
@@ -135,7 +130,7 @@ test:jdk18:fb3:
     name: registry.red-soft.biz:5000/docker-images/rdbtestenv/centos7:7.6.1810-cpro-4.0.9963-0
 
 deploy:internal:
-  <<: *build_template
+  <<: *deploy_template
   stage: deploy
   script:
     - mvn $MAVEN_CLI_OPTS deploy -Pdeploy-internal -Dmaven.test.skip.exec -Dreleasehub.build.version=$VERSION -Dreleasehub.build.context=${CONTEXT} -Dreleasehub.build.branch=${BRANCH} -Dreleasehub.build.commit=${CI_COMMIT_SHA} -Dreleasehub.build.ci_url=${CI_URL}
@@ -144,7 +139,7 @@ deploy:internal:
 
 
 deploy:bintray:
-  <<: *build_template
+  <<: *deploy_template
   stage: deploy
   script:
     - mvn $MAVEN_CLI_OPTS deploy -Pdeploy-bintray -Dmaven.test.skip.exec
