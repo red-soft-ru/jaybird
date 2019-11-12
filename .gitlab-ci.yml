@@ -139,7 +139,7 @@ deploy:internal:
   stage: deploy
   script:
     - mvn $MAVEN_CLI_OPTS deploy -Pdeploy-internal -Dmaven.test.skip.exec -Dreleasehub.build.version=$VERSION -Dreleasehub.build.context=${CONTEXT} -Dreleasehub.build.branch=${BRANCH} -Dreleasehub.build.commit=${CI_COMMIT_SHA} -Dreleasehub.build.ci_url=${CI_URL}
-    - for p in rdb2_6/jdk18 rdb3/jdk18 rdb3/jdk17 rdb4/jdk18 fb3/jdk18; do mvn $MAVEN_CLI_OPTS --non-recursive releasehub-register:upload-tests -Pdeploy-internal -Dtest.report.dir=results/$p -Dtest.report.name=$p -Dreleasehub.build.version=$VERSION; done
+    - for p in rdb2_6/jdk18 rdb3/jdk18 rdb3/jdk17 rdb4/jdk18 fb3/jdk18; do mvn $MAVEN_CLI_OPTS --non-recursive releasehub-register:upload-tests -Pdeploy-internal -Dtest.report.dir=results/$p -Dtest.report.name=${p//\//_} -Dreleasehub.build.version=$VERSION; done
     - mvn $MAVEN_CLI_OPTS --non-recursive releasehub-register:publish -Pdeploy-internal -Dreleasehub.build.version=$VERSION
 
 
