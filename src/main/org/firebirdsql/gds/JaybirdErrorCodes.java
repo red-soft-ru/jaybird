@@ -76,6 +76,7 @@ public interface JaybirdErrorCodes {
     // Error codes backported from Jaybird 4 as needed
     int jb_blobClosed               = 337248295;
     int jb_noKnownAuthPlugins       = 337248287;
+    int jb_explainedExecutionPlanNotSupported            = 337248293;
     int jb_operationClosed          = 337248298;
 
     @SuppressWarnings("unused")

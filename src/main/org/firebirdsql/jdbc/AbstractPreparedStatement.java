@@ -1255,6 +1255,10 @@ public abstract class AbstractPreparedStatement extends FBStatement implements F
         return super.getExecutionPlan();
     }
 
+    public String getExplainedExecutionPlan() throws SQLException {
+        return super.getExplainedExecutionPlan();
+    }
+
     /**
      * Get the statement type of this PreparedStatement.
      * The returned value will be one of the <code>TYPE_*</code> constant
