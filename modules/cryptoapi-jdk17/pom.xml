@@ -14,7 +14,7 @@
 			<groupId>ru.red-soft.jdbc</groupId>
 			<artifactId>jaybird-jdk17</artifactId>
 			<version>3.0.9-SNAPSHOT</version>
-			<scope>compile</scope>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>net.java.dev.jna</groupId>
