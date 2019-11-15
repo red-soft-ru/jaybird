@@ -73,6 +73,7 @@
 		<test.db.dir>/tmp/db</test.db.dir>
 		<test.db.lc_ctype>NONE</test.db.lc_ctype>
 		<test.report.dir>${basedir}/../../reports</test.report.dir>
+		<test.java8.jvm>/usr/lib/jvm/jre-1.8.0/bin/java</test.java8.jvm>
 	</properties>
 	<build>
 		<resources>
@@ -237,6 +238,7 @@
 					</includes>
 					<reportsDirectory>${test.report.dir}/jdk18</reportsDirectory>
 					<testFailureIgnore>true</testFailureIgnore>
+					<jvm>${test.java8.jvm}</jvm>
 				</configuration>
 			</plugin>
 			<plugin>

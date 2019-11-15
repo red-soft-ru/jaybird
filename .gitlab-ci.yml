@@ -105,6 +105,22 @@ build_and_test:jdk18:rdb3:
   image:
     name: registry.red-soft.biz:5000/docker-images/rdbtestenv/centos7:7.6.1810-cpro-4.0.9963-0
 
+build_and_test:liberica_jdk8:rdb3:
+  <<: *build_and_test_template
+  variables:
+    JDK_VERSION: 18
+    JAVA_HOME: /usr/lib/jvm/bellsoft-java8.x86_64
+    RDB_VERSION: 3.0.4.75
+    SKIP_JAVA7_TEST: "true"
+    EXTRA_DEPENDENCIES: icu
+  image:
+    name: registry.red-soft.biz:5000/docker-images/rdbtestenv/centos7:7.6.1810-cpro-4.0.9963-0
+  before_script:
+    - yum install -y maven krb5-server krb5-workstation expect $EXTRA_DEPENDENCIES
+    - /opt/cprocsp/sbin/amd64/cpconfig -license -set $LICENSE_CRYPTOPRO4
+    - ./ci/configure_kerberos.sh
+    - ./ci/install_liberica_jdk.sh
+
 build_and_test:jdk18:rdb2_6:
   <<: *build_and_test_template
   variables:
@@ -133,7 +149,7 @@ deploy:internal:
   stage: deploy
   script:
     - mvn $MAVEN_CLI_OPTS deploy -Pdeploy-internal -Dmaven.test.skip.exec -Dreleasehub.build.version=$VERSION -Dreleasehub.build.context=${CONTEXT} -Dreleasehub.build.branch=${BRANCH} -Dreleasehub.build.commit=${CI_COMMIT_SHA} -Dreleasehub.build.ci_url=${CI_URL}
-    - for p in rdb2_6/jdk18 rdb3/jdk18 rdb3/jdk17 rdb4/jdk18 fb3/jdk18; do mvn $MAVEN_CLI_OPTS --non-recursive releasehub-register:upload-tests -Pdeploy-internal -Dtest.report.dir=results/$p -Dtest.report.name=${p//\//_} -Dreleasehub.build.version=$VERSION; done
+    - for p in rdb2_6/jdk18 rdb3/jdk18 rdb3/jdk17 liberica_jdk8/jdk18 rdb4/jdk18 fb3/jdk18; do mvn $MAVEN_CLI_OPTS --non-recursive releasehub-register:upload-tests -Pdeploy-internal -Dtest.report.dir=results/$p -Dtest.report.name=${p//\//_} -Dreleasehub.build.version=$VERSION; done
     - mvn $MAVEN_CLI_OPTS --non-recursive releasehub-register:publish -Pdeploy-internal -Dreleasehub.build.version=$VERSION
 
 
