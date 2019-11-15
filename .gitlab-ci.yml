@@ -90,7 +90,7 @@ build_and_test:jdk18:rdb4:
     JDK_VERSION: 18
     JAVA_HOME: /usr/lib/jvm/jre-1.8.0
     SKIP_JAVA7_TEST: "true"
-    RDB_VERSION: 4.0.0.1633
+    RDB_VERSION: 4.0.0.1653
   image:
     name: registry.red-soft.biz:5000/docker-images/rdbtestenv/centos7:7.6.1810-cpro-4.0.9963-0
 
@@ -99,7 +99,7 @@ build_and_test:jdk18:rdb3:
   variables:
     JDK_VERSION: 18
     JAVA_HOME: /usr/lib/jvm/jre-1.8.0
-    RDB_VERSION: 3.0.4.75
+    RDB_VERSION: 3.0.4.102
     SKIP_JAVA7_TEST: "false"
     EXTRA_DEPENDENCIES: icu
   image:
