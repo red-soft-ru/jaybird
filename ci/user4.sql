@@ -1,7 +1,7 @@
 CREATE GLOBAL MAPPING GSS_AUTH USING PLUGIN GSS FROM ANY USER TO USER;
 commit;
 
-create user "ARTYOM.SMIRNOV@RED-SOFT.RU" password '1q2w3e4r' using plugin GostPassword_Manager;
+create user "TEST@RED-SOFT.RU" password '1q2w3e4r' using plugin GostPassword_Manager;
 commit;
 
 create policy TestPolicy AS
@@ -21,8 +21,17 @@ commit;
 grant policy "DEFAULT" to SYSDBA;
 commit;
 
-grant policy TestPolicy to "ARTYOM.SMIRNOV@RED-SOFT.RU";
+grant policy "DEFAULT" to trusted_user;
 commit;
 
-alter user "ARTYOM.SMIRNOV@RED-SOFT.RU" set password 'q3rgu7Ah' using plugin GostPassword_Manager;
+grant policy "DEFAULT" to UserWithGostPassword;
+commit;
+
+grant policy "DEFAULT" to effective_user;
+commit;
+
+grant policy TestPolicy to "TEST@RED-SOFT.RU";
+commit;
+
+alter user "TEST@RED-SOFT.RU" set password 'q3rgu7Ah' using plugin GostPassword_Manager;
 commit;

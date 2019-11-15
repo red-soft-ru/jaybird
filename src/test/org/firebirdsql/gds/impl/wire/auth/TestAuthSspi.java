@@ -93,8 +93,8 @@ public class TestAuthSspi extends SimpleFBTestBase {
             fbDataSource.setDatabase(databaseURL);
             fbDataSource.setNonStandardProperty("isc_dpb_trusted_auth", "1");
             fbDataSource.setNonStandardProperty("isc_dpb_multi_factor_auth", "1");
-            fbDataSource.setNonStandardProperty("isc_dpb_user_name", "artyom.smirnov@red-soft.ru"); // required for rdb3
-            fbDataSource.setNonStandardProperty("isc_dpb_certificate", "testuser.cer");
+            fbDataSource.setNonStandardProperty("isc_dpb_user_name", "test@red-soft.ru"); // required for rdb3
+            fbDataSource.setNonStandardProperty("isc_dpb_certificate", "/tmp/testuser.cer");
             fbDataSource.setNonStandardProperty("isc_dpb_repository_pin", "12345678");
 
             Connection conn;
@@ -132,7 +132,7 @@ public class TestAuthSspi extends SimpleFBTestBase {
 
             final String databaseURL = getdbpath(dbName);
             fbDataSource.setDatabase(databaseURL);
-            fbDataSource.setNonStandardProperty("isc_dpb_user_name", "artyom.smirnov@red-soft.ru");
+            fbDataSource.setNonStandardProperty("isc_dpb_user_name", "test@red-soft.ru");
             fbDataSource.setNonStandardProperty("isc_dpb_password", "q3rgu7Ah");
             fbDataSource.setNonStandardProperty("isc_dpb_trusted_auth", "1");
             fbDataSource.setNonStandardProperty("isc_dpb_multi_factor_auth", "1");
@@ -172,9 +172,9 @@ public class TestAuthSspi extends SimpleFBTestBase {
 
             final String databaseURL = getdbpath(dbName);
             fbDataSource.setDatabase(databaseURL);
-            fbDataSource.setNonStandardProperty("isc_dpb_user_name", "artyom.smirnov@red-soft.ru");
+            fbDataSource.setNonStandardProperty("isc_dpb_user_name", "test@red-soft.ru");
             fbDataSource.setNonStandardProperty("isc_dpb_password", "q3rgu7Ah");
-            fbDataSource.setNonStandardProperty("isc_dpb_certificate", "testuser.cer");
+            fbDataSource.setNonStandardProperty("isc_dpb_certificate", "/tmp/testuser.cer");
             fbDataSource.setNonStandardProperty("isc_dpb_repository_pin", "12345678");
             fbDataSource.setNonStandardProperty("isc_dpb_trusted_auth", "1");
             fbDataSource.setNonStandardProperty("isc_dpb_multi_factor_auth", "1");
@@ -217,7 +217,7 @@ public class TestAuthSspi extends SimpleFBTestBase {
             fbDataSource.setDatabase(databaseURL);
             fbDataSource.setNonStandardProperty("isc_dpb_lc_ctype", "WIN1251");
             fbDataSource.setNonStandardProperty("isc_dpb_user_name", "trusted_user");
-            fbDataSource.setNonStandardProperty("isc_dpb_certificate", "testuser.cer");
+            fbDataSource.setNonStandardProperty("isc_dpb_certificate", "/tmp/testuser.cer");
             fbDataSource.setNonStandardProperty("isc_dpb_repository_pin", "12345678");
             fbDataSource.setNonStandardProperty("isc_dpb_trusted_auth", "1");
             fbDataSource.setNonStandardProperty("isc_dpb_multi_factor_auth", "1");
