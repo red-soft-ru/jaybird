@@ -37,7 +37,7 @@ prepare:snapshot:
   before_script:
     - apk --update add maven
     - VERSION=$(mvn $MAVEN_CLI_OPTS -q -Dexec.executable="echo" -Dexec.args='${project.version}' --non-recursive org.codehaus.mojo:exec-maven-plugin:1.3.1:exec|sed 's/\(.*\)-.*/\1/')
-    - export BUILDNO=$(mvn $MAVEN_CLI_OPTS -q releasehub-build:buildno -Pdeploy-internal -DreleaseHubBuildVersion=${VERSION}-SNAPSHOT)
+    - export BUILDNO=$(mvn $MAVEN_CLI_OPTS -q --non-recursive releasehub-build:buildno -Pdeploy-internal -DreleaseHubBuildVersion=${VERSION}-SNAPSHOT)
     - export VERSION=${VERSION}-SNAPSHOT.${BUILDNO}
     - export BRANCH=${CI_COMMIT_REF_NAME}
     - export CONTEXT=commit
