@@ -57,8 +57,6 @@ if [ "$ARCH" == "i686" ]; then
 	ARCH="x86"
 fi
 
-mkdir -p "${REPORTS_DIR}"
-
 if [ -d $TMPFS ]; then
     echo Found $TMPFS. Will use it for databases
     TEST_DIR="$TMPFS"
@@ -223,8 +221,6 @@ done
 echo rdb_server | kinit rdb_server/localhost
 klist
 
-mvn $MAVEN_CLI_OPTS -f "${CI_PROJECT_DIR}"/pom.xml test Pdeploy-internal -DreportNamePrefix=$REPORT_PREFIX -DreleaseHubBuildVersion=$VERSION  -DfailIfNoTests=false -Dtest.report.dir=$REPORTS_DIR -Dtest.db.dir=$TEST_DIR -Dtest.java7.skip=$SKIP_JAVA7_TEST -Dtest.java8.jvm=$JAVA_HOME/bin/java -Dtest.java7.jvm=/usr/lib/jvm/jre-1.7.0/bin/java
-
-rm -rf $REPORTS_DIR/**/*.txt
+mvn $MAVEN_CLI_OPTS -f "${CI_PROJECT_DIR}"/pom.xml test Pdeploy-internal -DreportNamePrefix=$REPORT_PREFIX -DreleaseHubBuildVersion=$VERSION  -DfailIfNoTests=false -Dtest.db.dir=$TEST_DIR -Dtest.java7.skip=$SKIP_JAVA7_TEST -Dtest.java8.jvm=$JAVA_HOME/bin/java -Dtest.java7.jvm=/usr/lib/jvm/jre-1.7.0/bin/java
 
 kdestroy
