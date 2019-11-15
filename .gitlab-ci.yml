@@ -146,8 +146,8 @@ deploy:internal:
   <<: *deploy_template
   stage: deploy
   script:
-    - mvn $MAVEN_CLI_OPTS deploy -Pdeploy-internal -Dmaven.test.skip.exec -Dreleasehub.build.version=$VERSION 
-    - mvn $MAVEN_CLI_OPTS --non-recursive releasehub-build:publish -Pdeploy-internal -Dreleasehub.build.version=$VERSION
+    - mvn $MAVEN_CLI_OPTS deploy -Pdeploy-internal -Dmaven.test.skip.exec -DreleaseHubBuildVersion=$VERSION
+    - mvn $MAVEN_CLI_OPTS --non-recursive releasehub-build:publish -Pdeploy-internal -DreleaseHubBuildVersion=$VERSION
 
 
 deploy:bintray:
