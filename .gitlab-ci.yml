@@ -20,12 +20,13 @@ variables:
     - docker
     - builder
   stage: prepare
-  image: redsoftru/relmanager_client
+  image: openjdk:8-jdk-alpine
   script:
     - mkdir .ci
     - echo ${VERSION} > .ci/version
     - echo ${BRANCH} > .ci/branch
     - echo ${CONTEXT} > .ci/context
+    - mvn releasehub-build:register -Pdeploy-internal -DreleaseHubBuildOnlyCreate -DreleaseHubBuildVersion=$VERSION -DreleaseHubBuildContext=${CONTEXT} -DreleaseHubBuildBranch=${BRANCH} -DreleaseHubBuildCommit=${CI_COMMIT_SHA} -DreleaseHubBuildCIURL=${CI_URL}
   artifacts:
     expire_in: 1 day
     paths:
@@ -35,7 +36,7 @@ prepare:snapshot:
   <<: *prepare_template
   before_script:
     - VERSION=$(mvn -q -Dexec.executable="echo" -Dexec.args='${project.version}' --non-recursive org.codehaus.mojo:exec-maven-plugin:1.3.1:exec|sed 's/\(.*\)-.*/\1/')
-    - export BUILDNO=$(relmanager_client genbuildno ${RELEASE_HUB_PROJECT} ${VERSION}-SNAPSHOT)
+    - export BUILDNO=$(mvn -q releasehub-build:buildno -Pdeploy-internal -DreleaseHubBuildVersion=${VERSION}-SNAPSHOT)
     - export VERSION=${VERSION}-SNAPSHOT.${BUILDNO}
     - export BRANCH=${CI_COMMIT_REF_NAME}
     - export CONTEXT=commit
@@ -70,17 +71,11 @@ prepare:release:
     - docker
     - tester
   stage: build_and_test
-  artifacts:
-    expire_in: 1 day
-    paths:
-      - results/**/**/*.xml
-    reports:
-      junit:
-        - results/**/**/*.xml
   before_script:
     - yum install -y maven krb5-server krb5-workstation expect $EXTRA_DEPENDENCIES
     - /opt/cprocsp/sbin/amd64/cpconfig -license -set $LICENSE_CRYPTOPRO4
     - ./ci/configure_kerberos.sh
+    - export VERSION=`cat .ci/version`
   script:
     - ./ci/test.sh
 
@@ -90,7 +85,6 @@ build_and_test:jdk18:rdb4:
     JDK_VERSION: 18
     JAVA_HOME: /usr/lib/jvm/jre-1.8.0
     SKIP_JAVA7_TEST: "true"
-    REPORTS_DIR: ${CI_PROJECT_DIR}/results/rdb4
     RDB_VERSION: 4.0.0.1653
   image:
     name: registry.red-soft.biz:5000/docker-images/rdbtestenv/centos7:7.6.1810-cpro-4.0.9963-0
@@ -102,7 +96,6 @@ build_and_test:jdk18:rdb3:
     JAVA_HOME: /usr/lib/jvm/jre-1.8.0
     RDB_VERSION: 3.0.4.102
     SKIP_JAVA7_TEST: "false"
-    REPORTS_DIR: ${CI_PROJECT_DIR}/results/rdb3
     EXTRA_DEPENDENCIES: icu
   image:
     name: registry.red-soft.biz:5000/docker-images/rdbtestenv/centos7:7.6.1810-cpro-4.0.9963-0
@@ -114,8 +107,8 @@ build_and_test:liberica_jdk8:rdb3:
     JAVA_HOME: /usr/lib/jvm/bellsoft-java8.x86_64
     RDB_VERSION: 3.0.4.102
     SKIP_JAVA7_TEST: "true"
-    REPORTS_DIR: ${CI_PROJECT_DIR}/results/liberica_jdk8
     EXTRA_DEPENDENCIES: icu
+    REPORT_PREFIX: liberica_jdk8_
   image:
     name: registry.red-soft.biz:5000/docker-images/rdbtestenv/centos7:7.6.1810-cpro-4.0.9963-0
   before_script:
@@ -131,7 +124,6 @@ build_and_test:jdk18:rdb2_6:
     JAVA_HOME: /usr/lib/jvm/jre-1.8.0
     RDB_VERSION: 2.6.0.13485
     SKIP_JAVA7_TEST: "true"
-    REPORTS_DIR: ${CI_PROJECT_DIR}/results/rdb2_6
     EXTRA_DEPENDENCIES: icu xinetd
   image:
     name: registry.red-soft.biz:5000/docker-images/rdbtestenv/centos7:7.6.1810-cpro-4.0.9963-0
@@ -143,7 +135,6 @@ build_and_test:jdk18:fb3:
     JAVA_HOME: /usr/lib/jvm/jre-1.8.0
     RDB_VERSION: FB3.0.4
     SKIP_JAVA7_TEST: "true"
-    REPORTS_DIR: ${CI_PROJECT_DIR}/results/fb3
     EXTRA_DEPENDENCIES: icu xinetd libtommath
   image:
     name: registry.red-soft.biz:5000/docker-images/rdbtestenv/centos7:7.6.1810-cpro-4.0.9963-0
@@ -152,9 +143,8 @@ deploy:internal:
   <<: *deploy_template
   stage: deploy
   script:
-    - mvn $MAVEN_CLI_OPTS deploy -Pdeploy-internal -Dmaven.test.skip.exec -Dreleasehub.build.version=$VERSION -Dreleasehub.build.context=${CONTEXT} -Dreleasehub.build.branch=${BRANCH} -Dreleasehub.build.commit=${CI_COMMIT_SHA} -Dreleasehub.build.ci_url=${CI_URL}
-    - for p in rdb2_6/jdk18 rdb3/jdk18 rdb3/jdk17 liberica_jdk8/jdk18 rdb4/jdk18 fb3/jdk18; do mvn $MAVEN_CLI_OPTS --non-recursive releasehub-register:upload-tests -Pdeploy-internal -Dtest.report.dir=results/$p -Dtest.report.name=${p//\//_} -Dreleasehub.build.version=$VERSION; done
-    - mvn $MAVEN_CLI_OPTS --non-recursive releasehub-register:publish -Pdeploy-internal -Dreleasehub.build.version=$VERSION
+    - mvn $MAVEN_CLI_OPTS deploy -Pdeploy-internal -Dmaven.test.skip.exec -Dreleasehub.build.version=$VERSION 
+    - mvn $MAVEN_CLI_OPTS --non-recursive releasehub-build:publish -Pdeploy-internal -Dreleasehub.build.version=$VERSION
 
 
 deploy:bintray:

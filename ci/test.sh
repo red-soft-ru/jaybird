@@ -23,21 +23,29 @@ trap "fail" ERR INT QUIT KILL TERM
 check_variable JAVA_HOME
 check_variable CI_PROJECT_DIR
 check_variable RDB_VERSION
+check_variable VERSION
 
 JAVA="${JAVA_HOME}/bin/java"
 JDK_VERSION=`$JAVA -version 2>&1|head -n 1|awk -F\" '{split($2, v, ".");printf("%s%s", v[1], v[2])}'`
 INSTALLDIR=/opt/RedDatabase
 SOURCES=$(readlink -f $(dirname $0)/..)
 OS=linux
-RDB_VERSION=${RDB_VERSION}
-RDB_MAJOR_VERSION="4"
-if [[ "${RDB_VERSION:0:1}" -eq "3" ]]; then
+
+if [[ "${RDB_VERSION:0:1}" -eq "4" ]]; then
+  RDB_MAJOR_VERSION="4"
+  REPORT_PREFIX=${REPORT_PREFIX:=rdb4_}
+elif [[ "${RDB_VERSION:0:1}" -eq "3" ]]; then
   RDB_MAJOR_VERSION="3"
+  REPORT_PREFIX=${REPORT_PREFIX:=rdb3_}
 elif [[ "${RDB_VERSION:0:1}" -eq "2" ]]; then
   RDB_MAJOR_VERSION="2"
+  REPORT_PREFIX=${REPORT_PREFIX:=rdb2_6_}
 elif [[ "${RDB_VERSION:0:7}" == "FB3.0.4" ]]; then
   RDB_MAJOR_VERSION="FB3.0.4"
   INSTALLDIR=/opt/firebird
+  REPORT_PREFIX=${REPORT_PREFIX:=fb3_}
+else
+  die "Do not know how to test RDB ${RDB_VERSION}"
 fi
 TEST_DIR=/tmp/jaybird_test
 TMPFS=/tmpfs
@@ -215,7 +223,7 @@ done
 echo rdb_server | kinit rdb_server/localhost
 klist
 
-mvn $MAVEN_CLI_OPTS -f "${CI_PROJECT_DIR}"/pom.xml test -DfailIfNoTests=false -Dtest.report.dir=$REPORTS_DIR -Dtest.db.dir=$TEST_DIR -Dtest.java7.skip=$SKIP_JAVA7_TEST -Dtest.java8.jvm=$JAVA_HOME/bin/java -Dtest.java7.jvm=/usr/lib/jvm/jre-1.7.0/bin/java
+mvn $MAVEN_CLI_OPTS -f "${CI_PROJECT_DIR}"/pom.xml test Pdeploy-internal -DreportNamePrefix=$REPORT_PREFIX -DreleaseHubBuildVersion=$VERSION  -DfailIfNoTests=false -Dtest.report.dir=$REPORTS_DIR -Dtest.db.dir=$TEST_DIR -Dtest.java7.skip=$SKIP_JAVA7_TEST -Dtest.java8.jvm=$JAVA_HOME/bin/java -Dtest.java7.jvm=/usr/lib/jvm/jre-1.7.0/bin/java
 
 rm -rf $REPORTS_DIR/**/*.txt
 

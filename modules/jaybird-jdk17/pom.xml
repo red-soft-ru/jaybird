@@ -76,6 +76,7 @@
 		<test.report.dir>${basedir}/../../reports</test.report.dir>
 		<test.java7.jvm>/usr/lib/jvm/jre-1.7.0/bin/java</test.java7.jvm>
 		<test.java7.skip>true</test.java7.skip>
+		<report_name>jdk7</report_name>
 	</properties>
 	<build>
 		<resources>
@@ -237,7 +238,6 @@
 						<exclude>**/TestConst.java</exclude>
 						<exclude>**/*$$*.java</exclude>
 					</includes>
-					<reportsDirectory>${test.report.dir}/jdk17</reportsDirectory>
 					<testFailureIgnore>true</testFailureIgnore>
 					<skipTests>${test.java7.skip}</skipTests>
 					<jvm>${test.java7.jvm}</jvm>
@@ -258,20 +258,24 @@
 			<plugin>
 				<artifactId>maven-deploy-plugin</artifactId>
 			</plugin>
-			<plugin>
-				<groupId>ru.red-soft.maven.plugin</groupId>
-				<artifactId>releasehub-register-plugin</artifactId>
-				<version>1.0-SNAPSHOT</version>
-			</plugin>
 		</plugins>
 	</build>
-	<reporting>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-report-plugin</artifactId>
-				<version>2.22.2</version>
-			</plugin>
-		</plugins>
-	</reporting>
+
+	<profiles>
+		<profile>
+			<id>deploy-internal</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>ru.red-soft.maven.plugin</groupId>
+						<artifactId>releasehub-build-plugin</artifactId>
+					</plugin>
+					<plugin>
+						<groupId>ru.red-soft.maven.plugin</groupId>
+						<artifactId>releasehub-reports-plugin</artifactId>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 </project>
