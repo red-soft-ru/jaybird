@@ -159,6 +159,21 @@ public class FBServiceManager implements ServiceManager {
         serviceProperties.setPortNumber(port);
     }
 
+    /**
+     * @return Returns the role.
+     */
+    public String getRole() {
+        return serviceProperties.getRoleName();
+    }
+
+    /**
+     * @param role
+     *         The role to set.
+     */
+    public void setRole(String role) {
+        serviceProperties.setRoleName(role);
+    }
+
     @Override
     public WireCrypt getWireCrypt() {
         return serviceProperties.getWireCrypt();
