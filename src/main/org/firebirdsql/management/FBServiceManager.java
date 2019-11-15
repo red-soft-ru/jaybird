@@ -48,6 +48,7 @@ public class FBServiceManager implements ServiceManager {
     private String database;
     private String host;
     private int port = 3050;
+    private String role;
     private FBServiceConnectionProperties extraConnectionProperties;
 
     private OutputStream logger;
@@ -154,6 +155,21 @@ public class FBServiceManager implements ServiceManager {
     }
 
     /**
+     * @return Returns the role.
+     */
+    public String getRole() {
+        return this.role;
+    }
+
+    /**
+     * @param role
+     *         The role to set.
+     */
+    public void setRole(String role) {
+        this.role = role;
+    }
+
+    /**
      * @return Returns the out.
      */
     public synchronized OutputStream getLogger() {
@@ -215,6 +231,10 @@ public class FBServiceManager implements ServiceManager {
         if (getPassword() != null)
             serviceParameterBuffer.addArgument(
                     ISCConstants.isc_spb_password, getPassword());
+
+        if (getRole() != null)
+            serviceParameterBuffer.addArgument(
+                    ISCConstants.isc_spb_sql_role_name, getRole());
 
         serviceParameterBuffer.addArgument(
                 ISCConstants.isc_spb_dummy_packet_interval, new byte[]{120, 10, 0, 0});

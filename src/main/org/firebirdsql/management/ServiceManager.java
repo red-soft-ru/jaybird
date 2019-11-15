@@ -111,6 +111,21 @@ public interface ServiceManager {
     public void setPort(int port);
 
     /**
+     * Returns the role for the connection to the service manager.
+     *
+     * @return the role for the connection to the service manager.
+     */
+    public String getRole();
+
+    /**
+     * Sets the role for the connection to the service manager.
+     *
+     * @param role
+     *         for the connection to the service manager.
+     */
+    public void setRole(String role);
+
+    /**
      * Returns the logger for the connection to the service manager.
      * @return the logger for the connection to the service manager.
      */
