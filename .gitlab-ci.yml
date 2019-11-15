@@ -90,6 +90,7 @@ build_and_test:jdk18:rdb4:
     JDK_VERSION: 18
     JAVA_HOME: /usr/lib/jvm/jre-1.8.0
     SKIP_JAVA7_TEST: "true"
+    REPORTS_DIR: ${CI_PROJECT_DIR}/results/rdb4
     RDB_VERSION: 4.0.0.1653
   image:
     name: registry.red-soft.biz:5000/docker-images/rdbtestenv/centos7:7.6.1810-cpro-4.0.9963-0
@@ -101,6 +102,7 @@ build_and_test:jdk18:rdb3:
     JAVA_HOME: /usr/lib/jvm/jre-1.8.0
     RDB_VERSION: 3.0.4.102
     SKIP_JAVA7_TEST: "false"
+    REPORTS_DIR: ${CI_PROJECT_DIR}/results/rdb3
     EXTRA_DEPENDENCIES: icu
   image:
     name: registry.red-soft.biz:5000/docker-images/rdbtestenv/centos7:7.6.1810-cpro-4.0.9963-0
@@ -110,8 +112,9 @@ build_and_test:liberica_jdk8:rdb3:
   variables:
     JDK_VERSION: 18
     JAVA_HOME: /usr/lib/jvm/bellsoft-java8.x86_64
-    RDB_VERSION: 3.0.4.75
+    RDB_VERSION: 3.0.4.102
     SKIP_JAVA7_TEST: "true"
+    REPORTS_DIR: ${CI_PROJECT_DIR}/results/liberica_jdk8
     EXTRA_DEPENDENCIES: icu
   image:
     name: registry.red-soft.biz:5000/docker-images/rdbtestenv/centos7:7.6.1810-cpro-4.0.9963-0
@@ -128,6 +131,7 @@ build_and_test:jdk18:rdb2_6:
     JAVA_HOME: /usr/lib/jvm/jre-1.8.0
     RDB_VERSION: 2.6.0.13485
     SKIP_JAVA7_TEST: "true"
+    REPORTS_DIR: ${CI_PROJECT_DIR}/results/rdb2_6
     EXTRA_DEPENDENCIES: icu xinetd
   image:
     name: registry.red-soft.biz:5000/docker-images/rdbtestenv/centos7:7.6.1810-cpro-4.0.9963-0
@@ -135,11 +139,11 @@ build_and_test:jdk18:rdb2_6:
 build_and_test:jdk18:fb3:
   <<: *build_and_test_template
   variables:
-    BINDIR: ${CI_PROJECT_DIR}/dist/jdk18
     JDK_VERSION: 18
     JAVA_HOME: /usr/lib/jvm/jre-1.8.0
     RDB_VERSION: FB3.0.4
     SKIP_JAVA7_TEST: "true"
+    REPORTS_DIR: ${CI_PROJECT_DIR}/results/fb3
     EXTRA_DEPENDENCIES: icu xinetd libtommath
   image:
     name: registry.red-soft.biz:5000/docker-images/rdbtestenv/centos7:7.6.1810-cpro-4.0.9963-0
