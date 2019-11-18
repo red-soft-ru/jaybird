@@ -87,6 +87,7 @@ build_and_test:jdk18:rdb4:
     JDK_VERSION: 18
     JAVA_HOME: /usr/lib/jvm/jre-1.8.0
     SKIP_JAVA7_TEST: "true"
+    TEST_LIST: "**"
     RDB_VERSION: 4.0.0.1653
   image:
     name: registry.red-soft.biz:5000/docker-images/rdbtestenv/centos7:7.6.1810-cpro-4.0.9963-0
@@ -98,6 +99,7 @@ build_and_test:jdk18:rdb3:
     JAVA_HOME: /usr/lib/jvm/jre-1.8.0
     RDB_VERSION: 3.0.4.102
     SKIP_JAVA7_TEST: "false"
+    TEST_LIST: "**"
     EXTRA_DEPENDENCIES: icu
   image:
     name: registry.red-soft.biz:5000/docker-images/rdbtestenv/centos7:7.6.1810-cpro-4.0.9963-0
@@ -109,6 +111,7 @@ build_and_test:liberica_jdk8:rdb3:
     JAVA_HOME: /usr/lib/jvm/bellsoft-java8.x86_64
     RDB_VERSION: 3.0.4.102
     SKIP_JAVA7_TEST: "true"
+    TEST_LIST: "org.firebirdsql.gds.**"
     EXTRA_DEPENDENCIES: icu
     REPORT_PREFIX: liberica_jdk8_
   image:
@@ -127,6 +130,7 @@ build_and_test:jdk18:rdb2_6:
     JAVA_HOME: /usr/lib/jvm/jre-1.8.0
     RDB_VERSION: 2.6.0.13485
     SKIP_JAVA7_TEST: "true"
+    TEST_LIST: "**"
     EXTRA_DEPENDENCIES: icu xinetd
   image:
     name: registry.red-soft.biz:5000/docker-images/rdbtestenv/centos7:7.6.1810-cpro-4.0.9963-0
@@ -138,6 +142,7 @@ build_and_test:jdk18:fb3:
     JAVA_HOME: /usr/lib/jvm/jre-1.8.0
     RDB_VERSION: FB3.0.4
     SKIP_JAVA7_TEST: "true"
+    TEST_LIST: "**"
     EXTRA_DEPENDENCIES: icu xinetd libtommath
   image:
     name: registry.red-soft.biz:5000/docker-images/rdbtestenv/centos7:7.6.1810-cpro-4.0.9963-0
