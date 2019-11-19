@@ -114,6 +114,7 @@ build_and_test:jdk11:rdb3:
     TEST_JAVA8_JVM: /usr/lib/jvm/java-11-openjdk-11.0.5.10-0.el7_7.x86_64/bin/java
     TEST_LIST: "**"
     EXTRA_DEPENDENCIES: icu java-11-openjdk
+    REPORT_PREFIX: jdk11_
   image:
     name: registry.red-soft.biz:5000/docker-images/rdbtestenv/centos7:7.6.1810-cpro-4.0.9963-0
 
@@ -126,6 +127,7 @@ build_and_test:jdk12:rdb3:
     TEST_JAVA8_JVM: /usr/lib/jvm/jdk-12/bin/java
     TEST_LIST: "**"
     EXTRA_DEPENDENCIES: icu
+    REPORT_PREFIX: jdk12_
   image:
     name: registry.red-soft.biz:5000/docker-images/rdbtestenv/centos7:7.6.1810-cpro-4.0.9963-0
   before_script:
@@ -145,6 +147,7 @@ build_and_test:jdk13:rdb3:
     TEST_JAVA8_JVM: /usr/lib/jvm/jdk-13/bin/java
     TEST_LIST: "**"
     EXTRA_DEPENDENCIES: icu
+    REPORT_PREFIX: jdk13_
   image:
     name: registry.red-soft.biz:5000/docker-images/rdbtestenv/centos7:7.6.1810-cpro-4.0.9963-0
   before_script:
