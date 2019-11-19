@@ -15,4 +15,4 @@ gpgkey=https://download.bell-sw.com/pki/GPG-KEY-bellsoft
 priority=1
 EOF
 
-yum install -y bellsoft-java8
+yum install -y bellsoft-java8-runtime
