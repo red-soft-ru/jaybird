@@ -84,7 +84,6 @@ prepare:release:
 build_and_test:jdk18:rdb4:
   <<: *build_and_test_template
   variables:
-    JDK_VERSION: 18
     JAVA_HOME: /usr/lib/jvm/jre-1.8.0
     TEST_JAVA8_JVM: /usr/lib/jvm/jre-1.8.0/bin/java
     SKIP_JAVA7_TEST: "true"
@@ -96,7 +95,6 @@ build_and_test:jdk18:rdb4:
 build_and_test:jdk18:rdb3:
   <<: *build_and_test_template
   variables:
-    JDK_VERSION: 18
     JAVA_HOME: /usr/lib/jvm/jre-1.8.0
     RDB_VERSION: 3.0.4.102
     SKIP_JAVA7_TEST: "false"
@@ -110,11 +108,11 @@ build_and_test:jdk18:rdb3:
 build_and_test:liberica_jdk8:rdb3:
   <<: *build_and_test_template
   variables:
-    JDK_VERSION: 18
     JAVA_HOME: /usr/lib/jvm/jre-1.8.0
     RDB_VERSION: 3.0.4.102
     SKIP_JAVA7_TEST: "true"
     TEST_JAVA8_JVM: /usr/lib/jvm/bellsoft-java8-runtime.x86_64/bin/java
+    JDK_VER: 8-runtime
     TEST_LIST: "org.firebirdsql.gds.**"
     EXTRA_DEPENDENCIES: icu
     REPORT_PREFIX: liberica_jdk8_
@@ -127,10 +125,69 @@ build_and_test:liberica_jdk8:rdb3:
     - ./ci/install_liberica_jdk.sh
     - export VERSION=`cat .ci/version`
 
+build_and_test:liberica_jdk11:rdb3:
+  <<: *build_and_test_template
+  variables:
+    JAVA_HOME: /usr/lib/jvm/jre-1.8.0
+    RDB_VERSION: 3.0.4.102
+    SKIP_JAVA7_TEST: "true"
+    TEST_JAVA8_JVM: /usr/lib/jvm/bellsoft-java8-runtime.x86_64/bin/java
+    JDK_VER: 11-runtime
+    TEST_LIST: "org.firebirdsql.gds.**"
+    EXTRA_DEPENDENCIES: icu
+    REPORT_PREFIX: liberica_jdk11_
+  image:
+    name: registry.red-soft.biz:5000/docker-images/rdbtestenv/centos7:7.6.1810-cpro-4.0.9963-0
+  before_script:
+    - yum install -y maven krb5-server krb5-workstation expect $EXTRA_DEPENDENCIES
+    - /opt/cprocsp/sbin/amd64/cpconfig -license -set $LICENSE_CRYPTOPRO4
+    - ./ci/configure_kerberos.sh
+    - ./ci/install_liberica_jdk.sh
+    - export VERSION=`cat .ci/version`
+
+build_and_test:liberica_jdk12:rdb3:
+  <<: *build_and_test_template
+  variables:
+    JAVA_HOME: /usr/lib/jvm/jre-1.8.0
+    RDB_VERSION: 3.0.4.102
+    SKIP_JAVA7_TEST: "true"
+    TEST_JAVA8_JVM: /usr/lib/jvm/bellsoft-java8-runtime.x86_64/bin/java
+    JDK_VER: 12
+    TEST_LIST: "org.firebirdsql.gds.**"
+    EXTRA_DEPENDENCIES: icu
+    REPORT_PREFIX: liberica_jdk12_
+  image:
+    name: registry.red-soft.biz:5000/docker-images/rdbtestenv/centos7:7.6.1810-cpro-4.0.9963-0
+  before_script:
+    - yum install -y maven krb5-server krb5-workstation expect $EXTRA_DEPENDENCIES
+    - /opt/cprocsp/sbin/amd64/cpconfig -license -set $LICENSE_CRYPTOPRO4
+    - ./ci/configure_kerberos.sh
+    - ./ci/install_liberica_jdk.sh
+    - export VERSION=`cat .ci/version`
+
+build_and_test:liberica_jdk13:rdb3:
+  <<: *build_and_test_template
+  variables:
+    JAVA_HOME: /usr/lib/jvm/jre-1.8.0
+    RDB_VERSION: 3.0.4.102
+    SKIP_JAVA7_TEST: "true"
+    TEST_JAVA8_JVM: /usr/lib/jvm/bellsoft-java8-runtime.x86_64/bin/java
+    JDK_VER: 13
+    TEST_LIST: "org.firebirdsql.gds.**"
+    EXTRA_DEPENDENCIES: icu
+    REPORT_PREFIX: liberica_jdk13_
+  image:
+    name: registry.red-soft.biz:5000/docker-images/rdbtestenv/centos7:7.6.1810-cpro-4.0.9963-0
+  before_script:
+    - yum install -y maven krb5-server krb5-workstation expect $EXTRA_DEPENDENCIES
+    - /opt/cprocsp/sbin/amd64/cpconfig -license -set $LICENSE_CRYPTOPRO4
+    - ./ci/configure_kerberos.sh
+    - ./ci/install_liberica_jdk.sh
+    - export VERSION=`cat .ci/version`
+
 build_and_test:jdk18:rdb2_6:
   <<: *build_and_test_template
   variables:
-    JDK_VERSION: 18
     JAVA_HOME: /usr/lib/jvm/jre-1.8.0
     RDB_VERSION: 2.6.0.13485
     SKIP_JAVA7_TEST: "true"
@@ -143,7 +200,6 @@ build_and_test:jdk18:rdb2_6:
 build_and_test:jdk18:fb3:
   <<: *build_and_test_template
   variables:
-    JDK_VERSION: 18
     JAVA_HOME: /usr/lib/jvm/jre-1.8.0
     RDB_VERSION: FB3.0.4
     SKIP_JAVA7_TEST: "true"
