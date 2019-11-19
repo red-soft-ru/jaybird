@@ -131,7 +131,7 @@ build_and_test:liberica_jdk11:rdb3:
     JAVA_HOME: /usr/lib/jvm/jre-1.8.0
     RDB_VERSION: 3.0.4.102
     SKIP_JAVA7_TEST: "true"
-    TEST_JAVA8_JVM: /usr/lib/jvm/bellsoft-java8-runtime.x86_64/bin/java
+    TEST_JAVA8_JVM: /usr/lib/jvm/bellsoft-java11-runtime.x86_64/bin/java
     JDK_VER: 11-runtime
     TEST_LIST: "org.firebirdsql.gds.**"
     EXTRA_DEPENDENCIES: icu
@@ -151,7 +151,7 @@ build_and_test:liberica_jdk12:rdb3:
     JAVA_HOME: /usr/lib/jvm/jre-1.8.0
     RDB_VERSION: 3.0.4.102
     SKIP_JAVA7_TEST: "true"
-    TEST_JAVA8_JVM: /usr/lib/jvm/bellsoft-java8-runtime.x86_64/bin/java
+    TEST_JAVA8_JVM: /usr/lib/jvm/bellsoft-java12.x86_64/bin/java
     JDK_VER: 12
     TEST_LIST: "org.firebirdsql.gds.**"
     EXTRA_DEPENDENCIES: icu
@@ -171,7 +171,7 @@ build_and_test:liberica_jdk13:rdb3:
     JAVA_HOME: /usr/lib/jvm/jre-1.8.0
     RDB_VERSION: 3.0.4.102
     SKIP_JAVA7_TEST: "true"
-    TEST_JAVA8_JVM: /usr/lib/jvm/bellsoft-java8-runtime.x86_64/bin/java
+    TEST_JAVA8_JVM: /usr/lib/jvm/bellsoft-java13.x86_64/bin/java
     JDK_VER: 13
     TEST_LIST: "org.firebirdsql.gds.**"
     EXTRA_DEPENDENCIES: icu
