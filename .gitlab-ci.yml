@@ -105,6 +105,56 @@ build_and_test:jdk18:rdb3:
   image:
     name: registry.red-soft.biz:5000/docker-images/rdbtestenv/centos7:7.6.1810-cpro-4.0.9963-0
 
+build_and_test:jdk11:rdb3:
+  <<: *build_and_test_template
+  variables:
+    JAVA_HOME: /usr/lib/jvm/jre-1.8.0
+    RDB_VERSION: 3.0.4.102
+    SKIP_JAVA7_TEST: "true"
+    TEST_JAVA8_JVM: /usr/lib/jvm/java-11-openjdk-11.0.5.10-0.el7_7.x86_64/bin/java
+    TEST_LIST: "**"
+    EXTRA_DEPENDENCIES: icu java-11-openjdk
+  image:
+    name: registry.red-soft.biz:5000/docker-images/rdbtestenv/centos7:7.6.1810-cpro-4.0.9963-0
+
+build_and_test:jdk12:rdb3:
+  <<: *build_and_test_template
+  variables:
+    JAVA_HOME: /usr/lib/jvm/jre-1.8.0
+    RDB_VERSION: 3.0.4.102
+    SKIP_JAVA7_TEST: "true"
+    TEST_JAVA8_JVM: /usr/lib/jvm/jdk-12/bin/java
+    TEST_LIST: "**"
+    EXTRA_DEPENDENCIES: icu
+  image:
+    name: registry.red-soft.biz:5000/docker-images/rdbtestenv/centos7:7.6.1810-cpro-4.0.9963-0
+  before_script:
+    - yum install -y maven krb5-server krb5-workstation expect $EXTRA_DEPENDENCIES
+    - /opt/cprocsp/sbin/amd64/cpconfig -license -set $LICENSE_CRYPTOPRO4
+    - ./ci/configure_kerberos.sh
+    - export VERSION=`cat .ci/version`
+    - curl -O https://download.java.net/openjdk/jdk12/ri/openjdk-12+32_linux-x64_bin.tar.gz
+    - tar xvf openjdk-12*_bin.tar.gz -C /usr/lib/jvm
+
+build_and_test:jdk13:rdb3:
+  <<: *build_and_test_template
+  variables:
+    JAVA_HOME: /usr/lib/jvm/jre-1.8.0
+    RDB_VERSION: 3.0.4.102
+    SKIP_JAVA7_TEST: "true"
+    TEST_JAVA8_JVM: /usr/lib/jvm/jdk-13/bin/java
+    TEST_LIST: "**"
+    EXTRA_DEPENDENCIES: icu
+  image:
+    name: registry.red-soft.biz:5000/docker-images/rdbtestenv/centos7:7.6.1810-cpro-4.0.9963-0
+  before_script:
+    - yum install -y maven krb5-server krb5-workstation expect $EXTRA_DEPENDENCIES
+    - /opt/cprocsp/sbin/amd64/cpconfig -license -set $LICENSE_CRYPTOPRO4
+    - ./ci/configure_kerberos.sh
+    - export VERSION=`cat .ci/version`
+    - curl -O https://download.java.net/openjdk/jdk13/ri/openjdk-13+33_linux-x64_bin.tar.gz
+    - tar xvf openjdk-13*_bin.tar.gz -C /usr/lib/jvm
+
 build_and_test:liberica_jdk8:rdb3:
   <<: *build_and_test_template
   variables:
@@ -113,7 +163,7 @@ build_and_test:liberica_jdk8:rdb3:
     SKIP_JAVA7_TEST: "true"
     TEST_JAVA8_JVM: /usr/lib/jvm/bellsoft-java8-runtime.x86_64/bin/java
     JDK_VER: 8-runtime
-    TEST_LIST: "org.firebirdsql.gds.**"
+    TEST_LIST: "**"
     EXTRA_DEPENDENCIES: icu
     REPORT_PREFIX: liberica_jdk8_
   image:
@@ -133,7 +183,7 @@ build_and_test:liberica_jdk11:rdb3:
     SKIP_JAVA7_TEST: "true"
     TEST_JAVA8_JVM: /usr/lib/jvm/bellsoft-java11-runtime.x86_64/bin/java
     JDK_VER: 11-runtime
-    TEST_LIST: "org.firebirdsql.gds.**"
+    TEST_LIST: "**"
     EXTRA_DEPENDENCIES: icu
     REPORT_PREFIX: liberica_jdk11_
   image:
@@ -153,7 +203,7 @@ build_and_test:liberica_jdk12:rdb3:
     SKIP_JAVA7_TEST: "true"
     TEST_JAVA8_JVM: /usr/lib/jvm/bellsoft-java12.x86_64/bin/java
     JDK_VER: 12
-    TEST_LIST: "org.firebirdsql.gds.**"
+    TEST_LIST: "**"
     EXTRA_DEPENDENCIES: icu
     REPORT_PREFIX: liberica_jdk12_
   image:
@@ -173,7 +223,7 @@ build_and_test:liberica_jdk13:rdb3:
     SKIP_JAVA7_TEST: "true"
     TEST_JAVA8_JVM: /usr/lib/jvm/bellsoft-java13.x86_64/bin/java
     JDK_VER: 13
-    TEST_LIST: "org.firebirdsql.gds.**"
+    TEST_LIST: "**"
     EXTRA_DEPENDENCIES: icu
     REPORT_PREFIX: liberica_jdk13_
   image:
