@@ -86,6 +86,7 @@ build_and_test:jdk18:rdb4:
   variables:
     JDK_VERSION: 18
     JAVA_HOME: /usr/lib/jvm/jre-1.8.0
+    TEST_JAVA8_JVM: /usr/lib/jvm/jre-1.8.0/bin/java
     SKIP_JAVA7_TEST: "true"
     TEST_LIST: "**"
     RDB_VERSION: 4.0.0.1653
@@ -99,6 +100,8 @@ build_and_test:jdk18:rdb3:
     JAVA_HOME: /usr/lib/jvm/jre-1.8.0
     RDB_VERSION: 3.0.4.102
     SKIP_JAVA7_TEST: "false"
+    TEST_JAVA8_JVM: /usr/lib/jvm/jre-1.8.0/bin/java
+    TEST_JAVA7_JVM: /usr/lib/jvm/jre-1.7.0/bin/java
     TEST_LIST: "**"
     EXTRA_DEPENDENCIES: icu
   image:
@@ -108,9 +111,10 @@ build_and_test:liberica_jdk8:rdb3:
   <<: *build_and_test_template
   variables:
     JDK_VERSION: 18
-    JAVA_HOME: /usr/lib/jvm/bellsoft-java8-runtime.x86_64
+    JAVA_HOME: /usr/lib/jvm/jre-1.8.0
     RDB_VERSION: 3.0.4.102
     SKIP_JAVA7_TEST: "true"
+    TEST_JAVA8_JVM: /usr/lib/jvm/bellsoft-java8-runtime.x86_64/bin/java
     TEST_LIST: "org.firebirdsql.gds.**"
     EXTRA_DEPENDENCIES: icu
     REPORT_PREFIX: liberica_jdk8_
@@ -130,6 +134,7 @@ build_and_test:jdk18:rdb2_6:
     JAVA_HOME: /usr/lib/jvm/jre-1.8.0
     RDB_VERSION: 2.6.0.13485
     SKIP_JAVA7_TEST: "true"
+    TEST_JAVA8_JVM: /usr/lib/jvm/jre-1.8.0/bin/java
     TEST_LIST: "**"
     EXTRA_DEPENDENCIES: icu xinetd
   image:
@@ -142,6 +147,7 @@ build_and_test:jdk18:fb3:
     JAVA_HOME: /usr/lib/jvm/jre-1.8.0
     RDB_VERSION: FB3.0.4
     SKIP_JAVA7_TEST: "true"
+    TEST_JAVA8_JVM: /usr/lib/jvm/jre-1.8.0/bin/java
     TEST_LIST: "**"
     EXTRA_DEPENDENCIES: icu xinetd libtommath
   image:
