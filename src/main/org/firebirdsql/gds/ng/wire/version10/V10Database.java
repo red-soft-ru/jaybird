@@ -35,7 +35,7 @@ import org.firebirdsql.gds.ng.wire.auth.GSSClient;
 import org.firebirdsql.jdbc.SQLStateConstants;
 import org.firebirdsql.logging.Logger;
 import org.firebirdsql.logging.LoggerFactory;
-import org.ietf.jgss.*;
+import org.ietf.jgss.GSSException;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
