@@ -3223,6 +3223,15 @@ public abstract class AbstractResultSet implements ResultSet, FirebirdResultSet,
         return fbStatement.getExecutionPlan();
     }
 
+    public String getExplainedExecutionPlan() throws SQLException {
+        checkCursorMove();
+
+        if (fbStatement == null)
+            return "";
+
+        return fbStatement.getExplainedExecutionPlan();
+    }
+
     // java.sql.Wrapper interface
 
     public boolean isWrapperFor(Class<?> iface) throws SQLException {

@@ -38,11 +38,7 @@ import org.firebirdsql.gds.ng.wire.auth.GSSClient;
 import org.firebirdsql.jdbc.SQLStateConstants;
 import org.firebirdsql.logging.Logger;
 import org.firebirdsql.logging.LoggerFactory;
-import org.ietf.jgss.*;
-import sun.misc.BASE64Encoder;
-import sun.security.jgss.GSSCredentialImpl;
-import sun.security.jgss.GSSToken;
-import sun.security.jgss.spi.GSSNameSpi;
+import org.ietf.jgss.GSSException;
 
 import javax.security.auth.Subject;
 import java.io.ByteArrayOutputStream;

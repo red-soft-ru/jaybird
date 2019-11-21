@@ -592,6 +592,7 @@ public interface ISCConstants {
     int isc_info_sql_records             = 23;
     int isc_info_sql_batch_fetch         = 24;
     int isc_info_sql_relation_alias      = 25;
+    int isc_info_sql_explain_plan        = 26;
 
     /*********************************/
     /* SQL information return values */
