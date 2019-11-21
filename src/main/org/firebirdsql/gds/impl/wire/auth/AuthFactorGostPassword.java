@@ -3,10 +3,9 @@ package org.firebirdsql.gds.impl.wire.auth;
 import org.firebirdsql.gds.ClumpletReader;
 import org.firebirdsql.gds.impl.wire.ByteBuffer;
 import org.firebirdsql.gds.ng.wire.auth.legacy.UnixCrypt;
-import sun.misc.BASE64Encoder;
+import org.firebirdsql.util.Base64EncoderImpl;
 
 import java.sql.SQLException;
-import java.util.Arrays;
 
 import static org.firebirdsql.gds.ClumpletReader.Kind.Tagged;
 
@@ -241,7 +240,7 @@ public class AuthFactorGostPassword extends AuthFactor {
         data = AuthMethods.hashData(data, 1, hashMethod);
       }
 
-      final byte[] enc64 = new BASE64Encoder().encode(data).getBytes();
+      final byte[] enc64 = new Base64EncoderImpl().encode(data);
       oldSalt.add(enc64);
       return oldSalt.getData();
     }
