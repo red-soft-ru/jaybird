@@ -155,7 +155,7 @@ test:jdk18:rdb3:
     - ./ci/configure_kerberos.sh
     - export JAYBIRD_VERSION=`cat .ci/version`
     - export SRCDIR=`pwd`/jaybird-${JAYBIRD_VERSION}
-    - export RDB_VERSION=3.0.4.109
+    - export RDB_VERSION=3.0.4.102
     - archive_prefix=jaybird-${JAYBIRD_VERSION}
     - tar xf dist-src/${archive_prefix}.tar.gz
   script:
