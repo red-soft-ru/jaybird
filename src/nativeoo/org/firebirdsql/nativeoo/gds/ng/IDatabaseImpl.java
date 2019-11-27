@@ -4,6 +4,7 @@ import org.firebirdsql.gds.*;
 import org.firebirdsql.gds.impl.DatabaseParameterBufferExtension;
 import org.firebirdsql.gds.ng.*;
 import org.firebirdsql.gds.ng.listeners.TransactionListener;
+import org.firebirdsql.jdbc.FBDriverNotCapableException;
 import org.firebirdsql.jdbc.SQLStateConstants;
 import org.firebirdsql.jna.fbclient.FbClientLibrary;
 import org.firebirdsql.nativeoo.gds.ng.FbInterface.*;
@@ -272,6 +273,12 @@ public class IDatabaseImpl extends AbstractFbDatabase<NativeDatabaseConnection>
     @Override
     public int getHandle() {
         throw new UnsupportedOperationException( "Native OO API not support database handle" );
+    }
+
+    @Override
+    public void setNetworkTimeout(int milliseconds) throws SQLException {
+        throw new FBDriverNotCapableException(
+                "Setting network timeout not supported in native implementation");
     }
 
     protected IEventBlockImpl validateEventHandle(EventHandle eventHandle) throws SQLException {

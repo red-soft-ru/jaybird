@@ -7,6 +7,7 @@ import org.firebirdsql.gds.ServiceRequestBuffer;
 import org.firebirdsql.gds.impl.ServiceParameterBufferImp;
 import org.firebirdsql.gds.impl.ServiceRequestBufferImp;
 import org.firebirdsql.gds.ng.*;
+import org.firebirdsql.jdbc.FBDriverNotCapableException;
 import org.firebirdsql.jna.fbclient.FbClientLibrary;
 import org.firebirdsql.nativeoo.gds.ng.FbInterface.*;
 
@@ -138,6 +139,12 @@ public class IServiceImpl extends AbstractFbService<IServiceConnectionImpl> impl
     @Override
     public int getHandle() {
         throw new UnsupportedOperationException( "Native OO API not support service handle" );
+    }
+
+    @Override
+    public void setNetworkTimeout(int milliseconds) throws SQLException {
+        throw new FBDriverNotCapableException(
+                "Setting network timeout not supported in native implementation");
     }
 
     /**
