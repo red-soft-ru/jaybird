@@ -248,18 +248,36 @@ public final class FbConnectionProperties extends AbstractAttachProperties<IConn
             case isc_dpb_auth_plugin_list:
                 setAuthPlugins(parameter.getValueAsString());
                 break;
+            case isc_dpb_exclude_crypto_plugins:
+                setExcludeCryptoPlugins(parameter.getValueAsString());
+                break;
             case isc_dpb_utf8_filename:
                 // Filter out, handled explicitly in protocol implementation
                 break;
             case isc_dpb_specific_auth_data:
+                break;
+            case isc_dpb_process_id:
+            case isc_dpb_process_name:
+            case isc_dpb_time_zone_bind:
+            case isc_dpb_decfloat_bind:
+            case isc_dpb_decfloat_round:
+            case isc_dpb_decfloat_traps:
+                parameter.copyTo(extraDatabaseParameters, null);
+                dirtied();
                 break;
             case isc_dpb_gss:
                 break;
             case isc_dpb_certificate:
                 setCertificate(parameter.getValueAsString());
                 break;
+            case isc_dpb_certificate_base64:
+                setCertificateBase64(parameter.getValueAsString());
+                break;
             case isc_dpb_repository_pin:
                 setRepositoryPin(parameter.getValueAsString());
+                break;
+            case isc_dpb_effective_login:
+                setEffectiveLogin(parameter.getValueAsString());
                 break;
             case isc_dpb_verify_server:
                 parameter.copyTo(getExtraDatabaseParameters(), null);
@@ -269,26 +287,15 @@ public final class FbConnectionProperties extends AbstractAttachProperties<IConn
             case isc_dpb_multi_factor_auth:
                 parameter.copyTo(getExtraDatabaseParameters(), null);
                 break;
-            case isc_dpb_process_name:
-                parameter.copyTo(getExtraDatabaseParameters(), null);
-                break;
-            case isc_dpb_process_id:
-                parameter.copyTo(getExtraDatabaseParameters(), null);
-                break;
             default:
                 if (parameterType < jaybirdMinIscDpbValue || parameterType > jaybirdMaxIscDpbValue) {
                     log.warn(String.format(
                             "Unknown or unsupported parameter with type %d added to extra database parameters",
                             parameterType));
                 }
-                // intentional fall-through; properties below don't need a warning
-                // TODO Consider using explicit properties in IConnectionProperties?
-            case isc_dpb_time_zone_bind:
-            case isc_dpb_decfloat_bind:
-            case isc_dpb_decfloat_round:
-            case isc_dpb_decfloat_traps:
                 parameter.copyTo(extraDatabaseParameters, null);
                 dirtied();
+                break;
             }
         }
     }

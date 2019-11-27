@@ -171,26 +171,6 @@ public interface ISCConstants {
     int isc_dpb_decfloat_round          = 95;
     int isc_dpb_decfloat_traps          = 96;
 
-    /* Red Database security parameters */
-    int isc_dpb_mac_plugin				= 148;
-    int isc_dpb_krb5					= 149;
-    int isc_dpb_multi_factor_auth       = 150;
-    int isc_dpb_certificate             = 151;
-    int isc_dpb_repository_name         = 152;
-    int isc_dpb_eye                     = 153;
-    int isc_dpb_session_key             = 154;
-    int isc_dpb_session_key_iv          = 155;
-    int isc_dpb_verify_server           = 156;
-    int isc_dpb_hw_address              = 157;
-    int isc_dpb_certificate_body        = 158;
-    int isc_dpb_repository_pin          = 159;
-    int isc_dpb_session_encryption      = 161;
-    int isc_dpb_salt                    = 162;
-    int isc_dpb_master_attach           = 163;
-    int isc_dpb_gss                     = 164;
-    int isc_dpb_security_authentication = 165;
-
-
     /*
      * Driver-specific DPB params that will be removed before sending them
      * to the server. These params influence only client side.
@@ -219,13 +199,33 @@ public interface ISCConstants {
     int isc_dpb_generated_keys_enabled  = 146;
     int isc_dpb_ignore_procedure_type   = 147;
 
+    // TODO Check it out in rdb 4
+    /* Red Database security parameters */
+    int isc_dpb_mac_plugin				= 148;
+    int isc_dpb_krb5					= 149;
+    int isc_dpb_multi_factor_auth       = 150;
+    int isc_dpb_certificate             = 151;
+    int isc_dpb_repository_name         = 152;
+    int isc_dpb_eye                     = 153;
+    int isc_dpb_session_key             = 154;
+    int isc_dpb_session_key_iv          = 155;
+    int isc_dpb_verify_server           = 156;
+    int isc_dpb_hw_address              = 157;
+    int isc_dpb_certificate_body        = 158;
+    int isc_dpb_repository_pin          = 159;
+    int isc_dpb_session_encryption      = 161;
+    int isc_dpb_salt                    = 162;
+    int isc_dpb_master_attach           = 163;
+    int isc_dpb_effective_login	        = 164;
+    int isc_dpb_gss                     = 165;
+    int isc_dpb_security_authentication = 166;
+    int isc_dpb_certificate_base64      = 167;
+    int isc_dpb_exclude_crypto_plugins  = 168;
+
     // Lowest Jaybird DPB extension value
     int jaybirdMinIscDpbValue = isc_dpb_socket_buffer_size;
     // NOTE: Update this when adding new Jaybird specific DPB items
-    int jaybirdMaxIscDpbValue = isc_dpb_ignore_procedure_type;
-
-    // TODO Check it out in rdb 4
-    int isc_dpb_certificate_base64      = 145;
+    int jaybirdMaxIscDpbValue = isc_dpb_exclude_crypto_plugins;
 
     /*************************************/
     /* Transaction parameter block stuff */
@@ -293,6 +293,7 @@ public interface ISCConstants {
     int isc_spb_connect_timeout         = isc_dpb_connect_timeout;
     int isc_spb_dummy_packet_interval   = isc_dpb_dummy_packet_interval;
     int isc_spb_sql_role_name           = isc_dpb_sql_role_name;
+    int isc_spb_effective_login         = isc_dpb_effective_login;
 
     // This will not be used in protocol 13, therefore may be reused
     int isc_spb_specific_auth_data      = isc_spb_trusted_auth;
@@ -2354,8 +2355,11 @@ public interface ISCConstants {
     int SQL_TYPE_TIME = 560;
     int SQL_TYPE_DATE = 570;
     int SQL_INT64     = 580;
+    int SQL_INT128    = 32752;
     int SQL_TIMESTAMP_TZ = 32754;
     int SQL_TIME_TZ   = 32756;
+    // Replaced by SQL_INT128 in 4.0.0.1604
+    @Deprecated
     int SQL_DEC_FIXED = 32758;
     int SQL_DEC16     = 32760;
     int SQL_DEC34     = 32762;

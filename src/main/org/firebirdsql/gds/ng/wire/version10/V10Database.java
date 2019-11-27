@@ -23,6 +23,7 @@ import org.firebirdsql.gds.*;
 import org.firebirdsql.gds.impl.DatabaseParameterBufferExtension;
 import org.firebirdsql.gds.impl.wire.XdrOutputStream;
 import org.firebirdsql.gds.impl.wire.auth.AuthSspi;
+import org.firebirdsql.gds.impl.wire.auth.AuthSspiFactory;
 import org.firebirdsql.gds.ng.FbBatch;
 import org.firebirdsql.gds.ng.FbExceptionBuilder;
 import org.firebirdsql.gds.ng.FbMessageMetadata;
@@ -38,7 +39,7 @@ import org.firebirdsql.jdbc.FBDriverNotCapableException;
 import org.firebirdsql.jdbc.SQLStateConstants;
 import org.firebirdsql.logging.Logger;
 import org.firebirdsql.logging.LoggerFactory;
-import org.ietf.jgss.*;
+import org.ietf.jgss.GSSException;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -179,13 +180,14 @@ public class V10Database extends AbstractFbWireDatabase implements FbWireDatabas
         if (multifactor) {
             if (!newDpb.hasArgument(ISCConstants.isc_dpb_password) && connection.getAttachProperties().getPassword() != null)
                 newDpb.addArgument(ISCConstants.isc_dpb_password, connection.getAttachProperties().getPassword());
-            sspi = new AuthSspi();
+            sspi = AuthSspiFactory.createAuthSspi(AuthSspiFactory.Type.TYPE3);
             try {
+                sspi.setClumpletReaderType(ClumpletReader.Kind.Tagged);
                 if (newDpb.hasArgument(ISCConstants.isc_dpb_repository_pin))
                     sspi.setRepositoryPin(connection.getAttachProperties().getRepositoryPin());
                 sspi.fillFactors(newDpb);
             } catch (GDSException e) {
-                throw new SQLException(e.getMessage());
+                throw new SQLException(e);
             }
         }
         else sspi = null;
@@ -616,7 +618,7 @@ public class V10Database extends AbstractFbWireDatabase implements FbWireDatabas
 
     @Override
     public final void authReceiveResponse(AcceptPacket acceptPacket) throws IOException, SQLException {
-        final DbCryptCallback dbCryptCallback = createDbCryptCallback();
+        final DbCryptCallback dbCryptCallback = connection.createDbCryptCallback();
         wireOperations.authReceiveResponse(acceptPacket, dbCryptCallback, new FbWireOperations.ProcessAttachCallback() {
             @Override
             public void processAttachResponse(GenericResponse response) {

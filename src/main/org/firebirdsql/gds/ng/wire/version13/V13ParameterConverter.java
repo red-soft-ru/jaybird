@@ -86,6 +86,9 @@ public class V13ParameterConverter extends V12ParameterConverter {
         if (props.getUser() != null) {
             pb.addArgument(tagMapping.getUserNameTag(), props.getUser());
         }
+        if (props.getEffectiveLogin() != null) {
+            pb.addArgument(tagMapping.getEffectiveLoginTag(), props.getEffectiveLogin());
+        }
 
         clientAuthBlock.authFillParametersBlock(pb);
     }

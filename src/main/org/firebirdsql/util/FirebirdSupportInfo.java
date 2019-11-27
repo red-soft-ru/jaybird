@@ -148,7 +148,12 @@ public final class FirebirdSupportInfo {
             // all Firebird versions
             return true;
         } else if (precision <= 34) {
+            // TODO Remove this branch after Jaybird 4.0.0-beta-2
             return isVersionEqualOrAbove(4, 0);
+        } else if (precision <= 38) {
+            // NOTE: Can result in problems for Firebird 4.0.0.1603 or earlier
+            // TODO Remove build number check after Jaybird 4.0.0-beta-2 to avoid issues with Firebird 5
+            return isVersionEqualOrAbove(4, 0, 0) && serverVersion.getBuildNumber() > 1603;
         }
         return false;
     }
@@ -158,7 +163,7 @@ public final class FirebirdSupportInfo {
      */
     public int maxDecimalPrecision() {
         if (isVersionEqualOrAbove(4, 0)) {
-            return 34;
+            return 38;
         }
         return 18;
     }
@@ -283,7 +288,7 @@ public final class FirebirdSupportInfo {
 
     /**
      * Checks support for protocol versions. The check is limited to those protocol versions supported by Jaybird
-     * (10-13 at this time).
+     * (10-15 at this time, although v14 is only implemented as part of v15).
      *
      * @param protocolVersion
      *         Protocol version number
@@ -299,6 +304,11 @@ public final class FirebirdSupportInfo {
             return isVersionEqualOrAbove(2, 5);
         case 13:
             return isVersionEqualOrAbove(3, 0);
+        case 14:
+            // Jaybird has only implemented protocol version 14 as part of version 15
+            return isVersionEqualOrAbove(3, 0, 1);
+        case 15:
+            return isVersionEqualOrAbove(3, 0, 2);
         default:
             return false;
         }
@@ -432,7 +442,7 @@ public final class FirebirdSupportInfo {
     /**
      * @return {@code true} when PSQL functions are supported
      */
-    public boolean supportsPSQLFunctions() {
+    public boolean supportsPsqlFunctions() {
         return isVersionEqualOrAbove(3, 0);
     }
 
@@ -515,6 +525,20 @@ public final class FirebirdSupportInfo {
      * @return {@code true} when this Firebird version supports {@code TIME(STAMP) WITH TIME ZONE}
      */
     public boolean supportsTimeZones() {
+        return isVersionEqualOrAbove(4, 0);
+    }
+
+    /**
+     * @return {@code true} when this Firebird version supports packages.
+     */
+    public boolean supportsPackages() {
+        return isVersionEqualOrAbove(3, 0);
+    }
+
+    /**
+     * @return {@code true} when this Firebird version supports FLOAT(p) with binary precision.
+     */
+    public boolean supportsFloatBinaryPrecision() {
         return isVersionEqualOrAbove(4, 0);
     }
 

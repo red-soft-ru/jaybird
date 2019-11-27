@@ -3,10 +3,13 @@ package org.firebirdsql.gds.impl.wire.auth;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.firebirdsql.gds.ClumpletReader;
 import org.firebirdsql.gds.DatabaseParameterBuffer;
 import org.firebirdsql.gds.GDSException;
 import org.firebirdsql.gds.ISCConstants;
 import org.firebirdsql.gds.impl.wire.ByteBuffer;
+
+import static org.firebirdsql.gds.ClumpletReader.Kind.WideTagged;
 
 /**
  * @author roman.kisluhin
@@ -15,14 +18,15 @@ import org.firebirdsql.gds.impl.wire.ByteBuffer;
  *          Time: 19:33
  */
 public class AuthSspi {
-  private List<AuthFactor> factors = new ArrayList<AuthFactor>();
-  private int currentFactor = -1;
-  private Object sessionKey;
+  protected List<AuthFactor> factors = new ArrayList<AuthFactor>();
+  protected int currentFactor = -1;
+  protected Object sessionKey;
   private boolean trusted;      // field is not used yet
   private boolean multifactor;  // field is not used yet
-  private boolean freezeSessionKey;
+  protected boolean freezeSessionKey;
   private boolean securityAuthentication;
   private boolean sessionEncyption;
+  private ClumpletReader.Kind clumpletReaderType = WideTagged;
 
   public AuthSspi() {
     // set the current factor
@@ -43,50 +47,17 @@ public class AuthSspi {
       return true;
     }
 
-    int dataCount = data.getLength();
-    if (dataCount != 0) {
-      if ((data.get(dataCount - 1) & 0xFF)  == ISCConstants.isc_dpb_session_encryption)
-      {
-        setSessionEncyption(true);
-        data.setLength(dataCount - 1);
-        dataCount = data.getLength();
-      }
-      if ((data.get(dataCount - 1) & 0xFF)  == ISCConstants.isc_dpb_security_authentication)
-      {
-        setSecurityAuthentication(true);
-        data.setLength(dataCount - 1);
-        dataCount = data.getLength();
-      }
-      int type = data.get(dataCount - 1);
-      if (type == AuthFactor.TYPE_NONE) {
-        if (currentFactor >= factors.size())
-          throw new GDSAuthException("Error multi factor authentication");
-        if (sessionKey != null)
-          freezeSessionKey = true;
-        // Current factor was passed. Move to the next if possible
-        if (++currentFactor >= factors.size()) {
-          data.clear();
-          // Stop factors data exchanging
-          data.add((byte)AuthFactor.TYPE_NONE);
-          return true;
-        }
-      }
-      else
-        data.setLength(dataCount - 1);
-    }
-
     final AuthFactor f = factors.get(currentFactor);
     if (!f.request(data))
       return false;
 
-    data.add((byte)f.getType());
     return true;
   }
 
   public void fillFactors(final DatabaseParameterBuffer dpb) throws GDSException {
     // Password factor
     if (dpb.hasArgument(ISCConstants.isc_dpb_password) || dpb.hasArgument(ISCConstants.isc_dpb_user_name)) {
-      final AuthFactorPassword f = new AuthFactorPassword(this);
+      final AuthFactorGostPassword f = new AuthFactorGostPassword(this);
       f.setUserName(dpb.getArgumentAsString(ISCConstants.isc_dpb_user_name));
       if (dpb.hasArgument(ISCConstants.isc_dpb_password)) {
         f.setPassword(dpb.getArgumentAsString(ISCConstants.isc_dpb_password));
@@ -102,6 +73,7 @@ public class AuthSspi {
     // Certificate factor
     if (dpb.hasArgument(ISCConstants.isc_dpb_certificate) || dpb.hasArgument(ISCConstants.isc_dpb_certificate_base64)) {
       final AuthFactorCertificate f = new AuthFactorCertificate(this);
+      f.setClumpletReaderType(this.clumpletReaderType);
       if (dpb.hasArgument(ISCConstants.isc_dpb_certificate)) {
         final String filePath = dpb.getArgumentAsString(ISCConstants.isc_dpb_certificate);
         f.loadFromFile(filePath);
@@ -182,5 +154,9 @@ public class AuthSspi {
 
   public void setRepositoryPin(String pin) throws GDSAuthException {
     AuthCryptoPlugin.getPlugin().setRepositoryPin(pin);
+  }
+
+  public void setClumpletReaderType(ClumpletReader.Kind type) {
+    this.clumpletReaderType = type;
   }
 }

@@ -1,7 +1,5 @@
 package org.firebirdsql.gds.impl.wire.auth;
 
-import org.firebirdsql.gds.impl.wire.Bytes;
-
 /**
  * @author roman.kisluhin
  * @version 1.0
@@ -21,12 +19,14 @@ public abstract class AuthCryptoPlugin {
     _plugin = plugin;
   }
 
-  public abstract Object getSessionPublicKey(final Bytes publicKeyData, Bytes exchangeKeyData, final AuthPrivateKeyContext userKey)
+  public abstract void initializeProvider(final int providerType) throws AuthCryptoException;
+
+  public abstract Object getSessionPublicKey(final byte[] publicKeyData, byte[] exchangeKeyData, final AuthPrivateKeyContext userKey)
       throws AuthCryptoException;
 
   public abstract AuthPrivateKeyContext getUserKey(final String certBase64) throws AuthCryptoException;
 
-  public abstract void setIV(final Object keyHandle, final Bytes iVdata) throws AuthCryptoException;
+  public abstract void setIV(final Object keyHandle, final byte[] iVdata) throws AuthCryptoException;
 
   public abstract byte[] getIV(final Object keyHandle) throws AuthCryptoException;
 
@@ -42,7 +42,7 @@ public abstract class AuthCryptoPlugin {
 
   public abstract boolean destroyHash(Object hashHandle);
 
-  public abstract byte[] hashData(final byte[] data, final int hashingCount) throws AuthCryptoException;
+  public abstract byte[] hashData(final byte[] data, final int hashingCount, int hashMethod) throws AuthCryptoException;
 
   public abstract Object deriveKey(final Object hashHandle, boolean exportable) throws AuthCryptoException;
 
@@ -50,7 +50,7 @@ public abstract class AuthCryptoPlugin {
 
   public abstract byte[] ccfiDecrypt(final AuthPrivateKeyContext userKey, final byte[] data, String certBase64) throws AuthCryptoException;
 
-  public abstract byte[] ccfiSign(final AuthPrivateKeyContext userKey, final byte[] data, final String certBase64) throws AuthCryptoException;
+  public abstract byte[] ccfiSign(final AuthPrivateKeyContext userKey, final byte[] data, final String certBase64, final int keySpec) throws AuthCryptoException;
 
   public abstract void setRepositoryPin(String pin);
 

@@ -5,9 +5,9 @@ import com.sun.jna.platform.win32.WinError;
 import com.sun.jna.ptr.IntByReference;
 import com.sun.jna.ptr.PointerByReference;
 import org.apache.log4j.Logger;
+import org.firebirdsql.cryptoapi.cryptopro.exception.CryptoException;
 import org.firebirdsql.cryptoapi.windows.CryptoUtil;
 import org.firebirdsql.cryptoapi.windows.JnaUtils;
-import org.firebirdsql.cryptoapi.cryptopro.exception.CryptoException;
 import org.firebirdsql.cryptoapi.windows.Win32Api;
 import org.firebirdsql.cryptoapi.windows.Wincrypt;
 import org.firebirdsql.cryptoapi.windows.advapi.Advapi;
@@ -100,33 +100,43 @@ public class Crypt32 {
     return res;
   }
 
-  public static _CERT_CONTEXT.PCCERT_CONTEXT certEnumCertificatesInStore(Pointer certStoreHandle, _CERT_CONTEXT.PCERT_CONTEXT prevCertContext) {
-    final Pointer p = prevCertContext == null ? null : prevCertContext.getPointer();
-    return lib.CertEnumCertificatesInStore(certStoreHandle, p);
+  public static Pointer certEnumCertificatesInStore(Pointer certStoreHandle, Pointer prevCertContext) {
+    return lib.CertEnumCertificatesInStore(certStoreHandle, prevCertContext);
   }
 
-  public static _CERT_CONTEXT.PCCERT_CONTEXT certFindCertificateInStore(Pointer certStoreHandle, int encodingType, int findFlags,
-                                                                        int findType, byte[] findPara, _CERT_CONTEXT.PCERT_CONTEXT prevCertContext) {
+  public static Pointer certFindCertificateInStore(Pointer certStoreHandle, int encodingType, int findFlags,
+                                                   int findType, byte[] findPara, Pointer prevCertContext) {
     if (LOGGING)
       LOG.debug("certFindCertificateInStore " + certStoreHandle + " " + encodingType + " " + findFlags + " " + findType + " " +
           Arrays.toString(findPara) + " " + toString(prevCertContext));
-    _CERT_CONTEXT.PCCERT_CONTEXT res = lib.CertFindCertificateInStore(certStoreHandle, encodingType, findFlags, findType, findPara, prevCertContext);
+    Pointer res = lib.CertFindCertificateInStore(certStoreHandle, encodingType, findFlags, findType, findPara, prevCertContext);
     if (LOGGING)
       LOG.debug("certFindCertificateInStore " + toString(res));
     return res;
   }
 
-  public static _CERT_CONTEXT.PCCERT_CONTEXT certFindCertificateInStore(Pointer certStoreHandle, int encodingType, int findFlags,
-                                                                        int findType, Pointer findPara, _CERT_CONTEXT.PCERT_CONTEXT prevCertContext) {
+  public static Pointer certFindCertificateInStore(Pointer certStoreHandle, int encodingType, int findFlags,
+                                                   int findType, Pointer findPara, Pointer prevCertContext) {
     if (LOGGING)
       LOG.debug("certFindCertificateInStore " + certStoreHandle + " " + encodingType + " " + findFlags + " " + findType + " " + findPara + " " + toString(prevCertContext));
-    _CERT_CONTEXT.PCCERT_CONTEXT res = lib.CertFindCertificateInStore(certStoreHandle, encodingType, findFlags, findType, findPara, prevCertContext);
+    Pointer res = lib.CertFindCertificateInStore(certStoreHandle, encodingType, findFlags, findType, findPara, prevCertContext);
     if (LOGGING)
       LOG.debug("certFindCertificateInStore " + toString(res));
     return res;
   }
 
   public static boolean cryptAcquireCertificatePrivateKey(_CERT_CONTEXT.PCERT_CONTEXT pCert, int dwFlags,
+                                                          PointerByReference phCryptProvOrNCryptKey,
+                                                          IntByReference pdwKeySpec, IntByReference pfCallerFreeProvOrNCryptKey) {
+    if (LOGGING)
+      LOG.debug("cryptAcquireCertificatePrivateKey " + toString(pCert) + " " + dwFlags + " " + phCryptProvOrNCryptKey + " " + pdwKeySpec + " " + pfCallerFreeProvOrNCryptKey);
+    boolean res = lib.CryptAcquireCertificatePrivateKey(pCert, dwFlags, null, phCryptProvOrNCryptKey, pdwKeySpec, pfCallerFreeProvOrNCryptKey);
+    if (LOGGING)
+      LOG.debug("cryptAcquireCertificatePrivateKey " + res);
+    return res;
+  }
+
+  public static boolean cryptAcquireCertificatePrivateKey(Pointer pCert, int dwFlags,
                                                           PointerByReference phCryptProvOrNCryptKey,
                                                           IntByReference pdwKeySpec, IntByReference pfCallerFreeProvOrNCryptKey) {
     if (LOGGING)
@@ -173,7 +183,7 @@ public class Crypt32 {
   }
 
   public static Pointer certGetCertificateContextProperty(
-      _CERT_CONTEXT.PCCERT_CONTEXT pCertContext, int dwPropId
+      Pointer pCertContext, int dwPropId
   ) throws CryptoException {
     final IntByReference pcbData = new IntByReference();
     if (!lib.CertGetCertificateContextProperty(pCertContext, dwPropId, null, pcbData)) {
@@ -224,5 +234,15 @@ public class Crypt32 {
       throw CryptoUtil.raiseCryptoError("CryptDecryptMessage", Advapi.getLastError());
 
     return Win32Api.getActualData(data, pdwDataLen.getValue());
+  }
+
+  public static _CRYPT_OID_INFO.PCCRYPT_OID_INFO cryptFindOIDInfo(int type, int methodID, int kind) throws CryptoException {
+    if (LOGGING)
+      LOG.debug("cryptFindOIDInfo " + type + " " + methodID + " " + kind);
+    final IntByReference refID = new IntByReference(methodID);
+    _CRYPT_OID_INFO.PCCRYPT_OID_INFO methodInfo = lib.CryptFindOIDInfo(type, refID.getPointer(), kind);
+
+    return methodInfo;
+
   }
 }

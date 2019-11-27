@@ -658,6 +658,24 @@ public abstract class AbstractFbStatement implements FbStatement {
         return fieldDescriptor != null && fieldDescriptor.getCount() > 0;
     }
 
+    /**
+     * Signals the start of an execute for this statement.
+     *
+     * @return {@code OperationCloseHandle} handle for the operation
+     */
+    protected final OperationCloseHandle signalExecute() {
+        return FbDatabaseOperation.signalExecute(getDatabase());
+    }
+
+    /**
+     * Signals the start of a fetch for this statement.
+     *
+     * @return {@code OperationCloseHandle} handle for the operation
+     */
+    protected final OperationCloseHandle signalFetch() {
+        return FbDatabaseOperation.signalFetch(getDatabase());
+    }
+
     public FbBatch createBatch(BatchParameterBuffer parameters) throws SQLException {
         throw new FBDriverNotCapableException();
     }

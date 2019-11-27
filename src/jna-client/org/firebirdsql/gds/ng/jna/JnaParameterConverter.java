@@ -48,6 +48,9 @@ public class JnaParameterConverter extends AbstractParameterConverter<JnaDatabas
         if (props.getPassword() != null) {
             pb.addArgument(tagMapping.getPasswordTag(), props.getPassword());
         }
+        if (props.getEffectiveLogin() != null) {
+            pb.addArgument(tagMapping.getEffectiveLoginTag(), props.getEffectiveLogin());
+        }
 
         Map<String, String> configMap = new HashMap<>();
 

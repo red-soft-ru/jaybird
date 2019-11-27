@@ -1,12 +1,11 @@
 package org.firebirdsql.gds.ng.wire.auth;
 
+import org.firebirdsql.gds.ClumpletReader;
 import org.firebirdsql.gds.GDSException;
 import org.firebirdsql.gds.ISCConstants;
 import org.firebirdsql.gds.impl.wire.ByteBuffer;
 import org.firebirdsql.gds.impl.wire.auth.*;
-import org.firebirdsql.gds.ng.IAttachProperties;
 import org.firebirdsql.gds.ng.wire.auth.legacy.UnixCrypt;
-import org.firebirdsql.jdbc.FBConnectionProperties;
 import org.firebirdsql.logging.Logger;
 import org.firebirdsql.logging.LoggerFactory;
 import org.firebirdsql.util.ByteArrayHelper;
@@ -36,7 +35,7 @@ public class MultifactorAuthenticationPlugin implements AuthenticationPlugin {
     public AuthStatus authenticate(ClientAuthBlock clientAuthBlock) throws SQLException {
         if (authSspi == null) {
             log.debug("Multifactor phase 1");
-            authSspi = new AuthSspi();
+            authSspi = AuthSspiFactory.createAuthSspi(AuthSspiFactory.Type.TYPE3);
 
             String repositoryPin = clientAuthBlock.getRepositoryPin();
 
@@ -52,21 +51,28 @@ public class MultifactorAuthenticationPlugin implements AuthenticationPlugin {
 
             String userName = clientAuthBlock.getLogin();
             if (userName != null && !userName.isEmpty()) {
-                AuthFactorPassword authFactorPassword = new AuthFactorPassword(authSspi);
+                AuthFactorGostPassword authFactorPassword = new AuthFactorGostPassword(authSspi);
 
                 authFactorPassword.setUserName(userName);
-                authFactorPassword.setPassword(clientAuthBlock.getPassword());
-                authFactorPassword.setPasswordEnc(UnixCrypt.crypt(clientAuthBlock.getPassword(), "9z").substring(2, 13));
-                authFactorPassword.setHashExpanded(true);
+                if (clientAuthBlock.getPassword() != null && !clientAuthBlock.getPassword().isEmpty()) {
+                    authFactorPassword.setPassword(clientAuthBlock.getPassword());
+                    authFactorPassword.setPasswordEnc(UnixCrypt.crypt(clientAuthBlock.getPassword(), "9z").substring(2, 13));
+                }
                 authSspi.addFactor(authFactorPassword);
                 data.add((byte) AuthFactor.TYPE_PASSWORD);
             }
 
             String certificate = clientAuthBlock.getCertificate();
-            if (certificate != null && !certificate.isEmpty()) {
+            String certificateBase64 = clientAuthBlock.getCertificateBase64();
+            if ((certificate != null && !certificate.isEmpty()) ||
+                    (certificateBase64 != null && !certificateBase64.isEmpty())) {
                 AuthFactorCertificate authFactorCertificate = new AuthFactorCertificate(authSspi);
+                authFactorCertificate.setSdRandomNumber(ISCConstants.isc_dpb_certificate_body);
                 try {
-                    authFactorCertificate.loadFromFile(certificate);
+                    if (certificate != null && !certificate.isEmpty())
+                        authFactorCertificate.loadFromFile(certificate);
+                    else
+                        authFactorCertificate.setCertBase64(certificateBase64);
                 } catch (GDSException e) {
                     throw new SQLException(e.getMessage(), e);
                 }
@@ -80,7 +86,7 @@ public class MultifactorAuthenticationPlugin implements AuthenticationPlugin {
                 data.add((byte) AuthFactor.TYPE_SERVER_CERT);
             }
 
-            if (userName == null && certificate == null)
+            if (userName == null && certificate == null && certificateBase64 == null)
                 return  AuthStatus.AUTH_CONTINUE;
 
             clientData = Arrays.copyOf(data.getData(), data.getLength());

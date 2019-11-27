@@ -77,6 +77,16 @@ public enum ParameterTagMapping {
         public int getConfigTag() {
             return ISCConstants.isc_dpb_config;
         }
+
+        @Override
+        public int getEffectiveLoginTag() {
+            return ISCConstants.isc_dpb_effective_login;
+        }
+
+        @Override
+        public int getExcludeCryptoPluginsTag() {
+            return ISCConstants.isc_dpb_exclude_crypto_plugins;
+        }
     },
     SPB {
 
@@ -124,6 +134,16 @@ public enum ParameterTagMapping {
         public int getConfigTag() {
             return ISCConstants.isc_spb_config;
         }
+
+        @Override
+        public int getEffectiveLoginTag() {
+            return ISCConstants.isc_dpb_effective_login;
+        }
+
+        @Override
+        public int getExcludeCryptoPluginsTag() {
+            return ISCConstants.isc_dpb_exclude_crypto_plugins;
+        }
     };
 
     public abstract int getUserNameTag();
@@ -135,4 +155,6 @@ public enum ParameterTagMapping {
     public abstract int getSpecificAuthDataTag();
     public abstract int getGSSAuthTag();
     public abstract int getConfigTag();
+    public abstract int getEffectiveLoginTag();
+    public abstract int getExcludeCryptoPluginsTag();
 }

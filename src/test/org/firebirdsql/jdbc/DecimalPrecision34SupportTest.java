@@ -36,8 +36,10 @@ import static org.junit.Assume.assumeTrue;
 /**
  * Tests for Firebird 4 extended precision of 34 for decimal (and numeric).
  *
+ * @deprecated Replaced by {@link DecimalPrecision38SupportTest} to be removed after Jaybird 4.0.0-beta-2
  * @author <a href="mailto:mrotteveel@users.sourceforge.net">Mark Rotteveel</a>
  */
+@Deprecated
 public class DecimalPrecision34SupportTest extends FBJUnit4TestBase {
 
     private static final String CREATE_TABLE =
@@ -177,7 +179,7 @@ public class DecimalPrecision34SupportTest extends FBJUnit4TestBase {
             BigDecimal expectedNumeric19_2, String expectedNumeric19_2String) throws Exception {
         String prefix = "id=" + expectedId;
         assertTrue(prefix + " expected row", resultSet.next());
-        assertEquals(prefix, 1, resultSet.getInt("id"));
+        assertEquals(prefix, expectedId, resultSet.getInt("id"));
         assertEquals(prefix + " decimal19_2", expectedDecimal19_2, resultSet.getBigDecimal("decimal19_2"));
         assertEquals(prefix + " numeric19_2", expectedNumeric19_2, resultSet.getBigDecimal("numeric19_2"));
         assertEquals(prefix + " str_decimal19_2", expectedDecimal19_2String, resultSet.getString("str_decimal19_2"));

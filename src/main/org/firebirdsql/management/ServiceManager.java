@@ -127,6 +127,21 @@ public interface ServiceManager {
     void setPort(int port);
 
     /**
+     * Returns the role for the connection to the service manager.
+     *
+     * @return the role for the connection to the service manager.
+     */
+    String getRole();
+
+    /**
+     * Sets the role for the connection to the service manager.
+     *
+     * @param role
+     *         for the connection to the service manager.
+     */
+    void setRole(String role);
+
+    /**
      * Get the wire encryption level.
      *
      * @return Wire encryption level

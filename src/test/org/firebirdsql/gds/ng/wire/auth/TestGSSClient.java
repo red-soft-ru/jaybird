@@ -16,6 +16,7 @@ import java.util.Properties;
 import static org.firebirdsql.common.FBTestProperties.getUrl;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 
 /**
  * Tests for {@link GSSClient}.
@@ -66,6 +67,7 @@ public class TestGSSClient extends FBJUnit4TestBase {
             connection.close();
         } catch (SQLException e) {
             e.printStackTrace();
+            fail("Gss authentication should not fail");
         } finally {
             if (statement != null)
                 statement.close();

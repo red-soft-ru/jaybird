@@ -301,6 +301,26 @@ public interface IAttachProperties<T extends IAttachProperties> {
     void setAuthPlugins(String authPlugins);
 
     /**
+     *  Get the list of excluded authentication plugins using crypto library.
+     *
+     * @return comma-separated list of excluded authentication plugins, or {@code null} for driver default
+     * @since 4.0
+     */
+    String getExcludeCryptoPlugins();
+
+    /**
+     * Sets the excluded authentication plugins using crypto library.
+     * <p>
+     * Invalid names are skipped during authentication.
+     * </p>
+     *
+     * @param authPlugins
+     *         comma-separated list of excluded authentication plugins, or {@code null} for driver default
+     * @since 4.0
+     */
+    void setExcludeCryptoPlugins(String authPlugins);
+
+    /**
      * @return An immutable version of this instance as an implementation of {@link IAttachProperties}
      */
     T asImmutable();
@@ -320,6 +340,17 @@ public interface IAttachProperties<T extends IAttachProperties> {
      *         Path to the certificate to authenticate to the server.
      */
     void setCertificate(String certificate);
+
+    /**
+     * @return the certificate in base64 format.
+     */
+    String getCertificateBase64();
+
+    /**
+     * @param certificateBase64
+     *         Set the certificate body in base64 format.
+     */
+    void setCertificateBase64(String certificateBase64);
 
     /**
      * @return Pin-code for the cryptopro container.
@@ -343,4 +374,18 @@ public interface IAttachProperties<T extends IAttachProperties> {
      */
     void setVerifyServerCertificate(boolean verify);
 
+    /**
+     * Get the effective login of trusted user.
+     *
+     * @return Effective user login
+     * @since 3.0.7
+     */
+    String getEffectiveLogin();
+
+    /**
+     * @param login
+     *         Login of the trusted user.
+     * @since 3.0.7
+     */
+    void setEffectiveLogin(String login);
 }

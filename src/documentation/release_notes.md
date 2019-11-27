@@ -20,6 +20,10 @@ Jaybird 4.0.0-beta-2
 
 The following has been changed or fixed since Jaybird 4.0.0-beta-1
 
+-   New feature: support for `DatabaseMetaData.getFunctions` ([JDBC-552](http://tracker.firebirdsql.org/browse/JDBC-552)) \
+    See also [JDBC DatabaseMetaData.getFunctions implemented].
+-   New feature: support for `DatabaseMetaData.getFunctionColumns` ([JDBC-552](http://tracker.firebirdsql.org/browse/JDBC-552)) \
+    See also [JDBC DatabaseMetaData.getFunctionColumns implemented].
 -   Fixed: Connection property `defaultIsolation`/`isolation` did not work
     through `DriverManager`, but only on `DataSource` implementations. ([JDBC-584](http://tracker.firebirdsql.org/browse/JDBC-584))
 -   Fixed: attempts to use a blob after it was freed or after transaction end
@@ -44,6 +48,50 @@ The following has been changed or fixed since Jaybird 4.0.0-beta-1
     or embedded. Calling `setNetworkTimeout` will override the timeout set with
     the `soTimeout` connection property. When a timeout occurs, the connection
     will be closed.
+-   Changed: Procedures in packages are no longer returned from 
+    `DatabaseMetaData.getProcedures` and `getProcedureColumns` ([JDBC-590](http://tracker.firebirdsql.org/browse/JDBC-590)) \
+    See also [Excluding procedures from packages].
+-   Changed: On Firebird 4 and higher, precision of `FLOAT` and `DOUBLE PRECISION`
+    are reported using binary precision (24 and 53 respectively), instead of
+    decimal precision (7 and 15 respectively) ([JBC-591](http://tracker.firebirdsql.org/browse/JDBC-591)) \
+    See also [Precision reported for FLOAT and DOUBLE PRECISION on Firebird 4].
+-   Improvement: added binary literal prefix (`x'`) and suffix (`'`) to 
+    `DatabaseMetaData.getTypeInfo` for `LONGVARBINARY`, `VARBINARY` and 
+    `BINARY` ([JDBC-593](http://tracker.firebirdsql.org/browse/JDBC-593))
+-   New feature: added `FBEventManager.createFor(Connection)` to create an
+    `EventManager` for an existing connection. Backported to Jaybird 3.0.7. ([JDBC-594](http://tracker.firebirdsql.org/browse/JDBC-594)) \
+    The created event manager does not allow setting properties (other than
+    `waitTimeout`). It is still required to use `connect()` and `disconnect()`,
+    to start respectively stop listening for events. \
+    Due to implementation limitations, the lifetime is tied to the physical 
+    connection. When using a connection pool, this means that the event manager
+    works as long as the physical pooled connection remains open, which can be
+    (significantly) longer than the logical connection used to create the event
+    manager. \
+    This feature was contributed by [Vasiliy Yashkov](https://github.com/vasiliy-yashkov).
+-   Changed: Firebird 4.0.0.1604 and later changed the format of extended
+    numeric precision from a Decimal128 to an Int128, increasing the maximum
+    decimal precision from 34 to 38. The Int128 format is now supported. ([JDBC-595](http://tracker.firebirdsql.org/browse/JDBC-595)) \
+    Support for the old format will be removed after Jaybird 4.0.0-beta-2. See
+    also [Firebird 4 extended numeric precision support].
+-   New experimental feature: A way to monitor driver operations (specifically
+    statement executes and fetches). ([JDBC-597](http://tracker.firebirdsql.org/browse/JDBC-597) \ 
+    See [Operation monitoring] for details. \
+    This feature was contributed by [Vasiliy Yashkov](https://github.com/vasiliy-yashkov).
+-   Fixed: On Firebird 3 and 4 with `WireCrypt = Enabled`, the connection could
+    hang or throw exceptions like _"Unsupported or unexpected operation code"_. ([JDBC-599](http://tracker.firebirdsql.org/browse/JDBC-599)) \
+    The implementation could read wrong data, followed by either a read blocked
+    waiting for more data or an exception. \
+    The underlying problem was how buffer padding was skipped using 
+    `InputStream.skip`, which in `CipherInputStream` never skips beyond its
+    current buffer. If that buffer was at (or 1 or 2 bytes from) the end, 
+    Jaybird was reading less bytes than it should. This caused subsequent reads
+    to read wrong data, reading too little or too much data.
+-   New feature: Support for the v15 protocol (Firebird 3.0.2 and higher). ([JDBC-601](http://tracker.firebirdsql.org/browse/JDBC-601)) \
+    The v15 protocol supports database encryption key callbacks during the
+    authentication phase, supporting encrypted security databases. We decided to
+    implement the v14 changes only as part of the v15 implementation. \
+    See also [Database encryption support].
 
 Support
 =======
@@ -80,9 +128,12 @@ The main new features are:
 - [JDBC RowId support]
 - [JDBC DatabaseMetaData.getPseudoColumns implemented]
 - [JDBC DatabaseMetaData.getVersionColumns implemented]
+- [JDBC DatabaseMetaData.getFunctions implemented] (since Jaybird 4.0.0-beta-2)
+- [JDBC DatabaseMetaData.getFunctionColumns implemented] (since Jaybird 4.0.0-beta-2)
 - [Improved JDBC function escape support]
 - [New JDBC protocol prefix jdbc:firebird:]
 - [Generated keys support improvements]
+- [Operation monitoring]
 
 Upgrading from Jaybird 3 to 4 should be simple, but please make sure to read 
 [Compatibility changes] before using Jaybird 4. See also 
@@ -127,7 +178,7 @@ Jaybird 4 supports Java 7 (JDBC 4.1), Java 8 (JDBC 4.2), and Java 9 and higher
 
 Given the limited support period for Java 9 and higher versions, we will limit
 support on those versions to the most recent LTS version and the latest release.
-Currently that means we support Java 11 and Java 12.
+Currently that means we support Java 11 and Java 13.
 
 Jaybird 4 provides libraries for Java 7, Java 8 and Java 11. The Java 8 builds 
 have the same source and all JDBC 4.3 related functionality and can be used on
@@ -277,16 +328,8 @@ If you manage your dependencies manually, you need to do the following:
 Gotcha's
 --------
 
-During tests we have have observed that using Jaybird 4 with Firebird 4 may
-cause connection hangs when the connection is encrypted (the connection is 
-blocked in a read from the socket). The cause seems related to the 
-`TcpRemoteBufferSize` setting in Firebird. The workaround is to change the value
-to a different value (it seems multiples of 8 or 16 prevent the problem) or to 
-disable wire encryption in Firebird or for the specific connection (see 
-[Wire encryption support]).
-
 If you find a problem while upgrading, or other bugs: please report it 
-on <http://tracker.firebirdsql.org/brows/JDBC>.
+on <http://tracker.firebirdsql.org/browse/JDBC>.
 
 For known issues, consult [Known Issues].
 
@@ -374,7 +417,7 @@ versions do not need that module.
 
 Given the limited support period for Java 9 and higher versions, we limit 
 support on those versions to the most recent LTS version and the latest release.
-Currently that means we support Java 7, 8, 11 and 12.
+Currently that means we support Java 7, 8, 11 and 13.
 
 For compatibility with Java 9 modules, Jaybird defines the automatic module name 
 `org.firebirdsql.jaybird`. This guarantees a stable module name for Jaybird, and 
@@ -445,6 +488,10 @@ Jaybird 4 (and 3.0.4) adds support for Firebird 3 database encryption callbacks
 in the pure Java implementation of the version 13 protocol. This feature was 
 sponsored by IBPhoenix.
 
+In addition, version 15 of the protocol (Firebird 3.0.2 and higher) was also
+implemented, supporting encryption callbacks during authentication for use with
+encrypted security databases.
+
 The current implementation is simple and only supports replying with a static 
 value from a connection property. Be aware that a static value response for 
 database encryption is not very secure as it can easily lead to replay attacks 
@@ -491,13 +538,7 @@ Other warnings and limitations
     encryption (caveat: see the next point).
 -   Firebird may ask for the database encryption key before the connection has
     been encrypted (for example if the encrypted database itself is used as the
-    security database). _This applies to v15 protocol support, which is not yet
-    available._
--   The improvements of the versions 14 and 15 wire protocol are not
-    implemented, and as a result encrypted security databases (external or 
-    security database hosted in the database itself) will not work unless the
-    encryption plugin does not require a callback. Support for the version 15 
-    wire protocol will be added in a future version.
+    security database). _This applies to v15 protocol support._
 -   We cannot guarantee that the `dbCryptConfig` value cannot be obtained by 
     someone with access to your application or the machine hosting your 
     application (although that in itself would already imply a severe security 
@@ -852,16 +893,27 @@ Firebird 4 extended numeric precision support
 ---------------------------------------------
 
 Added support for the extended precision for `NUMERIC` and `DECIMAL` introduced 
-in Firebird 4, increasing the maximum precision to 34. In the implementation in 
-Firebird, this extended precision is backed by a IEEE-754 Decimal128 which is 
-also used for `DECFLOAT` support.
+in Firebird 4, increasing the maximum precision to 38. In the implementation in 
+Firebird, this extended precision is backed by an Int128.
 
-Any `NUMERIC` or `DECIMAL` with a precision between 19 and 34 will allow storage
-up to a precision of 34. 
+Any `NUMERIC` or `DECIMAL` with a precision between 19 and 38 will allow storage
+up to a precision of 38 (technically even 39, but not full range). 
 
 Values set on a field or parameter will be rounded to the target scale of the 
-field using `RoundingMode.HALF_EVEN`. Values exceeding a precision of 34 after 
-rounding will be rejected with a `TypeConversionException`.
+field using `RoundingMode.HALF_UP`. Values exceeding that do not fit in an 
+Int128 after rounding will be rejected with a `TypeConversionException`.
+
+### Important notice about extended numeric precision support ###
+
+The implementation of extended numeric precision was changed after Firebird
+4.0.0-beta-1 (in build 1604) from a maximum precision of 34 backed by a 
+Decimal128 to a maximum precision of 38 backed by an Int128. 
+
+Current test versions of Jaybird 4.0.0 support both formats, but support for the
+old 'DEC_FIXED' format backed by a Decimal128 will be removed after Jaybird
+4.0.0-beta-2. The old format is only supported in statements and result sets.
+Metadata may report incorrect incorrect information regarding precision (ie 38
+instead of 34).
 
 Firebird 4 time zone support
 ----------------------------
@@ -889,7 +941,7 @@ JDBC 4.2 introduced support for time zones, and maps these types to
 `java.time.OffsetTime` and `java.time.OffsetDateTime`. JDBC does not define
 explicit setters for these types. Use `setObject(index, value)`,
 `updateObject(index, value)`, `getObject(index/name)` or 
-`getObject(index/name, classType)`
+`getObject(index/name, classType)`.
 
 Firebird 4 supports both offset and named time zones. Given the definition in
 JDBC, Jaybird only supports offset time zones. On retrieval of a value with a
@@ -1079,7 +1131,7 @@ We strongly suggest that you use `java.time.LocalTime`,
 legacy datetime types.
 
 For `WITH TIME ZONE` types, the session time zone has no effect on the conversion
-to the legacy JDBC date/time types: to offset date/time is converted to epoch
+to the legacy JDBC date/time types: the offset date/time is converted to epoch
 milliseconds and used to construct these legacy types directly.
 
 Executing `SET TIME ZONE <zone name>` statements after connect will change the 
@@ -1196,6 +1248,62 @@ is the transaction that last updated the row.
 Jaybird only returns pseudo-column as version columns, so 'last updated' columns 
 updated by a trigger, calculated columns, or other forms of change tracking are 
 not reported by this method.
+
+JDBC DatabaseMetaData.getFunctions implemented
+----------------------------------------------
+
+The `DatabaseMetaData.getFunctions` method has now been implemented.
+
+The JDBC API specifies this method as:
+
+> Retrieves a description of the system and user functions available in the
+> given catalog.
+
+The implementation only returns functions that are available from
+the `RDB$FUNCTIONS` table. This means that the built-in functions are not
+included in the result of this method.
+
+For Firebird 3 and higher, the result includes native UDF, PSQL and UDR
+functions. The result does not include functions defined in packages as JDBC
+does not provide support for packages.
+
+Jaybird provides additional columns with Firebird specific information. As these
+columns are not defined by JDBC, they may change position when JDBC adds new
+columns. We recommend retrieving these columns by name.
+
+The additional columns are:
+
+-  `JB_FUNCTION_SOURCE` - Source of Firebird 3+ PSQL function, this is the part
+after the `AS` clause.
+-  `JB_FUNCTION_KIND` - Kind of function, one of `"UDF"`, `"PSQL"` (Firebird 3+)
+or `"UDR"` (Firebird 3+)
+-  `JB_MODULE_NAME` - Value of `RDB$MODULE_NAME`, is `null` for PSQL functions
+- `JB_ENTRYPOINT` - Value of `RDB$ENTRYPOINT`, is `null` for PSQL functions
+- `JB_ENGINE_NAME` - Value of `RDB$ENGINE_NAME`, is `null for UDF and PSQL
+functions
+
+JDBC DatabaseMetaData.getFunctionColumns implemented
+----------------------------------------------------
+
+The `DatabaseMetaData.getFunctionColumns` method has now been implemented.
+
+The JDBC API specifies this method as:
+
+> Retrieves a description of the given catalog's system or user function
+> parameters and return type.
+
+The implementation only returns columns of functions that are available from
+the `RDB$FUNCTIONS` table. This means that the built-in functions are not
+included in the result of this method.
+
+For Firebird 3 and higher, the result includes native UDF, PSQL and UDR
+functions. The result does not include functions defined in packages as JDBC
+does not provide support for packages.
+
+Where Firebird provides no column name, Jaybird generates one by combining 
+the string `PARAM_` with the value of `RDB$ARGUMENT_POSITION`. Names are not
+available for the parameters of legacy UDF functions, and for the return value
+of any function.
 
 Improved JDBC function escape support
 -------------------------------------
@@ -1438,6 +1546,41 @@ ignore or only selectively enable generated keys support, see
 
 See [Changes to behaviour of generated keys] in [Stricter JDBC compliance]. 
 
+Operation monitoring
+--------------------
+
+**Experimental feature**
+
+Operation monitoring is an experimental feature that allows an application to
+monitor and - in a limited fashion - control driver operations. This feature is
+exposed as the interfaces `org.firebirdsql.gds.ng.monitor.OperationAware` and
+`org.firebirdsql.gds.ng.monitor.Operation`.
+
+An application can implement `OperationAware` and register it through 
+`org.firebirdsql.gds.ng.OperationMonitor.initOperationAware(OperationAware)`.
+When a `SecurityManager` is active, registering an `OperationAware` will
+require the `SQLPermission` with name `org.firebirdsql.jaybird.initOperationAware`.
+Only one instance can be registered at a time. Setting `null` will clear the
+current instance.
+
+Once registered, the `OperationAware` instance will be notified of operation
+start and end through the methods `startOperation(Operation)` and 
+`endOperation(Operation)`. These methods are called on the thread performing the
+operation, so implementations must complete these methods as soon as possible to
+prevent performance problems in the driver.
+
+The `Operation` instance exposes the type of operation through `getType()` and
+allows the operation to be cancelled. Cancellation is only possible as long as
+the operation is active. Attempting to cancel when the operation is complete
+will throw an `SQLException`.
+
+This feature is experimental and its API may be removed or changed, and
+operation types may be added or removed in point releases.
+
+See also [jdp-2019-06 Ability to monitor driver operations](https://github.com/FirebirdSQL/jaybird/blob/master/devdoc/jdp/jdp-2019-06-ability-to-monitor-driver-operations.md)
+
+This feature was contributed by [Vasiliy Yashkov](https://github.com/vasiliy-yashkov).
+
 Potentially breaking changes
 ----------------------------
 
@@ -1598,6 +1741,31 @@ use `bestRowTransaction` instead.
 If you are relying on the `SCOPE` column containing the value for the requested
 scope, change your logic to remove that dependency.
 
+Precision reported for FLOAT and DOUBLE PRECISION on Firebird 4
+---------------------------------------------------------------
+
+Firebird 4 introduced support for SQL standard `FLOAT(p)` with 1 <= p <= 24 a
+synonym of `FLOAT`, and 25 <= p <= 53 as synonym of `DOUBLE PRECISION`. This
+precision is expressed in binary digits (or radix 2).
+
+To bring the metadata reported by Jaybird in line for this change, on Firebird 4
+and higher, we now report the precision for `FLOAT` and `DOUBLE PRECISION` in
+binary digits instead of decimal digits.
+
+For example for `FLOAT` precision, on Firebird 3 and lower Jaybird 4 returns `7`,
+and `24` on Firebird 4 and higher. For `DOUBLE PRECISION` precision, on Firebird 3
+and lower Jaybird 4 returns `15`, and `53` on Firebird 4 and higher. In addition,
+the radix reported in the metadata for these types will be 2 instead of 10 on
+Firebird 4 and higher.
+
+This change affects 
+
+- `DatabaseMetaData.getColumns` (columns `COLUMN_SIZE` and `NUM_PREC_RADIX`),
+- `DatabaseMetaData.getProcedureColumns` (columns `PRECISION` and `RADIX`), 
+- `DatabaseMetaData.getTypeInfo` (columns `PRECISION` and `NUM_PREC_RADIX`),
+- `ParameterMetaData.getPrecison`, 
+- `ResultSetMetaData.getPrecision`.
+
 Stricter JDBC compliance
 ------------------------
 
@@ -1669,6 +1837,19 @@ This is probably only a theoretical concern (we don't know of actual cases
 where detection changed). 
 
 See also [Generated keys grammar simplification]. 
+
+### DatabaseMetaData ###
+
+### Excluding procedures from packages ###
+
+The definition of `getProcedures` and `getProcedureColumns` does not offer a way
+to return information on procedures in packages without breaking tools or
+applications that rely on the JDBC standard behaviour. To avoid these problems,
+stored procedures in packages are no longer returned from these methods.
+
+The way Jaybird handled this previously was 'by accident', and the information
+returned was not enough to correctly call the procedure as the package name was
+not included.
 
 Removal of character mapping
 ----------------------------
