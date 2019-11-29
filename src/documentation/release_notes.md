@@ -241,6 +241,32 @@ on <http://tracker.firebirdsql.org/brows/JDBC>.
 Jaybird 3.0.x changelog
 =======================
 
+Changes in Jaybird 3.0.9
+------------------------
+
+The following has been changed or fixed since Jaybird 3.0.9:
+
+..
+
+### Known issues in Jaybird 3.0.9
+
+See [Known Issues]
+
+Changes in Jaybird 3.0.8
+------------------------
+
+The following has been changed or fixed since Jaybird 3.0.7:
+
+-   Fixed: On Firebird 3 and 4 with `WireCrypt = Enabled`, the connection could
+    hang or throw exceptions like _"Unsupported or unexpected operation code"_. ([JDBC-599](http://tracker.firebirdsql.org/browse/JDBC-599)) \
+    The implementation could read wrong data, followed by either a read blocked
+    waiting for more data or an exception. \
+    The underlying problem was how buffer padding was skipped using 
+    `InputStream.skip`, which in `CipherInputStream` never skips beyond its
+    current buffer. If that buffer was at (or 1 or 2 bytes from) the end, 
+    Jaybird was reading less bytes than it should. This caused subsequent reads
+    to read wrong data, reading too little or too much data.
+
 Changes in Jaybird 3.0.7
 ------------------------
 
@@ -274,10 +300,6 @@ The following has been changed or fixed since Jaybird 3.0.6
     manager. \
     This feature was contributed by [Vasiliy Yashkov](https://github.com/vasiliy-yashkov).
     
-### Known issues in Jaybird 3.0.7
-
-See [Known Issues]
-
 Changes in Jaybird 3.0.6
 ------------------------
 
