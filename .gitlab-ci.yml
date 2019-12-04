@@ -88,9 +88,9 @@ build_and_test:jdk18:rdb4:
     TEST_JAVA8_JVM: /usr/lib/jvm/jre-1.8.0/bin/java
     SKIP_JAVA7_TEST: "true"
     TEST_LIST: "**"
-    RDB_VERSION: 4.0.0.1677
+    RDB_VERSION: 4.0.0.1685
   image:
-    name: registry.red-soft.biz:5000/docker-images/rdbtestenv/centos7:7.6.1810-cpro-4.0.9963-0
+    name: registry.red-soft.biz:5000/docker-images/rdbtestenv/centos7:7.6.1810-cpro-4.0.9963-2
 
 build_and_test:jdk18:rdb3:
   <<: *build_and_test_template
@@ -103,7 +103,7 @@ build_and_test:jdk18:rdb3:
     TEST_LIST: "**"
     EXTRA_DEPENDENCIES: icu
   image:
-    name: registry.red-soft.biz:5000/docker-images/rdbtestenv/centos7:7.6.1810-cpro-4.0.9963-0
+    name: registry.red-soft.biz:5000/docker-images/rdbtestenv/centos7:7.6.1810-cpro-4.0.9963-2
 
 build_and_test:jdk11:rdb3:
   <<: *build_and_test_template
@@ -116,47 +116,7 @@ build_and_test:jdk11:rdb3:
     EXTRA_DEPENDENCIES: icu java-11-openjdk
     REPORT_PREFIX: jdk11_
   image:
-    name: registry.red-soft.biz:5000/docker-images/rdbtestenv/centos7:7.6.1810-cpro-4.0.9963-0
-
-build_and_test:jdk12:rdb3:
-  <<: *build_and_test_template
-  variables:
-    JAVA_HOME: /usr/lib/jvm/jre-1.8.0
-    RDB_VERSION: 3.0.4.102
-    SKIP_JAVA7_TEST: "true"
-    TEST_JAVA8_JVM: /usr/lib/jvm/jdk-12/bin/java
-    TEST_LIST: "**"
-    EXTRA_DEPENDENCIES: icu
-    REPORT_PREFIX: jdk12_
-  image:
-    name: registry.red-soft.biz:5000/docker-images/rdbtestenv/centos7:7.6.1810-cpro-4.0.9963-0
-  before_script:
-    - yum install -y maven krb5-server krb5-workstation expect $EXTRA_DEPENDENCIES
-    - /opt/cprocsp/sbin/amd64/cpconfig -license -set $LICENSE_CRYPTOPRO4
-    - ./ci/configure_kerberos.sh
-    - export VERSION=`cat .ci/version`
-    - curl -O https://download.java.net/openjdk/jdk12/ri/openjdk-12+32_linux-x64_bin.tar.gz
-    - tar xvf openjdk-12*_bin.tar.gz -C /usr/lib/jvm
-
-build_and_test:jdk13:rdb3:
-  <<: *build_and_test_template
-  variables:
-    JAVA_HOME: /usr/lib/jvm/jre-1.8.0
-    RDB_VERSION: 3.0.4.102
-    SKIP_JAVA7_TEST: "true"
-    TEST_JAVA8_JVM: /usr/lib/jvm/jdk-13/bin/java
-    TEST_LIST: "**"
-    EXTRA_DEPENDENCIES: icu
-    REPORT_PREFIX: jdk13_
-  image:
-    name: registry.red-soft.biz:5000/docker-images/rdbtestenv/centos7:7.6.1810-cpro-4.0.9963-0
-  before_script:
-    - yum install -y maven krb5-server krb5-workstation expect $EXTRA_DEPENDENCIES
-    - /opt/cprocsp/sbin/amd64/cpconfig -license -set $LICENSE_CRYPTOPRO4
-    - ./ci/configure_kerberos.sh
-    - export VERSION=`cat .ci/version`
-    - curl -O https://download.java.net/openjdk/jdk13/ri/openjdk-13+33_linux-x64_bin.tar.gz
-    - tar xvf openjdk-13*_bin.tar.gz -C /usr/lib/jvm
+    name: registry.red-soft.biz:5000/docker-images/rdbtestenv/centos7:7.6.1810-cpro-4.0.9963-2
 
 build_and_test:liberica_jdk8:rdb3:
   <<: *build_and_test_template
@@ -170,13 +130,7 @@ build_and_test:liberica_jdk8:rdb3:
     EXTRA_DEPENDENCIES: icu
     REPORT_PREFIX: liberica_jdk8_
   image:
-    name: registry.red-soft.biz:5000/docker-images/rdbtestenv/centos7:7.6.1810-cpro-4.0.9963-0
-  before_script:
-    - yum install -y maven krb5-server krb5-workstation expect $EXTRA_DEPENDENCIES
-    - /opt/cprocsp/sbin/amd64/cpconfig -license -set $LICENSE_CRYPTOPRO4
-    - ./ci/configure_kerberos.sh
-    - ./ci/install_liberica_jdk.sh
-    - export VERSION=`cat .ci/version`
+    name: registry.red-soft.biz:5000/docker-images/rdbtestenv/centos7:7.6.1810-cpro-4.0.9963-2
 
 build_and_test:liberica_jdk11:rdb3:
   <<: *build_and_test_template
@@ -190,53 +144,7 @@ build_and_test:liberica_jdk11:rdb3:
     EXTRA_DEPENDENCIES: icu
     REPORT_PREFIX: liberica_jdk11_
   image:
-    name: registry.red-soft.biz:5000/docker-images/rdbtestenv/centos7:7.6.1810-cpro-4.0.9963-0
-  before_script:
-    - yum install -y maven krb5-server krb5-workstation expect $EXTRA_DEPENDENCIES
-    - /opt/cprocsp/sbin/amd64/cpconfig -license -set $LICENSE_CRYPTOPRO4
-    - ./ci/configure_kerberos.sh
-    - ./ci/install_liberica_jdk.sh
-    - export VERSION=`cat .ci/version`
-
-build_and_test:liberica_jdk12:rdb3:
-  <<: *build_and_test_template
-  variables:
-    JAVA_HOME: /usr/lib/jvm/jre-1.8.0
-    RDB_VERSION: 3.0.4.102
-    SKIP_JAVA7_TEST: "true"
-    TEST_JAVA8_JVM: /usr/lib/jvm/bellsoft-java12.x86_64/bin/java
-    JDK_VER: 12
-    TEST_LIST: "**"
-    EXTRA_DEPENDENCIES: icu
-    REPORT_PREFIX: liberica_jdk12_
-  image:
-    name: registry.red-soft.biz:5000/docker-images/rdbtestenv/centos7:7.6.1810-cpro-4.0.9963-0
-  before_script:
-    - yum install -y maven krb5-server krb5-workstation expect $EXTRA_DEPENDENCIES
-    - /opt/cprocsp/sbin/amd64/cpconfig -license -set $LICENSE_CRYPTOPRO4
-    - ./ci/configure_kerberos.sh
-    - ./ci/install_liberica_jdk.sh
-    - export VERSION=`cat .ci/version`
-
-build_and_test:liberica_jdk13:rdb3:
-  <<: *build_and_test_template
-  variables:
-    JAVA_HOME: /usr/lib/jvm/jre-1.8.0
-    RDB_VERSION: 3.0.4.102
-    SKIP_JAVA7_TEST: "true"
-    TEST_JAVA8_JVM: /usr/lib/jvm/bellsoft-java13.x86_64/bin/java
-    JDK_VER: 13
-    TEST_LIST: "**"
-    EXTRA_DEPENDENCIES: icu
-    REPORT_PREFIX: liberica_jdk13_
-  image:
-    name: registry.red-soft.biz:5000/docker-images/rdbtestenv/centos7:7.6.1810-cpro-4.0.9963-0
-  before_script:
-    - yum install -y maven krb5-server krb5-workstation expect $EXTRA_DEPENDENCIES
-    - /opt/cprocsp/sbin/amd64/cpconfig -license -set $LICENSE_CRYPTOPRO4
-    - ./ci/configure_kerberos.sh
-    - ./ci/install_liberica_jdk.sh
-    - export VERSION=`cat .ci/version`
+    name: registry.red-soft.biz:5000/docker-images/rdbtestenv/centos7:7.6.1810-cpro-4.0.9963-2
 
 build_and_test:jdk18:rdb2_6:
   <<: *build_and_test_template
@@ -248,7 +156,7 @@ build_and_test:jdk18:rdb2_6:
     TEST_LIST: "**"
     EXTRA_DEPENDENCIES: icu xinetd
   image:
-    name: registry.red-soft.biz:5000/docker-images/rdbtestenv/centos7:7.6.1810-cpro-4.0.9963-0
+    name: registry.red-soft.biz:5000/docker-images/rdbtestenv/centos7:7.6.1810-cpro-4.0.9963-2
 
 build_and_test:jdk18:fb3:
   <<: *build_and_test_template
@@ -260,7 +168,7 @@ build_and_test:jdk18:fb3:
     TEST_LIST: "**"
     EXTRA_DEPENDENCIES: icu xinetd libtommath
   image:
-    name: registry.red-soft.biz:5000/docker-images/rdbtestenv/centos7:7.6.1810-cpro-4.0.9963-0
+    name: registry.red-soft.biz:5000/docker-images/rdbtestenv/centos7:7.6.1810-cpro-4.0.9963-2
 
 deploy:internal:
   <<: *deploy_template
