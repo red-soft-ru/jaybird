@@ -662,13 +662,13 @@ public class FBSADataSource implements DataSource, Serializable, Referenceable, 
     }
 
     @Override
-    public String getTimeZoneBind() {
-        return mcf.getTimeZoneBind();
+    public String getDataTypeBind() {
+        return mcf.getDataTypeBind();
     }
 
     @Override
-    public void setTimeZoneBind(String timeZoneBind) {
-        mcf.setTimeZoneBind(timeZoneBind);
+    public void setDataTypeBind(String dataTypeBind) {
+        mcf.setDataTypeBind(dataTypeBind);
     }
 
     @Override

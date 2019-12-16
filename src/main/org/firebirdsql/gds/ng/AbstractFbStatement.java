@@ -43,6 +43,8 @@ import java.util.Set;
  */
 public abstract class AbstractFbStatement implements FbStatement {
 
+    private static final long MAX_STATEMENT_TIMEOUT = 0xFF_FF_FF_FFL;
+
     /**
      * Set of states that will be reset to {@link StatementState#PREPARED} on transaction change
      */
@@ -65,6 +67,7 @@ public abstract class AbstractFbStatement implements FbStatement {
     private volatile RowDescriptor parameterDescriptor;
     private volatile RowDescriptor fieldDescriptor;
     private volatile FbTransaction transaction;
+    private long timeout;
 
     private final TransactionListener transactionListener = new TransactionListener() {
         @Override
@@ -104,6 +107,7 @@ public abstract class AbstractFbStatement implements FbStatement {
 
     protected AbstractFbStatement(Object syncObject) {
         this.syncObject = syncObject;
+        exceptionListenerDispatcher.addListener(new StatementCancelledListener());
     }
 
     /**
@@ -573,6 +577,21 @@ public abstract class AbstractFbStatement implements FbStatement {
         }
     }
 
+    /**
+     * Performs the same check as {@link #checkStatementValid()}, but considers {@code ignoreState} as valid.
+     *
+     * @param ignoreState
+     *         The invalid state (see {@link #checkStatementValid()} to ignore
+     * @throws SQLException
+     *         When this statement is closed or in error state.
+     */
+    protected final void checkStatementValid(StatementState ignoreState) throws SQLException {
+        if (ignoreState == getState()) {
+            return;
+        }
+        checkStatementValid();
+    }
+
     @Override
     protected void finalize() throws Throwable {
         try {
@@ -627,6 +646,45 @@ public abstract class AbstractFbStatement implements FbStatement {
         }
     }
 
+    @Override
+    public void setTimeout(long statementTimeout) throws SQLException {
+        try {
+            if (statementTimeout < 0) {
+                throw new FbExceptionBuilder()
+                        .nonTransientException(JaybirdErrorCodes.jb_invalidTimeout)
+                        .toFlatSQLException();
+            }
+            synchronized (getSynchronizationObject()) {
+                checkStatementValid(StatementState.NEW);
+                this.timeout = statementTimeout;
+            }
+        } catch (SQLException e) {
+            exceptionListenerDispatcher.errorOccurred(e);
+            throw e;
+        }
+    }
+
+    @Override
+    public long getTimeout() throws SQLException {
+        synchronized (getSynchronizationObject()) {
+            checkStatementValid(StatementState.NEW);
+            return timeout;
+        }
+    }
+
+    /**
+     * @return The timeout value, or {@code 0} if the timeout is larger than supported
+     * @throws SQLException
+     *         If the statement is invalid
+     */
+    protected long getAllowedTimeout() throws SQLException {
+        long timeout = getTimeout();
+        if (timeout > MAX_STATEMENT_TIMEOUT) {
+            return 0;
+        }
+        return timeout;
+    }
+
     /**
      * Parse the statement info response in <code>statementInfoResponse</code>. If the response is truncated, a new
      * request is done using {@link #getStatementInfoRequestItems()}
@@ -678,5 +736,30 @@ public abstract class AbstractFbStatement implements FbStatement {
 
     public FbBatch createBatch(BatchParameterBuffer parameters) throws SQLException {
         throw new FBDriverNotCapableException();
+    }
+
+    /**
+     * Listener to reset the statement state when it has been cancelled due to statement timeout.
+     */
+    private class StatementCancelledListener implements ExceptionListener {
+
+        @Override
+        public void errorOccurred(Object source, SQLException ex) {
+            if (source != AbstractFbStatement.this) {
+                return;
+            }
+            switch (ex.getErrorCode()) {
+            case ISCConstants.isc_cfg_stmt_timeout:
+            case ISCConstants.isc_att_stmt_timeout:
+            case ISCConstants.isc_req_stmt_timeout:
+                // Close cursor so statement can be reused
+                try {
+                    closeCursor();
+                } catch (SQLException e) {
+                    log.error("Unable to close cursor after statement timeout", e);
+                }
+                break;
+            }
+        }
     }
 }
