@@ -356,6 +356,30 @@ public class IStatementImpl extends AbstractFbStatement {
         return new IBatchImpl(batch, this, parameters);
     }
 
+    /*
+    * The FbInterface interface provides ability to set timeout value only for integer type.
+    */
+    @Override
+    public void setTimeout(long statementTimeout) throws SQLException {
+        super.setTimeout(statementTimeout);
+        try {
+            synchronized (getSynchronizationObject()) {
+                statement.setTimeout(getStatus(), (int)super.getTimeout());
+            }
+        } catch (SQLException e) {
+            exceptionListenerDispatcher.errorOccurred(e);
+            throw e;
+        }
+    }
+
+    @Override
+    public long getTimeout() throws SQLException {
+        synchronized (getSynchronizationObject()) {
+            checkStatementValid(StatementState.NEW);
+            return statement.getTimeout(getStatus());
+        }
+    }
+
     public FbMessageMetadata getInputMetadata() throws SQLException {
         return new IMessageMetadataImpl(database, inMeta);
     }
