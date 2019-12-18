@@ -26,9 +26,7 @@ import org.firebirdsql.gds.ng.DatatypeCoder;
 import org.firebirdsql.gds.ng.FbDatabase;
 import org.firebirdsql.gds.ng.fields.RowValue;
 import org.firebirdsql.gds.ng.wire.SimpleStatementListener;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import java.sql.SQLException;
 import java.sql.SQLNonTransientException;
@@ -45,9 +43,6 @@ import static org.junit.Assert.*;
 public class IStatementImplTest extends AbstractStatementTest {
 
     private static final String gdsType = "FBOONATIVE";
-
-    @Rule
-    public final ExpectedException expectedException = ExpectedException.none();
 
     private final AbstractNativeOODatabaseFactory factory =
             (AbstractNativeOODatabaseFactory) GDSFactory.getDatabaseFactoryForType(GDSType.getType(gdsType));
