@@ -179,6 +179,13 @@ public class JnaStatement extends AbstractFbStatement {
                         throw FbExceptionBuilder.forException(ISCConstants.isc_cancelled).toFlatSQLException();
                     }
                     if (hasSingletonResult) {
+                        clientLibrary.isc_dsql_execute2(statusVector, getTransaction().getJnaHandle(), handle,
+                                inXSqlDa.version, inXSqlDa, outXSqlDa);
+                    } else {
+                        clientLibrary.isc_dsql_execute(statusVector, getTransaction().getJnaHandle(), handle,
+                                inXSqlDa.version, inXSqlDa);
+                    }
+                    if (hasSingletonResult) {
                         /* A type with a singleton result (ie an execute procedure with return fields), doesn't actually
                          * have a result set that will be fetched, instead we have a singleton result if we have fields
                          */
