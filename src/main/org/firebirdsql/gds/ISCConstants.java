@@ -197,6 +197,7 @@ public interface ISCConstants {
     int isc_dpb_db_crypt_config         = 145;
     int isc_dpb_generated_keys_enabled  = 146;
     int isc_dpb_ignore_procedure_type   = 147;
+    int isc_dpb_wire_compression        = 148;
 
     // TODO Check it out in rdb 4
     /* Red Database security parameters */

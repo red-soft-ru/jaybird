@@ -461,7 +461,16 @@ public class FBSimpleDataSource extends RootCommonDataSource implements DataSour
         mcf.setIgnoreProcedureType(ignoreProcedureType);
     }
 
-	
+    @Override
+    public boolean isWireCompression() {
+        return mcf.isWireCompression();
+    }
+
+    @Override
+    public void setWireCompression(boolean wireCompression) {
+        mcf.setWireCompression(wireCompression);
+    }
+
 	@Override
     public String getCertificate() {
         return mcf.getCertificate();

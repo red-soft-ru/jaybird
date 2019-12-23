@@ -16,31 +16,33 @@
  *
  * All rights reserved.
  */
-package org.firebirdsql.gds.ng.wire.version16;
+package org.firebirdsql.gds.impl.wire;
 
-import org.firebirdsql.common.rules.RequireProtocol;
-import org.firebirdsql.gds.ng.wire.version15.TestV15Statement;
-import org.junit.ClassRule;
+import org.firebirdsql.util.InternalApi;
 
-import static org.firebirdsql.common.rules.RequireProtocol.requireProtocolVersion;
+import javax.crypto.Cipher;
+import java.io.IOException;
 
 /**
- * Tests for {@link org.firebirdsql.gds.ng.wire.version16.V16Statement} in the V16 protocol, reuses test for V15.
+ * Interface to support enabling encryption on a stream.
  *
  * @author <a href="mailto:mrotteveel@users.sourceforge.net">Mark Rotteveel</a>
  * @since 4.0
  */
-public class TestV16Statement extends TestV15Statement {
+@InternalApi
+interface EncryptedStreamSupport {
 
-    @ClassRule
-    public static final RequireProtocol requireProtocol = requireProtocolVersion(16);
-
-    public TestV16Statement() {
-        this(new V16CommonConnectionInfo());
-    }
-
-    protected TestV16Statement(V16CommonConnectionInfo commonConnectionInfo) {
-        super(commonConnectionInfo);
-    }
-
+    /**
+     * Wraps the underlying stream for encryption using the provided {@code cipher}.
+     * <p>
+     * An implementation wrapping a stream that also implements {@code EncryptedStreamSupport} may delegate this call to
+     * that wrapped stream.
+     * </p>
+     *
+     * @param cipher
+     *         Cipher for the stream
+     * @throws IOException
+     *         If the underlying stream is already wrapped
+     */
+    void setCipher(Cipher cipher) throws IOException;
 }
