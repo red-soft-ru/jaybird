@@ -692,6 +692,16 @@ public class FBSADataSource implements DataSource, Serializable, Referenceable, 
     }
 
     @Override
+    public boolean isWireCompression() {
+        return mcf.isWireCompression();
+    }
+
+    @Override
+    public void setWireCompression(boolean wireCompression) {
+        mcf.setWireCompression(wireCompression);
+    }
+
+    @Override
     public String getCertificate() {
         return mcf.getCertificate();
     }
