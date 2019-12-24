@@ -23,6 +23,7 @@ package org.firebirdsql.management;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.charset.Charset;
 import java.sql.SQLException;
 import java.util.Map;
 import java.util.TreeMap;
@@ -199,7 +200,7 @@ public class FBUserManager extends FBServiceManager implements UserManager {
         int length = getGds().iscVaxInteger(displayBuffer, count, 2);
         count += 2;
 
-        String string = new String(displayBuffer, count, length);
+        String string = new String(displayBuffer, count, length, Charset.forName("UTF-8"));
         count += length;
         return string;
         
