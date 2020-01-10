@@ -88,7 +88,7 @@ build_and_test:jdk18:rdb4:
     TEST_JAVA8_JVM: /usr/lib/jvm/jre-1.8.0/bin/java
     SKIP_JAVA7_TEST: "true"
     TEST_LIST: "**"
-    RDB_VERSION: 4.0.0.1685
+    RDB_VERSION: 4.0.0.1738
   image:
     name: registry.red-soft.biz:5000/docker-images/rdbtestenv/centos7:7.6.1810-cpro-4.0.9963-2
 
@@ -96,7 +96,7 @@ build_and_test:jdk18:rdb3:
   <<: *build_and_test_template
   variables:
     JAVA_HOME: /usr/lib/jvm/jre-1.8.0
-    RDB_VERSION: 3.0.4.102
+    RDB_VERSION: 3.0.4.169
     SKIP_JAVA7_TEST: "false"
     TEST_JAVA8_JVM: /usr/lib/jvm/jre-1.8.0/bin/java
     TEST_JAVA7_JVM: /usr/lib/jvm/jre-1.7.0/bin/java
@@ -109,7 +109,7 @@ build_and_test:jdk11:rdb3:
   <<: *build_and_test_template
   variables:
     JAVA_HOME: /usr/lib/jvm/jre-1.8.0
-    RDB_VERSION: 3.0.4.102
+    RDB_VERSION: 3.0.4.169
     SKIP_JAVA7_TEST: "true"
     TEST_JAVA8_JVM: /usr/lib/jvm/java-11-openjdk-11.0.5.10-0.el7_7.x86_64/bin/java
     TEST_LIST: "**"
@@ -122,7 +122,7 @@ build_and_test:liberica_jdk8:rdb3:
   <<: *build_and_test_template
   variables:
     JAVA_HOME: /usr/lib/jvm/jre-1.8.0
-    RDB_VERSION: 3.0.4.102
+    RDB_VERSION: 3.0.4.169
     SKIP_JAVA7_TEST: "true"
     TEST_JAVA8_JVM: /usr/lib/jvm/bellsoft-java8-runtime.x86_64/bin/java
     JDK_VER: 8-runtime
@@ -136,7 +136,7 @@ build_and_test:liberica_jdk11:rdb3:
   <<: *build_and_test_template
   variables:
     JAVA_HOME: /usr/lib/jvm/jre-1.8.0
-    RDB_VERSION: 3.0.4.102
+    RDB_VERSION: 3.0.4.169
     SKIP_JAVA7_TEST: "true"
     TEST_JAVA8_JVM: /usr/lib/jvm/bellsoft-java11-runtime.x86_64/bin/java
     JDK_VER: 11-runtime
@@ -150,7 +150,7 @@ build_and_test:jdk18:rdb2_6:
   <<: *build_and_test_template
   variables:
     JAVA_HOME: /usr/lib/jvm/jre-1.8.0
-    RDB_VERSION: 2.6.0.13485
+    RDB_VERSION: 2.6.0.13500
     SKIP_JAVA7_TEST: "true"
     TEST_JAVA8_JVM: /usr/lib/jvm/jre-1.8.0/bin/java
     TEST_LIST: "**"
