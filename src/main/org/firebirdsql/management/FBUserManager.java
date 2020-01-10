@@ -18,6 +18,7 @@
  */
 package org.firebirdsql.management;
 
+import org.firebirdsql.encodings.EncodingFactory;
 import org.firebirdsql.gds.ServiceRequestBuffer;
 import org.firebirdsql.gds.impl.GDSType;
 import org.firebirdsql.gds.ng.FbService;
@@ -25,6 +26,7 @@ import org.firebirdsql.gds.ng.FbService;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.sql.SQLException;
 import java.util.Map;
 import java.util.TreeMap;
@@ -146,13 +148,13 @@ public class FBUserManager extends FBServiceManager implements UserManager {
             srb.addArgument(isc_spb_sec_password, user.getPassword());
         }
         if (user.getFirstName() != null) {
-            srb.addArgument(isc_spb_sec_firstname, user.getFirstName());
+            srb.addArgument(isc_spb_sec_firstname, user.getFirstName(), EncodingFactory.getEncoding("UTF-8"));
         }
         if (user.getMiddleName() != null) {
-            srb.addArgument(isc_spb_sec_middlename, user.getMiddleName());
+            srb.addArgument(isc_spb_sec_middlename, user.getMiddleName(), EncodingFactory.getEncoding("UTF-8"));
         }
         if (user.getLastName() != null) {
-            srb.addArgument(isc_spb_sec_lastname, user.getLastName());
+            srb.addArgument(isc_spb_sec_lastname, user.getLastName(), EncodingFactory.getEncoding("UTF-8"));
         }
         if (user.getUserId() != -1) {
             srb.addArgument(isc_spb_sec_userid, user.getUserId());
@@ -183,12 +185,12 @@ public class FBUserManager extends FBServiceManager implements UserManager {
      * @param displayBuffer
      * @return an string from ther service request buffer.
      */
-    private String getSRBString(byte[] displayBuffer) {
+    private String getSRBString(byte[] displayBuffer) throws UnsupportedEncodingException {
         count += 1;
         int length = iscVaxInteger(displayBuffer, count, 2);
         count += 2;
 
-        String string = new String(displayBuffer, count, length);
+        String string = new String(displayBuffer, count, length, EncodingFactory.getEncoding("UTF-8").getCharsetName());
         count += length;
         return string;
     }
