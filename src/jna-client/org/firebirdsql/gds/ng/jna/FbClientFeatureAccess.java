@@ -16,33 +16,35 @@
  *
  * All rights reserved.
  */
-package org.firebirdsql.jdbc;
+package org.firebirdsql.gds.ng.jna;
+
+import org.firebirdsql.util.InternalApi;
+
+import java.util.Set;
 
 /**
- * Reasons for statement (or other resources) completion. This is intended for the {@link InternalTransactionCoordinator}
- * to notify the statement and related objects on why it should complete.
- * 
- * @since 2.2.3
+ * Firebird client feature access.
+ * <p>
+ * This interface allows checks for features of the Firebird client API.
+ * </p>
+ *
+ * @author <a href="mailto:mrotteveel@users.sourceforge.net">Mark Rotteveel</a>
+ * @since 4.0
  */
-public enum CompletionReason {
-    COMMIT {
-        @Override
-        boolean isTransactionEnd() {
-            return true;
-        }
-    },
-    ROLLBACK{
-        @Override
-        boolean isTransactionEnd() {
-            return true;
-        }
-    },
-    OTHER;
+@InternalApi
+public interface FbClientFeatureAccess {
 
     /**
-     * @return {@code true} if this completion indicates a transaction end
+     * Checks for presence of a client feature.
+     *
+     * @param clientFeature Client feature
+     * @return {@code true} if the feature is present, {@code false} otherwise
      */
-    boolean isTransactionEnd() {
-        return false;
-    }
+    boolean hasFeature(FbClientFeature clientFeature);
+
+    /**
+     * @return an unmodifiable set with supported client features
+     */
+    Set<FbClientFeature> getFeatures();
+
 }

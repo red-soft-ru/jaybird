@@ -2136,6 +2136,8 @@ The following methods will be removed in Jaybird 5:
 -   `FbStatement.getFieldDescriptor()`, use `FbStatement.getRowDescriptor()`
 -   `AbstractFbStatement.setFieldDescriptor(RowDescriptor fieldDescriptor)`, 
     use `AbstractFbStatement.setRowDescriptor(RowDescriptor rowDescriptor)`
+-   `FBField.isType(FieldDescriptor, int)`, use 
+    `JdbcTypeConverter.isJdbcType(FieldDescriptor, int)`
     
 ### Removal of deprecated classes ###
 
@@ -2152,6 +2154,15 @@ The following constants will be removed in Jaybird 5:
 -   `DatabaseParameterBufferExtension.EXTENSION_PARAMETERS` will be removed. There is no
     official replacement as this should be considered an implementation detail. It is
     possible that `DatabaseParameterBufferExtension` will be removed entirely.
+
+### Removal of UDF support for JDBC escapes ###
+
+Jaybird 4 and earlier have support to map JDBC function escapes to UDFs from
+`ib_udf` instead of built-in function using the boolean connection property
+`useStandarUdf`\[sic\].
+
+Given recent Firebird versions have significantly improved support for built-in
+functions, and UDFs are now deprecated, this option will be removed in Jaybird 5. 
     
 Compatibility notes
 ===================
