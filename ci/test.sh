@@ -20,30 +20,32 @@ function fail()
 
 trap "fail" ERR INT QUIT KILL TERM
 
-check_variable BINDIR
-check_variable SRCDIR
-check_variable JAYBIRD_VERSION
 check_variable JAVA_HOME
 check_variable CI_PROJECT_DIR
+check_variable RDB_VERSION
+check_variable VERSION
 
 JAVA="${JAVA_HOME}/bin/java"
 JDK_VERSION=`$JAVA -version 2>&1|head -n 1|awk -F\" '{split($2, v, ".");printf("%s%s", v[1], v[2])}'`
-REPORTS_DIR="${CI_PROJECT_DIR}/results/jdk${JDK_VERSION}_rdb4"
 INSTALLDIR=/opt/RedDatabase
 SOURCES=$(readlink -f $(dirname $0)/..)
 OS=linux
-RDB_VERSION=${RDB_VERSION}
-RDB_MAJOR_VERSION="4"
-if [[ "${RDB_VERSION:0:1}" -eq "3" ]]; then
+
+if [[ "${RDB_VERSION:0:1}" -eq "4" ]]; then
+  RDB_MAJOR_VERSION="4"
+  REPORT_PREFIX=${REPORT_PREFIX:=rdb4_}
+elif [[ "${RDB_VERSION:0:1}" -eq "3" ]]; then
   RDB_MAJOR_VERSION="3"
-  REPORTS_DIR="${CI_PROJECT_DIR}/results/jdk${JDK_VERSION}_rdb3"
+  REPORT_PREFIX=${REPORT_PREFIX:=rdb3_}
 elif [[ "${RDB_VERSION:0:1}" -eq "2" ]]; then
   RDB_MAJOR_VERSION="2"
-  REPORTS_DIR="${CI_PROJECT_DIR}/results/jdk${JDK_VERSION}_rdb2_6"
+  REPORT_PREFIX=${REPORT_PREFIX:=rdb2_6_}
 elif [[ "${RDB_VERSION:0:7}" == "FB3.0.4" ]]; then
   RDB_MAJOR_VERSION="FB3.0.4"
-  REPORTS_DIR="${CI_PROJECT_DIR}/results/jdk${JDK_VERSION}_fb3"
   INSTALLDIR=/opt/firebird
+  REPORT_PREFIX=${REPORT_PREFIX:=fb3_}
+else
+  die "Do not know how to test RDB ${RDB_VERSION}"
 fi
 TEST_DIR=/tmp/jaybird_test
 TMPFS=/tmpfs
@@ -54,8 +56,6 @@ ARCH=`arch`
 if [ "$ARCH" == "i686" ]; then
 	ARCH="x86"
 fi
-
-mkdir -p "${REPORTS_DIR}"
 
 if [ -d $TMPFS ]; then
     echo Found $TMPFS. Will use it for databases
@@ -94,7 +94,7 @@ chown firebird:firebird -R $KEYS_DIR/firebird
 sudo -u firebird /opt/cprocsp/bin/$CPROCSP_ARCH/certmgr -inst -cont '\\.\HDIMAGE\REDSOFT'
 sudo -u firebird /opt/cprocsp/bin/$CPROCSP_ARCH/csptest -passwd -cont '\\.\HDIMAGE\REDSOFT' -change 12345678
 
-cp fbt-repository/files/cert/REDSOFT.cer ./testuser.cer
+cp fbt-repository/files/cert/REDSOFT.cer /tmp/testuser.cer
 
 sed -i '/\[Parameters\]/a warning_time_gen_2001=ll:9223372036854775807\nwarning_time_sign_2001=ll:9223372036854775807\n' /etc/opt/cprocsp/config64.ini
 
@@ -144,9 +144,9 @@ if [[ "$RDB_MAJOR_VERSION" == "4" ]]; then
 
   sed -i 's/#VerifyCertificateChain = 1/VerifyCertificateChain = 0/g' "${INSTALLDIR}"/firebird.conf
   sed -i 's/#CertUsernameDN = CN/CertUsernameDN = E/g' "${INSTALLDIR}"/firebird.conf
-  sed -i 's/#ServerCertificate =/ServerCertificate = %D0%A1%D0%BC%D0%B8%D1%80%D0%BD%D0%BE%D0%B2%20%D0%90%D1%80%D1%82%D0%B5%D0%BC%20%D0%92%D1%8F%D1%87%D0%B5%D1%81%D0%BB%D0%B0%D0%B2%D0%BE%D0%B2%D0%B8%D1%87,%D0%A4%D0%B5%D0%B4%D0%B5%D1%80%D0%B0%D0%BB%D1%8C%D0%BD%D0%B0%D1%8F%20%D1%81%D0%BB%D1%83%D0%B6%D0%B1%D0%B0%20%D1%81%D1%83%D0%B4%D0%B5%D0%B1%D0%BD%D1%8B%D1%85%20%D0%BF%D1%80%D0%B8%D1%81%D1%82%D0%B0%D0%B2%D0%BE%D0%B2,071085DA7AC40C79ABE811F872541896CB/g' "${INSTALLDIR}"/firebird.conf
+  sed -i 's/#ServerCertificate =/ServerCertificate = %D0%A2%D0%B5%D1%81%D1%82%20%D0%A2%D0%B5%D1%81%D1%82%20%D0%A2%D0%B5%D1%81%D1%82,%D0%A4%D0%B5%D0%B4%D0%B5%D1%80%D0%B0%D0%BB%D1%8C%D0%BD%D0%B0%D1%8F%20%D1%81%D0%BB%D1%83%D0%B6%D0%B1%D0%B0%20%D1%81%D1%83%D0%B4%D0%B5%D0%B1%D0%BD%D1%8B%D1%85%20%D0%BF%D1%80%D0%B8%D1%81%D1%82%D0%B0%D0%B2%D0%BE%D0%B2,1085DA7AC40CE4ABE91189EE414A7114/g' "${INSTALLDIR}"/firebird.conf
   sed -i 's/#ServerPrivatePin =/ServerPrivatePin = 12345678/g' "${INSTALLDIR}"/firebird.conf
-  sed -i 's/#TrustedCertificate =/TrustedCertificate = %D0%A1%D0%BC%D0%B8%D1%80%D0%BD%D0%BE%D0%B2%20%D0%90%D1%80%D1%82%D0%B5%D0%BC%20%D0%92%D1%8F%D1%87%D0%B5%D1%81%D0%BB%D0%B0%D0%B2%D0%BE%D0%B2%D0%B8%D1%87,%D0%A4%D0%B5%D0%B4%D0%B5%D1%80%D0%B0%D0%BB%D1%8C%D0%BD%D0%B0%D1%8F%20%D1%81%D0%BB%D1%83%D0%B6%D0%B1%D0%B0%20%D1%81%D1%83%D0%B4%D0%B5%D0%B1%D0%BD%D1%8B%D1%85%20%D0%BF%D1%80%D0%B8%D1%81%D1%82%D0%B0%D0%B2%D0%BE%D0%B2,071085DA7AC40C79ABE811F872541896CB/g' "${INSTALLDIR}"/firebird.conf
+  sed -i 's/#TrustedCertificate =/TrustedCertificate = %D0%A2%D0%B5%D1%81%D1%82%20%D0%A2%D0%B5%D1%81%D1%82%20%D0%A2%D0%B5%D1%81%D1%82,%D0%A4%D0%B5%D0%B4%D0%B5%D1%80%D0%B0%D0%BB%D1%8C%D0%BD%D0%B0%D1%8F%20%D1%81%D0%BB%D1%83%D0%B6%D0%B1%D0%B0%20%D1%81%D1%83%D0%B4%D0%B5%D0%B1%D0%BD%D1%8B%D1%85%20%D0%BF%D1%80%D0%B8%D1%81%D1%82%D0%B0%D0%B2%D0%BE%D0%B2,1085DA7AC40CE4ABE91189EE414A7114/g' "${INSTALLDIR}"/firebird.conf
   sed -i 's/#TrustedUser =/TrustedUser = trusted_user/g' "${INSTALLDIR}"/firebird.conf
 
 "${INSTALLDIR}"/bin/isql -user SYSDBA -password masterkey "${INSTALLDIR}"/security4.fdb -i "${SOURCES}"/ci/user4.sql
@@ -221,6 +221,6 @@ done
 echo rdb_server | kinit rdb_server/localhost
 klist
 
-"${SRCDIR}"/bin/ant -Dtest.report.dir=$REPORTS_DIR -Dtest.db.dir=$TEST_DIR -Djdk=${JDK_VERSION} -Dversion=$JAYBIRD_VERSION -Dbindir=${BINDIR} -Dsrcdir=${SRCDIR} -f "${SOURCES}"/ci/test.xml
+mvn $MAVEN_CLI_OPTS -f "${CI_PROJECT_DIR}"/pom.xml test -Pdeploy-internal -DreportNamePrefix=$REPORT_PREFIX -DreleaseHubBuildVersion=$VERSION  -DfailIfNoTests=false -Dtest.db.dir=$TEST_DIR -Dtest.java7.skip=$SKIP_JAVA7_TEST -Dtest.java8.jvm=$TEST_JAVA8_JVM -Dtest.java7.jvm=$TEST_JAVA7_JVM -Dtest=$TEST_LIST
 
 kdestroy

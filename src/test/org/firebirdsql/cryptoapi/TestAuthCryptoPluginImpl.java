@@ -2,7 +2,6 @@ package org.firebirdsql.cryptoapi;
 
 import org.apache.log4j.BasicConfigurator;
 import org.firebirdsql.common.FBJUnit4TestBase;
-import org.firebirdsql.gds.GDSException;
 import org.firebirdsql.gds.impl.wire.auth.AuthCryptoPlugin;
 import org.firebirdsql.gds.impl.wire.auth.AuthPrivateKeyContext;
 import org.junit.Test;
@@ -89,7 +88,7 @@ public class TestAuthCryptoPluginImpl extends FBJUnit4TestBase {
 
     @Test
     public void testAuthCryptoPluginImpl_getUserKey() throws Exception {
-        String cert = loadCertFromFile("testuser.cer");
+        String cert = loadCertFromFile("/tmp/testuser.cer");
 
         AuthCryptoPlugin plugin = AuthCryptoPlugin.getPlugin();
         AuthPrivateKeyContext userKey = plugin.getUserKey(cert);
