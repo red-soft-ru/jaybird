@@ -1,6 +1,8 @@
 package org.firebirdsql.gds.impl.wire.auth;
 
-import org.apache.log4j.BasicConfigurator;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.core.config.Configurator;
+import org.apache.logging.log4j.core.config.DefaultConfiguration;
 import org.firebirdsql.common.FBJUnit4TestBase;
 import org.firebirdsql.common.FBTestProperties;
 import org.firebirdsql.common.JdbcResourceHelper;
@@ -29,7 +31,8 @@ import static org.junit.Assert.fail;
 public class TestAuthSspi extends FBJUnit4TestBase {
 
     public static void initLogger() {
-        BasicConfigurator.configure();
+        Configurator.initialize(new DefaultConfiguration());
+        Configurator.setRootLevel(Level.INFO);
     }
 
     @Test
