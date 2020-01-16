@@ -20,26 +20,28 @@ function fail()
 
 trap "fail" ERR INT QUIT KILL TERM
 
-check_variable BINDIR
-check_variable SRCDIR
-check_variable JAYBIRD_VERSION
 check_variable JAVA_HOME
 check_variable CI_PROJECT_DIR
+check_variable RDB_VERSION
+check_variable VERSION
 
 JAVA="${JAVA_HOME}/bin/java"
 JDK_VERSION=`$JAVA -version 2>&1|head -n 1|awk -F\" '{split($2, v, ".");printf("%s%s", v[1], v[2])}'`
-REPORTS_DIR="${CI_PROJECT_DIR}/results/jdk${JDK_VERSION}_rdb4"
 INSTALLDIR=/opt/RedDatabase
 SOURCES=$(readlink -f $(dirname $0)/..)
 OS=linux
-RDB_VERSION=${RDB_VERSION}
-RDB_MAJOR_VERSION="4"
-if [[ "${RDB_VERSION:0:1}" -eq "3" ]]; then
+
+if [[ "${RDB_VERSION:0:1}" -eq "4" ]]; then
+  RDB_MAJOR_VERSION="4"
+  REPORT_PREFIX=${REPORT_PREFIX:=rdb4_}
+elif [[ "${RDB_VERSION:0:1}" -eq "3" ]]; then
   RDB_MAJOR_VERSION="3"
-  REPORTS_DIR="${CI_PROJECT_DIR}/results/jdk${JDK_VERSION}_rdb3"
+  REPORT_PREFIX=${REPORT_PREFIX:=rdb3_}
 elif [[ "${RDB_VERSION:0:1}" -eq "2" ]]; then
   RDB_MAJOR_VERSION="2"
-  REPORTS_DIR="${CI_PROJECT_DIR}/results/jdk${JDK_VERSION}_rdb2_6"
+  REPORT_PREFIX=${REPORT_PREFIX:=rdb2_6_}
+else
+  die "Do not know how to test RDB ${RDB_VERSION}"
 fi
 TEST_DIR=/tmp/jaybird_test
 TMPFS=/tmpfs
@@ -50,8 +52,6 @@ ARCH=`arch`
 if [ "$ARCH" == "i686" ]; then
 	ARCH="x86"
 fi
-
-mkdir -p "${REPORTS_DIR}"
 
 if [ -d $TMPFS ]; then
     echo Found $TMPFS. Will use it for databases
@@ -199,6 +199,6 @@ done
 echo rdb_server | kinit rdb_server/localhost
 klist
 
-"${SRCDIR}"/bin/ant -Dtest.report.dir=$REPORTS_DIR -Dtest.db.dir=$TEST_DIR -Djdk=${JDK_VERSION} -Dversion=$JAYBIRD_VERSION -Dbindir=${BINDIR} -Dsrcdir=${SRCDIR} -f "${SOURCES}"/ci/test.xml
+mvn $MAVEN_CLI_OPTS -f "${CI_PROJECT_DIR}"/pom.xml test -Pdeploy-internal -DreportNamePrefix=$REPORT_PREFIX -DreleaseHubBuildVersion=$VERSION  -DfailIfNoTests=false -Dtest.db.dir=$TEST_DIR -Dtest.java7.skip=$SKIP_JAVA7_TEST -Dtest.java8.jvm=$TEST_JAVA8_JVM -Dtest.java7.jvm=$TEST_JAVA7_JVM -Dtest=$TEST_LIST
 
 kdestroy

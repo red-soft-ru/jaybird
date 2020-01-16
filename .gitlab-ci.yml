@@ -1,28 +1,32 @@
 stages:
 - prepare
-- sources
-- build
-- test
+- build_and_test
 - deploy
+
+cache:
+  paths:
+    - .m2/repository/
+    - target/
 
 variables:
   RELEASE_HUB_PROJECT: jaybird
   CI_URL: ${CI_PROJECT_URL}/pipelines/${CI_PIPELINE_ID}
   TAG_BRANCH: master
+  MAVEN_CLI_OPTS: "-s .m2/settings.xml --batch-mode -U"
+  MAVEN_OPTS: "-Dmaven.repo.local=.m2/repository"
 
 .prepare_template: &prepare_template
   tags:
     - docker
     - builder
   stage: prepare
-  image: redsoftru/relmanager_client
+  image: openjdk:8-jdk-alpine
   script:
     - mkdir .ci
-    - m4 -DVERSION=${VERSION} ci/artifacts.m4 > .ci/artifacts
     - echo ${VERSION} > .ci/version
     - echo ${BRANCH} > .ci/branch
-    - echo ${TAG} > .ci/tag
     - echo ${CONTEXT} > .ci/context
+    - mvn $MAVEN_CLI_OPTS releasehub-build:register -Pdeploy-internal -DreleaseHubBuildOnlyCreate -DreleaseHubBuildVersion=$VERSION -DreleaseHubBuildContext=${CONTEXT} -DreleaseHubBuildBranch=${BRANCH} -DreleaseHubBuildCommit=${CI_COMMIT_SHA} -DreleaseHubBuildCIURL=${CI_URL}
   artifacts:
     expire_in: 1 day
     paths:
@@ -31,10 +35,10 @@ variables:
 prepare:snapshot:
   <<: *prepare_template
   before_script:
-    - VERSION=$(cat build.properties|awk -F= '{if ($1 == "version.major") printf("%s.", $2); if ($1 == "version.minor") printf("%s.", $2); if ($1 == "version.revision") printf("%s", $2)}')
-    - export BUILDNO=$(relmanager_client genbuildno ${RELEASE_HUB_PROJECT} ${VERSION}-SNAPSHOT)
-    - export TAG=SNAPSHOT.${BUILDNO}
-    - export VERSION=${VERSION}-${TAG}
+    - apk --update add maven
+    - VERSION=$(mvn $MAVEN_CLI_OPTS -q -Dexec.executable="echo" -Dexec.args='${project.version}' --non-recursive org.codehaus.mojo:exec-maven-plugin:1.3.1:exec|sed 's/\(.*\)-.*/\1/')
+    - export BUILDNO=$(mvn $MAVEN_CLI_OPTS -q --non-recursive releasehub-build:buildno -Pdeploy-internal -DreleaseHubBuildVersion=${VERSION}-SNAPSHOT)
+    - export VERSION=${VERSION}-SNAPSHOT.${BUILDNO}
     - export BRANCH=${CI_COMMIT_REF_NAME}
     - export CONTEXT=commit
   except:
@@ -43,184 +47,129 @@ prepare:snapshot:
 prepare:release:
   <<: *prepare_template
   before_script:
+    - apk --update add maven
+    - VERSION_IN_POM=$(mvn -q -Dexec.executable="echo" -Dexec.args='${project.version}' --non-recursive org.codehaus.mojo:exec-maven-plugin:1.3.1:exec)
     - export VERSION=$(echo ${CI_COMMIT_TAG}|sed 's/v//')
     - export BRANCH=${TAG_BRANCH}
-    - export TAG=$(echo $VERSION|awk -F- '{print $2}')
     - export CONTEXT=tag
-    - VERSIONTAG=$(cat build.properties|grep version.tag=|awk -F- '{print $2}')
-    - SVNTAG=$(cat build.properties|grep version.svntag|awk -F= '{print $2}')
-    - "[ \"$TAG\" = \"$VERSIONTAG\" ] || (echo Update version.tag in build.properties!; exit 1)"
-    - "[ \"$SVNTAG\" = \"$CI_COMMIT_REF_NAME\" ] || (Update version.svntag in build.properties!; exit 1)"
+    - "[ \"$VERSION\" = \"$VERSION_IN_POM\" ] || (echo Project version in pom.xml and tag do not match!; exit 1)"
   only:
     - tags
 
-sources:
-  tags:
-    - docker
-    - builder
-  stage: sources
-  image: alpine:3.7
-  before_script:
-    - apk --update add bash git zip tar
-    - git config --global user.name "Dummy Name"
-    - git config --global user.email "dummy@email.org"
-    - export VERSION=`cat .ci/version`
-    - export TAG=`cat .ci/tag`
-  script:
-    - ./ci/dist-src.sh
-  artifacts:
-    expire_in: 1 day
-    paths:
-      - dist-src/
-  dependencies:
-    - prepare:snapshot
-    - prepare:release
-
-.build_template: &build_template
-  tags:
-    - docker
-    - builder
-  stage: build
-  before_script:
-    - apk --update add apache-ant bash zip tar
-    - export VERSION=`cat .ci/version`
-    - archive_prefix=jaybird-${VERSION}
-    - tar xf dist-src/${archive_prefix}.tar.gz
-  script:
-    - cd ${archive_prefix}
-    - ./ci/build.sh
-  artifacts:
-    expire_in: 1 day
-    paths:
-      - dist/
-
-build:jdk18:
-  <<: *build_template
+.deploy_template: &deploy_template
   image: openjdk:8-jdk-alpine
-
-build:jdk17:
-  <<: *build_template
-  image: openjdk:7-jdk-alpine
-
-test:jdk18:rdb4:
-  tags:
-    - docker
-    - tester
-  variables:
-    BINDIR: ${CI_PROJECT_DIR}/dist/jdk18
-    JDK_VERSION: 18
-    JAVA_HOME: /usr/lib/jvm/jre-1.8.0
-  image:
-    name: registry.red-soft.biz:5000/docker-images/rdbtestenv/centos7:7.6.1810-cpro-4.0.9963-0
-  stage: test
-  before_script:
-    - /opt/cprocsp/sbin/amd64/cpconfig -license -set $LICENSE_CRYPTOPRO4
-    - yum install -y krb5-server krb5-workstation expect
-    - ./ci/configure_kerberos.sh
-    - export JAYBIRD_VERSION=`cat .ci/version`
-    - export SRCDIR=`pwd`/jaybird-${JAYBIRD_VERSION}
-    - export RDB_VERSION=4.0.0.1732
-    - archive_prefix=jaybird-${JAYBIRD_VERSION}
-    - tar xf dist-src/${archive_prefix}.tar.gz
-  script:
-    - cd ${archive_prefix}
-    - ./ci/test.sh
-  artifacts:
-    expire_in: 1 day
-    paths:
-      - results
-    reports:
-      junit:
-        - results/jdk${JDK_VERSION}_rdb4/TEST-*.xml
-  dependencies:
-    - prepare:snapshot
-    - prepare:release
-    - sources
-    - build:jdk18
-
-test:jdk18:rdb3:
-  tags:
-    - docker
-    - tester
-  variables:
-    BINDIR: ${CI_PROJECT_DIR}/dist/jdk18
-    JDK_VERSION: 18
-    JAVA_HOME: /usr/lib/jvm/jre-1.8.0
-  image:
-    name: registry.red-soft.biz:5000/docker-images/rdbtestenv/centos7:7.6.1810-cpro-4.0.9963-0
-  stage: test
-  before_script:
-    - /opt/cprocsp/sbin/amd64/cpconfig -license -set $LICENSE_CRYPTOPRO4
-    - yum install -y krb5-server krb5-workstation expect icu
-    - ./ci/configure_kerberos.sh
-    - export JAYBIRD_VERSION=`cat .ci/version`
-    - export SRCDIR=`pwd`/jaybird-${JAYBIRD_VERSION}
-    - export RDB_VERSION=3.0.4.102
-    - archive_prefix=jaybird-${JAYBIRD_VERSION}
-    - tar xf dist-src/${archive_prefix}.tar.gz
-  script:
-    - cd ${archive_prefix}
-    - ./ci/test.sh
-  artifacts:
-    expire_in: 1 day
-    paths:
-      - results
-    reports:
-      junit:
-        - results/jdk${JDK_VERSION}_rdb3/TEST-*.xml
-  dependencies:
-    - prepare:snapshot
-    - prepare:release
-    - sources
-    - build:jdk18
-
-test:jdk18:rdb2_6:
-  tags:
-    - docker
-    - tester
-  variables:
-    BINDIR: ${CI_PROJECT_DIR}/dist/jdk18
-    JDK_VERSION: 18
-    JAVA_HOME: /usr/lib/jvm/jre-1.8.0
-  image:
-    name: registry.red-soft.biz:5000/docker-images/rdbtestenv/centos7:7.6.1810-cpro-4.0.9963-0
-  stage: test
-  before_script:
-    - /opt/cprocsp/sbin/amd64/cpconfig -license -set $LICENSE_CRYPTOPRO4
-    - yum install -y krb5-server krb5-workstation expect icu xinetd
-    - ./ci/configure_kerberos.sh
-    - export JAYBIRD_VERSION=`cat .ci/version`
-    - export SRCDIR=`pwd`/jaybird-${JAYBIRD_VERSION}
-    - export RDB_VERSION=2.6.0.13485
-    - archive_prefix=jaybird-${JAYBIRD_VERSION}
-    - tar xf dist-src/${archive_prefix}.tar.gz
-  script:
-    - cd ${archive_prefix}
-    - ./ci/test.sh
-  artifacts:
-    expire_in: 1 day
-    paths:
-      - results
-    reports:
-      junit:
-        - results/jdk${JDK_VERSION}_rdb2_6/TEST-*.xml
-  dependencies:
-    - prepare:snapshot
-    - prepare:release
-    - sources
-    - build:jdk18
-
-deploy:
   tags:
     - docker
     - builder
   stage: deploy
-  image: redsoftru/relmanager_client
-  except:
-    - tags
+  before_script:
+    - export VERSION=`cat .ci/version`
+    - export BRANCH=`cat .ci/branch`
+    - export CONTEXT=`cat .ci/context`
+    - apk --update add maven
+
+.build_and_test_template: &build_and_test_template
+  tags:
+    - docker
+    - tester
+  stage: build_and_test
+  before_script:
+    - yum install -y maven krb5-server krb5-workstation expect $EXTRA_DEPENDENCIES
+    - /opt/cprocsp/sbin/amd64/cpconfig -license -set $LICENSE_CRYPTOPRO4
+    - ./ci/configure_kerberos.sh
+    - export VERSION=`cat .ci/version`
   script:
-    - find dist*
-    - relmanager_client deploy ${RELEASE_HUB_PROJECT} $(cat .ci/version) --artifacts .ci/artifacts --ci_url ${CI_URL} --context $(cat .ci/context) --branch $(cat .ci/branch) --commit ${CI_COMMIT_SHA}
-  only:
-    variables:
-      - "$RELEASE_HUB_KEY"
+    - ./ci/test.sh
+
+build_and_test:jdk18:rdb4:
+  <<: *build_and_test_template
+  variables:
+    JAVA_HOME: /usr/lib/jvm/jre-1.8.0
+    TEST_JAVA8_JVM: /usr/lib/jvm/jre-1.8.0/bin/java
+    SKIP_JAVA7_TEST: "true"
+    TEST_LIST: "**"
+    RDB_VERSION: 4.0.0.1748
+  image:
+    name: registry.red-soft.biz:5000/docker-images/rdbtestenv/centos7:7.6.1810-cpro-4.0.9963-2
+
+build_and_test:jdk18:rdb3:
+  <<: *build_and_test_template
+  variables:
+    JAVA_HOME: /usr/lib/jvm/jre-1.8.0
+    RDB_VERSION: 3.0.4.169
+    SKIP_JAVA7_TEST: "false"
+    TEST_JAVA8_JVM: /usr/lib/jvm/jre-1.8.0/bin/java
+    TEST_JAVA7_JVM: /usr/lib/jvm/jre-1.7.0/bin/java
+    TEST_LIST: "**"
+    EXTRA_DEPENDENCIES: icu
+  image:
+    name: registry.red-soft.biz:5000/docker-images/rdbtestenv/centos7:7.6.1810-cpro-4.0.9963-2
+
+build_and_test:jdk11:rdb3:
+  <<: *build_and_test_template
+  variables:
+    JAVA_HOME: /usr/lib/jvm/jre-1.8.0
+    RDB_VERSION: 3.0.4.169
+    SKIP_JAVA7_TEST: "true"
+    TEST_JAVA8_JVM: /usr/lib/jvm/java-11-openjdk-11.0.5.10-0.el7_7.x86_64/bin/java
+    TEST_LIST: "**"
+    EXTRA_DEPENDENCIES: icu java-11-openjdk
+    REPORT_PREFIX: jdk11_
+  image:
+    name: registry.red-soft.biz:5000/docker-images/rdbtestenv/centos7:7.6.1810-cpro-4.0.9963-2
+
+build_and_test:liberica_jdk8:rdb3:
+  <<: *build_and_test_template
+  variables:
+    JAVA_HOME: /usr/lib/jvm/jre-1.8.0
+    RDB_VERSION: 3.0.4.169
+    SKIP_JAVA7_TEST: "true"
+    TEST_JAVA8_JVM: /usr/lib/jvm/bellsoft-java8-runtime.x86_64/bin/java
+    JDK_VER: 8-runtime
+    TEST_LIST: "**"
+    EXTRA_DEPENDENCIES: icu
+    REPORT_PREFIX: liberica_jdk8_
+  image:
+    name: registry.red-soft.biz:5000/docker-images/rdbtestenv/centos7:7.6.1810-cpro-4.0.9963-2
+
+build_and_test:liberica_jdk11:rdb3:
+  <<: *build_and_test_template
+  variables:
+    JAVA_HOME: /usr/lib/jvm/jre-1.8.0
+    RDB_VERSION: 3.0.4.169
+    SKIP_JAVA7_TEST: "true"
+    TEST_JAVA8_JVM: /usr/lib/jvm/bellsoft-java11-runtime.x86_64/bin/java
+    JDK_VER: 11-runtime
+    TEST_LIST: "**"
+    EXTRA_DEPENDENCIES: icu
+    REPORT_PREFIX: liberica_jdk11_
+  image:
+    name: registry.red-soft.biz:5000/docker-images/rdbtestenv/centos7:7.6.1810-cpro-4.0.9963-2
+
+build_and_test:jdk18:rdb2_6:
+  <<: *build_and_test_template
+  variables:
+    JAVA_HOME: /usr/lib/jvm/jre-1.8.0
+    RDB_VERSION: 2.6.0.13500
+    SKIP_JAVA7_TEST: "true"
+    TEST_JAVA8_JVM: /usr/lib/jvm/jre-1.8.0/bin/java
+    TEST_LIST: "**"
+    EXTRA_DEPENDENCIES: icu xinetd
+  image:
+    name: registry.red-soft.biz:5000/docker-images/rdbtestenv/centos7:7.6.1810-cpro-4.0.9963-2
+
+deploy:internal:
+  <<: *deploy_template
+  stage: deploy
+  script:
+    - mvn $MAVEN_CLI_OPTS deploy -Pdeploy-internal -Dmaven.test.skip.exec -DreleaseHubBuildVersion=$VERSION
+    - mvn $MAVEN_CLI_OPTS --non-recursive releasehub-build:publish -Pdeploy-internal -DreleaseHubBuildVersion=$VERSION
+
+
+#deploy:bintray:
+#  <<: *deploy_template
+#  stage: deploy
+#  script:
+#    - mvn $MAVEN_CLI_OPTS deploy -Pdeploy-bintray -Dmaven.test.skip.exec
+#  only:
+#    - tags
