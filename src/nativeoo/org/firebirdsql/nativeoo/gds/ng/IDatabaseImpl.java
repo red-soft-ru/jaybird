@@ -42,7 +42,7 @@ public class IDatabaseImpl extends AbstractFbDatabase<NativeDatabaseConnection>
     public IDatabaseImpl(NativeDatabaseConnection connection) {
         super(connection, connection.createDatatypeCoder());
         clientLibrary = connection.getClientLibrary();
-        master = clientLibrary.fb_get_master_interface();        
+        master = ((FbInterface)clientLibrary).fb_get_master_interface();
         provider = master.getDispatcher();
         util = master.getUtilInterface();
         attachment = null;

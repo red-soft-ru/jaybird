@@ -13,6 +13,12 @@ import org.firebirdsql.jna.fbclient.*;
  */
 public interface FbInterface extends FbClientLibrary
 {
+	/**
+	 * Original signature : <code>extern "C" IMaster* ISC_EXPORT fb_get_master_interface();</code><br>
+	 * <i>native declaration : firebird/include/firebird/interface.h:364</i>
+	 */
+	IMaster fb_get_master_interface();
+
 	public static interface IVersionedIntf
 	{
 	}

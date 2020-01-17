@@ -139,6 +139,7 @@
 								<source>../../src/jdbc_42</source>
 								<source>../../src/jna-client</source>
 								<source>../../src/openoffice</source>
+								<source>../../src/nativeoo</source>
 							</sources>
 						</configuration>
 					</execution>
@@ -154,6 +155,7 @@
 								<source>../../src/test/</source>
 								<source>../../src/test_42/</source>
 								<source>../../src/jna-test/</source>
+								<source>../../src/nativeoo-test/</source>
 							</sources>
 						</configuration>
 					</execution>
@@ -219,6 +221,7 @@
 						../../src/jna-client:
 						../../src/jdbc_42:
 						../../src/openoffice
+						../../src/nativeoo:
 					</sourcepath>
 					<excludePackageNames>${excludedPackages}</excludePackageNames>
 					<links>

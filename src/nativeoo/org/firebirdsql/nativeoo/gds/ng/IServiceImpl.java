@@ -33,7 +33,7 @@ public class IServiceImpl extends AbstractFbService<IServiceConnectionImpl> impl
     public IServiceImpl(IServiceConnectionImpl connection) {
         super(connection, connection.createDatatypeCoder());
         clientLibrary = connection.getClientLibrary();
-        master = clientLibrary.fb_get_master_interface();
+        master = ((FbInterface) clientLibrary).fb_get_master_interface();
         status = master.getStatus();
         provider = master.getDispatcher();
     }

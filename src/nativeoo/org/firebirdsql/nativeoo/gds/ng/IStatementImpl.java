@@ -200,8 +200,19 @@ public class IStatementImpl extends AbstractFbStatement {
 
             byte[] fieldData = parameters.getFieldData(idx);
             if (fieldData == null) {
-                // Note this only works because we mark the type as nullable in allocateXSqlDa
-
+                // Note this only works because we mark the type as nullable in inMessage
+                final FieldDescriptor fieldDescriptor = rowDescriptor.getFieldDescriptor(idx);
+                nullShort = new byte[]{-1, -1};
+                // clear status
+                getStatus();
+                offset = inMeta.getOffset(status, idx) - align;
+                int nullOffset = inMeta.getNullOffset(status, idx);
+                inMessage.position(offset);
+                processStatus();
+                // clear status
+                getStatus();
+                inMessage.position(nullOffset);
+                inMessage.put(nullShort);
             } else {
                 final FieldDescriptor fieldDescriptor = rowDescriptor.getFieldDescriptor(idx);
                 // clear status
