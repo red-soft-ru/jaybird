@@ -26,6 +26,8 @@ The following has been changed or fixed since Jaybird 4.0.0-beta-1
     See also [DatabaseMetaData getFunctionColumns implemented](#databasemetadata-getfunctioncolumns-implemented).
 -   Fixed: Connection property `defaultIsolation`/`isolation` did not work
     through `DriverManager`, but only on `DataSource` implementations. ([JDBC-584](http://tracker.firebirdsql.org/browse/JDBC-584))
+-   Changed: Changed version numbering and naming scheme ([JDBC-585](http://tracker.firebirdsql.org/browse/JDBC-585)) \
+    See [Changes in artifact and library names](#changes-in-artifact-and-library-names)
 -   Fixed: attempts to use a blob after it was freed or after transaction end
     could throw a `NullPointerException` or just work depending on whether the
     connection had a new transaction. ([JDBC-587](http://tracker.firebirdsql.org/browse/JDBC-587)) \
@@ -115,6 +117,16 @@ The following has been changed or fixed since Jaybird 4.0.0-beta-1
     names in English ([JDBC-608](http://tracker.firebirdsql.org/browse/JDBC-608))
 -   New feature: Support for JDBC escape `DATABASE` ([JDBC-609](http://tracker.firebirdsql.org/browse/JDBC-609))
 
+Known issues
+============
+
+-   Using a native connection with a Firebird 3 client library to a Firebird 2.5
+    or older server may be slow to connect. The workaround is to specify the
+    IPv4 address instead of the host name in the connection string, or to use a
+    Firebird 2.5 or earlier `fbclient.dll`.
+    
+    This is caused by [CORE-4658](http://tracker.firebirdsql.org/browse/CORE-4658)
+
 Support
 =======
 
@@ -172,9 +184,9 @@ be sent to the Firebird-java mailing list or reported on the issue tracker
 Supported Firebird versions
 ---------------------------
 
-Jaybird @VERSION@ was tested against Firebird 2.5.9, 3.0.5, and a recent 
-Firebird 4 snapshot build, but should also support other Firebird versions from 
-2.5 and up.
+Jaybird @VERSION_WO_TARGET@ was tested against Firebird 2.5.9, 3.0.5, and
+a recent Firebird 4 snapshot build, but should also support other Firebird
+versions from 2.5 and up.
 
 Formal support for Firebird 2.0 and 2.1 has been dropped (although in general we 
 expect the driver to work). The Type 2 and embedded server JDBC drivers use JNA to
@@ -231,19 +243,20 @@ Jaybird supports the following specifications:
 Getting Jaybird 4
 =================
 
-Jaybird @VERSION@
--------------------
+Jaybird @VERSION_WO_TARGET@
+---------------------------
 
 ### Maven ###
 
-Jaybird @VERSION@ is available from Maven central: 
+Jaybird @VERSION_WO_TARGET@ is available from Maven central: 
 
 Groupid: `org.firebirdsql.jdbc`,\
-Artifactid: `jaybird-XX` (where `XX` is `jdk17`, `jdk18` or `java11`).\
-Version: `@VERSION@`
+Artifactid: `jaybird`,\
+Version: `@VERSION_SIMPLE@.javaXX@VERSION_TAG@` (where `XX` is `7`, `8` or `11`).
 
-For ease of use, we also provide a Maven relocation artifact with artifact id
-`jaybird`. For Jaybird 4 this relocation artifact points to `jaybird-jdk18`.
+For ease of transition to the new artifact naming, we also provide a Maven
+relocation artifact with artifact id `jaybird-jdkXX` (with `XX` is `17` or `18`).
+However, we recommend switching to the `jaybird` artifact id.
 
 NOTE: SNAPSHOT releases are only available from the Sonatype snapshot 
 repository, <https://oss.sonatype.org/content/repositories/snapshots>
@@ -253,8 +266,8 @@ For example:
 ~~~ {.xml}
 <dependency>
     <groupId>org.firebirdsql.jdbc</groupId>
-    <artifactId>jaybird-jdk18</artifactId>
-    <version>@VERSION@</version>
+    <artifactId>jaybird</artifactId>
+    <version>@VERSION_EXAMPLE@</version>
 </dependency>
 ~~~
 
@@ -265,8 +278,8 @@ dependency:
 ~~~ {.xml}
 <dependency>
     <groupId>org.firebirdsql.jdbc</groupId>
-    <artifactId>jaybird-jdk18</artifactId>
-    <version>@VERSION@</version>
+    <artifactId>jaybird</artifactId>
+    <version>@VERSION_EXAMPLE@</version>
     <exclusions>
         <exclusion>
             <groupId>javax.resource</groupId>
@@ -303,14 +316,15 @@ See also [Type 2 (native) and embedded driver](#type-2-native-and-embedded-drive
 
 You can download the latest versions from <https://www.firebirdsql.org/en/jdbc-driver/>
 
-At minimum Jaybird 4 requires `jaybird-XX-@VERSION@.jar` (where `XX` is `jdk17`, 
-`jdk18` or `java11`) and `connector-api-1.5.jar`. You can also use 
-`jaybird-full-XX-@VERSION@.jar` which includes the connector-api files.
+At minimum Jaybird 4 requires `jaybird-@VERSION_SIMPLE@.javaXX@VERSION_TAG@.jar` 
+(where `XX` is `7`, `8` or `11`) and `connector-api-1.5.jar`. You can also use 
+`jaybird-full-@VERSION_SIMPLE@.javaXX@VERSION_TAG@.jar` which includes
+the connector-api files.
 
 If you deploy your application to a Java EE application server, then you must 
-use `jaybird-XX-@VERSION@.jar` (not `-full`!), and **not** include 
-`connector-api-1.5.jar` as this dependency will be provided by your application 
-server.
+use `jaybird-@VERSION_SIMPLE@.javaXX@VERSION_TAG@.jar` (not `-full`!), and **not**
+include `connector-api-1.5.jar` as this dependency will be provided by your
+application server.
 
 For `getGeneratedKeys` support you will need to include 
 `antlr-runtime-4.7.2.jar` on your classpath.
@@ -328,9 +342,11 @@ before upgrading to Jaybird 4.
 Maven
 -----
 
-Upgrade the version of the dependency to @VERSION@. If you use native or 
-embedded verify that you upgrade JNA (`net.java.dev.jna:jna`) from 4.4.0 to 
-5.3.0.
+Change the artifact id from `jaybird-jdkXX` to `jaybird`, and change the version
+of the dependency to `@VERSION_SIMPLE@.javaXX@VERSION_TAG@` (where `XX` is your
+Java version, `7` for Java 7, `8` for Java 8 and `11` for Java 11). If you use
+native or embedded verify that you upgrade JNA (`net.java.dev.jna:jna`) from
+4.4.0 to 5.3.0.
 
 For more detailed instructions, see also the information on Maven in
 [Getting Jaybird 4](#getting-jaybird-4). 
@@ -341,9 +357,9 @@ Manual install
 If you manage your dependencies manually, you need to do the following:
 
 1.  Replace the Jaybird 3 library with the Jaybird 4 version
-    - `jaybird-3.0.x.jar` with `jaybird-XX-@VERSION@.jar` (where `XX` is 
-      `jdk17`, `jdk18` or `java11`) 
-    - `jaybird-full-3.0.x.jar` with `jaybird-full-XX-@VERSION@.jar`
+    - `jaybird-3.0.x.jar` with `jaybird-@VERSION_SIMPLE@.javaXX@VERSION_TAG@.jar`
+    (where `XX` is `7`, `8` or `11`) 
+    - `jaybird-full-3.0.x.jar` with `jaybird-full-@VERSION_SIMPLE@.javaXX@VERSION_TAG@.jar`
     
 2.  If installed, remove `antlr-runtime-4.7.jar` and replace it with 
     `antlr-runtime-4.7.2.jar`. This library is necessary for `getGeneratedKeys`
@@ -377,32 +393,36 @@ would be reused for Java 15.
 
 Forced by this issue, we have overhauled the naming convention entirely to bring
 more consistency between Maven artifacts and the Jaybird zip distribution. The
-full naming convention is documented in [jdp-2019-02](https://github.com/FirebirdSQL/jaybird/blob/master/devdoc/jdp/jdp-2019-02-version-number-and-naming-scheme.md).
+full naming convention is documented in [jdp-2019-04](https://github.com/FirebirdSQL/jaybird/blob/master/devdoc/jdp/jdp-2019-04-version-number-and-naming-scheme.md).
+
+This new naming convention has been changed compared to the one from Jaybird
+4.0.0-beta-1.
 
 This new naming convention has the following effects:
 
--   Java 9 and higher use suffix `javaXX` (eg `java11` for Java 11)
--   Java 8 and earlier will use suffix `jdkXX` (eg `jdk18` for Java 1.8)
-    -   Previous Jaybird versions used suffix `jdkXX` for Maven, and `JDK_x.y` 
-        for zip artifacts; these will now all use `javaXX` (or `jdkxx` for 
-        Java 8 and earlier)
--   Names of libraries are now consistent with the Maven naming convention
+-   The targeted Java version is no longer part of the Maven artifact id. The
+    artifact id is now `jaybird` for all Java versions. We provide a relocation
+    artifact for `jaybird-jdk17` and `jaybird-jdk18` for backwards compatibility.
+-   The targeted Java version is now part of the version (eg `4.0.0.java11`)
+-   Names of libraries in the distribution zip are now consistent with the Maven
+    naming convention
 
-As a result of these new naming conventions, the following has been changed (for
-Java 11, read `java11` instead of `jdk18`)
+As a result of these new naming conventions, the following has been changed:
 
--   Distribution zip: `jaybird-jdk18-4.0.0.zip` (was `Jaybird-3.0.5_JDK1.8.zip`)
--   Jaybird: `jaybird-jdk18-4.0.0.jar` (was `jaybird-3.0.5.jar` in zip 
+-   Maven artifact: `jaybird` (for all Java versions) (was `jaybird-jdk18`)
+-   Maven version: `4.0.0.java8` (was `3.0.5`) 
+-   Distribution zip: `jaybird-4.0.0.java8.zip` (was `Jaybird-3.0.5_JDK1.8.zip`)
+-   Jaybird: `jaybird-4.0.0.java8.jar` (was `jaybird-3.0.5.jar` in zip 
     distribution)
--   Jaybird (full): `jaybird-full-jdk18-4.0.0.jar` (was 
+-   Jaybird (full): `jaybird-full-4.0.0.java8.jar` (was 
     `jaybird-full-3.0.5.jar`)
--   Jaybird sources: `jaybird-jdk18-4.0.0-sources.jar` (was 
+-   Jaybird sources: `jaybird-4.0.0.java8-sources.jar` (was 
     `jaybird-3.0.5-sources.jar` in zip distribution)
--   Jaybird javadoc: `jaybird-jdk18-4.0.0-javadoc.jar` (was
+-   Jaybird javadoc: `jaybird-4.0.0.java8-javadoc.jar` (was
     `jaybird-3.0.5-javadoc.jar` in zip distribution)
     
 Furthermore, the client name reported to Firebird 2.5 and higher has been 
-changed from `Jaybird 3.0.5-JDK_1.8` to `Jaybird jaybird-jdk17-4.0.0` 
+changed from `Jaybird 3.0.5-JDK_1.8` to `Jaybird jaybird-4.0.0.java8` 
 
 Java support
 ------------
@@ -1747,8 +1767,8 @@ See also [Compatibility changes](#compatibility-changes) for details.
 Other fixes and changes
 -----------------------
 
--   The distribution zip no longer includes the jaybird-@VERSION@.rar. This file
-was an example JCA Resource Archive.
+-   The distribution zip no longer includes the jaybird-@VERSION_SIMPLE@.javaXX@VERSION_TAG@.rar.
+    This file was an example JCA Resource Archive.
 
     We currently plan to remove JCA support entirely in Jaybird 5. See also
 [Dropping JCA support](#dropping-jca-support).
@@ -1804,16 +1824,6 @@ Removal of deprecated classes and packages
 
 See [Removal of deprecated classes, packages and methods](#removal-of-deprecated-classes-packages-and-methods)
 in [Compatibility changes](#compatibility-changes) for more details.
-
-Known Issues
-============
-
--   Using a native connection with a Firebird 3 client library to a Firebird 2.5
-    or older server may be slow to connect. The workaround is to specify the
-    IPv4 address instead of the host name in the connection string, or to use a
-    Firebird 2.5 or earlier `fbclient.dll`.
-    
-    This is caused by [CORE-4658](http://tracker.firebirdsql.org/browse/CORE-4658)
 
 Compatibility changes
 =====================
