@@ -12,8 +12,18 @@ be sent to the Firebird-java mailing list or reported on the issue tracker
 Jaybird 4.0.x changelog
 =======================
 
-Changes per Jaybird 4 release. See also [What's new in Jaybird 4]. For known
-issues, consult [Known Issues].
+Changes per Jaybird 4 release. See also [What's new in Jaybird 4](#whats-new-in-jaybird-4). For known
+issues, consult [Known Issues](#known-issues).
+
+Jaybird 4.0.0
+-------------
+
+The following has been changed or fixed since Jaybird 4.0.0-beta-2
+
+-   Changed: The 'DEC_FIXED' extended numeric precision support (for Firebird
+    4.0.0-beta-1) has been removed ([JDBC-596](http://tracker.firebirdsql.org/browse/JDBC-596)) \
+    Now only the 'INT128' extended numeric precision (for Firebird 4.0.0-beta-2
+    and higher) is supported. 
 
 Jaybird 4.0.0-beta-2
 --------------------
@@ -21,11 +31,13 @@ Jaybird 4.0.0-beta-2
 The following has been changed or fixed since Jaybird 4.0.0-beta-1
 
 -   New feature: support for `DatabaseMetaData.getFunctions` ([JDBC-552](http://tracker.firebirdsql.org/browse/JDBC-552)) \
-    See also [JDBC DatabaseMetaData.getFunctions implemented].
+    See also [DatabaseMetaData getFunctions implemented](#databasemetadata-getfunctions-implemented).
 -   New feature: support for `DatabaseMetaData.getFunctionColumns` ([JDBC-552](http://tracker.firebirdsql.org/browse/JDBC-552)) \
-    See also [JDBC DatabaseMetaData.getFunctionColumns implemented].
+    See also [DatabaseMetaData getFunctionColumns implemented](#databasemetadata-getfunctioncolumns-implemented).
 -   Fixed: Connection property `defaultIsolation`/`isolation` did not work
     through `DriverManager`, but only on `DataSource` implementations. ([JDBC-584](http://tracker.firebirdsql.org/browse/JDBC-584))
+-   Changed: Changed version numbering and naming scheme ([JDBC-585](http://tracker.firebirdsql.org/browse/JDBC-585)) \
+    See [Changes in artifact and library names](#changes-in-artifact-and-library-names)
 -   Fixed: attempts to use a blob after it was freed or after transaction end
     could throw a `NullPointerException` or just work depending on whether the
     connection had a new transaction. ([JDBC-587](http://tracker.firebirdsql.org/browse/JDBC-587)) \
@@ -50,11 +62,11 @@ The following has been changed or fixed since Jaybird 4.0.0-beta-1
     will be closed.
 -   Changed: Procedures in packages are no longer returned from 
     `DatabaseMetaData.getProcedures` and `getProcedureColumns` ([JDBC-590](http://tracker.firebirdsql.org/browse/JDBC-590)) \
-    See also [Excluding procedures from packages].
+    See also [Excluding procedures from packages](#excluding-procedures-from-packages).
 -   Changed: On Firebird 4 and higher, precision of `FLOAT` and `DOUBLE PRECISION`
     are reported using binary precision (24 and 53 respectively), instead of
     decimal precision (7 and 15 respectively) ([JBC-591](http://tracker.firebirdsql.org/browse/JDBC-591)) \
-    See also [Precision reported for FLOAT and DOUBLE PRECISION on Firebird 4].
+    See also [Precision reported for FLOAT and DOUBLE PRECISION on Firebird 4](#precision-reported-for-float-and-double-precision-on-firebird-4).
 -   Improvement: added binary literal prefix (`x'`) and suffix (`'`) to 
     `DatabaseMetaData.getTypeInfo` for `LONGVARBINARY`, `VARBINARY` and 
     `BINARY` ([JDBC-593](http://tracker.firebirdsql.org/browse/JDBC-593))
@@ -73,10 +85,10 @@ The following has been changed or fixed since Jaybird 4.0.0-beta-1
     numeric precision from a Decimal128 to an Int128, increasing the maximum
     decimal precision from 34 to 38. The Int128 format is now supported. ([JDBC-595](http://tracker.firebirdsql.org/browse/JDBC-595)) \
     Support for the old format will be removed after Jaybird 4.0.0-beta-2. See
-    also [Firebird 4 extended numeric precision support].
+    also [Firebird 4 extended numeric precision support](#firebird-4-extended-numeric-precision-support).
 -   New experimental feature: A way to monitor driver operations (specifically
-    statement executes and fetches). ([JDBC-597](http://tracker.firebirdsql.org/browse/JDBC-597) \ 
-    See [Operation monitoring] for details. \
+    statement executes and fetches). ([JDBC-597](http://tracker.firebirdsql.org/browse/JDBC-597)) \
+    See [Operation monitoring](#operation-monitoring) for details. \
     This feature was contributed by [Vasiliy Yashkov](https://github.com/vasiliy-yashkov).
 -   Fixed: On Firebird 3 and 4 with `WireCrypt = Enabled`, the connection could
     hang or throw exceptions like _"Unsupported or unexpected operation code"_. ([JDBC-599](http://tracker.firebirdsql.org/browse/JDBC-599)) \
@@ -91,29 +103,39 @@ The following has been changed or fixed since Jaybird 4.0.0-beta-1
     The v15 protocol supports database encryption key callbacks during the
     authentication phase, supporting encrypted security databases. We decided to
     implement the v14 changes only as part of the v15 implementation. \
-    See also [Database encryption support].
+    See also [Database encryption support](#database-encryption-support).
 -   New feature: Jaybird now supports UTF-8 URL encoding for connection
     properties in the JDBC url. ([JDBC-604](http://tracker.firebirdsql.org/browse/JDBC-604)) \
     This introduce a minor incompatibility, see also 
-    [URL encoding in query part of JDBC URL]. \
+    [URL encoding in query part of JDBC URL](#url-encoding-in-query-part-of-jdbc-url). \
     This feature was backported to Jaybird 3.0.9.
 -   New feature: Firebird 4 data type bind configuration support ([JDBC-603](http://tracker.firebirdsql.org/browse/JDBC-603)) \
     This change also removes the `timeZoneBind` and `decfloatBind` connection
     properties. This feature requires Firebird 4 beta 2 or snapshot 
     Firebird 4.0.0.1683 or higher. \
-    See also [Firebird 4 data type bind configuration support]. \
+    See also [Firebird 4 data type bind configuration support](#firebird-4-data-type-bind-configuration-support). \
     This feature was partially backported to Jaybird 3.0.9.
 -   New feature: Support for statement timeouts through `java.sql.Statement.setQueryTimeout`
     for the v16 protocol (Firebird 4 and higher) ([JDBC-602](http://tracker.firebirdsql.org/browse/JDBC-602)) \
-    See also [Firebird 4 statement timeout support].
+    See also [Firebird 4 statement timeout support](#firebird-4-statement-timeout-support).
 -   New feature: Support for zlib wire compression in the pure Java wire
     protocol implementation (Firebird 3 and higher) ([JDBC-606](http://tracker.firebirdsql.org/browse/JDBC-606)) \
-    See also [Wire compression support].
+    See also [Wire compression support](#wire-compression-support).
 -   New feature: Support for JDBC escape `DAYNAME`, will always return day names
     in English ([JDBC-607](http://tracker.firebirdsql.org/browse/JDBC-607))
 -   New feature: Support for JDBC escape `MONTHNAME`, will always return month
     names in English ([JDBC-608](http://tracker.firebirdsql.org/browse/JDBC-608))
 -   New feature: Support for JDBC escape `DATABASE` ([JDBC-609](http://tracker.firebirdsql.org/browse/JDBC-609))
+
+Known issues
+============
+
+-   Using a native connection with a Firebird 3 client library to a Firebird 2.5
+    or older server may be slow to connect. The workaround is to specify the
+    IPv4 address instead of the host name in the connection string, or to use a
+    Firebird 2.5 or earlier `fbclient.dll`.
+    
+    This is caused by [CORE-4658](http://tracker.firebirdsql.org/browse/CORE-4658)
 
 Support
 =======
@@ -141,29 +163,29 @@ Firebird 4.
 
 The main new features are:
 
-- [Wire encryption support] (backported to Jaybird 3.0.4)
-- [Database encryption support] (backported to Jaybird 3.0.4)
-- [Wire compression support]
-- [Authentication plugin improvements]
-- [Firebird 4 data type bind configuration support] (since Jaybird 4.0.0-beta-2)
-- [Firebird 4 DECFLOAT support]
-- [Firebird 4 extended numeric precision support]
-- [Firebird 4 time zone support]
-- [Firebird 4 statement timeout support] (since Jaybird 4.0.0-beta-2)
-- [JDBC RowId support]
-- [JDBC DatabaseMetaData.getPseudoColumns implemented]
-- [JDBC DatabaseMetaData.getVersionColumns implemented]
-- [JDBC DatabaseMetaData.getFunctions implemented] (since Jaybird 4.0.0-beta-2)
-- [JDBC DatabaseMetaData.getFunctionColumns implemented] (since Jaybird 4.0.0-beta-2)
-- [Improved JDBC function escape support]
-- [New JDBC protocol prefix jdbc:firebird:]
-- [URL encoding in query part of JDBC URL] (backported to Jaybird 3.0.9)
-- [Generated keys support improvements]
-- [Operation monitoring]
+- [Wire encryption support](#wire-encryption-support) (backported to Jaybird 3.0.4)
+- [Database encryption support](#database-encryption-support) (backported to Jaybird 3.0.4)
+- [Wire compression support](#wire-compression-support)
+- [Authentication plugin improvements](#authentication-plugin-improvements)
+- [Firebird 4 data type bind configuration support](#firebird-4-data-type-bind-configuration-support) (since Jaybird 4.0.0-beta-2)
+- [Firebird 4 DECFLOAT support](#firebird-4-decfloat-support)
+- [Firebird 4 extended numeric precision support](#firebird-4-extended-numeric-precision-support)
+- [Firebird 4 time zone support](#firebird-4-time-zone-support)
+- [Firebird 4 statement timeout support](#firebird-4-statement-timeout-support) (since Jaybird 4.0.0-beta-2)
+- [JDBC RowId support](#jdbc-rowid-support)
+- [DatabaseMetaData getPseudoColumns implemented](#databasemetadata-getpseudocolumns-implemented)
+- [DatabaseMetaData getVersionColumns implemented](#databasemetadata-getversioncolumns-implemented)
+- [DatabaseMetaData getFunctions implemented](#databasemetadata-getfunctions-implemented) (since Jaybird 4.0.0-beta-2)
+- [DatabaseMetaData getFunctionColumns implemented](#databasemetadata-getfunctioncolumns-implemented) (since Jaybird 4.0.0-beta-2)
+- [Improved JDBC function escape support](#improved-jdbc-function-escape-support)
+- [New JDBC protocol prefix jdbc:firebird:](#new-jdbc-protocol-prefix-jdbcfirebird)
+- [URL encoding in query part of JDBC URL](#url-encoding-in-query-part-of-jdbc-url) (backported to Jaybird 3.0.9)
+- [Generated keys support improvements](#generated-keys-support-improvements)
+- [Operation monitoring](#operation-monitoring)
 
 Upgrading from Jaybird 3 to 4 should be simple, but please make sure to read 
-[Compatibility changes] before using Jaybird 4. See also 
-[Upgrading from Jaybird 3 to Jaybird 4].
+[Compatibility changes](#compatibility-changes) before using Jaybird 4. See also 
+[Upgrading from Jaybird 3 to Jaybird 4](#upgrading-from-jaybird-3-to-jaybird-4).
 
 Bug reports about undocumented changes in behavior are appreciated. Feedback can
 be sent to the Firebird-java mailing list or reported on the issue tracker
@@ -172,9 +194,9 @@ be sent to the Firebird-java mailing list or reported on the issue tracker
 Supported Firebird versions
 ---------------------------
 
-Jaybird @VERSION@ was tested against Firebird 2.5.8, 3.0.4, and a recent 
-Firebird 4 snapshot build, but should also support other Firebird versions from 
-2.5 and up.
+Jaybird @VERSION_WO_TARGET@ was tested against Firebird 2.5.9, 3.0.5, and
+a recent Firebird 4 snapshot build, but should also support other Firebird
+versions from 2.5 and up.
 
 Formal support for Firebird 2.0 and 2.1 has been dropped (although in general we 
 expect the driver to work). The Type 2 and embedded server JDBC drivers use JNA to
@@ -214,7 +236,7 @@ Java 9 and higher as well.
 Jaybird 4 is not modularized, but all versions declare the automatic module name 
 `org.firebirdsql.jaybird`.
 
-See als [Java support] in [What's new in Jaybird 4].
+See als [Java support](#java-support) in [What's new in Jaybird 4](#whats-new-in-jaybird-4).
 
 Specification support
 ---------------------
@@ -231,19 +253,20 @@ Jaybird supports the following specifications:
 Getting Jaybird 4
 =================
 
-Jaybird @VERSION@
--------------------
+Jaybird @VERSION_WO_TARGET@
+---------------------------
 
 ### Maven ###
 
-Jaybird @VERSION@ is available from Maven central: 
+Jaybird @VERSION_WO_TARGET@ is available from Maven central: 
 
 Groupid: `org.firebirdsql.jdbc`,\
-Artifactid: `jaybird-XX` (where `XX` is `jdk17`, `jdk18` or `java11`).\
-Version: `@VERSION@`
+Artifactid: `jaybird`,\
+Version: `@VERSION_SIMPLE@.javaXX@VERSION_TAG@` (where `XX` is `7`, `8` or `11`).
 
-For ease of use, we also provide a Maven relocation artifact with artifact id
-`jaybird`. For Jaybird 4 this relocation artifact points to `jaybird-jdk18`.
+For ease of transition to the new artifact naming, we also provide a Maven
+relocation artifact with artifact id `jaybird-jdkXX` (with `XX` is `17` or `18`).
+However, we recommend switching to the `jaybird` artifact id.
 
 NOTE: SNAPSHOT releases are only available from the Sonatype snapshot 
 repository, <https://oss.sonatype.org/content/repositories/snapshots>
@@ -253,8 +276,8 @@ For example:
 ~~~ {.xml}
 <dependency>
     <groupId>org.firebirdsql.jdbc</groupId>
-    <artifactId>jaybird-jdk18</artifactId>
-    <version>@VERSION@</version>
+    <artifactId>jaybird</artifactId>
+    <version>@VERSION_EXAMPLE@</version>
 </dependency>
 ~~~
 
@@ -265,8 +288,8 @@ dependency:
 ~~~ {.xml}
 <dependency>
     <groupId>org.firebirdsql.jdbc</groupId>
-    <artifactId>jaybird-jdk18</artifactId>
-    <version>@VERSION@</version>
+    <artifactId>jaybird</artifactId>
+    <version>@VERSION_EXAMPLE@</version>
     <exclusions>
         <exclusion>
             <groupId>javax.resource</groupId>
@@ -297,42 +320,46 @@ For Windows and Linux, you can add the `org.firebirdsql.jdbc:fbclient`
 dependency on your classpath to provide the native libraries for the `native` 
 and `local` protocol. Be aware that this dependency does not support `embedded`.
 
-See also [Type 2 (native) and embedded driver].
+See also [Type 2 (native) and embedded driver](#type-2-native-and-embedded-driver).
 
 ### Download ###
 
 You can download the latest versions from <https://www.firebirdsql.org/en/jdbc-driver/>
 
-At minimum Jaybird 4 requires `jaybird-XX-@VERSION@.jar` (where `XX` is `jdk17`, 
-`jdk18` or `java11`) and `connector-api-1.5.jar`. You can also use 
-`jaybird-full-XX-@VERSION@.jar` which includes the connector-api files.
+At minimum Jaybird 4 requires `jaybird-@VERSION_SIMPLE@.javaXX@VERSION_TAG@.jar` 
+(where `XX` is `7`, `8` or `11`) and `connector-api-1.5.jar`. You can also use 
+`jaybird-full-@VERSION_SIMPLE@.javaXX@VERSION_TAG@.jar` which includes
+the connector-api files.
 
 If you deploy your application to a Java EE application server, then you must 
-use `jaybird-XX-@VERSION@.jar` (not `-full`!), and **not** include 
-`connector-api-1.5.jar` as this dependency will be provided by your application 
-server.
+use `jaybird-@VERSION_SIMPLE@.javaXX@VERSION_TAG@.jar` (not `-full`!), and **not**
+include `connector-api-1.5.jar` as this dependency will be provided by your
+application server.
 
 For `getGeneratedKeys` support you will need to include 
 `antlr-runtime-4.7.2.jar` on your classpath.
 
 For native, local or embedded support, you will need to include `jna-5.3.0.jar` 
-on your classpath. See also [Type 2 (native) and embedded driver].
+on your classpath. See also [Type 2 (native) and embedded driver](#type-2-native-and-embedded-driver).
 
 Upgrading from Jaybird 3 to Jaybird 4
 =====================================
 
-Please make sure to read [Compatibility changes] and 
-[Changes in artifact and library names] before upgrading to Jaybird 4.
+Please make sure to read [Compatibility changes](#compatibility-changes) and 
+[Changes in artifact and library names](#changes-in-artifact-and-library-names)
+before upgrading to Jaybird 4.
 
 Maven
 -----
 
-Upgrade the version of the dependency to @VERSION@. If you use native or 
-embedded verify that you upgrade JNA (`net.java.dev.jna:jna`) from 4.4.0 to 
-5.3.0.
+Change the artifact id from `jaybird-jdkXX` to `jaybird`, and change the version
+of the dependency to `@VERSION_SIMPLE@.javaXX@VERSION_TAG@` (where `XX` is your
+Java version, `7` for Java 7, `8` for Java 8 and `11` for Java 11). If you use
+native or embedded verify that you upgrade JNA (`net.java.dev.jna:jna`) from
+4.4.0 to 5.3.0.
 
 For more detailed instructions, see also the information on Maven in
-[Getting Jaybird 4]. 
+[Getting Jaybird 4](#getting-jaybird-4). 
 
 Manual install
 --------------
@@ -340,9 +367,9 @@ Manual install
 If you manage your dependencies manually, you need to do the following:
 
 1.  Replace the Jaybird 3 library with the Jaybird 4 version
-    - `jaybird-3.0.x.jar` with `jaybird-XX-@VERSION@.jar` (where `XX` is 
-      `jdk17`, `jdk18` or `java11`) 
-    - `jaybird-full-3.0.x.jar` with `jaybird-full-XX-@VERSION@.jar`
+    - `jaybird-3.0.x.jar` with `jaybird-@VERSION_SIMPLE@.javaXX@VERSION_TAG@.jar`
+    (where `XX` is `7`, `8` or `11`) 
+    - `jaybird-full-3.0.x.jar` with `jaybird-full-@VERSION_SIMPLE@.javaXX@VERSION_TAG@.jar`
     
 2.  If installed, remove `antlr-runtime-4.7.jar` and replace it with 
     `antlr-runtime-4.7.2.jar`. This library is necessary for `getGeneratedKeys`
@@ -358,7 +385,7 @@ Gotcha's
 If you find a problem while upgrading, or other bugs: please report it 
 on <http://tracker.firebirdsql.org/browse/JDBC>.
 
-For known issues, consult [Known Issues].
+For known issues, consult [Known Issues](#known-issues).
 
 What's new in Jaybird 4
 =======================
@@ -376,32 +403,36 @@ would be reused for Java 15.
 
 Forced by this issue, we have overhauled the naming convention entirely to bring
 more consistency between Maven artifacts and the Jaybird zip distribution. The
-full naming convention is documented in [jdp-2019-02](https://github.com/FirebirdSQL/jaybird/blob/master/devdoc/jdp/jdp-2019-02-version-number-and-naming-scheme.md).
+full naming convention is documented in [jdp-2019-04](https://github.com/FirebirdSQL/jaybird/blob/master/devdoc/jdp/jdp-2019-04-version-number-and-naming-scheme.md).
+
+This new naming convention has been changed compared to the one from Jaybird
+4.0.0-beta-1.
 
 This new naming convention has the following effects:
 
--   Java 9 and higher use suffix `javaXX` (eg `java11` for Java 11)
--   Java 8 and earlier will use suffix `jdkXX` (eg `jdk18` for Java 1.8)
-    -   Previous Jaybird versions used suffix `jdkXX` for Maven, and `JDK_x.y` 
-        for zip artifacts; these will now all use `javaXX` (or `jdkxx` for 
-        Java 8 and earlier)
--   Names of libraries are now consistent with the Maven naming convention
+-   The targeted Java version is no longer part of the Maven artifact id. The
+    artifact id is now `jaybird` for all Java versions. We provide a relocation
+    artifact for `jaybird-jdk17` and `jaybird-jdk18` for backwards compatibility.
+-   The targeted Java version is now part of the version (eg `4.0.0.java11`)
+-   Names of libraries in the distribution zip are now consistent with the Maven
+    naming convention
 
-As a result of these new naming conventions, the following has been changed (for
-Java 11, read `java11` instead of `jdk18`)
+As a result of these new naming conventions, the following has been changed:
 
--   Distribution zip: `jaybird-jdk18-4.0.0.zip` (was `Jaybird-3.0.5_JDK1.8.zip`)
--   Jaybird: `jaybird-jdk18-4.0.0.jar` (was `jaybird-3.0.5.jar` in zip 
+-   Maven artifact: `jaybird` (for all Java versions) (was `jaybird-jdk18`)
+-   Maven version: `4.0.0.java8` (was `3.0.5`) 
+-   Distribution zip: `jaybird-4.0.0.java8.zip` (was `Jaybird-3.0.5_JDK1.8.zip`)
+-   Jaybird: `jaybird-4.0.0.java8.jar` (was `jaybird-3.0.5.jar` in zip 
     distribution)
--   Jaybird (full): `jaybird-full-jdk18-4.0.0.jar` (was 
+-   Jaybird (full): `jaybird-full-4.0.0.java8.jar` (was 
     `jaybird-full-3.0.5.jar`)
--   Jaybird sources: `jaybird-jdk18-4.0.0-sources.jar` (was 
+-   Jaybird sources: `jaybird-4.0.0.java8-sources.jar` (was 
     `jaybird-3.0.5-sources.jar` in zip distribution)
--   Jaybird javadoc: `jaybird-jdk18-4.0.0-javadoc.jar` (was
+-   Jaybird javadoc: `jaybird-4.0.0.java8-javadoc.jar` (was
     `jaybird-3.0.5-javadoc.jar` in zip distribution)
     
 Furthermore, the client name reported to Firebird 2.5 and higher has been 
-changed from `Jaybird 3.0.5-JDK_1.8` to `Jaybird jaybird-jdk17-4.0.0` 
+changed from `Jaybird 3.0.5-JDK_1.8` to `Jaybird jaybird-4.0.0.java8` 
 
 Java support
 ------------
@@ -411,7 +442,7 @@ Java support
 The driver supports Java 7 with caveats.
  
 -   Firebird 4 time zone types are not supported under Java 7, see also
-    [Firebird 4 time zone support].
+    [Firebird 4 time zone support](#firebird-4-time-zone-support).
 
 -   Under Java 7, Jaybird requires JAXB (`javax.xml.bind`), this will work in
     standard Java, but may require additional configuration in certain 
@@ -454,7 +485,7 @@ Firebird support
 ----------------
 
 Support for Firebird 2.0 and 2.1 has been dropped. See [Firebird 2.0 and 2.1 no
-longer supported] for details.
+longer supported](#firebird-2.0-and-2.1-no-longer-supported) for details.
 
 Firebird versions 2.5, 3.0 and (upcoming) 4.0 are supported.
 
@@ -533,18 +564,22 @@ implementations have an equivalent property with the same name. This
 property can be set as follows:
 
 -   Absent or empty value: empty response to callback (depending on the database 
-    encryption plugin this may just work or yield an error later)
+    encryption plugin this may just work or yield an error later).
 -   Strings prefixed with `base64:`: rest of the string is decoded as base64 to 
     bytes. The `=` padding characters are optional, but when present they must
     be valid (that is: if you use padding, you must use the right number of 
-    padding characters for the length)
+    padding characters for the length). \
+    When the base64 encoded value contains `+`, it must be escaped as `%2B` in
+    the JDBC URL. For backwards compatibility with Jaybird 3, we can't switch to
+    the URL-safe variant of base64.
 -   Plain string value: string is encoded to bytes using UTF-8, and these bytes
-    are used as the response
+    are used as the response. Avoid use of `:` in the plain string value.
     
 Because of the limitation of connection URL parsing, we strongly suggest to
 avoid plain string values with `&` or `;`. Likewise, avoid `:` so that we can
 support other prefixes similar to `base64:` in the future. If you need these 
-characters, consider using a base64 encoded value instead.
+characters, consider using a base64 encoded value instead, or ensure these
+characters are URL encoded: `&`: `%26`, `;`: `%3B`, `:`: `%3A`, `%`: `%25`.
 
 For service operations, as implemented in the `org.firebirdsql.management` 
 package, Firebird requires the `KeyHolderPlugin` configuration to be globally 
@@ -577,11 +612,10 @@ Wire compression support
 Support for zlib wire compression was added in the pure Java wire protocol.
 Compression can be enabled using boolean connection property `wireCompression`.
 
-The connection property only has effect for the pure Java wire protocol
-connections on Firebird 3 and higher, if the server has the zlib library. Native
-connections will follow the `WireCompression` configuration in 
-the `firebird.conf` read by the client library, if the zlib library is on the
-search path.
+The connection property only affects the pure Java wire protocol connections on
+Firebird 3 and higher, if the server has the zlib library. Native connections
+will follow the `WireCompression` configuration in the `firebird.conf` read by
+the client library, if the zlib library is on the search path.
 
 Compression is currently disabled by default. We may change this in future 
 versions of Jaybird to be enabled by default.
@@ -619,13 +653,15 @@ slower authentication because more roundtrips to the server are needed. After
 the attempt to use `Srp256` fails, authentication continues with `Srp`.
 
 To avoid this, consider explicitly configuring the authentication plugins to 
-use, see [Configure authentication plugins] for details.
+use, see [Configure authentication plugins](#configure-authentication-plugins)
+for details.
 
 When connecting to Firebird 3 or higher, the pure Java protocol in Jaybird will 
 no longer try the `Legacy_Auth` plugin by default as it is an unsafe 
 authentication mechanism. We strongly suggest to use SRP users only, but if you 
 really need to use legacy authentication, you can specify connection property 
-`authPlugins=Legacy_Auth`, see [Configure authentication plugins] for details.
+`authPlugins=Legacy_Auth`, see [Configure authentication plugins](#configure-authentication-plugins)
+for details.
 
 Firebird 2.5 and earlier are not affected and will always use legacy 
 authentication.
@@ -710,7 +746,7 @@ Firebird 4 (build 4.0.0.1683 or later) introduced the `SET BIND` statement and
 rules for compatibility or ease of processing data.
 
 This feature is specifically necessary for using the `WITH TIME ZONE` types
-under Java 7. See also [Time zone bind configuration].
+under Java 7. See also [Time zone bind configuration](#time-zone-bind-configuration).
 
 In Jaybird this feature is exposed as connection property `dataTypeBind` (alias
 `set_bind`). The value of this connection property is a semicolon-separated list
@@ -748,8 +784,8 @@ configuration, which means that they are retained (or reverted to) when
 executing `ALTER SESSION RESET`.
 
 This feature replaces the connection properties `timeZoneBind` and
-`decfloatBind` from earlier Jaybird 4 versions. The `timeZoneBind` and
-`decfloatBind` properties are no longer supported. 
+`decfloatBind` from earlier Jaybird 4 beta or snapshot versions. The
+`timeZoneBind` and `decfloatBind` properties are no longer supported. 
 
 Firebird 4 DECFLOAT support
 ---------------------------
@@ -792,7 +828,7 @@ additional dependencies.
 ### Precision and range ###
 
 The `DECFLOAT` datatype supports values with a precision of 16 or 34 decimal 
-digits, and an exponent [^decimalFormat] between -398 and 369 (`DECFLOAT(16)`), or 
+digits, and an exponent[^decimalFormat] between -398 and 369 (`DECFLOAT(16)`), or 
 between -6176 and 6111 (`DECFLOAT(34)`), so the minimum and maximum values are:
 
 [^decimalFormat]: The `DECFLOAT` decimal format stores values as sign, integral 
@@ -889,7 +925,7 @@ differences in rounding, and the result of calculations may be out of range.
     retrieval of these values will result in a `SQLException`, with a 
     `DecimalInconvertibleException` cause with details on the special. The 
     support for these special values is currently under discussion and
-    may be removed in future Firebird 4 snapshots.
+    may be removed in future Firebird 4 snapshots, or may be disabled by default.
 
 2.  `byte` in Java is signed, and historically Jaybird has preserved sign when
 storing byte values, and it considers values outside -128 and +127 out of range.
@@ -915,7 +951,7 @@ precision.
 8.  If the magnitude of the `DECFLOAT` value is too great to be represented in 
 `float` or `double`, +Infinity or -Infinity may be returned (see 
 `BigDecimal.doubleValue()`). This behavior is subject to change, future releases 
-may throw a `SQLException` instead, see also related note 8.
+may throw a `SQLException` instead, see also related note 9.
  
 9.  Storing and retrieving values NaN, +Infinity and -Infinity are currently 
 supported, but this may change as this doesn't seem to be allowed by the 
@@ -948,7 +984,7 @@ a calculation as a boolean value. Instead, use a real `BOOLEAN`.
 `new BigDecimal(String)`, with extra support for special values `+NaN`, `-NaN`, 
 `+sNaN`, `-sNaN`, `+Infinity` and `-Infinity` (case insensitive). Other 
 non-numerical strings throw an `SQLException` with a `NumberFormatException` as 
-cause. Out of range values are handled as described in [Precision and range].
+cause. Out of range values are handled as described in [Precision and range](#precision-and-range).
 
 13. Getting values as `String` will be equivalent to `BigDecimal.toString()`,
 with extra support for the special values mentioned in the previous note.
@@ -964,7 +1000,7 @@ precision. Be aware that use of `BigInteger` for large values may result in
 significant memory consumption. 
 
 16. Setting as `BigInteger` will lose precision for values with more digits than
-the target type. It applies the rules described in [Precision and range].
+the target type. It applies the rules described in [Precision and range](#precision-and-range).
 
 17. Values can also be set and retrieved as types `Decimal32`, `Decimal64` and 
 `Decimal128` from the `org.firebirdsql.extern.decimal` package. Where `Decimal64`
@@ -976,7 +1012,7 @@ types, and in terms of the interface (API) of these types).
 18. Setting a `Decimal128` on a `DECFLOAT(16)`, or a `Decimal32` on a 
 `DECFLOAT(16)` or `DECFLOAT(34)`, or retrieving a `Decimal32` from
 a `DECFLOAT(16)` or `DECFLOAT(34)`, or a `Decimal64` from a `DECFLOAT(34)`
-will apply the rules described in [Precision and range].
+will apply the rules described in [Precision and range](#precision-and-range).
 
 19. Zero values can have a sign (eg `-0` vs `0` (`+0`)), this can only be 
 set or retrieved using `String` or the `DecimalXX` types, or the result of 
@@ -1003,11 +1039,8 @@ The implementation of extended numeric precision was changed after Firebird
 4.0.0-beta-1 (in build 1604) from a maximum precision of 34 backed by a 
 Decimal128 to a maximum precision of 38 backed by an Int128. 
 
-Current test versions of Jaybird 4.0.0 support both formats, but support for the
-old 'DEC_FIXED' format backed by a Decimal128 will be removed after Jaybird
-4.0.0-beta-2. The old format is only supported in statements and result sets.
-Metadata may report incorrect incorrect information regarding precision (ie 38
-instead of 34).
+Support for the old 'DEC_FIXED' format backed by a Decimal128 was removed in
+Jaybird 4.0.0-beta-2.
 
 Firebird 4 time zone support
 ----------------------------
@@ -1023,7 +1056,7 @@ Time zone types are not supported under Java 7, you will need to enable legacy
 time zone bind. With legacy time zone bind, Firebird will convert to the 
 equivalent `TIME` and `TIMESTAMP` (`WITHOUT TIME ZONE`) types using the session 
 time zone. Time zone bind can be configured with connection property 
-`dataTypeBind`, for more information see [Time zone bind configuration].
+`dataTypeBind`, for more information see [Time zone bind configuration](#time-zone-bind-configuration).
 
 See also [jdp-2019-03 Time Zone Support](https://github.com/FirebirdSQL/jaybird/blob/master/devdoc/jdp/jdp-2019-03-time-zone-support.md)  
 
@@ -1133,8 +1166,8 @@ cannot use the `java.time.OffsetTime`/`OffsetDateTime` types returned for the
 `WITH TIME ZONE` types.
 
 To redefine the data type binding, you can use the connection property
-`dataTypeBind`. See [Firebird 4 data type bind configuration support] for
-details.
+`dataTypeBind`. See [Firebird 4 data type bind configuration support](#firebird-4-data-type-bind-configuration-support)
+for details.
 
 You will need to individually map the time zone types, either to `legacy` (which
 uses `time` and `timestamp` (without time zone)) or to a desired target data
@@ -1169,7 +1202,8 @@ the default is the best option in the light of JDBC requirements with regard to
 Valid values are time zone names known by Firebird, we recommend to use the long
 names (eg `Europe/Amsterdam`) and not the ambiguous short IDs (eg `CET`). 
 Although not required, we recommend to use time zone names that are known by 
-Firebird and Java (see [Session time zone for conversion] for caveats).
+Firebird and Java (see [Session time zone for conversion](#session-time-zone-for-conversion)
+for caveats).
 
 To use the default server time zone and the old behaviour to use the JVM default 
 time zone, set the connection property to `server`. This will result in the 
@@ -1317,8 +1351,8 @@ applies this alias for the `RDB$DB_KEY` column(s) in a select-list.
 Be aware that result set metadata will still report `DB_KEY` as the column name 
 and label.
 
-JDBC DatabaseMetaData.getPseudoColumns implemented
---------------------------------------------------
+DatabaseMetaData getPseudoColumns implemented
+---------------------------------------------
 
 The `DatabaseMetaData.getPseudoColumns` method (introduced in JDBC 4.1) has now
 been implemented.
@@ -1338,8 +1372,8 @@ and higher it will also report on `RDB$RECORD_VERSION`.
 The pseudo-column `RDB$RECORD_VERSION` was introduced in Firebird 3, its value
 is the transaction that last updated the row.
 
-JDBC DatabaseMetaData.getVersionColumns implemented
----------------------------------------------------
+DatabaseMetaData getVersionColumns implemented
+----------------------------------------------
 
 The `DatabaseMetaData.getVersionColumns` method has now been implemented.
 
@@ -1358,8 +1392,8 @@ Jaybird only returns pseudo-column as version columns, so 'last updated' columns
 updated by a trigger, calculated columns, or other forms of change tracking are 
 not reported by this method.
 
-JDBC DatabaseMetaData.getFunctions implemented
-----------------------------------------------
+DatabaseMetaData getFunctions implemented
+-----------------------------------------
 
 The `DatabaseMetaData.getFunctions` method has now been implemented.
 
@@ -1388,11 +1422,11 @@ after the `AS` clause.
 or `"UDR"` (Firebird 3+)
 -  `JB_MODULE_NAME` - Value of `RDB$MODULE_NAME`, is `null` for PSQL functions
 - `JB_ENTRYPOINT` - Value of `RDB$ENTRYPOINT`, is `null` for PSQL functions
-- `JB_ENGINE_NAME` - Value of `RDB$ENGINE_NAME`, is `null for UDF and PSQL
+- `JB_ENGINE_NAME` - Value of `RDB$ENGINE_NAME`, is `null` for UDF and PSQL
 functions
 
-JDBC DatabaseMetaData.getFunctionColumns implemented
-----------------------------------------------------
+DatabaseMetaData getFunctionColumns implemented
+-----------------------------------------------
 
 The `DatabaseMetaData.getFunctionColumns` method has now been implemented.
 
@@ -1489,7 +1523,7 @@ are trimmed, but only whether we count characters or bytes after trimming.
 optional.
 -   `POSITION(substring IN string[, CHARACTERS|OCTETS])` - The optional second 
 parameter is now supported if `CHARACTERS`. `OCTETS` is not supported.
--   `CONVERT(value, SQLtype)` - See [Improved CONVERT support].
+-   `CONVERT(value, SQLtype)` - See [Improved CONVERT support](#improved-convert-support).
 
 ### Improved CONVERT support ###
 
@@ -1569,8 +1603,9 @@ string. Jaybird will always use UTF-8 for decoding.
 
 This change introduces the following backwards incompatibilities:
 
-- `+` in the query part now means _space_ (0x20), so occurrences
-of `+` (_plus_) need to be escaped as `%2B`
+- `+` in the query part now means _space_ (0x20), so occurrences of `+` (_plus_)
+need to be escaped as `%2B`; make sure to do this for base64 encoded values of
+`dbCryptConfig`
 - `%` in the query part now introduces an escape, so occurrences 
 of `%` (_percent_) need to be escaped as `%25`
 
@@ -1690,11 +1725,13 @@ that modify a single row.
 You will either need to change the execution of these statements to use the 
 normal execute/prepare or use `Statement.NO_GENERATED_KEYS`. Alternatively 
 ignore or only selectively enable generated keys support, see 
-[Configuration of generated keys behaviour] above.
+[Configuration of generated keys behaviour](#configuration-of-generated-keys-behaviour)
+above.
 
 ### Other behavioural changes to generated keys ###
 
-See [Changes to behaviour of generated keys] in [Stricter JDBC compliance]. 
+See [Changes to behaviour of generated keys](#changes-to-behaviour-of-generated-keys)
+in [Stricter JDBC compliance](#stricter-jdbc-compliance). 
 
 Operation monitoring
 --------------------
@@ -1736,16 +1773,16 @@ Potentially breaking changes
 
 Jaybird 4 contains a number of changes that might break existing applications.
 
-See also [Compatibility changes] for details.
+See also [Compatibility changes](#compatibility-changes) for details.
 
 Other fixes and changes
 -----------------------
 
--   The distribution zip no longer includes the jaybird-@VERSION@.rar. This file
-was an example JCA Resource Archive.
+-   The distribution zip no longer includes the jaybird-@VERSION_SIMPLE@.javaXX@VERSION_TAG@.rar.
+    This file was an example JCA Resource Archive.
 
     We currently plan to remove JCA support entirely in Jaybird 5. See also
-[Dropping JCA (Java Connector Architecture) support].
+[Dropping JCA support](#dropping-jca-support).
 
 -   Added support for Firebird 4 page size 32768 (32KB) in `FBManager` and backup 
 managers (backported to Jaybird 3.0.5) ([JDBC-468](http://tracker.firebirdsql.org/browse/JDBC-468))
@@ -1796,18 +1833,8 @@ on the Java command line.
 Removal of deprecated classes and packages
 ------------------------------------------
 
-See [Removal of deprecated classes, packages and methods] in 
-[Compatibility changes] for more details.
-
-Known Issues
-============
-
--   Using a native connection with a Firebird 3 client library to a Firebird 2.5
-    or older server may be slow to connect. The workaround is to specify the
-    IPv4 address instead of the host name in the connection string, or to use a
-    Firebird 2.5 or earlier `fbclient.dll`.
-    
-    This is caused by [CORE-4658](http://tracker.firebirdsql.org/browse/CORE-4658)
+See [Removal of deprecated classes, packages and methods](#removal-of-deprecated-classes-packages-and-methods)
+in [Compatibility changes](#compatibility-changes) for more details.
 
 Compatibility changes
 =====================
@@ -1821,6 +1848,8 @@ document, but it could just as well be an implementation bug.
 
 Firebird 2.0 and 2.1 no longer supported
 ----------------------------------------
+<!-- For GitHub markdown compatibility -->
+<a name="firebird-2.0-and-2.1-no-longer-supported"></a>
 
 Support for Firebird 2.0 and 2.1 has been dropped in Jaybird 4. In general we
 expect the driver to remain functional, but chances are certain metadata (eg 
@@ -1839,7 +1868,8 @@ Removed Legacy_Auth from default authentication plugins
 The pure Java protocol in Jaybird will - by default - no longer try the 
 `Legacy_Auth` plugin when connecting to Firebird 3 or higher.
 
-See [Default authentication plugins] for more information.
+See [Default authentication plugins](#default-authentication-plugins) for more
+information.
 
 Time zone behaviour
 -------------------
@@ -1853,17 +1883,19 @@ result values will be in the time zone of the JVM and not the Firebird server
 time zone.
 
 To revert to the previous behaviour, explicitly set `sessionTimeZone=server`.
-See [Connection property sessionTimeZone] for more information.
+See [Connection property sessionTimeZone](#connection-property-sessiontimezone)
+for more information.
 
 RDB$DB_KEY columns no longer of Types.BINARY
 --------------------------------------------
 
-With the introduction of [JDBC RowId support], `RDB$DB_KEY` columns are no 
-longer identified as `java.sql.Types.BINARY`, but as `java.sql.Types.ROWID`.
-The column will behave in a backwards-compatible manner as a binary field, with
-the exception of `getObject`, which will return a `java.sql.RowId` instead.
+With the introduction of [JDBC RowId support](#jdbc-rowid-support), `RDB$DB_KEY`
+columns are no longer identified as `java.sql.Types.BINARY`, but as
+`java.sql.Types.ROWID`. The column will behave in a backwards-compatible manner
+as a binary field, with the exception of `getObject`, which will return
+a `java.sql.RowId` instead.
 
-Unfortunately this does not apply to parameters, see also [JDBC RowId support].
+Unfortunately this does not apply to parameters, see also [JDBC RowId support](#jdbc-rowid-support).
 
 Due to the method of identification, real columns of type `char character set octets` 
 with the name `DB_KEY` will also be identified as a `ROWID` column.
@@ -1882,7 +1914,7 @@ scope `bestRowSession`. It will be returned for all values of `scope`.
 If a table does not have a primary key, the `RDB$DB_KEY` is considered the
 second-best alternative, with scope `bestRowTransaction`. It will only be 
 returned for scopes `bestRowTemporary` and `bestRowTransaction`. See also
-[JDBC RowId support].
+[JDBC RowId support](#jdbc-rowid-support).
 
 If you are currently using `DatabaseMetaData.getBestRowIdentifier` with 
 `scope` value `DatabaseMetaData.bestRowSession`, consider if you need to
@@ -1921,9 +1953,11 @@ Incompatibilities due to URL encoding in JDBC URL query part
 
 With the introduction of URL encoding for the query part of the JDBC URL, the
 use of characters `+` and `%` in the query part of a JDBC URL now have different
-meaning and can lead to errors or unexpected results.
+meaning and can lead to errors or unexpected results. This is especially
+relevant for base64 encoded values of `dbCryptConfig`.
 
-See [URL encoding in query part of JDBC URL] for more information.
+See [URL encoding in query part of JDBC URL](#url-encoding-in-query-part-of-jdbc-url)
+for more information.
 
 Stricter JDBC compliance
 ------------------------
@@ -1995,11 +2029,11 @@ as normal statement to be enhanced with a `RETURNING` clause.
 This is probably only a theoretical concern (we don't know of actual cases
 where detection changed). 
 
-See also [Generated keys grammar simplification]. 
+See also [Generated keys grammar simplification](#generated-keys-grammar-simplification). 
 
 ### DatabaseMetaData ###
 
-### Excluding procedures from packages ###
+#### Excluding procedures from packages ####
 
 The definition of `getProcedures` and `getProcedureColumns` does not offer a way
 to return information on procedures in packages without breaking tools or
@@ -2067,7 +2101,7 @@ Removal of deprecated classes, packages and methods
 The following connection properties (and equivalent data source properties) have
 been removed:
 
--   `useTranslation`: See [Removal of character mapping]
+-   `useTranslation`: See [Removal of character mapping](#removal-of-character-mapping)
 -   `octetsAsBytes`: Since Jaybird 3 octets is always handled as `BINARY`
 -   `noResultSetTracking`: Option does nothing since Jaybird 3
 -   `paranoia_mode`: Option does nothing since Jaybird 2.2 (maybe earlier)
@@ -2088,7 +2122,8 @@ The following deprecated methods have been removed in Jaybird 4:
 -   `ServiceRequestBufferImp#ServiceRequestBufferImp(int taskIdentifier)`
 -   `FBBlob#copyCharacterStream(Reader reader, long length, String encoding)`
 -   `FBBlob#copyCharacterStream(Reader reader, String encoding)` 
--   See also [Removal of character mapping] for a number of removed methods
+-   See also [Removal of character mapping](#removal-of-character-mapping) for
+    a number of removed methods
     
 The following classes have been removed in Jaybird 4:
 
@@ -2101,7 +2136,7 @@ The following constants have been removed in Jaybird 4:
 
 -   All `SQL_STATE_*` constants in `FBSQLException`,
     `FBResourceTransactionException`, `FBResourceException`, and
-    `FBDriverNotCapableException` will be removed. Use equivalent constants in
+    `FBDriverNotCapableException` have been removed. Use equivalent constants in
     `org.firebirdsql.jdbc.SQLStateConstants`.
 
 Breaking changes for Jaybird 5
@@ -2119,7 +2154,7 @@ Jaybird 5 may drop support for Java 8, depending on the actual release time line
 
 This decision is not final yet.
 
-### Dropping JCA (Java Connector Architecture) support ###
+### Dropping JCA support ###
 
 Jaybird is currently built around a JCA (Java Connector Architecture) 
 implementation. As such, it is both a JDBC driver and a JCA driver. The current
