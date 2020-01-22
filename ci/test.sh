@@ -121,7 +121,7 @@ if [[ "$RDB_MAJOR_VERSION" == "4" ]]; then
   sed -i 's/#UserManager = Srp/UserManager = Srp, Legacy_UserManager, GostPassword_Manager /g' "${INSTALLDIR}"/firebird.conf
   sed -i 's/#WireCrypt = Enabled (for client) \/ Required (for server)/WireCrypt = Disabled/g' "${INSTALLDIR}"/firebird.conf
 
-  sed -i 's/#KrbServerKeyfile/KrbServerKeyfile/g' "${INSTALLDIR}"/firebird.conf
+  sed -i 's/#GssServerKeyfile/GssServerKeyfile/g' "${INSTALLDIR}"/firebird.conf
   sed -i 's/#GssServiceName/GssServiceName/g' "${INSTALLDIR}"/firebird.conf
   sed -i 's/#GssHostName =/GssHostName = localhost/g' "${INSTALLDIR}"/firebird.conf
   sed -i 's/#TraceAuthentication = 0/TraceAuthentication = 1/g' "${INSTALLDIR}"/firebird.conf
