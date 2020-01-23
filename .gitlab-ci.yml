@@ -88,7 +88,7 @@ build_and_test:jdk18:rdb4:
     TEST_JAVA8_JVM: /usr/lib/jvm/jre-1.8.0/bin/java
     SKIP_JAVA7_TEST: "true"
     TEST_LIST: "**"
-    RDB_VERSION: 4.0.0.1738
+    RDB_VERSION: 4.0.0.1772
   image:
     name: registry.red-soft.biz:5000/docker-images/rdbtestenv/centos7:7.6.1810-cpro-4.0.9963-2
 
