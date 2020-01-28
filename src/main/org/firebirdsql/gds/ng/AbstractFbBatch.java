@@ -93,6 +93,11 @@ public abstract class AbstractFbBatch implements FbBatch {
         return fieldValues;
     }
 
+    /**
+     * Creating a string descriptor from metadata.
+     *
+     * @throws SQLException
+     */
     protected void prepareBatch() throws SQLException {
 
         if (getStatement() != null)

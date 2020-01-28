@@ -293,16 +293,6 @@ public interface FbStatement extends ExceptionListenable {
     void ensureClosedCursor(boolean transactionEnd) throws SQLException;
 
     /**
-     * Creates a batch that call prepared statement to get a metadata.
-     *
-     * @param parameters
-     *         Batch parameters buffer {@link BatchParameterBuffer}
-     * @return Instance of {@link FbBatch}
-     * @throws SQLException
-     */
-    FbBatch createBatch(BatchParameterBuffer parameters) throws SQLException;
-
-    /**
      * Sets the statement timeout.
      * <p>
      * The statement timeout value is ignored in implementations that do not support timeouts. If the provided
@@ -336,4 +326,14 @@ public interface FbStatement extends ExceptionListenable {
      * @since 4.0
      */
     long getTimeout() throws SQLException;
+
+    /**
+     * Creates a batch that call prepared statement to get a metadata.
+     *
+     * @param parameters
+     *         Batch parameters buffer {@link BatchParameterBuffer}
+     * @return Instance of {@link FbBatch}
+     * @throws SQLException
+     */
+    FbBatch createBatch(BatchParameterBuffer parameters) throws SQLException;
 }

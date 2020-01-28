@@ -81,7 +81,7 @@ public interface FbBatch extends ExceptionListenable {
 
     /**
      * Execute tis batch and
-     * @return completion state.
+     * @return {@link FbBatchCompletionState} completion state.
      */
     FbBatchCompletionState execute() throws SQLException;
 

@@ -7,12 +7,15 @@ import org.firebirdsql.gds.impl.GDSHelper;
 import org.firebirdsql.gds.ng.*;
 import org.firebirdsql.gds.ng.fields.RowValue;
 import org.firebirdsql.jdbc.FBBlob;
+import org.firebirdsql.logging.Logger;
+import org.firebirdsql.logging.LoggerFactory;
 import org.firebirdsql.nativeoo.gds.ng.FbInterface.*;
 
 import java.io.IOException;
 import java.sql.SQLException;
 
 /**
+ * Implementation of {@link FbBatch} for native OO API.
  *
  * @author <a href="mailto:vasiliy.yashkov@red-soft.ru">Vasiliy Yashkov</a>
  * @since 4.0
@@ -65,6 +68,12 @@ public class IBatchImpl extends AbstractFbBatch {
         prepareBatch();
     }
 
+    /**
+     * If batch is created from a database,
+     * it is necessary to initialize it to obtain metadata.
+     *
+     * @throws SQLException
+     */
     private void init() throws SQLException {
         synchronized (getSynchronizationObject()) {
             if (metadata == null) {
@@ -89,6 +98,11 @@ public class IBatchImpl extends AbstractFbBatch {
         prepareBatch();
     }
 
+    /**
+     * Build batch message from field values.
+     *
+     * @throws SQLException
+     */
     @Override
     public void addBatch() throws SQLException {
         RowValue fieldValues = getFieldValues();

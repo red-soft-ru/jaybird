@@ -3,6 +3,7 @@ package org.firebirdsql.gds.ng;
 import java.sql.SQLException;
 
 /**
+ * Interface to access batch fields metadata
  *
  * @author <a href="mailto:vasiliy.yashkov@red-soft.ru">Vasiliy Yashkov</a>
  * @since 4.0

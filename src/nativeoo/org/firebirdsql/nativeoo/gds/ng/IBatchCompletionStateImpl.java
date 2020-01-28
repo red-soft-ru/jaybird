@@ -6,6 +6,7 @@ import org.firebirdsql.nativeoo.gds.ng.FbInterface.*;
 import java.sql.SQLException;
 
 /**
+ * Implementation of {@Link FbBatchCompletionState} for native batch execution.
  *
  * @author <a href="mailto:vasiliy.yashkov@red-soft.ru">Vasiliy Yashkov</a>
  * @since 4.0

@@ -449,7 +449,7 @@ public class IBatchImplTest extends AbstractBatchTest {
     public void testMultipleMessagesBatchWithoutBlobs() throws SQLException {
         allocateTransaction();
         BatchParameterBuffer buffer = new BatchParameterBufferImpl();
-        buffer.addArgument(FbInterface.IBatch.TAG_RECORD_COUNTS, 1);
+        buffer.addArgument(BatchParameterBuffer.TAG_RECORD_COUNTS, 1);
         IBatchImpl batch = (IBatchImpl) db.createBatch(transaction, INSERT_QUERY_WITHOUT_BLOBS, buffer);
 
         int testInteger = 42;

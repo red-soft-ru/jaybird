@@ -54,6 +54,9 @@ public abstract class AbstractNativeConnection<T extends IAttachProperties<T>, C
         return clientLibrary;
     }
 
+    /**
+     * Processing {@link IStatus} to get result of native calling
+     */
     protected void processStatus(IStatus status, WarningMessageCallback messageCallback) throws SQLException {
         Pointer pointer = status.getErrors();
         long[] statusVector = pointer.getLongArray(0, 20);
