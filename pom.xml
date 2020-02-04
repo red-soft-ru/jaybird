@@ -14,9 +14,8 @@
 		<maven-release-plugin.version>2.5.3</maven-release-plugin.version>
 		<maven-jar-plugin.version>3.2.0</maven-jar-plugin.version>
 		<maven-assembly-plugin.version>3.2.0</maven-assembly-plugin.version>
-		<jaybird.version.simple>${project.version}</jaybird.version.simple>
-		<jaybird.version.display>Jaybird ${project.version}</jaybird.version.display>
 		<project.build.outputTimestamp>2020-01-03T15:00:00Z</project.build.outputTimestamp>
+		<project.name>Jaybird</project.name>
 	</properties>
 	<modules>
 		<module>modules/jaybird-jdk18</module>
