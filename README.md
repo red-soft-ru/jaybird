@@ -1,14 +1,29 @@
 # Jaybird
-Jaybird is a JDBC driver suite to connect to Firebird database servers.
+Jaybird is a JDBC driver suite to connect to Firebird/Red Database servers.
 
 [![Build Status](https://travis-ci.com/FirebirdSQL/jaybird.svg?branch=master)](https://travis-ci.com/FirebirdSQL/jaybird)
-[![MavenCentral](https://maven-badges.herokuapp.com/maven-central/org.firebirdsql.jdbc/jaybird-jdk18/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.firebirdsql.jdbc/jaybird-jdk18/)
+[![MavenCentral](https://maven-badges.herokuapp.com/maven-central/org.firebirdsql.jdbc/jaybird-jdk18/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.firebirdsql.jdbc/jaybird-jdk18/) [![image](https://img.shields.io/badge/red--soft--bintray-jaybird--releases-brightgreen)](https://bintray.com/beta/#/red-soft-ru/releases)
 
 ## Reporting bugs or improvements
 
 For security vulnerabilities, see [Security Policy](https://github.com/FirebirdSQL/jaybird/security/policy).
 
 For bugs or improvement, go to our [Issue tracker](http://tracker.firebirdsql.org/browse/JDBC).
+
+## Key Features
+
+The main difference between Red Soft Jaybird driver and the original driver is full Red Database server support. Improved performance compared to the original Jaybird driver for specific tasks. Key supported features:
+- External stored procedures;
+- Full text search;
+- Improved security subsystem.
+
+The driver supports all types of authentication provided by Red Database server. The following authentication methods are supported:
+- Secure Password Authentication (Srp);
+- Traditional password (Legacy_Auth) authentication;
+- Multifactor authentication (Password, Certificate) using security policies;
+- Trusted Authentication through the GSSAPI (Gss) Mechanism.
+
+Support for multifactor authentication is implemented using the cryptographic provider CryptoPro.
 
 ## Resources
 
@@ -18,6 +33,8 @@ For bugs or improvement, go to our [Issue tracker](http://tracker.firebirdsql.or
 - [FAQ](src/documentation/faq.md)
 - [Release notes](src/documentation/release_notes.md)
 - [How to contribute](CONTRIBUTING.md)
+- [Red Soft](https://www.red-soft.ru)
+- [Red Database](https://reddatabase.ru)
 
 ## License
 
