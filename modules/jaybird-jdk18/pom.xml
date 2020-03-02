@@ -207,7 +207,7 @@
 				<artifactId>maven-javadoc-plugin</artifactId>
 				<configuration>
 					<failOnError>false</failOnError>
-					<notimestamp>false</notimestamp>
+					<notimestamp>true</notimestamp>
 					<stylesheet>java</stylesheet>
 					<destDir>${project.build.outputDirectory}/docs</destDir>
 					<author>true</author>
@@ -262,7 +262,6 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
-				<version>3.2.0</version>
 				<executions>
 					<execution>
 						<goals>
