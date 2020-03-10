@@ -16,7 +16,7 @@ variables:
   MAVEN_OPTS: "-Dmaven.repo.local=.m2/repository"
   RDB2_VERSION: "2.6.0.13500"
   RDB3_VERSION: "3.0.4.169"
-  RDB4_VERSION: "4.0.0.1784" # locked build for this branch
+  RDB4_VERSION: "4.0.0.1860" # locked build for this branch
 
 .prepare_template: &prepare_template
   tags:
