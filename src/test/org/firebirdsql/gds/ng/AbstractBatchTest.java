@@ -238,7 +238,7 @@ public abstract class AbstractBatchTest {
         }
 
         BatchParameterBuffer buffer = new BatchParameterBufferImpl();
-        buffer.addArgument(/*FbInterface.IBatch.TAG_RECORD_COUNTS*/2, 1);
+        buffer.addArgument(BatchParameterBuffer.TAG_RECORD_COUNTS, 1);
         FbBatch batch = db.createBatch(transaction, INSERT_QUERY, metadataBuilder.getMessageMetadata(), buffer);
     }
 
