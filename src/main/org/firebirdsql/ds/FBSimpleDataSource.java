@@ -22,7 +22,7 @@ import org.firebirdsql.gds.DatabaseParameterBuffer;
 import org.firebirdsql.gds.TransactionParameterBuffer;
 import org.firebirdsql.gds.impl.GDSFactory;
 import org.firebirdsql.gds.impl.GDSType;
-import org.firebirdsql.jca.FBManagedConnectionFactory;
+import org.firebirdsql.jaybird.xca.FBManagedConnectionFactory;
 import org.firebirdsql.jdbc.FBDataSource;
 import org.firebirdsql.jdbc.FirebirdConnectionProperties;
 
@@ -279,10 +279,6 @@ public class FBSimpleDataSource extends RootCommonDataSource implements DataSour
         return mcf.isTimestampUsesLocalTimezone();
     }
 
-    public boolean isUseStandardUdf() {
-        return mcf.isUseStandardUdf();
-    }
-
     public boolean isUseStreamBlobs() {
         return mcf.isUseStreamBlobs();
     }
@@ -337,10 +333,6 @@ public class FBSimpleDataSource extends RootCommonDataSource implements DataSour
 
     public void setType(String type) {
         mcf.setType(type);
-    }
-
-    public void setUseStandardUdf(boolean useStandardUdf) {
-        mcf.setUseStandardUdf(useStandardUdf);
     }
 
     public void setUseStreamBlobs(boolean useStreamBlobs) {

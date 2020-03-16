@@ -61,9 +61,9 @@ Given the limited support period for Java 9 and higher versions, we will limit
 support on those versions to the most recent LTS version and the latest release.
 Currently that means we support Java 11 and Java 13.
 
-Jaybird 5 provides libraries for Java 7, Java 8 and Java 11. The Java 8 builds 
-have the same source and all JDBC 4.3 related functionality and can be used on
-Java 9 and higher as well.
+Jaybird 5 provides libraries for Java 8 and Java 11. The Java 8 builds have the
+same source and all JDBC 4.3 related functionality and can be used on Java 9 and
+higher as well.
 
 Jaybird 5 is not modularized, but all versions declare the automatic module name 
 `org.firebirdsql.jaybird`.
@@ -217,7 +217,7 @@ Java support
 
 ### Java 7 support dropped ###
 
-Java 7 is no longer supported
+Java 7 is no longer supported. See also [jdp-2020-02 Drop Java 7 support](https://github.com/FirebirdSQL/jaybird/blob/master/devdoc/jdp/jdp-2020-02-drop-java-7-support.md).
 
 ### Java 8 ###
 
@@ -275,10 +275,91 @@ breaking changes.
 not listed, please report it as bug.** It might have been a change we forgot to
 document, but it could just as well be an implementation bug.
 
+Support for Java 7 dropped
+--------------------------
+
+Jaybird 5 does not support Java 7. You will need to upgrade to Java 8 or higher,
+or remain on Jaybird 4.
+
+Removal of classes, packages and methods without deprecation
+------------------------------------------------------------
+
+### Removal of methods without deprecation ###
+
+The following methods have been removed in Jaybird 5:
+
+-   `JdbcVersionSupport.createBatchUpdateException`, the `JdbcVersionSupport`
+    interface is an internal API of Jaybird, but was previously not marked as
+    such.
+
+### Removal of constants without deprecation ###
+
+The following constants have been removed in Jaybird 5:
+
+-   `TIME_WITH_TIMEZONE` and `TIMESTAMP_WITH_TIMEZONE` from
+    `org.firebirdsql.jdbc.JaybirdTypeCodes`. Use the constants with the same
+    name from `java.sql.Types`.
+
 Removal of deprecated classes, packages and methods
 ---------------------------------------------------
 
-...
+### Removal of deprecated methods ###
+
+The following methods have been removed in Jaybird 5:
+
+-   `MaintenanceManager.listLimboTransactions()`, use
+    `MaintenanceManager.limboTransactionsAsList()` or 
+    `MaintenanceManager.getLimboTransactions()` instead.
+-   `TraceManager.loadConfigurationFromFile(String)`, use standard Java 
+    functionality like `new String(Files.readAllBytes(Paths.get(fileName)), <charset>)`
+-   `FBDatabaseMetaData.hasNoWildcards(String pattern)`
+-   `FBDatabaseMetaData.stripEscape(String pattern)`
+-   `StatementParser.parseInsertStatement(String sql)`, use 
+    `StatementParser.parseStatement(String sql)`
+-   `FbStatement.getFieldDescriptor()`, use `FbStatement.getRowDescriptor()`
+-   `AbstractFbStatement.setFieldDescriptor(RowDescriptor fieldDescriptor)`, 
+    use `AbstractFbStatement.setRowDescriptor(RowDescriptor rowDescriptor)`
+-   `FBField.isType(FieldDescriptor, int)`, use 
+    `JdbcTypeConverter.isJdbcType(FieldDescriptor, int)`
+    
+### Removal of deprecated classes ###
+
+The following classes have been removed in Jaybird 5:
+
+-   `FBMissingParameterException`, exception is no longer used.
+    
+### Removal of deprecated constants ###
+
+The following constants have been removed in Jaybird 5:
+
+-   All `SQL_STATE_*` constants in `FBSQLParseException`. Use equivalent
+    constants in `org.firebirdsql.jdbc.SQLStateConstants`.
+-   `DatabaseParameterBufferExtension.EXTENSION_PARAMETERS` has been removed.
+    There is no official replacement as this should be considered an
+    implementation detail. It is possible that `DatabaseParameterBufferExtension`
+    will be removed entirely.
+    
+Removal of UDF support for JDBC escapes
+---------------------------------------
+
+Given recent Firebird versions have significantly improved support for built-in
+functions, and UDFs are now deprecated, the support to map JDBC function escapes
+to UDFs from `ib_udf` instead of built-in functions using the boolean connection
+property `useStandarUdf`\[sic\] has been removed.
+
+As a result, the following methods, constants, properties and others are no
+longer available:
+
+-   Connection property `useStandarUdf`\[sic\] and its alias `use_standard_udf`
+-   `isUseStandardUdf()` and `setUseStandardUdf(boolean useStandardUdf)` in
+    `FirebirdConnectionProperties` and in implementations of `DataSource` and
+    other classes
+-   Constants `FBConnectionProperties.USE_STANDARD_UDF_PROPERTY`, 
+    `DatabaseParameterBufferExtension.USE_STANDARD_UDF`,
+    `ISCConstants.isc_dpb_use_standard_udf`
+-   Enum `EscapeParserMode` and its usages in `FBEscapedCallParser` and
+    `FBEscapedParser`
+-   Public classes in package are now marked as internal-api 
 
 Breaking changes for Jaybird 5
 ------------------------------
@@ -286,10 +367,6 @@ Breaking changes for Jaybird 5
 <!-- TODO Move relevant parts to Compatibility changes once actually removed -->
 
 With Jaybird 5 the following breaking changes will be introduced.
-
-### Dropping support for Java 7 ###
-
-Jaybird 5 will drop support for Java 7.
 
 ### Dropping support for Java 8 (tentative) ###
 
@@ -310,50 +387,6 @@ If you are currently using Jaybird as a JCA driver, please let us know on the
 Firebird-Java mailing list. We may reconsider this decision and instead 
 restructure Jaybird so the dependency on JCA is only needed when Jaybird is used 
 as a JCA driver. 
-
-### Removal of deprecated methods ###
-
-The following methods will be removed in Jaybird 5:
-
--   `MaintenanceManager.listLimboTransactions()`, use
-    `MaintenanceManager.limboTransactionsAsList()` or 
-    `MaintenanceManager.getLimboTransactions()` instead.
--   `TraceManager.loadConfigurationFromFile(String)`, use standard Java 
-    functionality like `new String(Files.readAllBytes(Paths.get(fileName)), <charset>)`
--   `FBDatabaseMetaData.hasNoWildcards(String pattern)`
--   `FBDatabaseMetaData.stripEscape(String pattern)`
--   `StatementParser.parseInsertStatement(String sql)`, use 
-    `StatementParser.parseStatement(String sql)`
--   `FbStatement.getFieldDescriptor()`, use `FbStatement.getRowDescriptor()`
--   `AbstractFbStatement.setFieldDescriptor(RowDescriptor fieldDescriptor)`, 
-    use `AbstractFbStatement.setRowDescriptor(RowDescriptor rowDescriptor)`
--   `FBField.isType(FieldDescriptor, int)`, use 
-    `JdbcTypeConverter.isJdbcType(FieldDescriptor, int)`
-    
-### Removal of deprecated classes ###
-
-The following classes will be removed in Jaybird 5:
-
--   `FBMissingParameterException`, exception is no longer used.
-    
-### Removal of deprecated constants ###
-
-The following constants will be removed in Jaybird 5:
-
--   All `SQL_STATE_*` constants in `FBSQLParseException` will be removed. Use equivalent 
-    constants in `org.firebirdsql.jdbc.SQLStateConstants`.
--   `DatabaseParameterBufferExtension.EXTENSION_PARAMETERS` will be removed. There is no
-    official replacement as this should be considered an implementation detail. It is
-    possible that `DatabaseParameterBufferExtension` will be removed entirely.
-
-### Removal of UDF support for JDBC escapes ###
-
-Jaybird 4 and earlier have support to map JDBC function escapes to UDFs from
-`ib_udf` instead of built-in function using the boolean connection property
-`useStandarUdf`\[sic\].
-
-Given recent Firebird versions have significantly improved support for built-in
-functions, and UDFs are now deprecated, this option will be removed in Jaybird 5. 
     
 Compatibility notes
 ===================
