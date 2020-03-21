@@ -16,15 +16,15 @@
  *
  * All rights reserved.
  */
-package org.firebirdsql.jaybird.xca;
 
 /**
- * This error is thrown when message read from the RDB$TRANSACTIONS table does not represent a serialized Xid.
+ * XCA (or ex-connector-architecture), is an internal API of Jaybird for connection management.
+ * <p>
+ * Historically it was derived from the JavaEE Connector Architecture specification, but that tie has been cut
+ * since Jaybird 5.
+ * </p>
  */
-public class FBIncorrectXidException extends Exception {
+@InternalApi
+package org.firebirdsql.jaybird.xca;
 
-    public FBIncorrectXidException(String reason) {
-        super(reason);
-    }
-
-}
+import org.firebirdsql.util.InternalApi;

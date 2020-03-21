@@ -46,6 +46,7 @@ import javax.transaction.xa.XAException;
 import javax.transaction.xa.XAResource;
 import javax.transaction.xa.Xid;
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.SocketTimeoutException;
 import java.sql.DriverManager;
@@ -907,7 +908,7 @@ public class FBManagedConnection implements ManagedConnection, XAResource, Excep
 
             stmtHandle2.close();
             trHandle2.commit();
-        } catch (SQLException | ResourceException ex) {
+        } catch (SQLException | IOException ex) {
             log.debug("can't perform query to fetch xids", ex);
             throw new FBXAException(XAException.XAER_RMFAIL, ex);
         }
@@ -1085,7 +1086,7 @@ public class FBManagedConnection implements ManagedConnection, XAResource, Excep
             trHandle2.commit();
 
             return xids.toArray(new FBXid[0]);
-        } catch (SQLException | ResourceException e) {
+        } catch (SQLException | IOException e) {
             throw new FBXAException("can't perform query to fetch xids", XAException.XAER_RMFAIL, e);
         }
     }
@@ -1149,7 +1150,7 @@ public class FBManagedConnection implements ManagedConnection, XAResource, Excep
             trHandle2.commit();
 
             return xid;
-        } catch (SQLException | ResourceException e) {
+        } catch (SQLException | IOException e) {
             throw new FBXAException("can't perform query to fetch xids", XAException.XAER_RMFAIL, e);
         }
     }
