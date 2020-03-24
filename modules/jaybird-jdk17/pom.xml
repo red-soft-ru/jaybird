@@ -86,6 +86,8 @@
 		<dependency>
 			<groupId>org.objenesis</groupId>
 			<artifactId>objenesis</artifactId>
+			<version>2.6</version>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 	<properties>
