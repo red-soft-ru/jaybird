@@ -36,7 +36,6 @@
             <classpath>
                 <pathelement location="${build.lib}/${archive.name.simple}"/>
                 <pathelement location="${build.lib}/${archive.name.test}"/>
-                <pathelement location="${build.lib}/connector-api-1.5.jar"/>
                 <pathelement location="${srcdir}/lib/jna-5.5.0.jar" />
                 <pathelement location="${srcdir}/lib/log4j-1.2-api-2.12.1.jar"/>
                 <pathelement location="${srcdir}/lib/log4j-api-2.12.1.jar"/>
@@ -108,7 +107,6 @@
 
                 <pathelement location="${build.lib}/${archive.name.simple}"/>
                 <pathelement location="${build.lib}/${archive.name.test}"/>
-                <pathelement location="${build.lib}/connector-api-1.5.jar"/>
                 <pathelement location="${srcdir}/lib/jna-5.5.0.jar" />
                 <pathelement location="${srcdir}/lib/log4j-1.2-api-2.12.1.jar"/>
                 <pathelement location="${srcdir}/lib/log4j-api-2.12.1.jar"/>
@@ -183,7 +181,6 @@
 
                 <pathelement location="${build.lib}/${archive.name.simple}"/>
                 <pathelement location="${build.lib}/${archive.name.test}"/>
-                <pathelement location="${build.lib}/connector-api-1.5.jar"/>
                 <pathelement location="${srcdir}/lib/jna-5.5.0.jar" />
                 <pathelement location="${srcdir}/lib/log4j-1.2-api-2.12.1.jar"/>
                 <pathelement location="${srcdir}/lib/log4j-api-2.12.1.jar"/>

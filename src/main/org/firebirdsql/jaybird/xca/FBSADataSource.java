@@ -2,17 +2,16 @@ package org.firebirdsql.jaybird.xca;
 
 import java.io.PrintWriter;
 import java.io.Serializable;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.SQLFeatureNotSupportedException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
 import javax.naming.NamingException;
 import javax.naming.Reference;
-import javax.resource.Referenceable;
-import javax.resource.ResourceException;
+import javax.naming.Referenceable;
+import javax.sql.ConnectionEvent;
+import javax.sql.ConnectionEventListener;
 import javax.sql.DataSource;
 
 import org.firebirdsql.gds.DatabaseParameterBuffer;
@@ -20,13 +19,9 @@ import org.firebirdsql.gds.TransactionParameterBuffer;
 import org.firebirdsql.gds.impl.GDSFactory;
 import org.firebirdsql.gds.impl.GDSType;
 import org.firebirdsql.jdbc.FBDriverNotCapableException;
-import org.firebirdsql.jdbc.FBSQLException;
 import org.firebirdsql.jdbc.FirebirdConnectionProperties;
 
-import javax.resource.spi.ConnectionEvent;
-import javax.resource.spi.ConnectionEventListener;
-
-public class FBSADataSource implements DataSource, Serializable, Referenceable, FirebirdConnectionProperties, ConnectionEventListener {
+public class FBSADataSource implements DataSource, Serializable, Referenceable, FirebirdConnectionProperties, XcaConnectionEventListener {
     
     transient protected FBManagedConnectionFactory mcf;
     transient protected PrintWriter log;
@@ -57,7 +52,7 @@ public class FBSADataSource implements DataSource, Serializable, Referenceable, 
      * @return length of BLOB buffer.
      */
     public Integer getBlobBufferLength() {
-        return new Integer(mcf.getBlobBufferSize());
+        return mcf.getBlobBufferSize();
     }
     
     /**
@@ -361,19 +356,13 @@ public class FBSADataSource implements DataSource, Serializable, Referenceable, 
      * @throws SQLException if something went wrong.
      */
     public Connection getConnection() throws SQLException {
-      try {
         FBConnectionRequestInfo subjectCri = mcf.getDefaultConnectionRequestInfo();
         FBManagedConnection mc = getManagedConnection(subjectCri).forkManagedConnection();
         mc.setManagedEnvironment(false);
-        mc.setConnectionSharing(false);
         mc.addConnectionEventListener(this);
-        Connection con = (Connection) mc.getConnection(null, subjectCri);
+        Connection con = mc.getConnection();
         connections.add(mc);
         return con;
-      }
-      catch (ResourceException ex) {
-        throw new FBSQLException(ex);
-      }
     }
 
     /**
@@ -424,8 +413,18 @@ public class FBSADataSource implements DataSource, Serializable, Referenceable, 
         return loginTimeout;
     }
 
+    @Override
+    public ConnectionBuilder createConnectionBuilder() throws SQLException {
+        return null;
+    }
+
     public Logger getParentLogger() throws SQLFeatureNotSupportedException {
         throw new FBDriverNotCapableException();
+    }
+
+    @Override
+    public ShardingKeyBuilder createShardingKeyBuilder() throws SQLException {
+        return null;
     }
 
     /**
@@ -459,9 +458,9 @@ public class FBSADataSource implements DataSource, Serializable, Referenceable, 
 
     /**
      * Frees phisical connection
-     * @throws ResourceException
+     * @throws SQLException
      */
-    public synchronized void close() throws ResourceException
+    public synchronized void close() throws SQLException
     {
     	List<FBManagedConnection> connections = new ArrayList<FBManagedConnection>(this.connections);
     	for(FBManagedConnection mc1:connections)
@@ -475,14 +474,10 @@ public class FBSADataSource implements DataSource, Serializable, Referenceable, 
     	this.connections.clear();
         if (mc != null)
         {
-            try {
-                // Clean up method should cause the database to detach,
-                // but if this does not happen, then do it manually
-                if (mc.getGDSHelper().getCurrentDatabase().isAttached())
-                    mc.destroy();
-            } catch (SQLException e) {
-                throw new ResourceException(e.getMessage(), e);
-            }
+            // Clean up method should cause the database to detach,
+            // but if this does not happen, then do it manually
+            if (mc.getGDSHelper().getCurrentDatabase().isAttached())
+                mc.destroy();
             mc = null;
         }
     }
@@ -501,16 +496,11 @@ public class FBSADataSource implements DataSource, Serializable, Referenceable, 
         if (mcf.getDatabase() == null || "".equals(mcf.getDatabase().trim()))
             throw new SQLException(
                 "Database was not specified. Cannot provide connections.");
-                
-        try {
-        	mc = (FBManagedConnection)mcf.createManagedConnection(null, cxRequestInfo);
-			mc.setManagedEnvironment(false);
-			mc.setConnectionSharing(false);
 
-			return mc;
-        } catch(ResourceException rex) {
-            throw new FBSQLException(rex);
-        }
+        mc = (FBManagedConnection)mcf.createManagedConnection(cxRequestInfo);
+        mc.setManagedEnvironment(false);
+
+        return mc;
     }
     
     // JDBC 4.0
@@ -523,41 +513,37 @@ public class FBSADataSource implements DataSource, Serializable, Referenceable, 
     	throw new FBDriverNotCapableException();
     }
 
-    //javax.resource.spi.ConnectionEventListener implementation
-
     /**
-     * <code>javax.resource.spi.ConnectionEventListener</code> callback for 
+     * callback for
      * when a <code>ManagedConnection</code> is closed.
      *
      * @param ce contains information about the connection that has be closed
      */
-    public void connectionClosed(ConnectionEvent ce) {
-        PrintWriter externalLog = ((FBManagedConnection)ce.getSource()).getLogWriter();
+    public void connectionClosed(XcaConnectionEvent ce) {
         try {
             ((FBManagedConnection)ce.getSource()).destroy();
             connections.remove((FBManagedConnection)ce.getSource());
         }
-        catch (ResourceException e) {
-            if (externalLog != null) externalLog.println("Exception closing unmanaged connection: " + e);
+        catch (SQLException e) {
+            if (log != null) log.println("Exception closing unmanaged connection: " + e);
         }
 
     }
 
     /**
-     * <code>javax.resource.spi.ConnectionEventListener</code> callback for 
+     * callback for
      * when a Local Transaction was rolled back within the context of a
      * <code>ManagedConnection</code>.
      *
      * @param ce contains information about the connection 
      */
-    public void connectionErrorOccurred(ConnectionEvent ce) {
-        PrintWriter externalLog = ((FBManagedConnection)ce.getSource()).getLogWriter();
+    public void connectionErrorOccurred(XcaConnectionEvent ce) {
         try {
             ((FBManagedConnection)ce.getSource()).destroy();
             connections.remove((FBManagedConnection)ce.getSource());
         }
-        catch (ResourceException e) {
-            if (externalLog != null) externalLog.println("Exception closing unmanaged connection: " + e);
+        catch (SQLException e) {
+            if (log != null) log.println("Exception closing unmanaged connection: " + e);
         }
     }
 
