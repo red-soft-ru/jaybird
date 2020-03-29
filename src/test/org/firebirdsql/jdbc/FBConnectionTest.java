@@ -34,7 +34,6 @@ import org.firebirdsql.gds.ng.IConnectionProperties;
 import org.firebirdsql.gds.ng.WireCrypt;
 import org.firebirdsql.gds.ng.wire.crypt.FBSQLEncryptException;
 import org.firebirdsql.jca.FBManagedConnection;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -889,8 +888,10 @@ public class FBConnectionTest {
         }
     }
 
+    /**
+     * Rationale: see <a href="http://tracker.firebirdsql.org/browse/JDBC-386">JDBC-386</a>
+     */
     @Test
-    @Ignore("JDBC-386")
     public void transactionSettingsNotShared() throws Exception {
         try (FBConnection con1 = getConnectionViaDriverManager().unwrap(FBConnection.class);
              FBConnection con2 = getConnectionViaDriverManager().unwrap(FBConnection.class)) {
