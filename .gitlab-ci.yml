@@ -17,6 +17,8 @@ variables:
   RDB2_VERSION: "2.6.0.13500"
   RDB3_VERSION: "3.0.5.1"
   RDB4_VERSION: "4.0.0.1868"
+  http_proxy: http://git.red-soft.biz:3128
+  https_proxy: http://git.red-soft.biz:3128
 
 .prepare_template: &prepare_template
   tags:
