@@ -111,7 +111,7 @@
 					<exclude>log4j.properties</exclude>
 					<exclude>META-INF/ra.xml</exclude>
 					<exclude>**/reserved_words*.txt</exclude>
-					<exclude>org/firebirdsql/version.properties</exclude>
+					<exclude>org/firebirdsql/jaybird/version.properties</exclude>
 					<exclude>org/firebirdsql/version_maven.properties</exclude>
 				</excludes>
 			</resource>
@@ -125,7 +125,7 @@
 		</resources>
 		<testResources>
 			<testResource>
-				<directory>../../src/test</directory>
+				<directory>../../src/test_resources</directory>
 				<filtering>false</filtering>
 				<excludes>
 					<exclude>**/*.java</exclude>

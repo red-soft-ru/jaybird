@@ -128,7 +128,7 @@ build_and_test:jdk11:rdb2_6:
     RDB_VERSION: $RDB2_VERSION
     TEST_JAVA_JVM: /usr/lib/jvm/java-11-openjdk-11.0.6.10-1.el7_7.x86_64/bin/java
     TEST_LIST: "**"
-    EXTRA_DEPENDENCIES: icu xinetd java-11-openjdk
+    EXTRA_DEPENDENCIES: java-11-openjdk icu xinetd
   image:
     name: registry.red-soft.biz:5000/docker-images/rdbtestenv/centos7:7.6.1810-cpro-4.0.9963-2
 
