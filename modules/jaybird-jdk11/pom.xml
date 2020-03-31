@@ -6,8 +6,8 @@
 		<version>5.0.0-SNAPSHOT</version>
 		<relativePath>../../pom.xml</relativePath>
 	</parent>
-	<artifactId>jaybird-jdk18</artifactId>
-	<name>jaybird-jdk18</name>
+	<artifactId>jaybird-jdk11</artifactId>
+	<name>jaybird-jdk11</name>
 	<packaging>jar</packaging>
 	<dependencies>
 		<dependency>
@@ -99,8 +99,8 @@
 		<test.db.dir>/tmp/db</test.db.dir>
 		<test.db.lc_ctype>NONE</test.db.lc_ctype>
 		<test.report.dir>${basedir}/../../reports</test.report.dir>
-		<test.java8.jvm>/usr/lib/jvm/jre-1.8.0/bin/java</test.java8.jvm>
-		<report_name>jdk8</report_name>
+		<test.java.jvm>/usr/lib/jvm/java-11-openjdk-11.0.6.10-1.el7_7.x86_64/bin/java</test.java.jvm>
+		<report_name>jdk11</report_name>
 	</properties>
 	<build>
 		<resources>
@@ -265,7 +265,7 @@
 						<exclude>**/*$$*.java</exclude>
 					</includes>
 					<testFailureIgnore>true</testFailureIgnore>
-					<jvm>${test.java8.jvm}</jvm>
+					<jvm>${test.java.jvm}</jvm>
 				</configuration>
 			</plugin>
 			<plugin>

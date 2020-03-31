@@ -199,6 +199,6 @@ done
 echo rdb_server | kinit rdb_server/localhost
 klist
 
-mvn $MAVEN_CLI_OPTS -f "${CI_PROJECT_DIR}"/pom.xml test -Pdeploy-internal -DreportNamePrefix=$REPORT_PREFIX -DreleaseHubBuildVersion=$VERSION  -DfailIfNoTests=false -Dtest.db.dir=$TEST_DIR -Dtest.java7.skip=$SKIP_JAVA7_TEST -Dtest.java8.jvm=$TEST_JAVA8_JVM -Dtest.java7.jvm=$TEST_JAVA7_JVM -Dtest=$TEST_LIST
+mvn $MAVEN_CLI_OPTS -f "${CI_PROJECT_DIR}"/pom.xml test -Pdeploy-internal -DreportNamePrefix=$REPORT_PREFIX -DreleaseHubBuildVersion=$VERSION  -DfailIfNoTests=false -Dtest.db.dir=$TEST_DIR -Dtest.java.jvm=$TEST_JAVA_JVM -Dtest=$TEST_LIST
 
 kdestroy
