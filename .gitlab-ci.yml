@@ -111,7 +111,7 @@ build_and_test:jdk11:rdb3:
 build_and_test:liberica_jdk11:rdb3:
   <<: *build_and_test_template
   variables:
-    JAVA_HOME: /usr/lib/jvm/bellsoft-java11-runtime.x86_64
+    JAVA_HOME: /usr/lib/jvm/java-11-openjdk-11.0.6.10-1.el7_7.x86_64
     RDB_VERSION: $RDB3_VERSION
     TEST_JAVA_JVM: /usr/lib/jvm/bellsoft-java11-runtime.x86_64/bin/java
     JDK_VER: 11-runtime
