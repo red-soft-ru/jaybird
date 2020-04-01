@@ -52,6 +52,10 @@ java {
 dependencies {
     implementation 'org.antlr:antlr4-runtime:4.7.2'
     nativeImplementation 'net.java.dev.jna:jna:5.5.0'
+    nativeImplementation 'net.java.dev.jna:jna-platform:5.5.0'
+    nativeImplementation 'org.apache.logging.log4j:log4j-1.2-api:2.12.1'
+    nativeImplementation 'org.apache.logging.log4j:log4j-api:2.12.1'
+    nativeImplementation 'org.apache.logging.log4j:log4j-core:2.12.1'
 
     compileOnly 'javax.servlet:javax.servlet-api:3.1.0'
 
@@ -82,6 +86,20 @@ sourceSets {
             srcDirs = ['src/resources']
         }
     }
+    cryptoapi {
+        java {
+            srcDirs = ['src/cryptoapi']
+        }
+        cryptoapi.compileClasspath += main.output + main.compileClasspath
+        cryptoapi.runtimeClasspath += main.output + main.runtimeClasspath
+    }
+    cryptoapi_sec {
+        java {
+            srcDirs = ['src/cryptoapi_sec']
+        }
+        cryptoapi_sec.compileClasspath += cryptoapi.output + main.output + main.compileClasspath
+        cryptoapi_sec.runtimeClasspath += cryptoapi.output + main.output + main.runtimeClasspath
+    }
     test {
         java {
             srcDirs = ['src/test', 'src/test_42', 'src/jna-test']
@@ -110,11 +128,43 @@ processResources {
 
 apply from: 'documentation.gradle'
 
+task cryptoapiJar(type: Jar) {
+    from sourceSets.cryptoapi.output
+    archiveBaseName = project.name + '-cryptoapi'
+}
+
+task cryptoapi_sourcesJar(type: Jar, dependsOn: classes) {
+    archiveClassifier = 'sources'
+    from sourceSets.cryptoapi.allSource
+    archiveBaseName = project.name + '-cryptoapi'
+}
+
+task cryptoapi_secJar(type: Jar) {
+    from sourceSets.cryptoapi_sec.output
+    from (sourceSets.cryptoapi.output) {
+        exclude('org/firebirdsql/cryptoapi/windows/advapi/**')
+    }
+    archiveBaseName = project.name + '-cryptoapi-security'
+}
+
+task cryptoapi_sec_sourcesJar(type: Jar, dependsOn: classes) {
+    archiveClassifier = 'sources'
+    from sourceSets.cryptoapi_sec.allSource
+    from (sourceSets.cryptoapi.allSource) {
+        exclude('org/firebirdsql/cryptoapi/windows/advapi/*.java')
+    }
+    archiveBaseName = project.name + '-cryptoapi-security'
+}
+
 task dist(type: Zip) {
     dependsOn assemble, buildAllDocs
     destinationDirectory = file("$buildDir/dist")
 
     from jar.outputs
+    from cryptoapiJar.outputs
+    from cryptoapi_secJar.outputs
+    from cryptoapi_sourcesJar.outputs
+    from cryptoapi_sec_sourcesJar.outputs
     from javadocJar.outputs
     from sourcesJar.outputs
     from buildReleaseNotes.outputs
@@ -147,6 +197,10 @@ jar {
                 'Automatic-Module-Name': 'org.firebirdsql.jaybird'
         )
     }
+}
+
+artifacts {
+    archives cryptoapiJar, cryptoapi_sourcesJar, cryptoapi_secJar, cryptoapi_sec_sourcesJar
 }
 
 javadoc {
