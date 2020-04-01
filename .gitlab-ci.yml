@@ -62,7 +62,7 @@ prepare:release:
     - tags
 
 .deploy_template: &deploy_template
-  image: openjdk:8-jdk-alpine
+  image: openjdk:11-jdk-buster
   tags:
     - docker
     - builder
