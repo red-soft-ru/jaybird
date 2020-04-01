@@ -116,7 +116,7 @@ build_and_test:liberica_jdk11:rdb3:
     TEST_JAVA_JVM: /usr/lib/jvm/bellsoft-java11-runtime.x86_64/bin/java
     JDK_VER: 11-runtime
     TEST_LIST: "**"
-    EXTRA_DEPENDENCIES: icu
+    EXTRA_DEPENDENCIES: java-11-openjdk icu
     REPORT_PREFIX: liberica_jdk11_
   image:
     name: registry.red-soft.biz:5000/docker-images/rdbtestenv/centos7:7.6.1810-cpro-4.0.9963-2
