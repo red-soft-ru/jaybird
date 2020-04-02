@@ -62,7 +62,9 @@ prepare:release:
     - tags
 
 .deploy_template: &deploy_template
-  image: openjdk:11-jdk-buster
+  image:
+    name: openjdk:11-jdk-buster
+    entrypoint: ["/bin/sh", "-c"]
   tags:
     - docker
     - builder
@@ -71,7 +73,7 @@ prepare:release:
     - export VERSION=`cat .ci/version`
     - export BRANCH=`cat .ci/branch`
     - export CONTEXT=`cat .ci/context`
-    - apk --update add maven
+    - apt update -y && apt install maven -y
 
 .build_and_test_template: &build_and_test_template
   tags:
