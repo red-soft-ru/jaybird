@@ -64,7 +64,7 @@ prepare:release:
 .deploy_template: &deploy_template
   image:
     name: openjdk:11-jdk-buster
-    entrypoint: ["/bin/sh", "-c"]
+    entrypoint: /bin/sh
   tags:
     - docker
     - builder
