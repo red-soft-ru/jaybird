@@ -107,6 +107,8 @@ sourceSets {
         resources {
             srcDirs = ['src/test_resources']
         }
+        test.compileClasspath += cryptoapi.output
+        test.runtimeClasspath += cryptoapi.output
     }
     tools {
         java {
