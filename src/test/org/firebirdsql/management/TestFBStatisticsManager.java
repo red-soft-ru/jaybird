@@ -164,7 +164,7 @@ public class TestFBStatisticsManager extends FBJUnit4TestBase {
                     statManager.getDatabaseTransactionInfo();
             int databaseMajorVersion = conn.getMetaData().getDatabaseMajorVersion();
             // The transaction values checked here might be implementation dependent
-            if (databaseMajorVersion == 3) {
+            if (databaseMajorVersion >= 3) {
                 assertEquals("oldest", 1, databaseTransactionInfo.getOldestTransaction());
                 assertEquals("oldest active", 2, databaseTransactionInfo.getOldestActiveTransaction());
                 assertEquals("oldest snapshot", 2, databaseTransactionInfo.getOldestSnapshotTransaction());
