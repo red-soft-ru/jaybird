@@ -26,6 +26,7 @@ import org.firebirdsql.gds.ng.fields.RowDescriptor;
 import org.firebirdsql.gds.ng.listeners.DatabaseListener;
 import org.firebirdsql.gds.ng.listeners.DatabaseListenerDispatcher;
 import org.firebirdsql.gds.ng.listeners.TransactionListener;
+import org.firebirdsql.jdbc.FirebirdConnectionProperties;
 import org.firebirdsql.logging.Logger;
 import org.firebirdsql.logging.LoggerFactory;
 
@@ -48,7 +49,7 @@ import static org.firebirdsql.gds.VaxEncoding.iscVaxInteger2;
  * @author <a href="mailto:mrotteveel@users.sourceforge.net">Mark Rotteveel</a>
  * @since 3.0
  */
-public abstract class AbstractFbDatabase<T extends AbstractConnection<IConnectionProperties, ? extends FbDatabase>>
+public abstract class AbstractFbDatabase<T extends AbstractConnection<FirebirdConnectionProperties, ? extends FbDatabase>>
         extends AbstractFbAttachment<T> implements FbDatabase, TransactionListener {
 
     private static final Logger log = LoggerFactory.getLogger(AbstractFbDatabase.class);
@@ -320,7 +321,7 @@ public abstract class AbstractFbDatabase<T extends AbstractConnection<IConnectio
     }
 
     @Override
-    public IConnectionProperties getConnectionProperties() {
+    public FirebirdConnectionProperties getConnectionProperties() {
         return connection.getAttachProperties().asImmutable();
     }
 

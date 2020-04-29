@@ -19,7 +19,7 @@
 package org.firebirdsql.gds.ng.wire;
 
 import org.firebirdsql.encodings.IEncodingFactory;
-import org.firebirdsql.gds.ng.IConnectionProperties;
+import org.firebirdsql.jdbc.FirebirdConnectionProperties;
 
 import java.sql.SQLException;
 
@@ -29,7 +29,7 @@ import java.sql.SQLException;
  * @author <a href="mailto:mrotteveel@users.sourceforge.net">Mark Rotteveel</a>
  * @since 3.0
  */
-public final class WireDatabaseConnection extends WireConnection<IConnectionProperties, FbWireDatabase> {
+public final class WireDatabaseConnection extends WireConnection<FirebirdConnectionProperties, FbWireDatabase> {
 
     /**
      * Creates a WireDatabaseConnection (without establishing a connection to the server) with the default
@@ -38,7 +38,7 @@ public final class WireDatabaseConnection extends WireConnection<IConnectionProp
      * @param connectionProperties
      *         Connection properties
      */
-    public WireDatabaseConnection(IConnectionProperties connectionProperties) throws SQLException {
+    public WireDatabaseConnection(FirebirdConnectionProperties connectionProperties) throws SQLException {
         super(connectionProperties);
     }
 
@@ -52,7 +52,7 @@ public final class WireDatabaseConnection extends WireConnection<IConnectionProp
      * @param protocols
      *         The collection of protocols to use for this connection.
      */
-    public WireDatabaseConnection(IConnectionProperties connectionProperties, IEncodingFactory encodingFactory,
+    public WireDatabaseConnection(FirebirdConnectionProperties connectionProperties, IEncodingFactory encodingFactory,
             ProtocolCollection protocols) throws SQLException {
         super(connectionProperties, encodingFactory, protocols);
     }
@@ -60,5 +60,10 @@ public final class WireDatabaseConnection extends WireConnection<IConnectionProp
     @Override
     protected FbWireDatabase createConnectionHandle(ProtocolDescriptor protocolDescriptor) {
         return protocolDescriptor.createDatabase(this);
+    }
+
+    @Override
+    public final String getAttachObjectName() {
+        return getAttachProperties().getDatabase();
     }
 }

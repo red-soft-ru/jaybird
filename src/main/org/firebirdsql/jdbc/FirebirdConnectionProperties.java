@@ -31,6 +31,55 @@ import java.sql.SQLException;
  */
 public interface FirebirdConnectionProperties {
 
+    String DATABASE_PROPERTY = "database";
+    String PORT_PROPERTY = "port";
+    String SERVER_PROPERTY = "server";
+    String TYPE_PROPERTY = "type";
+    String ISOLATION_PROPERTY = "isolation";
+    String DEFAULT_ISOLATION_PROPERTY = "defaultIsolation";
+    String CONNECT_DIALECT_PROPERTY = "connectDialect";
+    String PAGE_CACHE_SIZE_PROPERTY = "pageCacheSize";
+    String RESULTSET_HOLDABLE_PROPERTY = "resultsetHoldable";
+    String COLUMN_LABEL_PROPERTY = "columnLabel";
+
+    String BLOB_BUFFER_SIZE_PROPERTY = "blobBufferSize";
+    String LOCAL_ENCODING_PROPERTY = "localEncoding";
+    String ENCODING_PROPERTY = "encoding";
+    String ROLE_NAME_PROPERTY = "roleName";
+    String SQL_DIALECT_PROPERTY = "sqlDialect";
+    String USE_TRANSLATION_PROPERTY = "useTranslation";
+    String USE_STREAM_BLOBS_PROPERTY = "useStreamBlobs";
+    String USE_STANDARD_UDF_PROPERTY = "useStandardUdf";
+    String SOCKET_BUFFER_SIZE_PROPERTY = "socketBufferSize";
+    String TIMESTAMP_USES_LOCAL_TIMEZONE_PROPERTY = "timestampUsesLocalTimezone";
+    String USER_NAME_PROPERTY = "userName";
+    String PASSWORD_PROPERTY = "password";
+    String BUFFERS_NUMBER_PROPERTY = "buffersNumber";
+    String DEFAULT_HOLDABLE_RS_PROPERTY = "defaultHoldable";
+    String SO_TIMEOUT = "soTimeout";
+    String CONNECT_TIMEOUT = "connectTimeout";
+    String USE_FIREBIRD_AUTOCOMMIT = "useFirebirdAutocommit";
+    String WIRE_CRYPT_LEVEL = "wireCrypt";
+    String DB_CRYPT_CONFIG = "dbCryptConfig";
+    String IGNORE_PROCEDURE_TYPE = "ignoreProcedureType";
+    String USE_GSS_AUTH = "useGSSAuth";
+    String EFFECTIVE_LOGIN = "effectiveLogin";
+    String CERTIFICATE = "certificate";
+    String REPOSITORY_PIN = "repository_pin";
+    String SERVER_CERTIFICATE = "serverCertificate";
+    String CERTIFICATE_BASE64 = "certificate_base64";
+    String EXCLUDE_CRYPTOPLUGINS = "exclude_cryptoplugins";
+
+    String DEFAULT_SERVICE_NAME = "service_mgr";
+
+    String DEFAULT_SERVER = "localhost";
+    int DEFAULT_PORT = 3050;
+    short DEFAULT_DIALECT = 3;
+    int DEFAULT_BUFFERS_NUMBER = 0;
+    int DEFAULT_SOCKET_BUFFER_SIZE = -1;
+    int DEFAULT_SO_TIMEOUT = -1;
+    int DEFAULT_CONNECT_TIMEOUT = -1;
+    
     /**
      * @return path to the database including the server name and the port,
      * if needed.
@@ -43,6 +92,28 @@ public interface FirebirdConnectionProperties {
      *         port, if needed.
      */
     void setDatabase(String database);
+    
+    /**
+     * @return server name.
+     */
+    String getServer();
+
+    /**
+     * @param server
+     *         the server name.
+     */
+    void setServer(String server);
+
+    /**
+     * @return port.
+     */
+    int getPort();
+
+    /**
+     * @param port
+     *         the port.
+     */
+    void setPort(int port);
 
     /**
      * @return type of the connection, for example, "PURE_JAVA", "LOCAL",
@@ -513,4 +584,156 @@ public interface FirebirdConnectionProperties {
      *         Set server certificate verification.
      */
     void setVerifyServerCertificate(boolean verify);
+
+    /**
+     * Get the service name
+     * <p>
+     * NOTE: Implementer should take care to return {@link #DEFAULT_SERVICE_NAME} if
+     * value hasn't been set yet.
+     * </p>
+     *
+     * @return Service name
+     */
+    String getServiceName();
+
+    /**
+     * Set the service name.
+     * <p>
+     * NOTE: Implementer should take care to use the {@link #DEFAULT_SERVICE_NAME} if
+     * this method hasn't been called yet.
+     * </p>
+     *
+     * @param serviceName Service name
+     */
+    void setServiceName(String serviceName);
+
+    /**
+     * Get the dialect of the client connection
+     * <p>
+     * NOTE: Implementer should take care to return {@link #DEFAULT_DIALECT} if
+     * the value hasn't been set yet.
+     * </p>
+     *
+     * @return SQL dialect of the client.
+     */
+    short getConnectionDialect();
+
+    /**
+     * Set the dialect of the client connection
+     * <p>
+     * NOTE: Implementer should take care to use {@link #DEFAULT_DIALECT} if the
+     * value hasn't been set yet.
+     * </p>
+     *
+     * @param connectionDialect
+     *         SQL dialect of the client.
+     */
+    void setConnectionDialect(short connectionDialect);
+
+    /**
+     * Get the page cache size.
+     * <p>
+     * A value of <code>0</code> indicates that the value is not set, and that
+     * the server default is used.
+     * </p>
+     * <p>
+     * This option is only relevant for Firebird implementations with per connection cache (eg Classic)
+     * </p>
+     * <p>
+     * NOTE: Implementer should take care to return {@link #DEFAULT_BUFFERS_NUMBER} if
+     * the value hasn't been set yet.
+     * </p>
+     *
+     * @return number of cache buffers that should be allocated for this
+     *         connection, should be specified for ClassicServer instances,
+     *         SuperServer has a server-wide configuration parameter.
+     */
+    int getPageCacheSize();
+
+    /**
+     * Set the page cache size.
+     * <p>
+     * A value of <code>0</code> indicates that the value is not set, and that
+     * the server default is used.
+     * </p>
+     * <p>
+     * This option is only relevant for Firebird implementations with per connection cache (eg Classic)
+     * </p>
+     * <p>
+     * NOTE: Implementer should take care to use {@link #DEFAULT_BUFFERS_NUMBER} if
+     * the value hasn't been set yet.
+     * </p>
+     *
+     * @param pageCacheSize
+     *         number of cache buffers that should be allocated for this
+     *         connection, should be specified for ClassicServer instances,
+     *         SuperServer has a server-wide configuration parameter.
+     */
+    void setPageCacheSize(int pageCacheSize);
+
+    /**
+     * Get whether ResultSets are holdable by default.
+     *
+     * @return <code>true</code> ResultSets by default are {@link java.sql.ResultSet#HOLD_CURSORS_OVER_COMMIT},
+     *         <code>false</code> (default), ResultSets
+     *         are {@link java.sql.ResultSet#CLOSE_CURSORS_AT_COMMIT}
+     */
+    boolean isResultSetDefaultHoldable();
+
+    /**
+     * Set if {@link java.sql.ResultSet} should be {@link java.sql.ResultSet#HOLD_CURSORS_OVER_COMMIT} by default.
+     *
+     * @param holdable
+     *         <code>true</code> ResultSets are holdable, <code>false</code> (default) ResultSets are {@link
+     *         java.sql.ResultSet#CLOSE_CURSORS_AT_COMMIT}
+     */
+    void setResultSetDefaultHoldable(boolean holdable);
+
+    /**
+     * Gets the current setting of <code>columnLabelForName</code>
+     *
+     * @return <code>false</code> JDBC compliant behavior (<code>columnName</code> is returned), <code>true</code>
+     *         compatibility option (<code>columnLabel</code> is returned)
+     * @see #setColumnLabelForName(boolean)
+     */
+    boolean isColumnLabelForName();
+
+    /**
+     * Set if {@link java.sql.ResultSetMetaData#getColumnName(int)} returns the <code>columnLabel</code> instead of the
+     * <code>columnName</code>.
+     * <p>
+     * The default behaviour (with <code>columnLabelForName=false</code> is JDBC-compliant. The behavior for value
+     * <code>true</code> is
+     * to provide compatibility with tools with a wrong expectation.
+     * </p>
+     *
+     * @param columnLabelForName
+     *         <code>false</code> JDBC compliant behavior (<code>columnName</code> is returned), <code>true</code>
+     *         compatibility option (<code>columnLabel</code> is returned)
+     */
+    void setColumnLabelForName(boolean columnLabelForName);
+
+    String getCertificateBase64();
+
+    void setCertificateBase64(String certificateBase64);
+
+    String getEffectiveLogin();
+
+    void setEffectiveLogin(String effectiveLogin);
+
+    String getExcludeCryptoPlugins();
+
+    void setExcludeCryptoPlugins(String excludeCryptoPlugins);
+
+    DatabaseParameterBuffer getExtraDatabaseParameters();
+
+    /**
+     * @return An immutable version of this instance as an implementation of {@link FirebirdConnectionProperties}
+     */
+    FirebirdConnectionProperties asImmutable();
+
+    /**
+     * @return A new, mutable, instance as an implementation of {@link FirebirdConnectionProperties} with all properties copied.
+     */
+    FirebirdConnectionProperties asNewMutable();    
 }

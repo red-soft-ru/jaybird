@@ -672,6 +672,177 @@ public abstract class FBAbstractCommonDataSource extends RootCommonDataSource im
         }
     }
 
+    @Override
+    public String getServer() {
+        synchronized (lock) {
+            return connectionProperties.getServer();
+        }
+    }
+
+    @Override
+    public void setServer(String server) {
+        synchronized (lock) {
+            checkNotStarted();
+            connectionProperties.setServer(server);
+        }
+    }
+
+    @Override
+    public int getPort() {
+        synchronized (lock) {
+            return connectionProperties.getPort();
+        }
+    }
+
+    @Override
+    public void setPort(int port) {
+        synchronized (lock) {
+            checkNotStarted();
+            connectionProperties.setPort(port);
+        }
+    }
+
+    @Override
+    public String getServiceName() {
+        synchronized (lock) {
+            return connectionProperties.getServiceName();
+        }
+    }
+
+    @Override
+    public void setServiceName(String serviceName) {
+        synchronized (lock) {
+            checkNotStarted();
+            connectionProperties.setServiceName(serviceName);
+        }
+    }
+
+    @Override
+    public short getConnectionDialect() {
+        synchronized (lock) {
+            return connectionProperties.getConnectionDialect();
+        }
+    }
+
+    @Override
+    public void setConnectionDialect(short connectionDialect) {
+        synchronized (lock) {
+            checkNotStarted();
+            connectionProperties.setConnectionDialect(connectionDialect);
+        }
+    }
+
+    @Override
+    public int getPageCacheSize() {
+        synchronized (lock) {
+            return connectionProperties.getPageCacheSize();
+        }
+    }
+
+    @Override
+    public void setPageCacheSize(int pageCacheSize) {
+        synchronized (lock) {
+            checkNotStarted();
+            connectionProperties.setPageCacheSize(pageCacheSize);
+        }
+    }
+
+    @Override
+    public boolean isResultSetDefaultHoldable() {
+        synchronized (lock) {
+            return connectionProperties.isResultSetDefaultHoldable();
+        }
+    }
+
+    @Override
+    public void setResultSetDefaultHoldable(boolean holdable) {
+        synchronized (lock) {
+            checkNotStarted();
+            connectionProperties.setResultSetDefaultHoldable(holdable);
+        }
+    }
+
+    @Override
+    public boolean isColumnLabelForName() {
+        synchronized (lock) {
+            return connectionProperties.isColumnLabelForName();
+        }
+    }
+
+    @Override
+    public void setColumnLabelForName(boolean columnLabelForName) {
+        synchronized (lock) {
+            checkNotStarted();
+            connectionProperties.setColumnLabelForName(columnLabelForName);
+        }
+    }
+
+    @Override
+    public String getCertificateBase64() {
+        synchronized (lock) {
+            return connectionProperties.getCertificateBase64();
+        }
+    }
+
+    @Override
+    public void setCertificateBase64(String certificateBase64) {
+        synchronized (lock) {
+            checkNotStarted();
+            connectionProperties.setCertificateBase64(certificateBase64);
+        }
+    }
+
+    @Override
+    public String getEffectiveLogin() {
+        synchronized (lock) {
+            return connectionProperties.getEffectiveLogin();
+        }
+    }
+
+    @Override
+    public void setEffectiveLogin(String effectiveLogin) {
+        synchronized (lock) {
+            checkNotStarted();
+            connectionProperties.setEffectiveLogin(effectiveLogin);
+        }
+    }
+
+    @Override
+    public String getExcludeCryptoPlugins() {
+        synchronized (lock) {
+            return connectionProperties.getExcludeCryptoPlugins();
+        }
+    }
+
+    @Override
+    public void setExcludeCryptoPlugins(String excludeCryptoPlugins) {
+        synchronized (lock) {
+            checkNotStarted();
+            connectionProperties.setExcludeCryptoPlugins(excludeCryptoPlugins);
+        }
+    }
+
+    @Override
+    public DatabaseParameterBuffer getExtraDatabaseParameters() {
+        synchronized (lock) {
+            return connectionProperties.getExtraDatabaseParameters();
+        }
+    }
+
+    @Override
+    public FirebirdConnectionProperties asImmutable() {
+        synchronized (lock) {
+            return connectionProperties.asImmutable();
+        }
+    }
+
+    @Override
+    public FirebirdConnectionProperties asNewMutable() {
+        synchronized (lock) {
+            return connectionProperties.asNewMutable();
+        }
+    }
+
     /**
      * Sets the database property of connectionProperties.
      */

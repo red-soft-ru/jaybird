@@ -28,6 +28,7 @@ import org.firebirdsql.gds.impl.TransactionParameterBufferImpl;
 import org.firebirdsql.gds.ng.fields.FieldValue;
 import org.firebirdsql.gds.ng.fields.RowValue;
 import org.firebirdsql.gds.ng.wire.SimpleStatementListener;
+import org.firebirdsql.jdbc.FBConnectionProperties;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.rules.ExpectedException;
@@ -357,7 +358,7 @@ public abstract class BaseTestBlob extends FBJUnit4TestBase {
         }
     }
 
-    protected abstract FbDatabase createFbDatabase(FbConnectionProperties connectionInfo) throws SQLException;
+    protected abstract FbDatabase createFbDatabase(FBConnectionProperties connectionInfo) throws SQLException;
 
     /**
      * Creates a database connection to the test database.
@@ -365,12 +366,12 @@ public abstract class BaseTestBlob extends FBJUnit4TestBase {
      * @throws SQLException
      */
     protected FbDatabase createDatabaseConnection() throws SQLException {
-        final FbConnectionProperties connectionInfo = new FbConnectionProperties();
-        connectionInfo.setServerName(FBTestProperties.DB_SERVER_URL);
-        connectionInfo.setPortNumber(FBTestProperties.DB_SERVER_PORT);
-        connectionInfo.setUser(DB_USER);
+        final FBConnectionProperties connectionInfo = new FBConnectionProperties();
+        connectionInfo.setServer(FBTestProperties.DB_SERVER_URL);
+        connectionInfo.setPort(FBTestProperties.DB_SERVER_PORT);
+        connectionInfo.setUserName(DB_USER);
         connectionInfo.setPassword(DB_PASSWORD);
-        connectionInfo.setDatabaseName(FBTestProperties.getDatabasePath());
+        connectionInfo.setDatabase(FBTestProperties.getDatabasePath());
         connectionInfo.setEncoding("NONE");
         return createFbDatabase(connectionInfo);
     }

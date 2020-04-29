@@ -21,6 +21,7 @@ package org.firebirdsql.gds.ng;
 import org.firebirdsql.encodings.Encoding;
 import org.firebirdsql.encodings.EncodingDefinition;
 import org.firebirdsql.encodings.IEncodingFactory;
+import org.firebirdsql.jdbc.FirebirdConnectionProperties;
 import org.firebirdsql.jdbc.SQLStateConstants;
 
 import java.sql.SQLException;
@@ -34,9 +35,9 @@ import java.sql.SQLNonTransientConnectionException;
  * @author <a href="mailto:mrotteveel@users.sourceforge.net">Mark Rotteveel</a>
  * @since 3.0
  */
-public abstract class AbstractConnection<T extends IAttachProperties<T>, C extends FbAttachment> {
+public abstract class AbstractConnection<T extends FirebirdConnectionProperties, C extends FbAttachment> {
 
-    protected final T attachProperties;
+    protected final FirebirdConnectionProperties attachProperties;
     private final EncodingDefinition encodingDefinition;
     private final IEncodingFactory encodingFactory;
 
@@ -72,21 +73,19 @@ public abstract class AbstractConnection<T extends IAttachProperties<T>, C exten
     public abstract C identify() throws SQLException;
 
     public final String getServerName() {
-        return attachProperties.getServerName();
+        return attachProperties.getServer();
     }
 
     public final int getPortNumber() {
-        return attachProperties.getPortNumber();
+        return attachProperties.getPort();
     }
 
-    public final String getAttachObjectName() {
-        return attachProperties.getAttachObjectName();
-    }
+    public abstract String getAttachObjectName();
 
     /**
      * @return An immutable copy of the current attach properties.
      */
-    public final T getAttachProperties() {
+    public final FirebirdConnectionProperties getAttachProperties() {
         return attachProperties.asImmutable();
     }
 

@@ -30,6 +30,8 @@ import org.firebirdsql.gds.impl.GDSFactory;
 import org.firebirdsql.gds.impl.GDSType;
 import org.firebirdsql.gds.ng.*;
 import org.firebirdsql.gds.ng.listeners.DefaultDatabaseListener;
+import org.firebirdsql.jdbc.FBConnectionProperties;
+import org.firebirdsql.jdbc.FirebirdConnectionProperties;
 import org.firebirdsql.jdbc.FBSQLException;
 import org.firebirdsql.jdbc.FirebirdConnection;
 import org.firebirdsql.logging.Logger;
@@ -56,7 +58,7 @@ public class FBEventManager implements EventManager {
 
     private final GDSType gdsType;
     private FbDatabase fbDatabase;
-    private final IConnectionProperties connectionProperties;
+    private final FirebirdConnectionProperties connectionProperties;
     private final EventManagerBehaviour eventManagerBehaviour;
     private volatile boolean connected = false;
     private final Map<String, Set<EventListener>> listenerMap = Collections.synchronizedMap(new HashMap<String, Set<EventListener>>());
@@ -73,7 +75,7 @@ public class FBEventManager implements EventManager {
 
     public FBEventManager(GDSType gdsType) {
         this.gdsType = gdsType;
-        connectionProperties = new FbConnectionProperties();
+        connectionProperties = new FBConnectionProperties();
         eventManagerBehaviour = new DefaultEventManagerBehaviour();
     }
 
@@ -200,12 +202,12 @@ public class FBEventManager implements EventManager {
 
     @Override
     public void setUser(String user) {
-        connectionProperties.setUser(user);
+        connectionProperties.setUserName(user);
     }
 
     @Override
     public String getUser() {
-        return connectionProperties.getUser();
+        return connectionProperties.getUserName();
     }
 
     @Override
@@ -220,42 +222,42 @@ public class FBEventManager implements EventManager {
 
     @Override
     public void setDatabase(String database) {
-        connectionProperties.setDatabaseName(database);
+        connectionProperties.setDatabase(database);
     }
 
     @Override
     public String getDatabase() {
-        return connectionProperties.getDatabaseName();
+        return connectionProperties.getDatabase();
     }
 
     @Override
     public String getHost() {
-        return connectionProperties.getServerName();
+        return connectionProperties.getServer();
     }
 
     @Override
     public void setHost(String host) {
-        connectionProperties.setServerName(host);
+        connectionProperties.setServer(host);
     }
 
     @Override
     public int getPort() {
-        return connectionProperties.getPortNumber();
+        return connectionProperties.getPort();
     }
 
     @Override
     public void setPort(int port) {
-        connectionProperties.setPortNumber(port);
+        connectionProperties.setPort(port);
     }
 
     @Override
     public WireCrypt getWireCrypt() {
-        return connectionProperties.getWireCrypt();
+        return WireCrypt.fromString(connectionProperties.getWireCrypt());
     }
 
     @Override
     public void setWireCrypt(WireCrypt wireCrypt) {
-        connectionProperties.setWireCrypt(wireCrypt);
+        connectionProperties.setWireCrypt(wireCrypt.name());
     }
 
     @Override

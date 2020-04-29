@@ -19,6 +19,7 @@
 package org.firebirdsql.gds.ng.wire;
 
 import org.firebirdsql.gds.ng.*;
+import org.firebirdsql.jdbc.FirebirdConnectionProperties;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -34,13 +35,13 @@ public final class FbWireDatabaseFactory implements FbDatabaseFactory {
     private static final FbWireDatabaseFactory INSTANCE = new FbWireDatabaseFactory();
 
     @Override
-    public FbWireDatabase connect(IConnectionProperties connectionProperties) throws SQLException {
+    public FbWireDatabase connect(FirebirdConnectionProperties connectionProperties) throws SQLException {
         final WireDatabaseConnection connection = new WireDatabaseConnection(connectionProperties);
         return performConnect(connection);
     }
 
     @Override
-    public FbService serviceConnect(IServiceProperties serviceProperties) throws SQLException {
+    public FbService serviceConnect(FirebirdConnectionProperties serviceProperties) throws SQLException {
         final WireServiceConnection connection = new WireServiceConnection(serviceProperties);
         return performConnect(connection);
     }

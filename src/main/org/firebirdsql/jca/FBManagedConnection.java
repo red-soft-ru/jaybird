@@ -127,18 +127,18 @@ public class FBManagedConnection implements ManagedConnection, XAResource, Excep
                 dpb.addArgument(DatabaseParameterBuffer.CONNECT_TIMEOUT, DriverManager.getLoginTimeout());
             }
 
-            final FbConnectionProperties connectionProperties = new FbConnectionProperties();
+            final FBConnectionProperties connectionProperties = new FBConnectionProperties();
             connectionProperties.fromDpb(dpb);
             // TODO Move this logic to the GDSType or database factory?
             final String gdsTypeName = mcf.getGDSType().toString();
             if (!(EmbeddedGDSFactoryPlugin.EMBEDDED_TYPE_NAME.equals(gdsTypeName)
                     || LocalGDSFactoryPlugin.LOCAL_TYPE_NAME.equals(gdsTypeName))) {
                 final DbAttachInfo dbAttachInfo = DbAttachInfo.parseConnectString(mcf.getDatabase());
-                connectionProperties.setServerName(dbAttachInfo.getServer());
-                connectionProperties.setPortNumber(dbAttachInfo.getPort());
-                connectionProperties.setDatabaseName(dbAttachInfo.getFileName());
+                connectionProperties.setServer(dbAttachInfo.getServer());
+                connectionProperties.setPort(dbAttachInfo.getPort());
+                connectionProperties.setDatabase(dbAttachInfo.getFileName());
             } else {
-                connectionProperties.setDatabaseName(mcf.getDatabase());
+                connectionProperties.setDatabase(mcf.getDatabase());
             }
 
             if (dpb.hasArgument(DatabaseParameterBuffer.GSS_AUTH)) {

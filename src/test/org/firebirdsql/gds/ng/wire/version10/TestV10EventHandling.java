@@ -31,6 +31,7 @@ import org.firebirdsql.gds.impl.wire.XdrOutputStream;
 import org.firebirdsql.gds.ng.*;
 import org.firebirdsql.gds.ng.fields.RowValue;
 import org.firebirdsql.gds.ng.wire.*;
+import org.firebirdsql.jdbc.FirebirdConnectionProperties;
 import org.junit.*;
 import org.junit.rules.ExpectedException;
 
@@ -86,7 +87,7 @@ public class TestV10EventHandling extends FBJUnit4TestBase {
         this.commonConnectionInfo = commonConnectionInfo;
     }
 
-    protected final IConnectionProperties getConnectionInfo() {
+    protected final FirebirdConnectionProperties getConnectionInfo() {
         return commonConnectionInfo.getDatabaseConnectionInfo();
     }
 

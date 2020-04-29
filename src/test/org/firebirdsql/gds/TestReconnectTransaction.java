@@ -26,6 +26,7 @@ import org.firebirdsql.gds.ng.fields.RowValue;
 import org.firebirdsql.gds.ng.listeners.DefaultStatementListener;
 import org.firebirdsql.gds.ng.listeners.StatementListener;
 import org.firebirdsql.jca.FBTpb;
+import org.firebirdsql.jdbc.FBConnectionProperties;
 import org.firebirdsql.jdbc.FBTpbMapper;
 import org.firebirdsql.jdbc.field.FBField;
 import org.firebirdsql.jdbc.field.FieldDataProvider;
@@ -84,12 +85,12 @@ public class TestReconnectTransaction extends FBJUnit4TestBase {
 
     @Test
     public void testReconnectTransaction() throws Exception {
-        FbConnectionProperties connectionInfo = new FbConnectionProperties();
-        connectionInfo.setServerName(FBTestProperties.DB_SERVER_URL);
-        connectionInfo.setPortNumber(FBTestProperties.DB_SERVER_PORT);
-        connectionInfo.setUser(DB_USER);
+        FBConnectionProperties connectionInfo = new FBConnectionProperties();
+        connectionInfo.setServer(FBTestProperties.DB_SERVER_URL);
+        connectionInfo.setPort(FBTestProperties.DB_SERVER_PORT);
+        connectionInfo.setUserName(DB_USER);
         connectionInfo.setPassword(DB_PASSWORD);
-        connectionInfo.setDatabaseName(FBTestProperties.getDatabasePath());
+        connectionInfo.setDatabase(FBTestProperties.getDatabasePath());
         connectionInfo.setEncoding("NONE");
 
         FbDatabaseFactory databaseFactory = FBTestProperties.getFbDatabaseFactory();

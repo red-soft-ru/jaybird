@@ -25,11 +25,11 @@ import org.firebirdsql.gds.ServiceParameterBuffer;
 import org.firebirdsql.gds.ServiceRequestBuffer;
 import org.firebirdsql.gds.impl.GDSServerVersion;
 import org.firebirdsql.gds.ng.FbService;
-import org.firebirdsql.gds.ng.IServiceProperties;
 import org.firebirdsql.gds.ng.wire.AbstractFbWireService;
 import org.firebirdsql.gds.ng.wire.FbWireService;
 import org.firebirdsql.gds.ng.wire.ProtocolCollection;
 import org.firebirdsql.gds.ng.wire.WireServiceConnection;
+import org.firebirdsql.jdbc.FirebirdConnectionProperties;
 import org.firebirdsql.management.FBManager;
 import org.firebirdsql.management.FBStatisticsManager;
 import org.junit.ClassRule;
@@ -74,7 +74,7 @@ public class TestV10Service {
         this.commonConnectionInfo = commonConnectionInfo;
     }
 
-    protected final IServiceProperties getConnectionInfo() {
+    protected final FirebirdConnectionProperties getConnectionInfo() {
         return commonConnectionInfo.getServiceConnectionInfo();
     }
 
