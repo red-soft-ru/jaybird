@@ -116,7 +116,7 @@ build_and_test:jdk11:rdb3:
     JAVA_HOME: /usr/lib/jvm/jre-1.8.0
     RDB_VERSION: $RDB3_VERSION
     SKIP_JAVA7_TEST: "true"
-    TEST_JAVA8_JVM: /usr/lib/jvm/java-11-openjdk-11.0.6.10-1.el7_7.x86_64/bin/java
+    TEST_JAVA8_JVM: /usr/lib/jvm/java-11-openjdk-11.0.6.10-3.el7.x86_64/bin/java
     TEST_LIST: "**"
     EXTRA_DEPENDENCIES: icu java-11-openjdk
     REPORT_PREFIX: jdk11_
