@@ -83,6 +83,7 @@ prepare:release:
     - /opt/cprocsp/sbin/amd64/cpconfig -license -set $LICENSE_CRYPTOPRO4
     - ./ci/configure_kerberos.sh
     - export VERSION=`cat .ci/version`
+    - export JAVA11=`update-alternatives --display jre_11_openjdk | sed -n '2p;3q' | awk -F\" '{split($1, v, " ");printf("%s", v[5])}'`
   script:
     - ./ci/test.sh
 
@@ -112,8 +113,6 @@ build_and_test:jdk18:rdb3:
 
 build_and_test:jdk11:rdb3:
   <<: *build_and_test_template
-  before_script:
-    - export JAVA11=`update-alternatives --display jre_11_openjdk | sed -n '2p;3q' | awk -F\" '{split($1, v, " ");printf("%s", v[5])}'`
   variables:
     JAVA_HOME: /usr/lib/jvm/jre-1.8.0
     RDB_VERSION: $RDB3_VERSION
