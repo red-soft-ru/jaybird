@@ -64,8 +64,6 @@ else
 	mkdir -p "$TEST_DIR"
 fi
 
-RDB_URL=http://artifactory.red-soft.biz/list/red-database/red-database/linux-${ARCH}/${RDB_VERSION}/linux-${ARCH}-${RDB_VERSION}.bin
-
 echo "Download fbt"
 (git clone --depth 1 http://git.red-soft.biz/red-database/fbt-repository.git) || die "Unable to checkout tests" 
 
@@ -106,6 +104,8 @@ if [[ "$RDB_MAJOR_VERSION" == "2" ]]; then
   ARCHITECTURE=super
 elif [[ "$RDB_MAJOR_VERSION" == "3" ]]; then
   RDB_URL=http://builds.red-soft.biz/release_hub/rdb30/${RDB_VERSION}/download/red-database:linux-${ARCH}-enterprise:${RDB_VERSION}:bin
+elif [[ "$RDB_MAJOR_VERSION" == "4" ]]; then
+  RDB_URL=http://builds.red-soft.biz/release_hub/rdb40/${RDB_VERSION}/download/red-database:linux-${ARCH}-enterprise:${RDB_VERSION}:bin
 fi
 
 if [[ "$RDB_MAJOR_VERSION" == "FB3.0.4" ]]; then
