@@ -16,7 +16,7 @@ variables:
   MAVEN_OPTS: "-Dmaven.repo.local=.m2/repository"
   RDB2_VERSION: "2.6.0.13508"
   RDB3_VERSION: "3.0.5.116"
-  RDB4_VERSION: "4.0.0.1962"
+  RDB4_VERSION: "4.0.0.1961"
   http_proxy: http://git.red-soft.biz:3128
   https_proxy: http://git.red-soft.biz:3128
 
@@ -83,6 +83,7 @@ prepare:release:
     - /opt/cprocsp/sbin/amd64/cpconfig -license -set $LICENSE_CRYPTOPRO4
     - ./ci/configure_kerberos.sh
     - export VERSION=`cat .ci/version`
+    - export JAVA11=`update-alternatives --display jre_11_openjdk | sed -n '2p;3q' | awk -F\" '{split($1, v, " ");printf("%s", v[5])}'`
   script:
     - ./ci/test.sh
 
@@ -116,7 +117,7 @@ build_and_test:jdk11:rdb3:
     JAVA_HOME: /usr/lib/jvm/jre-1.8.0
     RDB_VERSION: $RDB3_VERSION
     SKIP_JAVA7_TEST: "true"
-    TEST_JAVA8_JVM: /usr/lib/jvm/java-11-openjdk-11.0.6.10-3.el7.x86_64/bin/java
+    TEST_JAVA8_JVM: $JAVA11/bin/java
     TEST_LIST: "**"
     EXTRA_DEPENDENCIES: icu java-11-openjdk
     REPORT_PREFIX: jdk11_
