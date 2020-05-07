@@ -69,35 +69,6 @@ public class FBSADataSource implements DataSource, Serializable, Referenceable, 
     public void setBlobBufferLength(Integer length) {
         mcf.setBlobBufferSize(length.intValue());
     }
-    
-    
-    
-    /**
-     * Get name of the database. 
-     * 
-     * @return database name, value is equal to the part of full JDBC URL without
-     * the <code>jdbc:firebirdsql:</code> part.
-     * 
-     * @deprecated use {@link #getDatabase} instead for the sake of naming
-     * compatibility.
-     */
-    public String getDatabaseName() {
-        return getDatabase();
-    }
-    
-    /**
-     * Set database name.
-     * 
-     * @param name connection URL without <code>"jdbc:firebirdsql:"</code>
-     * prefix (<code>"//localhost:3050/c:/database/employee.gdb"</code>) for
-     * example).
-     * 
-     * @deprecated use {@link #setDatabase(String)} instead for the sake of 
-     * naming compatibility.
-     */
-    public void setDatabaseName(String name) {
-        setDatabase(name);
-    }
 
     /**
      * Get name of the database. 
@@ -119,7 +90,6 @@ public class FBSADataSource implements DataSource, Serializable, Referenceable, 
     public void setDatabase(String name) {
         mcf.setDatabase(name);
     }
-    
 
     @Override
     public String getServer() {
