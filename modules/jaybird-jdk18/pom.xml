@@ -150,6 +150,7 @@
 								<source>../../src/main</source>
 								<source>../../src/jdbc_42</source>
 								<source>../../src/jna-client</source>
+								<source>../../src/nativeoo</source>
 								<source>../../src/openoffice</source>
 							</sources>
 						</configuration>
@@ -166,6 +167,7 @@
 								<source>../../src/test/</source>
 								<source>../../src/test_42/</source>
 								<source>../../src/jna-test/</source>
+								<source>../../src/nativeoo-test/</source>
 							</sources>
 						</configuration>
 					</execution>
@@ -229,6 +231,7 @@
 					<sourcepath>
 						../../src/main:
 						../../src/jna-client:
+						../../src/nativeoo:
 						../../src/jdbc_42:
 						../../src/openoffice
 					</sourcepath>
@@ -258,6 +261,7 @@
 				<configuration>
 					<includes>
 						<include>**/Test*.java</include>
+						<include>**/nativeoo/**</include>
 						<exclude>**/jni/Test*.java</exclude>
 						<exclude>**/TestAll.java</exclude>
 						<exclude>**/TestXABase*.java</exclude>
