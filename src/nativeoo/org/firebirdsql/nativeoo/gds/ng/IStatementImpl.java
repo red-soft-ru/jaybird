@@ -130,7 +130,8 @@ public class IStatementImpl extends AbstractFbStatement {
                 reset(false);
 
                 switchState(StatementState.EXECUTING);
-                updateStatementTimeout();
+                if (this.statement.vTable.version >= IStatementIntf.VERSION)
+                    updateStatementTimeout();
 
                 setMetaData(getParameterDescriptor(), parameters);
 
@@ -396,5 +397,6 @@ public class IStatementImpl extends AbstractFbStatement {
     private void updateStatementTimeout() throws SQLException {
         int allowedTimeout = (int) getAllowedTimeout();
         statement.setTimeout(getStatus(), allowedTimeout);
+        processStatus();
     }
 }
