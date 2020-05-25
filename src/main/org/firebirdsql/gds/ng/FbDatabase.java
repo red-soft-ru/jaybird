@@ -24,7 +24,11 @@
  */
 package org.firebirdsql.gds.ng;
 
-import org.firebirdsql.gds.*;
+import org.firebirdsql.gds.BatchParameterBuffer;
+import org.firebirdsql.gds.BlobParameterBuffer;
+import org.firebirdsql.gds.EventHandle;
+import org.firebirdsql.gds.EventHandler;
+import org.firebirdsql.gds.TransactionParameterBuffer;
 import org.firebirdsql.gds.ng.fields.RowDescriptor;
 import org.firebirdsql.gds.ng.listeners.DatabaseListener;
 import org.firebirdsql.gds.ng.listeners.ExceptionListenable;
