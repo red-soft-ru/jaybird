@@ -230,7 +230,7 @@ public class TestAuthSspi extends FBJUnit4TestBase {
             ResultSet resultSet = statement.executeQuery("select current_user from rdb$database");
             resultSet.next();
             System.out.println("Current user is " + resultSet.getString(1));
-            assertEquals("test@red-soft.ru", resultSet.getString(1).toLowerCase());
+            assertEquals("TEST@RED-SOFT.RU", resultSet.getString(1).toUpperCase());
             JdbcResourceHelper.closeQuietly(resultSet);
             JdbcResourceHelper.closeQuietly(statement);
         } catch (Exception e) {
