@@ -166,7 +166,7 @@ public class IStatementImpl extends AbstractFbStatement {
                          * have a result set that will be fetched, instead we have a singleton result if we have fields
                          */
                         statementListenerDispatcher.statementExecuted(this, false, true);
-                        queueRowData(toRowValue(getFieldDescriptor(), outMeta, outPtr));
+                        queueRowData(toRowValue(getRowDescriptor(), outMeta, outPtr));
                         setAllRowsFetched(true);
                     } else {
                         // A normal execute is never a singleton result (even if it only produces a single result)
@@ -282,7 +282,7 @@ public class IStatementImpl extends AbstractFbStatement {
                     int fetchStatus = cursor.fetchNext(getStatus(), ptr);
                     processStatus();
                     if (fetchStatus == IStatus.RESULT_OK) {
-                        queueRowData(toRowValue(getFieldDescriptor(), outMeta, ptr));
+                        queueRowData(toRowValue(getRowDescriptor(), outMeta, ptr));
                     } else if (fetchStatus == IStatus.RESULT_NO_DATA) {
                         setAllRowsFetched(true);
                         // Note: we are not explicitly 'closing' the cursor here
