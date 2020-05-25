@@ -9,7 +9,7 @@ import org.firebirdsql.common.JdbcResourceHelper;
 import org.firebirdsql.cryptoapi.AuthCryptoPluginImpl;
 import org.firebirdsql.gds.impl.GDSServerVersion;
 import org.firebirdsql.gds.impl.GDSType;
-import org.firebirdsql.jca.FBSADataSource;
+import org.firebirdsql.jaybird.xca.FBSADataSource;
 import org.firebirdsql.jdbc.FirebirdConnection;
 import org.junit.Test;
 

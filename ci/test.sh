@@ -60,8 +60,6 @@ else
 	mkdir -p "$TEST_DIR"
 fi
 
-RDB_URL=http://artifactory.red-soft.biz/list/red-database/red-database/linux-${ARCH}/${RDB_VERSION}/linux-${ARCH}-${RDB_VERSION}.bin
-
 echo "Download fbt"
 (git clone --depth 1 http://git.red-soft.biz/red-database/fbt-repository.git) || die "Unable to checkout tests" 
 
@@ -102,6 +100,8 @@ if [[ "$RDB_MAJOR_VERSION" == "2" ]]; then
   ARCHITECTURE=super
 elif [[ "$RDB_MAJOR_VERSION" == "3" ]]; then
   RDB_URL=http://builds.red-soft.biz/release_hub/rdb30/${RDB_VERSION}/download/red-database:linux-${ARCH}-enterprise:${RDB_VERSION}:bin
+elif [[ "$RDB_MAJOR_VERSION" == "4" ]]; then
+  RDB_URL=http://builds.red-soft.biz/release_hub/rdb40/${RDB_VERSION}/download/red-database:linux-${ARCH}-enterprise:${RDB_VERSION}:bin
 fi
 
 (curl -s "$RDB_URL" -o /tmp/installer.bin && chmod +x /tmp/installer.bin) || die "Unable to download RedDatabase"
@@ -199,6 +199,6 @@ done
 echo rdb_server | kinit rdb_server/localhost
 klist
 
-mvn $MAVEN_CLI_OPTS -f "${CI_PROJECT_DIR}"/pom.xml test -Pdeploy-internal -DreportNamePrefix=$REPORT_PREFIX -DreleaseHubBuildVersion=$VERSION  -DfailIfNoTests=false -Dtest.db.dir=$TEST_DIR -Dtest.java7.skip=$SKIP_JAVA7_TEST -Dtest.java8.jvm=$TEST_JAVA8_JVM -Dtest.java7.jvm=$TEST_JAVA7_JVM -Dtest=$TEST_LIST
+mvn $MAVEN_CLI_OPTS -f "${CI_PROJECT_DIR}"/pom.xml test -Pdeploy-internal -DreportNamePrefix=$REPORT_PREFIX -DreleaseHubBuildVersion=$VERSION  -DfailIfNoTests=false -Dtest.db.dir=$TEST_DIR -Dtest.java.jvm=$TEST_JAVA_JVM -Dtest=$TEST_LIST
 
 kdestroy

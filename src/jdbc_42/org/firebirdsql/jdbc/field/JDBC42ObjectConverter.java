@@ -19,6 +19,7 @@
 package org.firebirdsql.jdbc.field;
 
 import org.firebirdsql.gds.ng.DatatypeCoder;
+import org.firebirdsql.util.InternalApi;
 
 import java.sql.JDBCType;
 import java.sql.SQLException;
@@ -35,8 +36,8 @@ import static org.firebirdsql.jdbc.JavaTypeNameConstants.*;
  * @author <a href="mailto:mrotteveel@users.sourceforge.net">Mark Rotteveel</a>
  * @since 2.2
  */
-@SuppressWarnings("Since15")
-public class JDBC42ObjectConverter implements ObjectConverter {
+@InternalApi
+class JDBC42ObjectConverter implements ObjectConverter {
 
     @Override
     public boolean setObject(final FBField field, final Object object) throws SQLException {
