@@ -102,6 +102,8 @@ if [[ "$RDB_MAJOR_VERSION" == "2" ]]; then
   ARCHITECTURE=super
 elif [[ "$RDB_MAJOR_VERSION" == "3" ]]; then
   RDB_URL=http://builds.red-soft.biz/release_hub/rdb30/${RDB_VERSION}/download/red-database:linux-${ARCH}-enterprise:${RDB_VERSION}:bin
+elif [[ "$RDB_MAJOR_VERSION" == "4" ]]; then
+  RDB_URL=http://builds.red-soft.biz/release_hub/rdb40/${RDB_VERSION}/download/red-database:linux-${ARCH}-enterprise:${RDB_VERSION}:bin
 fi
 
 (curl -s "$RDB_URL" -o /tmp/installer.bin && chmod +x /tmp/installer.bin) || die "Unable to download RedDatabase"
