@@ -56,7 +56,6 @@
 
         <fileset dir="${build.test}">
           <include name="**/Test*.class"/>
-          <exclude name="**/jni/Test*.class"/>
           <exclude name="**/TestAll.class"/>
           <exclude name="**/TestXABase*.class"/>
           <exclude name="**/TestConst.class"/>
