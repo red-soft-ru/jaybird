@@ -177,6 +177,8 @@ fi
 echo "Start RDB..."
 
 if [[ "$RDB_MAJOR_VERSION" == "2" ]]; then
+  export FIREBIRD=/opt/RedDatabase
+  export PATH=$PATH:$FIREBIRD/lib
   sh -c "echo /opt/RedDatabase/lib >> /etc/ld.so.conf"
   ldconfig
 

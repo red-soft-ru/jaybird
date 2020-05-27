@@ -4,6 +4,7 @@
     <property name="test.db.dir" value="/tmp/db"/>
     <property name="test.db.lc_ctype" value="NONE"/>
     <property name="test.report.dir" value="report"/>
+    <property name="lib_dir" value="/opt/RedDatabase/lib"/>
 
     <mkdir dir="${test.report.dir}"/>
 
@@ -14,6 +15,7 @@
         <sysproperty key="test.db.dir" value="${test.db.dir}"/>
         <sysproperty key="test.db.lc_ctype" value="${test.db.lc_ctype}"/>
         <sysproperty key="test.report.dir" value="${test.report.dir}"/>
+        <sysproperty key="java.library.path" path="${java.library.path}:${lib_dir}"/>
 
         <classpath>
           <pathelement location="${bindir}/bin/jaybird-full-jdk${jdk}-${version}.jar" />
