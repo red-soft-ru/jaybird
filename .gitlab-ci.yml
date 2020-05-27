@@ -121,7 +121,7 @@ test:jdk18:rdb4:
     - ./ci/configure_kerberos.sh
     - export JAYBIRD_VERSION=`cat .ci/version`
     - export SRCDIR=`pwd`/jaybird-${JAYBIRD_VERSION}
-    - export RDB_VERSION=4.0.0.1713
+    - export RDB_VERSION=4.0.0.1994
     - archive_prefix=jaybird-${JAYBIRD_VERSION}
     - tar xf dist-src/${archive_prefix}.tar.gz
   script:
@@ -157,7 +157,7 @@ test:jdk18:rdb3:
     - ./ci/configure_kerberos.sh
     - export JAYBIRD_VERSION=`cat .ci/version`
     - export SRCDIR=`pwd`/jaybird-${JAYBIRD_VERSION}
-    - export RDB_VERSION=3.0.4.169
+    - export RDB_VERSION=3.0.5.116
     - archive_prefix=jaybird-${JAYBIRD_VERSION}
     - tar xf dist-src/${archive_prefix}.tar.gz
   script:
@@ -193,7 +193,7 @@ test:jdk18:rdb2_6:
     - ./ci/configure_kerberos.sh
     - export JAYBIRD_VERSION=`cat .ci/version`
     - export SRCDIR=`pwd`/jaybird-${JAYBIRD_VERSION}
-    - export RDB_VERSION=2.6.0.13500
+    - export RDB_VERSION=2.6.0.13508
     - archive_prefix=jaybird-${JAYBIRD_VERSION}
     - tar xf dist-src/${archive_prefix}.tar.gz
   script:
