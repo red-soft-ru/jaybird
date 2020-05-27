@@ -178,6 +178,22 @@ jthrowable FirebirdStatusVector::IssueExceptionsAndOrAddWarnings(JNIEnv* javaEnv
 					exceptionObjectCurrent = newException;
 					}
 				}
+			// check if lValue is not in end of status vector, and if it not, add to exception
+			else if ((type == 1 || type == 4) && index != 2)
+			{
+				jthrowable newException = (jthrowable)sClassBinding.CreateNewInstance(javaEnvironment, "(II)V", type, lValue);
+
+				if( exceptionObjectHead == NULL )
+				{
+					exceptionObjectHead = newException;
+					exceptionObjectCurrent = newException;
+				}
+				else
+				{
+					sSetNextMethod.CallVoid( javaEnvironment, exceptionObjectCurrent, newException );
+					exceptionObjectCurrent = newException;
+				}				
+			}
 				
 		}
 
