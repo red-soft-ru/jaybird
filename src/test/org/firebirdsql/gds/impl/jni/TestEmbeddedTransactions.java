@@ -84,4 +84,41 @@ public class TestEmbeddedTransactions extends FBJUnit4TestBase {
             c.close();
         }
     }
+
+    @Test
+    public void testLocalTransactionWithChangedLockTimeout() throws Exception {
+        FBManagedConnectionFactory mcf = initMcf();
+        DataSource ds = (DataSource) mcf.createConnectionFactory();
+        AbstractConnection c = (AbstractConnection) ds.getConnection();
+
+        try {
+
+            Statement s = c.createStatement();
+            LocalTransaction t = c.getLocalTransaction();
+            TransactionParameterBuffer tpb = c.createTransactionParameterBuffer();
+            tpb.addArgument(TransactionParameterBuffer.READ_COMMITTED);
+            tpb.addArgument(TransactionParameterBuffer.REC_VERSION);
+            tpb.addArgument(TransactionParameterBuffer.WRITE);
+            tpb.addArgument(TransactionParameterBuffer.WAIT);
+            tpb.addArgument(ISCConstants.isc_tpb_lock_timeout, 10);
+            c.setTransactionParameters(tpb);
+            t.begin();
+            s.execute("CREATE TABLE T1 ( C1 SMALLINT, C2 SMALLINT)");
+            t.commit();
+            tpb = c.createTransactionParameterBuffer();
+            tpb.addArgument(TransactionParameterBuffer.READ_COMMITTED);
+            tpb.addArgument(TransactionParameterBuffer.REC_VERSION);
+            tpb.addArgument(TransactionParameterBuffer.WRITE);
+            tpb.addArgument(TransactionParameterBuffer.WAIT);
+            tpb.addArgument(ISCConstants.isc_tpb_lock_timeout, 100);
+            t.begin();
+            s.execute("DROP TABLE T1");
+            s.close();
+            t.commit();
+            c.close();
+
+        } finally {
+            c.close();
+        }
+    }
 }
