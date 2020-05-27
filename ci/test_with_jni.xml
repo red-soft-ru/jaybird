@@ -30,7 +30,6 @@
           <formatter type="xml"/>
           <zipfileset src="${bindir}/test/jaybird-test-jdk${jdk}-${version}.jar">
             <include name="**/Test*.class"/>
-            <exclude name="**/jni/Test*.class"/>
             <exclude name="**/TestAll.class"/>
             <exclude name="**/TestXABase*.class"/>
             <exclude name="**/TestConst.class"/>

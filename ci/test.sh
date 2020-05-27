@@ -177,6 +177,9 @@ fi
 echo "Start RDB..."
 
 if [[ "$RDB_MAJOR_VERSION" == "2" ]]; then
+  sh -c "echo /opt/RedDatabase/lib >> /etc/ld.so.conf"
+  ldconfig
+
   /etc/init.d/firebird restart
 
   "$INSTALLDIR/bin/gsec" -user SYSDBA -password masterkey -add TEST@RED-SOFT.RU -pw q3rgu7Ah
@@ -200,6 +203,9 @@ done
 echo rdb_server | kinit rdb_server/localhost
 klist
 
-"${SRCDIR}"/bin/ant -Dtest.report.dir=$REPORTS_DIR -Dtest.db.dir=$TEST_DIR -Djdk=${JDK_VERSION} -Dversion=$JAYBIRD_VERSION -Dbindir=${BINDIR} -Dsrcdir=${SRCDIR} -f "${SOURCES}"/ci/test.xml
-
+if [[ "$RDB_MAJOR_VERSION" == "2" ]]; then
+  "${SRCDIR}"/bin/ant -Dtest.report.dir=$REPORTS_DIR -Dtest.db.dir=$TEST_DIR -Djdk=${JDK_VERSION} -Dversion=$JAYBIRD_VERSION -Dbindir=${BINDIR} -Dsrcdir=${SRCDIR} -f "${SOURCES}"/ci/test_with_jni.xml
+else
+  "${SRCDIR}"/bin/ant -Dtest.report.dir=$REPORTS_DIR -Dtest.db.dir=$TEST_DIR -Djdk=${JDK_VERSION} -Dversion=$JAYBIRD_VERSION -Dbindir=${BINDIR} -Dsrcdir=${SRCDIR} -f "${SOURCES}"/ci/test.xml
+fi
 kdestroy
