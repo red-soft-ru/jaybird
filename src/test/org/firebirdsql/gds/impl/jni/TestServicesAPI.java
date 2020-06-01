@@ -32,6 +32,8 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
+import static org.firebirdsql.common.FBTestProperties.DB_PATH;
+
 
 /**
  * Initial tests for Services API. Currently run only against embedded server.
@@ -58,10 +60,10 @@ public class TestServicesAPI extends TestCase
             fbManager.setPort(5066);
             fbManager.start();
 
-            mRelativeBackupPath = "db/" + "testES01344.fbk";
+            mRelativeBackupPath = DB_PATH + "./testES01344.fbk";
             mAbsoluteBackupPath = new File(".", mRelativeBackupPath).getAbsolutePath();
 
-            mRelativeDatabasePath = "db/" + "testES01344.fdb";
+            mRelativeDatabasePath = DB_PATH + "./testES01344.fdb";
             mAbsoluteDatabasePath = new File(".", mRelativeDatabasePath).getAbsolutePath();
 
             fbManager.createDatabase(mAbsoluteDatabasePath, "SYSDBA", "masterkey");

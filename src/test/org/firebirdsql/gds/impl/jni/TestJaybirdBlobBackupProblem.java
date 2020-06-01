@@ -41,6 +41,8 @@ import java.sql.*;
 
 import junit.framework.TestCase;
 
+import static org.firebirdsql.common.FBTestProperties.DB_PATH;
+
 /**
  * Demonstrates a problem backing up a database which has been created using streamed blobs(As far as my testing shows
  * it does not occur when segmented blobs are used ).
@@ -106,10 +108,10 @@ public class TestJaybirdBlobBackupProblem extends TestCase
             fbManager.setPort(5066);
             fbManager.start();
 
-            mRelativeBackupPath = "db/" + "testES01344.fbk";
+            mRelativeBackupPath = DB_PATH + "./testES01344.fbk";
             mAbsoluteBackupPath = new File("").getCanonicalPath() + "/"+mRelativeBackupPath;
 
-            mRelativeDatabasePath = "db/" + "testES01344.fdb";
+            mRelativeDatabasePath = DB_PATH + "./testES01344.fdb";
             mAbsoluteDatabasePath = new File("").getCanonicalPath() + "/"+mRelativeDatabasePath;
 
             fbManager.createDatabase(mAbsoluteDatabasePath, "SYSDBA", "masterkey");

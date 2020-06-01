@@ -11,6 +11,8 @@ import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
 
+import static org.firebirdsql.common.FBTestProperties.DB_PATH;
+
 /**
  * Created by IntelliJ IDEA.
  * User: Ryan Baldwin
@@ -40,7 +42,7 @@ public class TestSpecialEmbeddedServerUrls extends TestCase
             fbManager.setPort(5066);
             fbManager.start();
 
-            mRelativeDatabasePath = "db/" + "testES01874.fdb";
+            mRelativeDatabasePath = DB_PATH + "./testES01874.fdb";
             mAbsoluteDatabasePath = new File(".", mRelativeDatabasePath).getAbsolutePath();
 
             fbManager.createDatabase(mAbsoluteDatabasePath, "SYSDBA", "masterkey");
