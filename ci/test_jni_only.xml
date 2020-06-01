@@ -31,11 +31,7 @@
         <batchtest haltonfailure="false" todir="${test.report.dir}">
           <formatter type="xml"/>
           <zipfileset src="${bindir}/test/jaybird-test-jdk${jdk}-${version}.jar">
-            <include name="**/Test*.class"/>
-            <exclude name="**/TestAll.class"/>
-            <exclude name="**/TestXABase*.class"/>
-            <exclude name="**/TestConst.class"/>
-            <exclude name="**/*$$*.class"/>
+			<include name="**/jni/Test*.class"/>
           </zipfileset>
         </batchtest>
         <formatter type="plain" usefile="false" />

@@ -90,7 +90,7 @@ chown firebird:firebird -R $KEYS_DIR/firebird
 sudo -u firebird /opt/cprocsp/bin/$CPROCSP_ARCH/certmgr -inst -cont '\\.\HDIMAGE\REDSOFT'
 sudo -u firebird /opt/cprocsp/bin/$CPROCSP_ARCH/csptest -passwd -cont '\\.\HDIMAGE\REDSOFT' -change 12345678
 
-cp fbt-repository/files/cert/REDSOFT.cer ./testuser.cer
+cp fbt-repository/files/cert/REDSOFT.cer /tmp/testuser.cer
 
 sed -i '/\[Parameters\]/a warning_time_gen_2001=ll:9223372036854775807\nwarning_time_sign_2001=ll:9223372036854775807\n' /etc/opt/cprocsp/config64.ini
 
@@ -206,7 +206,25 @@ echo rdb_server | kinit rdb_server/localhost
 klist
 
 if [[ "$RDB_MAJOR_VERSION" == "2" ]]; then
-  "${SRCDIR}"/bin/ant -Dtest.report.dir=$REPORTS_DIR -Dtest.db.dir=$TEST_DIR -Djdk=${JDK_VERSION} -Dversion=$JAYBIRD_VERSION -Dbindir=${BINDIR} -Dsrcdir=${SRCDIR} -f "${SOURCES}"/ci/test_with_jni.xml
+  "${SRCDIR}"/bin/ant -Dtest.report.dir=$REPORTS_DIR -Dtest.db.dir=$TEST_DIR -Djdk=${JDK_VERSION} -Dversion=$JAYBIRD_VERSION -Dbindir=${BINDIR} -Dsrcdir=${SRCDIR} -f "${SOURCES}"/ci/test.xml
+  /etc/init.d/firebird stop
+  /opt/RedDatabase/uninstall --mode unattended
+  (curl -s "$RDB_URL" -o /tmp/installer.bin && chmod +x /tmp/installer.bin) || die "Unable to download RedDatabase"
+  /tmp/installer.bin --DBAPasswd masterkey --mode unattended --architecture classic || die "Unable to install RedDatabase"
+  
+  test -f /etc/init.d/xinetd && /etc/init.d/xinetd start || (sudo cp /opt/RedDatabase/misc/firebird.xinetd /etc/xinetd.d/firebird && xinetd -f /etc/xinetd.conf)
+  
+  echo "Waiting until port 3050 opened..."
+  try=10
+  while ! $NC localhost 3050 </dev/null; do
+      sleep 5
+      try=$((try-1))
+      if [ $try = 0 ]; then
+          die "Unable to connect to RDB..."
+      fi
+  done  
+  
+  "${SRCDIR}"/bin/ant -Dtest.report.dir=$REPORTS_DIR -Dtest.db.dir=$TEST_DIR -Djdk=${JDK_VERSION} -Dversion=$JAYBIRD_VERSION -Dbindir=${BINDIR} -Dsrcdir=${SRCDIR} -f "${SOURCES}"/ci/test_jni_only.xml
 else
   "${SRCDIR}"/bin/ant -Dtest.report.dir=$REPORTS_DIR -Dtest.db.dir=$TEST_DIR -Djdk=${JDK_VERSION} -Dversion=$JAYBIRD_VERSION -Dbindir=${BINDIR} -Dsrcdir=${SRCDIR} -f "${SOURCES}"/ci/test.xml
 fi
