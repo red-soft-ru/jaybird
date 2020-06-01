@@ -99,7 +99,7 @@ echo Will use build $RDB_VERSION for testing
 echo "Downloading RedDatabase $RDB_BUILD_ID"
 if [[ "$RDB_MAJOR_VERSION" == "2" ]]; then
   RDB_URL=http://builds.red-soft.biz/release_hub/rdb26/${RDB_VERSION}/download/red-database:linux-${ARCH}:${RDB_VERSION}:bin:installer
-  ARCHITECTURE=classic
+  ARCHITECTURE=super
 elif [[ "$RDB_MAJOR_VERSION" == "3" ]]; then
   RDB_URL=http://builds.red-soft.biz/release_hub/rdb30/${RDB_VERSION}/download/red-database:linux-${ARCH}-enterprise:${RDB_VERSION}:bin
 elif [[ "$RDB_MAJOR_VERSION" == "4" ]]; then
@@ -182,7 +182,7 @@ if [[ "$RDB_MAJOR_VERSION" == "2" ]]; then
   sh -c "echo /opt/RedDatabase/lib >> /etc/ld.so.conf"
   ldconfig
 
-  test -f /etc/init.d/xinetd && /etc/init.d/xinetd start || (sudo cp /opt/RedDatabase/misc/firebird.xinetd /etc/xinetd.d/firebird && xinetd -f /etc/xinetd.conf)
+  /etc/init.d/firebird restart
 
   "$INSTALLDIR/bin/gsec" -user SYSDBA -password masterkey -add TEST@RED-SOFT.RU -pw q3rgu7Ah
   "$INSTALLDIR/bin/gsec" -user SYSDBA -password masterkey -add trusted_user -pw trusted
