@@ -83,7 +83,7 @@ public class TestAuthCryptoPluginImpl extends TestCase {
     }
 
     public void testAuthCryptoPluginImpl_getUserKey() throws Exception {
-        String cert = loadCertFromFile("testuser.cer");
+        String cert = loadCertFromFile("/tmp/testuser.cer");
 
         AuthCryptoPlugin plugin = AuthCryptoPlugin.getPlugin();
         AuthPrivateKeyContext userKey = plugin.getUserKey(cert);
