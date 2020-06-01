@@ -60,11 +60,9 @@ public class TestServicesAPI extends TestCase
             fbManager.setPort(5066);
             fbManager.start();
 
-            mRelativeBackupPath = DB_PATH + "./testES01344.fbk";
-            mAbsoluteBackupPath = new File(".", mRelativeBackupPath).getAbsolutePath();
+            mAbsoluteBackupPath = DB_PATH + "/testES01344.fbk";
 
-            mRelativeDatabasePath = DB_PATH + "./testES01344.fdb";
-            mAbsoluteDatabasePath = new File(".", mRelativeDatabasePath).getAbsolutePath();
+            mAbsoluteDatabasePath = DB_PATH + "/testES01344.fdb";
 
             fbManager.createDatabase(mAbsoluteDatabasePath, "SYSDBA", "masterkey");
             }

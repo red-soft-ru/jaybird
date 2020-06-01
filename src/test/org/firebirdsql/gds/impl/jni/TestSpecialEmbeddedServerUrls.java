@@ -42,8 +42,7 @@ public class TestSpecialEmbeddedServerUrls extends TestCase
             fbManager.setPort(5066);
             fbManager.start();
 
-            mRelativeDatabasePath = DB_PATH + "./testES01874.fdb";
-            mAbsoluteDatabasePath = new File(".", mRelativeDatabasePath).getAbsolutePath();
+            mAbsoluteDatabasePath = DB_PATH + "/testES01874.fdb";
 
             fbManager.createDatabase(mAbsoluteDatabasePath, "SYSDBA", "masterkey");
             }

@@ -108,11 +108,9 @@ public class TestJaybirdBlobBackupProblem extends TestCase
             fbManager.setPort(5066);
             fbManager.start();
 
-            mRelativeBackupPath = DB_PATH + "./testES01344.fbk";
-            mAbsoluteBackupPath = new File("").getCanonicalPath() + "/"+mRelativeBackupPath;
+            mAbsoluteBackupPath = DB_PATH + "/testES01344.fbk";
 
-            mRelativeDatabasePath = DB_PATH + "./testES01344.fdb";
-            mAbsoluteDatabasePath = new File("").getCanonicalPath() + "/"+mRelativeDatabasePath;
+            mAbsoluteDatabasePath = DB_PATH + "/testES01344.fdb";
 
             fbManager.createDatabase(mAbsoluteDatabasePath, "SYSDBA", "masterkey");
             }
