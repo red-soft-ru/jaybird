@@ -8,7 +8,9 @@ import org.firebirdsql.jna.fbclient.*;
 
 /**
  * JNA Wrapper for library implementing <b>interface.h</b>.
- *
+ * <p>
+ * This file was modified manually, <strong>do not automatically regenerate!</strong>
+ * </p>
  * @since 4.0
  */
 public interface FbInterface extends FbClientLibrary
@@ -827,13 +829,13 @@ public interface FbInterface extends FbClientLibrary
 		public int setOffsets(IStatus status, IMessageMetadata metadata, IOffsetsCallback callback);
 		public IDecFloat16 getDecFloat16(IStatus status);
 		public IDecFloat34 getDecFloat34(IStatus status);
-		public ITransaction getTransactionByHandle(IStatus status, com.sun.jna.ptr.LongByReference hndlPtr);
-		public IStatement getStatementByHandle(IStatus status, com.sun.jna.ptr.LongByReference hndlPtr);
 		public void decodeTimeTz(IStatus status, ISC_TIME_TZ[] timeTz, com.sun.jna.Pointer hours, com.sun.jna.Pointer minutes, com.sun.jna.Pointer seconds, com.sun.jna.Pointer fractions, int timeZoneBufferLength, com.sun.jna.Pointer timeZoneBuffer);
 		public void decodeTimeStampTz(IStatus status, ISC_TIMESTAMP_TZ[] timeStampTz, com.sun.jna.Pointer year, com.sun.jna.Pointer month, com.sun.jna.Pointer day, com.sun.jna.Pointer hours, com.sun.jna.Pointer minutes, com.sun.jna.Pointer seconds, com.sun.jna.Pointer fractions, int timeZoneBufferLength, com.sun.jna.Pointer timeZoneBuffer);
 		public void encodeTimeTz(IStatus status, ISC_TIME_TZ[] timeTz, int hours, int minutes, int seconds, int fractions, String timeZone);
 		public void encodeTimeStampTz(IStatus status, ISC_TIMESTAMP_TZ[] timeStampTz, int year, int month, int day, int hours, int minutes, int seconds, int fractions, String timeZone);
 		public IInt128 getInt128(IStatus status);
+		public void decodeTimeTzEx(IStatus status, ISC_TIME_TZ_EX[] timeTz, com.sun.jna.Pointer hours, com.sun.jna.Pointer minutes, com.sun.jna.Pointer seconds, com.sun.jna.Pointer fractions, int timeZoneBufferLength, com.sun.jna.Pointer timeZoneBuffer);
+		public void decodeTimeStampTzEx(IStatus status, ISC_TIMESTAMP_TZ_EX[] timeStampTz, com.sun.jna.Pointer year, com.sun.jna.Pointer month, com.sun.jna.Pointer day, com.sun.jna.Pointer hours, com.sun.jna.Pointer minutes, com.sun.jna.Pointer seconds, com.sun.jna.Pointer fractions, int timeZoneBufferLength, com.sun.jna.Pointer timeZoneBuffer);
 	}
 
 	public static interface IOffsetsCallbackIntf extends IVersionedIntf
@@ -1502,7 +1504,7 @@ public interface FbInterface extends FbClientLibrary
 			}
 		}
 
-		public int cloopDummy;
+		public com.sun.jna.Pointer cloopDummy;
 		public com.sun.jna.Pointer cloopVTable;
 		protected volatile VTable vTable;
 
@@ -13805,16 +13807,6 @@ public interface FbInterface extends FbClientLibrary
 				public IDecFloat34 invoke(IUtil self, IStatus status);
 			}
 
-			public static interface Callback_getTransactionByHandle extends com.sun.jna.Callback
-			{
-				public ITransaction invoke(IUtil self, IStatus status, com.sun.jna.ptr.LongByReference hndlPtr);
-			}
-
-			public static interface Callback_getStatementByHandle extends com.sun.jna.Callback
-			{
-				public IStatement invoke(IUtil self, IStatus status, com.sun.jna.ptr.LongByReference hndlPtr);
-			}
-
 			public static interface Callback_decodeTimeTz extends com.sun.jna.Callback
 			{
 				public void invoke(IUtil self, IStatus status, ISC_TIME_TZ[] timeTz, com.sun.jna.Pointer hours, com.sun.jna.Pointer minutes, com.sun.jna.Pointer seconds, com.sun.jna.Pointer fractions, int timeZoneBufferLength, com.sun.jna.Pointer timeZoneBuffer);
@@ -13838,6 +13830,16 @@ public interface FbInterface extends FbClientLibrary
 			public static interface Callback_getInt128 extends com.sun.jna.Callback
 			{
 				public IInt128 invoke(IUtil self, IStatus status);
+			}
+
+			public static interface Callback_decodeTimeTzEx extends com.sun.jna.Callback
+			{
+				public void invoke(IUtil self, IStatus status, ISC_TIME_TZ_EX[] timeTz, com.sun.jna.Pointer hours, com.sun.jna.Pointer minutes, com.sun.jna.Pointer seconds, com.sun.jna.Pointer fractions, int timeZoneBufferLength, com.sun.jna.Pointer timeZoneBuffer);
+			}
+
+			public static interface Callback_decodeTimeStampTzEx extends com.sun.jna.Callback
+			{
+				public void invoke(IUtil self, IStatus status, ISC_TIMESTAMP_TZ_EX[] timeStampTz, com.sun.jna.Pointer year, com.sun.jna.Pointer month, com.sun.jna.Pointer day, com.sun.jna.Pointer hours, com.sun.jna.Pointer minutes, com.sun.jna.Pointer seconds, com.sun.jna.Pointer fractions, int timeZoneBufferLength, com.sun.jna.Pointer timeZoneBuffer);
 			}
 
 			public VTable(com.sun.jna.Pointer pointer)
@@ -14037,38 +14039,6 @@ public interface FbInterface extends FbClientLibrary
 					}
 				};
 
-				getTransactionByHandle = new Callback_getTransactionByHandle() {
-					@Override
-					public ITransaction invoke(IUtil self, IStatus status, com.sun.jna.ptr.LongByReference hndlPtr)
-					{
-						try
-						{
-							return obj.getTransactionByHandle(status, hndlPtr);
-						}
-						catch (Throwable t)
-						{
-							FbInterfaceException.catchException(status, t);
-							return null;
-						}
-					}
-				};
-
-				getStatementByHandle = new Callback_getStatementByHandle() {
-					@Override
-					public IStatement invoke(IUtil self, IStatus status, com.sun.jna.ptr.LongByReference hndlPtr)
-					{
-						try
-						{
-							return obj.getStatementByHandle(status, hndlPtr);
-						}
-						catch (Throwable t)
-						{
-							FbInterfaceException.catchException(status, t);
-							return null;
-						}
-					}
-				};
-
 				decodeTimeTz = new Callback_decodeTimeTz() {
 					@Override
 					public void invoke(IUtil self, IStatus status, ISC_TIME_TZ[] timeTz, com.sun.jna.Pointer hours, com.sun.jna.Pointer minutes, com.sun.jna.Pointer seconds, com.sun.jna.Pointer fractions, int timeZoneBufferLength, com.sun.jna.Pointer timeZoneBuffer)
@@ -14144,6 +14114,36 @@ public interface FbInterface extends FbClientLibrary
 						}
 					}
 				};
+
+				decodeTimeTzEx = new Callback_decodeTimeTzEx() {
+					@Override
+					public void invoke(IUtil self, IStatus status, ISC_TIME_TZ_EX[] timeTz, com.sun.jna.Pointer hours, com.sun.jna.Pointer minutes, com.sun.jna.Pointer seconds, com.sun.jna.Pointer fractions, int timeZoneBufferLength, com.sun.jna.Pointer timeZoneBuffer)
+					{
+						try
+						{
+							obj.decodeTimeTzEx(status, timeTz, hours, minutes, seconds, fractions, timeZoneBufferLength, timeZoneBuffer);
+						}
+						catch (Throwable t)
+						{
+							FbInterfaceException.catchException(status, t);
+						}
+					}
+				};
+
+				decodeTimeStampTzEx = new Callback_decodeTimeStampTzEx() {
+					@Override
+					public void invoke(IUtil self, IStatus status, ISC_TIMESTAMP_TZ_EX[] timeStampTz, com.sun.jna.Pointer year, com.sun.jna.Pointer month, com.sun.jna.Pointer day, com.sun.jna.Pointer hours, com.sun.jna.Pointer minutes, com.sun.jna.Pointer seconds, com.sun.jna.Pointer fractions, int timeZoneBufferLength, com.sun.jna.Pointer timeZoneBuffer)
+					{
+						try
+						{
+							obj.decodeTimeStampTzEx(status, timeStampTz, year, month, day, hours, minutes, seconds, fractions, timeZoneBufferLength, timeZoneBuffer);
+						}
+						catch (Throwable t)
+						{
+							FbInterfaceException.catchException(status, t);
+						}
+					}
+				};
 			}
 
 			public VTable()
@@ -14165,19 +14165,19 @@ public interface FbInterface extends FbClientLibrary
 			public Callback_setOffsets setOffsets;
 			public Callback_getDecFloat16 getDecFloat16;
 			public Callback_getDecFloat34 getDecFloat34;
-			public Callback_getTransactionByHandle getTransactionByHandle;
-			public Callback_getStatementByHandle getStatementByHandle;
 			public Callback_decodeTimeTz decodeTimeTz;
 			public Callback_decodeTimeStampTz decodeTimeStampTz;
 			public Callback_encodeTimeTz encodeTimeTz;
 			public Callback_encodeTimeStampTz encodeTimeStampTz;
 			public Callback_getInt128 getInt128;
+			public Callback_decodeTimeTzEx decodeTimeTzEx;
+			public Callback_decodeTimeStampTzEx decodeTimeStampTzEx;
 
 			@Override
 			protected java.util.List<String> getFieldOrder()
 			{
 				java.util.List<String> fields = super.getFieldOrder();
-				fields.addAll(java.util.Arrays.asList("getFbVersion", "loadBlob", "dumpBlob", "getPerfCounters", "executeCreateDatabase", "decodeDate", "decodeTime", "encodeDate", "encodeTime", "formatStatus", "getClientVersion", "getXpbBuilder", "setOffsets", "getDecFloat16", "getDecFloat34", "getTransactionByHandle", "getStatementByHandle", "decodeTimeTz", "decodeTimeStampTz", "encodeTimeTz", "encodeTimeStampTz", "getInt128"));
+				fields.addAll(java.util.Arrays.asList("getFbVersion", "loadBlob", "dumpBlob", "getPerfCounters", "executeCreateDatabase", "decodeDate", "decodeTime", "encodeDate", "encodeTime", "formatStatus", "getClientVersion", "getXpbBuilder", "setOffsets", "getDecFloat16", "getDecFloat34", "decodeTimeTz", "decodeTimeStampTz", "encodeTimeTz", "encodeTimeStampTz", "getInt128", "decodeTimeTzEx", "decodeTimeStampTzEx"));
 				return fields;
 			}
 		}
@@ -14353,28 +14353,6 @@ public interface FbInterface extends FbClientLibrary
 			return result;
 		}
 
-		public ITransaction getTransactionByHandle(IStatus status, com.sun.jna.ptr.LongByReference hndlPtr)
-		{
-			VTable vTable = getVTable();
-			if (vTable.getTransactionByHandle == null) {
-				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IUtilIntf.VERSION);
-				return null;
-			}
-			ITransaction result = vTable.getTransactionByHandle.invoke(this, status, hndlPtr);
-			return result;
-		}
-
-		public IStatement getStatementByHandle(IStatus status, com.sun.jna.ptr.LongByReference hndlPtr)
-		{
-			VTable vTable = getVTable();
-			if (vTable.getStatementByHandle == null) {
-				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IUtilIntf.VERSION);
-				return null;
-			}
-			IStatement result = vTable.getStatementByHandle.invoke(this, status, hndlPtr);
-			return result;
-		}
-
 		public void decodeTimeTz(IStatus status, ISC_TIME_TZ[] timeTz, com.sun.jna.Pointer hours, com.sun.jna.Pointer minutes, com.sun.jna.Pointer seconds, com.sun.jna.Pointer fractions, int timeZoneBufferLength, com.sun.jna.Pointer timeZoneBuffer)
 		{
 			VTable vTable = getVTable();
@@ -14424,6 +14402,26 @@ public interface FbInterface extends FbClientLibrary
 			}
 			IInt128 result = vTable.getInt128.invoke(this, status);
 			return result;
+		}
+
+		public void decodeTimeTzEx(IStatus status, ISC_TIME_TZ_EX[] timeTz, com.sun.jna.Pointer hours, com.sun.jna.Pointer minutes, com.sun.jna.Pointer seconds, com.sun.jna.Pointer fractions, int timeZoneBufferLength, com.sun.jna.Pointer timeZoneBuffer)
+		{
+			VTable vTable = getVTable();
+			if (vTable.decodeTimeTzEx == null) {
+				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IUtilIntf.VERSION);
+				return;
+			}
+			vTable.decodeTimeTzEx.invoke(this, status, timeTz, hours, minutes, seconds, fractions, timeZoneBufferLength, timeZoneBuffer);
+		}
+
+		public void decodeTimeStampTzEx(IStatus status, ISC_TIMESTAMP_TZ_EX[] timeStampTz, com.sun.jna.Pointer year, com.sun.jna.Pointer month, com.sun.jna.Pointer day, com.sun.jna.Pointer hours, com.sun.jna.Pointer minutes, com.sun.jna.Pointer seconds, com.sun.jna.Pointer fractions, int timeZoneBufferLength, com.sun.jna.Pointer timeZoneBuffer)
+		{
+			VTable vTable = getVTable();
+			if (vTable.decodeTimeStampTzEx == null) {
+				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IUtilIntf.VERSION);
+				return;
+			}
+			vTable.decodeTimeStampTzEx.invoke(this, status, timeStampTz, year, month, day, hours, minutes, seconds, fractions, timeZoneBufferLength, timeZoneBuffer);
 		}
 	}
 
