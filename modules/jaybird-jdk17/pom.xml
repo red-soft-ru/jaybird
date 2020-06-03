@@ -252,12 +252,14 @@
 				<configuration>
 					<includes>
 						<include>**/Test*.java</include>
+					</includes>
+					<excludes>
 						<exclude>**/jni/Test*.java</exclude>
 						<exclude>**/TestAll.java</exclude>
 						<exclude>**/TestXABase*.java</exclude>
 						<exclude>**/TestConst.java</exclude>
 						<exclude>**/*$$*.java</exclude>
-					</includes>
+					</excludes>
 					<testFailureIgnore>true</testFailureIgnore>
 					<skipTests>${test.java7.skip}</skipTests>
 					<jvm>${test.java7.jvm}</jvm>
