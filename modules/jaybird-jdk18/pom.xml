@@ -280,12 +280,14 @@
 							<includes>
 								<include>**/Test*.java</include>
 								<include>**/nativeoo/**</include>
+							</includes>
+							<excludes>
 								<exclude>**/jni/Test*.java</exclude>
 								<exclude>**/TestAll.java</exclude>
 								<exclude>**/TestXABase*.java</exclude>
 								<exclude>**/TestConst.java</exclude>
 								<exclude>**/*$$*.java</exclude>
-							</includes>
+							</excludes>
 						</configuration>
 					</execution>
 					<execution>
