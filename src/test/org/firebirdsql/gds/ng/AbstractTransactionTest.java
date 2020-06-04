@@ -170,6 +170,21 @@ public abstract class AbstractTransactionTest extends FBJUnit4TestBase {
         assertValueForKey(key, false, null);
     }
 
+    @Test
+    public void testTransactionWithZeroLockTimeout() throws Exception {
+        expectedException.expect(SQLException.class);
+
+        TransactionParameterBuffer tpb = new TransactionParameterBufferImpl();
+        tpb.addArgument(ISCConstants.isc_tpb_read_committed);
+        tpb.addArgument(ISCConstants.isc_tpb_rec_version);
+        tpb.addArgument(ISCConstants.isc_tpb_write);
+        tpb.addArgument(ISCConstants.isc_tpb_wait);
+        tpb.addArgument(ISCConstants.isc_tpb_lock_timeout, 0);
+        final FbTransaction transaction = db.startTransaction(tpb);
+
+        expectedException.expect(SQLException.class);
+    }
+
     protected final void assertValueForKey(int key, boolean hasRow, String expectedValue) throws SQLException {
         Connection connection = getConnectionViaDriverManager();
         PreparedStatement pstmt = null;
