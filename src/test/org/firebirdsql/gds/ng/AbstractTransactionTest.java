@@ -180,8 +180,6 @@ public abstract class AbstractTransactionTest extends FBJUnit4TestBase {
         tpb.addArgument(ISCConstants.isc_tpb_wait);
         tpb.addArgument(ISCConstants.isc_tpb_lock_timeout, 0);
         final FbTransaction transaction = db.startTransaction(tpb);
-
-        expectedException.expect(SQLException.class);
     }
 
     protected final void assertValueForKey(int key, boolean hasRow, String expectedValue) throws SQLException {
