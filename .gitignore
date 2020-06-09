@@ -10,3 +10,5 @@ classes/
 *.FDB
 .settings/
 /junit*.properties
+target/
+pom.xml.versionsBackup
