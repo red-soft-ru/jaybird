@@ -271,44 +271,20 @@
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>2.22.2</version>
 				<configuration>
-					<skip>true</skip>
+					<includes>
+						<include>**/Test*.java</include>
+						<include>**/nativeoo/**</include>
+					</includes>
+					<excludes>
+						<exclude>**/jni/Test*.java</exclude>
+						<exclude>**/TestAll.java</exclude>
+						<exclude>**/TestXABase*.java</exclude>
+						<exclude>**/TestConst.java</exclude>
+						<exclude>**/*$$*.java</exclude>
+					</excludes>
 					<testFailureIgnore>true</testFailureIgnore>
 					<jvm>${test.java8.jvm}</jvm>
 				</configuration>
-				<executions>
-					<execution>
-						<id>test-without-jni</id>
-						<goals>
-							<goal>test</goal>
-						</goals>
-						<configuration>
-							<skip>false</skip>
-							<includes>
-								<include>**/Test*.java</include>
-								<include>**/nativeoo/**</include>
-							</includes>
-							<excludes>
-								<exclude>**/jni/Test*.java</exclude>
-								<exclude>**/TestAll.java</exclude>
-								<exclude>**/TestXABase*.java</exclude>
-								<exclude>**/TestConst.java</exclude>
-								<exclude>**/*$$*.java</exclude>
-							</excludes>
-						</configuration>
-					</execution>
-					<execution>
-						<id>test-jni-only</id>
-						<goals>
-							<goal>test</goal>
-						</goals>
-						<configuration>
-							<skip>${test.jni.skip}</skip>
-							<includes>
-								<include>**/jni/Test*.java</include>
-							</includes>
-						</configuration>
-					</execution>
-				</executions>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
