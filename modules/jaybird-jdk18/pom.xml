@@ -106,7 +106,6 @@
 		<test.db.lc_ctype>NONE</test.db.lc_ctype>
 		<test.report.dir>${basedir}/../../reports</test.report.dir>
 		<test.java8.jvm>/usr/lib/jvm/jre-1.8.0/bin/java</test.java8.jvm>
-		<test.jni.skip>true</test.jni.skip>
 		<report_name>jdk8</report_name>
 	</properties>
 	<build>
