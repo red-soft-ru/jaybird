@@ -100,7 +100,6 @@
 		<test.db.lc_ctype>NONE</test.db.lc_ctype>
 		<test.report.dir>${basedir}/../../reports</test.report.dir>
 		<test.java.jvm>/usr/lib/jvm/java-11-openjdk-11.0.6.10-1.el7_7.x86_64/bin/java</test.java.jvm>
-		<test.jni.skip>true</test.jni.skip>
 		<report_name>jdk11</report_name>
 	</properties>
 	<build>
@@ -265,44 +264,20 @@
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>2.22.2</version>
 				<configuration>
-					<skip>true</skip>
+					<includes>
+						<include>**/Test*.java</include>
+						<include>**/nativeoo/**</include>
+					</includes>
+					<excludes>
+						<exclude>**/jni/Test*.java</exclude>
+						<exclude>**/TestAll.java</exclude>
+						<exclude>**/TestXABase*.java</exclude>
+						<exclude>**/TestConst.java</exclude>
+						<exclude>**/*$$*.java</exclude>
+					</excludes>
 					<testFailureIgnore>true</testFailureIgnore>
 					<jvm>${test.java.jvm}</jvm>
 				</configuration>
-				<executions>
-					<execution>
-						<id>test-without-jni</id>
-						<goals>
-							<goal>test</goal>
-						</goals>
-						<configuration>
-							<skip>false</skip>
-							<includes>
-								<include>**/Test*.java</include>
-								<include>**/nativeoo/**</include>
-							</includes>
-							<excludes>
-								<exclude>**/jni/Test*.java</exclude>
-								<exclude>**/TestAll.java</exclude>
-								<exclude>**/TestXABase*.java</exclude>
-								<exclude>**/TestConst.java</exclude>
-								<exclude>**/*$$*.java</exclude>
-							</excludes>
-						</configuration>
-					</execution>
-					<execution>
-						<id>test-jni-only</id>
-						<goals>
-							<goal>test</goal>
-						</goals>
-						<configuration>
-							<skip>${test.jni.skip}</skip>
-							<includes>
-								<include>**/jni/Test*.java</include>
-							</includes>
-						</configuration>
-					</execution>
-				</executions>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>

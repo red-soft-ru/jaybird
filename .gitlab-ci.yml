@@ -100,6 +100,18 @@ build_and_test:jdk11:rdb4:
   image:
     name: registry.red-soft.biz:5000/docker-images/rdbtestenv/centos7:7.6.1810-cpro-4.0.9963-2
 
+build_and_test:jdk11:rdb4_native_only:
+  <<: *build_and_test_template
+  variables:
+    JAVA_HOME: /usr/java11
+    TEST_JAVA_JVM: /usr/java11/bin/java
+    TEST_LIST: "**/nativeoo/**,**/jni/**,**/jna/**,**/jna/**"
+    RDB_VERSION: $RDB4_VERSION
+    EXTRA_DEPENDENCIES: java-11-openjdk
+    REPORT_PREFIX: rdb4_jdk11_native_
+  image:
+    name: registry.red-soft.biz:5000/docker-images/rdbtestenv/centos7:7.6.1810-cpro-4.0.9963-2
+
 build_and_test:jdk11:rdb3:
   <<: *build_and_test_template
   variables:
