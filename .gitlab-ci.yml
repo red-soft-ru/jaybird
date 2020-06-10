@@ -93,7 +93,7 @@ build_and_test:jdk18:rdb4:
     JAVA_HOME: /usr/lib/jvm/jre-1.8.0
     TEST_JAVA8_JVM: /usr/lib/jvm/jre-1.8.0/bin/java
     SKIP_JAVA7_TEST: "true"
-    TEST_LIST: "**/Test*.java,**/nativeoo/**,**/jni/**,**/jna/**"
+    TEST_LIST: "**"
     RDB_VERSION: $RDB4_VERSION
   image:
     name: registry.red-soft.biz:5000/docker-images/rdbtestenv/centos7:7.6.1810-cpro-4.0.9963-2
@@ -118,7 +118,7 @@ build_and_test:jdk18:rdb3:
     SKIP_JAVA7_TEST: "false"
     TEST_JAVA8_JVM: /usr/lib/jvm/jre-1.8.0/bin/java
     TEST_JAVA7_JVM: /usr/lib/jvm/jre-1.7.0/bin/java
-    TEST_LIST: "**/Test*.java,**/nativeoo/**,**/jni/**,**/jna/**"
+    TEST_LIST: "**"
     EXTRA_DEPENDENCIES: icu
   image:
     name: registry.red-soft.biz:5000/docker-images/rdbtestenv/centos7:7.6.1810-cpro-4.0.9963-2
@@ -130,7 +130,7 @@ build_and_test:jdk11:rdb3:
     RDB_VERSION: $RDB3_VERSION
     SKIP_JAVA7_TEST: "true"
     TEST_JAVA8_JVM: /usr/java11/bin/java
-    TEST_LIST: "**/Test*.java,**/nativeoo/**,**/jni/**,**/jna/**"
+    TEST_LIST: "**"
     EXTRA_DEPENDENCIES: icu java-11-openjdk
     REPORT_PREFIX: jdk11_
   image:
@@ -144,7 +144,7 @@ build_and_test:liberica_jdk8:rdb3:
     SKIP_JAVA7_TEST: "true"
     TEST_JAVA8_JVM: /usr/lib/jvm/bellsoft-java8-runtime.x86_64/bin/java
     JDK_VER: 8-runtime
-    TEST_LIST: "**/Test*.java,**/nativeoo/**,**/jni/**,**/jna/**"
+    TEST_LIST: "**"
     EXTRA_DEPENDENCIES: icu
     REPORT_PREFIX: liberica_jdk8_
   image:
@@ -158,7 +158,7 @@ build_and_test:liberica_jdk11:rdb3:
     SKIP_JAVA7_TEST: "true"
     TEST_JAVA8_JVM: /usr/lib/jvm/bellsoft-java11-runtime.x86_64/bin/java
     JDK_VER: 11-runtime
-    TEST_LIST: "**/Test*.java,**/nativeoo/**,**/jni/**,**/jna/**"
+    TEST_LIST: "**"
     EXTRA_DEPENDENCIES: icu
     REPORT_PREFIX: liberica_jdk11_
   image:
@@ -171,7 +171,7 @@ build_and_test:jdk18:rdb2_6:
     RDB_VERSION: $RDB2_VERSION
     SKIP_JAVA7_TEST: "true"
     TEST_JAVA8_JVM: /usr/lib/jvm/jre-1.8.0/bin/java
-    TEST_LIST: "**/Test*.java,!**/nativeoo/**,**/jni/**,**/jna/**"
+    TEST_LIST: "**,!**/nativeoo/**"
     EXTRA_DEPENDENCIES: icu xinetd
   image:
     name: registry.red-soft.biz:5000/docker-images/rdbtestenv/centos7:7.6.1810-cpro-4.0.9963-2
