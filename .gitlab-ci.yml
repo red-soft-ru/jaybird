@@ -104,7 +104,8 @@ build_and_test:jdk18:rdb4_native_only:
     JAVA_HOME: /usr/lib/jvm/jre-1.8.0
     TEST_JAVA8_JVM: /usr/lib/jvm/jre-1.8.0/bin/java
     SKIP_JAVA7_TEST: "true"
-    TEST_LIST: "**/nativeoo/**,**/jni/**,**/jna/**,**/jna/**"
+    TEST_LIST: "**"
+    GDS_TYPE: "NATIVE"
     RDB_VERSION: $RDB4_VERSION
     REPORT_PREFIX: rdb4_native_jdk18_
   image:
