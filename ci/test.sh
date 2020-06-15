@@ -174,7 +174,9 @@ else
 fi
 
 # Delete symlink for fbclient to test fbclient.jar
-rm -f /usr/lib64/libfbclient.so
+if [[ "$GDS_TYPE" != "EMBEDDED" ]]; then
+  rm -f /usr/lib64/libfbclient.so
+fi
 
 echo "Start RDB..."
 
