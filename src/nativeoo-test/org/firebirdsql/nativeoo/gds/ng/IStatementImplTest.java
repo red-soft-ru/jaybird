@@ -18,14 +18,15 @@
  */
 package org.firebirdsql.nativeoo.gds.ng;
 
+import org.firebirdsql.common.FBTestProperties;
+import org.firebirdsql.common.rules.GdsTypeRule;
 import org.firebirdsql.gds.JaybirdErrorCodes;
-import org.firebirdsql.gds.impl.GDSFactory;
-import org.firebirdsql.gds.impl.GDSType;
 import org.firebirdsql.gds.ng.AbstractStatementTest;
 import org.firebirdsql.gds.ng.DatatypeCoder;
 import org.firebirdsql.gds.ng.FbDatabase;
 import org.firebirdsql.gds.ng.fields.RowValue;
 import org.firebirdsql.gds.ng.wire.SimpleStatementListener;
+import org.junit.ClassRule;
 import org.junit.Test;
 
 import java.sql.SQLException;
@@ -42,10 +43,11 @@ import static org.junit.Assert.*;
  */
 public class IStatementImplTest extends AbstractStatementTest {
 
-    private static final String gdsType = "FBOONATIVE";
+    @ClassRule
+    public static final GdsTypeRule testType = GdsTypeRule.supportsFBOONativeOnly();
 
-    private final AbstractNativeOODatabaseFactory factory =
-            (AbstractNativeOODatabaseFactory) GDSFactory.getDatabaseFactoryForType(GDSType.getType(gdsType));
+    private AbstractNativeOODatabaseFactory factory =
+            (AbstractNativeOODatabaseFactory) FBTestProperties.getFbDatabaseFactory();
 
     @Override
     protected Class<? extends FbDatabase> getExpectedDatabaseType() {

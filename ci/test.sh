@@ -174,7 +174,7 @@ else
 fi
 
 # Delete symlink for fbclient to test fbclient.jar
-if [[ "$GDS_TYPE" != "EMBEDDED" ]]; then
+if [[ "$GDS_TYPE" != "EMBEDDED" && "$GDS_TYPE" != "FBOOEMBEDDED" ]]; then
   rm -f /usr/lib64/libfbclient.so
 fi
 
