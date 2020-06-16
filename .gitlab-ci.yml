@@ -120,7 +120,7 @@ build_and_test:jdk18:rdb4_fboonative:
     TEST_LIST: "**"
     GDS_TYPE: "FBOONATIVE"
     RDB_VERSION: $RDB4_VERSION
-    REPORT_PREFIX: rdb4_native_jdk18_
+    REPORT_PREFIX: rdb4_fboonative_jdk18_
   image:
     name: registry.red-soft.biz:5000/docker-images/rdbtestenv/centos7:7.6.1810-cpro-4.0.9963-2
 
@@ -146,7 +146,7 @@ build_and_test:jdk18:rdb4_fbooembedded:
     TEST_LIST: "**"
     GDS_TYPE: "FBOOEMBEDDED"
     RDB_VERSION: $RDB4_VERSION
-    REPORT_PREFIX: rdb4_embedded_jdk18_
+    REPORT_PREFIX: rdb4_fbooembedded_jdk18_
   image:
     name: registry.red-soft.biz:5000/docker-images/rdbtestenv/centos7:7.6.1810-cpro-4.0.9963-2
 
