@@ -140,9 +140,11 @@ public class IStatementImpl extends AbstractFbStatement {
                 ITransactionImpl transaction = (ITransactionImpl) getTransaction();
 
                 Pointer inPtr = null;
-                if (inMessage.array().length > 0) {
-                    inPtr = new Memory(inMessage.array().length);
-                    inPtr.write(0, inMessage.array(), 0, inMessage.array().length);
+                // Actually the message size may be smaller than previously declared,
+                // so we take pointer position as message size
+                if (inMessage.position() > 0) {
+                    inPtr = new Memory(inMessage.position());
+                    inPtr.write(0, inMessage.array(), 0, inMessage.position());
                 }
                 Pointer outPtr = null;
 
@@ -191,68 +193,67 @@ public class IStatementImpl extends AbstractFbStatement {
 
         IMaster master = database.getMaster();
         IMetadataBuilder metadataBuilder = master.getMetadataBuilder(getStatus(), parameters.getCount());
-        inMessage = ByteBuffer.allocate(inMeta.getMessageLength(getStatus()));
+        int messageLength = inMeta.getMessageLength(getStatus());
+        inMessage = ByteBuffer.allocate(messageLength > 0 ? messageLength : Short.MAX_VALUE);
         processStatus();
-        int offset;
-        byte[] nullShort = {0, 0};
-        int align = 0;
+        int offset = 0;
+        byte[] nullShort = new byte[]{-1, -1};
+        byte[] notNullShort = new byte[]{0, 0};
+        int align;
 
         for (int idx = 0; idx < parameters.getCount(); idx++) {
-
             byte[] fieldData = parameters.getFieldData(idx);
+            final FieldDescriptor fieldDescriptor = rowDescriptor.getFieldDescriptor(idx);
             if (fieldData == null) {
                 // Note this only works because we mark the type as nullable in inMessage
-                final FieldDescriptor fieldDescriptor = rowDescriptor.getFieldDescriptor(idx);
-                nullShort = new byte[]{-1, -1};
                 // clear status
                 getStatus();
-                offset = inMeta.getOffset(status, idx) - align;
                 int nullOffset = inMeta.getNullOffset(status, idx);
-                inMessage.position(offset);
                 processStatus();
                 // clear status
                 getStatus();
+                offset += inMeta.getLength(status, idx);
                 inMessage.position(nullOffset);
                 inMessage.put(nullShort);
+                offset += nullShort.length;
+                inMessage.position(offset);
+                // Although we pass a null value, length and type must still be specified
+                metadataBuilder.setLength(status, idx, inMeta.getLength(status, idx));
+                metadataBuilder.setType(status, idx, fieldDescriptor.getType());
             } else {
-                final FieldDescriptor fieldDescriptor = rowDescriptor.getFieldDescriptor(idx);
+                nullShort = new byte[]{-1, -1};
                 // clear status
                 getStatus();
-                offset = inMeta.getOffset(status, idx) - align;
-                int nullOffset = inMeta.getNullOffset(status, idx);
+                // Values must be aligned, otherwise, data will be lost
+                int align2 = inMeta.getAlignment(status);
+                align = (fieldData.length ^ align2) & 1;
                 inMessage.position(offset);
                 if (fieldDescriptor.isVarying()) {
                     metadataBuilder.setLength(status, idx, Math.min(fieldDescriptor.getLength(), fieldData.length));
-                    metadataBuilder.setType(status, idx, ISCConstants.SQL_VARYING);
-                    metadataBuilder.setScale(status, idx, inMeta.getScale(status, idx));
-                    metadataBuilder.setSubType(status, idx, inMeta.getSubType(status, idx));
+                    metadataBuilder.setType(status, idx, ISCConstants.SQL_VARYING + 1);
                     metadataBuilder.setCharSet(status, idx, inMeta.getCharSet(status, idx));
                     byte[] encodeShort = fieldDescriptor.getDatatypeCoder().encodeShort(fieldData.length);
                     inMessage.put(encodeShort);
                     offset += encodeShort.length;
                     inMessage.position(offset);
-                    align += inMeta.getLength(status, idx) - fieldData.length;
                 } else if (fieldDescriptor.isFbType(ISCConstants.SQL_TEXT)) {
                     metadataBuilder.setLength(status, idx, Math.min(fieldDescriptor.getLength(), fieldData.length));
-                    metadataBuilder.setType(status, idx, ISCConstants.SQL_TEXT);
-                    metadataBuilder.setScale(status, idx, inMeta.getScale(status, idx));
-                    metadataBuilder.setSubType(status, idx, inMeta.getSubType(status, idx));
+                    metadataBuilder.setType(status, idx, ISCConstants.SQL_TEXT + 1);
                     metadataBuilder.setCharSet(status, idx, inMeta.getCharSet(status, idx));
-                    align += inMeta.getLength(status, idx) - fieldData.length;
                 } else {
                     metadataBuilder.setLength(status, idx, inMeta.getLength(status, idx));
                     metadataBuilder.setType(status, idx, fieldDescriptor.getType());
-                    metadataBuilder.setSubType(status, idx, fieldDescriptor.getSubType());
-                    metadataBuilder.setSubType(status, idx, inMeta.getSubType(status, idx));
-                    metadataBuilder.setCharSet(status, idx, inMeta.getCharSet(status, idx));
+                    metadataBuilder.setCharSet(status, idx, 0);
                 }
                 processStatus();
                 // clear status
                 getStatus();
                 inMessage.put(fieldData);
-                inMessage.position(nullOffset - align);
-                inMessage.put(nullShort);
+                offset += fieldData.length + align;
+                inMessage.position(offset);
+                inMessage.put(notNullShort);
             }
+            offset += notNullShort.length;
         }
         
         inMeta = metadataBuilder.getMetadata(getStatus());
