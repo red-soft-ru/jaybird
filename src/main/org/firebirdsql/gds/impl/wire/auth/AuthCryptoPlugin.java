@@ -1,5 +1,6 @@
 package org.firebirdsql.gds.impl.wire.auth;
 
+import org.firebirdsql.gds.ISCConstants;
 import org.firebirdsql.gds.impl.wire.Bytes;
 
 /**
@@ -13,7 +14,7 @@ public abstract class AuthCryptoPlugin {
 
   public static AuthCryptoPlugin getPlugin() throws GDSAuthException {
     if (_plugin == null)
-      throw new GDSAuthException("Crypto plugin is not installed. Please, register with AuthCryptoPlugin#register(AuthCryptoPlugin).");
+      throw new GDSAuthException(ISCConstants.isc_login, "Crypto plugin is not installed. Please, register with AuthCryptoPlugin#register(AuthCryptoPlugin).");
     return _plugin;
   }
 
