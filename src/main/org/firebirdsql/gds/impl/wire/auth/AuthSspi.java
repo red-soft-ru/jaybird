@@ -183,4 +183,12 @@ public class AuthSspi {
   public void setRepositoryPin(String pin) throws GDSAuthException {
     AuthCryptoPlugin.getPlugin().setRepositoryPin(pin);
   }
+
+  public void setProviderID(int providerID) throws GDSAuthException {
+    try {
+      AuthCryptoPlugin.getPlugin().setProviderID(providerID);
+    } catch (AuthCryptoException e) {
+      throw new GDSAuthException(String.format("Can't initialize provider with provider type %s", providerID), e);
+    }
+  }
 }

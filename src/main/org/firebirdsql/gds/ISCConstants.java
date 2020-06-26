@@ -182,6 +182,7 @@ public interface ISCConstants {
     public static final int isc_dpb_master_attach           = 163;
     public static final int isc_dpb_gss                     = 164;
     public static final int isc_dpb_security_authentication = 165;
+    public static final int isc_dpb_provider_id             = 166;
 
     /*************************************/
     /* Transaction parameter block stuff */
@@ -247,6 +248,7 @@ public interface ISCConstants {
     public final static int isc_spb_verify_server           = 157;
     public final static int isc_spb_hw_address              = 158;
     public final static int isc_spb_repository_pin          = isc_dpb_repository_pin;
+    public final static int isc_spb_provider_id             = isc_dpb_provider_id;
 
     public final static int isc_spb_connect_timeout         = isc_dpb_connect_timeout;
     public final static int isc_spb_dummy_packet_interval   = isc_dpb_dummy_packet_interval;

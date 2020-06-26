@@ -323,6 +323,12 @@ public class AuthCryptoPluginImpl extends AuthCryptoPlugin {
   }
 
   @Override
+  public void setProviderID(int providerID) throws AuthCryptoException {
+    CryptoProProvider.PROV_DEFAULT = providerID;
+    initializeProvider(CryptoProProvider.PROV_DEFAULT);
+  }
+
+  @Override
   public byte[] generateRandom(Object provHandle, int size) throws AuthCryptoException {
     byte[] res = null;
     try {

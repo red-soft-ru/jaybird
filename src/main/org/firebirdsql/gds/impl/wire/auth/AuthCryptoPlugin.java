@@ -57,6 +57,8 @@ public abstract class AuthCryptoPlugin {
 
   public abstract void setRepositoryPin(String pin);
 
+  public abstract void setProviderID(int providerID) throws AuthCryptoException;
+
   public abstract byte[] generateRandom(Object provHandle, int size) throws AuthCryptoException;
 
   public abstract boolean verifySign(final byte[] data, final byte[] serverPublicCert, final byte[] signedNumber) throws AuthCryptoException;
