@@ -363,7 +363,8 @@ public class FBServiceManager implements ServiceManager {
 
                 if (spbType == null) {
                     final Integer dpbKey = FBConnectionHelper.getDpbKey(propertyName);
-                    if (dpbKey == ISCConstants.isc_dpb_local_encoding || dpbKey == ISCConstants.isc_dpb_lc_ctype)
+                    if (dpbKey == ISCConstants.isc_dpb_local_encoding || dpbKey == ISCConstants.isc_dpb_lc_ctype ||
+                            dpbKey == ISCConstants.isc_dpb_repository_pin || dpbKey == ISCConstants.isc_dpb_provider_id)
                         spbType = dpbKey;
                     else
                         continue;

@@ -2683,10 +2683,14 @@ public abstract class AbstractJavaGDSImpl extends AbstractGDS implements GDS {
         newDpb.getArgumentsList().addAll(((ParameterBufferBase)serviceParameterBuffer).getArgumentsList());
 
         sspi = new AuthSspi();
-				if (((ParameterBufferBase)newDpb).hasArgument(ISCConstants.isc_spb_repository_pin)) {
-					sspi.setRepositoryPin(((ParameterBufferBase) newDpb).getArgumentAsString(ISCConstants.isc_spb_repository_pin));
-					((ParameterBufferBase) newDpb).removeArgument(ISCConstants.isc_spb_repository_pin);
-				}
+		if (((ParameterBufferBase)newDpb).hasArgument(ISCConstants.isc_spb_repository_pin)) {
+		  sspi.setRepositoryPin(((ParameterBufferBase) newDpb).getArgumentAsString(ISCConstants.isc_spb_repository_pin));
+		  ((ParameterBufferBase) newDpb).removeArgument(ISCConstants.isc_spb_repository_pin);
+		}
+		if (((ParameterBufferBase)newDpb).hasArgument(ISCConstants.isc_spb_provider_id)) {
+		  sspi.setProviderID(((ParameterBufferBase) newDpb).getArgumentAsInt(ISCConstants.isc_spb_provider_id));
+		  ((ParameterBufferBase) newDpb).removeArgument(ISCConstants.isc_spb_provider_id);
+		}
         sspi.fillFactors(newDpb);
         svc.setAuthSspi(sspi);
 

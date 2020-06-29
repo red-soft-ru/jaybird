@@ -324,6 +324,8 @@ public class AuthCryptoPluginImpl extends AuthCryptoPlugin {
 
   @Override
   public void setProviderID(int providerID) throws AuthCryptoException {
+    if (CryptoProProvider.PROV_DEFAULT == providerID)
+      return; // we already have initialized provider
     CryptoProProvider.PROV_DEFAULT = providerID;
     initializeProvider(CryptoProProvider.PROV_DEFAULT);
   }
