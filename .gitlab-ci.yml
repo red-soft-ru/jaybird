@@ -16,7 +16,7 @@ variables:
   MAVEN_OPTS: "-Dmaven.repo.local=.m2/repository"
   RDB2_VERSION: "2.6.0.13508"
   RDB3_VERSION: "3.0.5.116"
-  RDB4_VERSION: "4.0.0.2022"
+  RDB4_VERSION: "4.0.0.2103"
   http_proxy: http://git.red-soft.biz:3128
   https_proxy: http://git.red-soft.biz:3128
 
@@ -98,6 +98,58 @@ build_and_test:jdk18:rdb4:
   image:
     name: registry.red-soft.biz:5000/docker-images/rdbtestenv/centos7:7.6.1810-cpro-4.0.9963-2
 
+build_and_test:jdk18:rdb4_native:
+  <<: *build_and_test_template
+  variables:
+    JAVA_HOME: /usr/lib/jvm/jre-1.8.0
+    TEST_JAVA8_JVM: /usr/lib/jvm/jre-1.8.0/bin/java
+    SKIP_JAVA7_TEST: "true"
+    TEST_LIST: "**"
+    GDS_TYPE: "NATIVE"
+    RDB_VERSION: $RDB4_VERSION
+    REPORT_PREFIX: rdb4_native_jdk18_
+  image:
+    name: registry.red-soft.biz:5000/docker-images/rdbtestenv/centos7:7.6.1810-cpro-4.0.9963-2
+
+build_and_test:jdk18:rdb4_fboonative:
+  <<: *build_and_test_template
+  variables:
+    JAVA_HOME: /usr/lib/jvm/jre-1.8.0
+    TEST_JAVA8_JVM: /usr/lib/jvm/jre-1.8.0/bin/java
+    SKIP_JAVA7_TEST: "true"
+    TEST_LIST: "**"
+    GDS_TYPE: "FBOONATIVE"
+    RDB_VERSION: $RDB4_VERSION
+    REPORT_PREFIX: rdb4_fboonative_jdk18_
+  image:
+    name: registry.red-soft.biz:5000/docker-images/rdbtestenv/centos7:7.6.1810-cpro-4.0.9963-2
+
+build_and_test:jdk18:rdb4_embedded:
+  <<: *build_and_test_template
+  variables:
+    JAVA_HOME: /usr/lib/jvm/jre-1.8.0
+    TEST_JAVA8_JVM: /usr/lib/jvm/jre-1.8.0/bin/java
+    SKIP_JAVA7_TEST: "true"
+    TEST_LIST: "**"
+    GDS_TYPE: "EMBEDDED"
+    RDB_VERSION: $RDB4_VERSION
+    REPORT_PREFIX: rdb4_embedded_jdk18_
+  image:
+    name: registry.red-soft.biz:5000/docker-images/rdbtestenv/centos7:7.6.1810-cpro-4.0.9963-2
+
+build_and_test:jdk18:rdb4_fbooembedded:
+  <<: *build_and_test_template
+  variables:
+    JAVA_HOME: /usr/lib/jvm/jre-1.8.0
+    TEST_JAVA8_JVM: /usr/lib/jvm/jre-1.8.0/bin/java
+    SKIP_JAVA7_TEST: "true"
+    TEST_LIST: "**"
+    GDS_TYPE: "FBOOEMBEDDED"
+    RDB_VERSION: $RDB4_VERSION
+    REPORT_PREFIX: rdb4_fbooembedded_jdk18_
+  image:
+    name: registry.red-soft.biz:5000/docker-images/rdbtestenv/centos7:7.6.1810-cpro-4.0.9963-2
+
 build_and_test:jdk18:rdb3:
   <<: *build_and_test_template
   variables:
@@ -159,7 +211,7 @@ build_and_test:jdk18:rdb2_6:
     RDB_VERSION: $RDB2_VERSION
     SKIP_JAVA7_TEST: "true"
     TEST_JAVA8_JVM: /usr/lib/jvm/jre-1.8.0/bin/java
-    TEST_LIST: "**"
+    TEST_LIST: "**,!**/nativeoo/**"
     EXTRA_DEPENDENCIES: icu xinetd
   image:
     name: registry.red-soft.biz:5000/docker-images/rdbtestenv/centos7:7.6.1810-cpro-4.0.9963-2

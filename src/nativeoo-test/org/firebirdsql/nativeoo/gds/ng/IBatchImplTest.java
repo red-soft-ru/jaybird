@@ -1,5 +1,7 @@
 package org.firebirdsql.nativeoo.gds.ng;
 
+import org.firebirdsql.common.FBTestProperties;
+import org.firebirdsql.common.rules.GdsTypeRule;
 import org.firebirdsql.gds.BatchParameterBuffer;
 import org.firebirdsql.gds.BlobParameterBuffer;
 import org.firebirdsql.gds.ISCConstants;
@@ -8,6 +10,7 @@ import org.firebirdsql.gds.ng.*;
 import org.firebirdsql.gds.ng.fields.RowValue;
 import org.firebirdsql.gds.ng.wire.SimpleStatementListener;
 import org.firebirdsql.jdbc.FBBlob;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -34,7 +37,8 @@ import static org.junit.Assert.assertTrue;
  */
 public class IBatchImplTest extends AbstractBatchTest {
 
-    private static final String gdsType = "FBOONATIVE";
+    @ClassRule
+    public static final GdsTypeRule testType = GdsTypeRule.supportsFBOONativeOnly();
 
     //@formatter:off
     protected String INSERT_QUERY_WITHOUT_BLOBS = "INSERT INTO test_p_metadata (" +
@@ -113,8 +117,8 @@ public class IBatchImplTest extends AbstractBatchTest {
     @Rule
     public final ExpectedException expectedException = ExpectedException.none();
 
-    private final AbstractNativeOODatabaseFactory factory =
-            (AbstractNativeOODatabaseFactory) GDSFactory.getDatabaseFactoryForType(GDSType.getType(gdsType));
+    private AbstractNativeOODatabaseFactory factory =
+            (AbstractNativeOODatabaseFactory) FBTestProperties.getFbDatabaseFactory();
 
     @Override
     protected Class<? extends FbDatabase> getExpectedDatabaseType() {

@@ -26,6 +26,7 @@ check_variable RDB_VERSION
 check_variable VERSION
 
 JAVA="${JAVA_HOME}/bin/java"
+GDS_TYPE="${GDS_TYPE}"
 JDK_VERSION=`$JAVA -version 2>&1|head -n 1|awk -F\" '{split($2, v, ".");printf("%s%s", v[1], v[2])}'`
 INSTALLDIR=/opt/RedDatabase
 SOURCES=$(readlink -f $(dirname $0)/..)
@@ -172,6 +173,11 @@ else
 
 fi
 
+# Delete symlink for fbclient to test fbclient.jar
+if [[ "$GDS_TYPE" != "EMBEDDED" && "$GDS_TYPE" != "FBOOEMBEDDED" ]]; then
+  rm -f /usr/lib64/libfbclient.so
+fi
+
 echo "Start RDB..."
 
 if [[ "$RDB_MAJOR_VERSION" == "2" ]]; then
@@ -199,9 +205,9 @@ done
 echo rdb_server | kinit rdb_server/localhost
 klist
 
-if [[ "$RDB_MAJOR_VERSION" -ge "3" ]]; then
-  mvn $MAVEN_CLI_OPTS -f "${CI_PROJECT_DIR}"/pom.xml test -Pdeploy-internal -DreportNamePrefix=$REPORT_PREFIX -DreleaseHubBuildVersion=$VERSION  -DfailIfNoTests=false -Dtest.db.dir=$TEST_DIR -Dtest.jni.skip=false -Dtest.java7.skip=$SKIP_JAVA7_TEST -Dtest.java8.jvm=$TEST_JAVA8_JVM -Dtest.java7.jvm=$TEST_JAVA7_JVM -Dtest=$TEST_LIST
-else
-  mvn $MAVEN_CLI_OPTS -f "${CI_PROJECT_DIR}"/pom.xml test -Pdeploy-internal -DreportNamePrefix=$REPORT_PREFIX -DreleaseHubBuildVersion=$VERSION  -DfailIfNoTests=false -Dtest.db.dir=$TEST_DIR -Dtest.java7.skip=$SKIP_JAVA7_TEST -Dtest.java8.jvm=$TEST_JAVA8_JVM -Dtest.java7.jvm=$TEST_JAVA7_JVM -Dtest=$TEST_LIST
+if [[ "$GDS_TYPE" == "" ]]; then
+  GDS_TYPE="PURE_JAVA"
 fi
+
+mvn $MAVEN_CLI_OPTS -f "${CI_PROJECT_DIR}"/pom.xml test -Pdeploy-internal -DreportNamePrefix=$REPORT_PREFIX -DreleaseHubBuildVersion=$VERSION  -DfailIfNoTests=false -Dtest.db.dir=$TEST_DIR -Dtest.java7.skip=$SKIP_JAVA7_TEST -Dtest.java8.jvm=$TEST_JAVA8_JVM -Dtest.java7.jvm=$TEST_JAVA7_JVM -Dtest=$TEST_LIST -Dtest.gds_type=$GDS_TYPE
 kdestroy
