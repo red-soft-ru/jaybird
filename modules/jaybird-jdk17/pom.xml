@@ -153,6 +153,7 @@
 								<source>../../src/main</source>
 								<source>../../src/jdbc_41</source>
 								<source>../../src/jna-client</source>
+								<source>../../src/nativeoo</source>
 								<source>../../src/openoffice</source>
 							</sources>
 						</configuration>
@@ -168,6 +169,7 @@
 								<source>../../src/cryptoapi/</source>
 								<source>../../src/test/</source>
 								<source>../../src/jna-test/</source>
+								<source>../../src/nativeoo-test</source>
 							</sources>
 						</configuration>
 					</execution>
@@ -260,12 +262,14 @@
 				<configuration>
 					<includes>
 						<include>**/Test*.java</include>
+					</includes>
+					<excludes>
 						<exclude>**/jni/Test*.java</exclude>
 						<exclude>**/TestAll.java</exclude>
 						<exclude>**/TestXABase*.java</exclude>
 						<exclude>**/TestConst.java</exclude>
 						<exclude>**/*$$*.java</exclude>
-					</includes>
+					</excludes>
 					<testFailureIgnore>true</testFailureIgnore>
 					<skipTests>${test.java7.skip}</skipTests>
 					<jvm>${test.java7.jvm}</jvm>

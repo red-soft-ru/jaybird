@@ -31,6 +31,7 @@
 				<module>modules/cryptoapi-jdk17</module>
 				<module>modules/cryptoapi-security-jdk18</module>
 				<module>modules/cryptoapi-security-jdk17</module>
+				<module>modules/jaybird-fbclient</module>
 			</modules>
 		</profile>
 		<profile>
@@ -45,6 +46,7 @@
 				<module>modules/jaybird-jdk18</module>
 				<module>modules/cryptoapi-jdk18</module>
 				<module>modules/cryptoapi-security-jdk18</module>
+				<module>modules/jaybird-fbclient</module>
 			</modules>
 		</profile>
 		<profile>
@@ -172,17 +174,17 @@
 			<dependency>
 				<groupId>org.apache.logging.log4j</groupId>
 				<artifactId>log4j-1.2-api</artifactId>
-				<version>2.12.1</version>
+				<version>2.13.3</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.logging.log4j</groupId>
 				<artifactId>log4j-api</artifactId>
-				<version>2.12.1</version>
+				<version>2.13.3</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.logging.log4j</groupId>
 				<artifactId>log4j-core</artifactId>
-				<version>2.12.1</version>
+				<version>2.13.3</version>
 			</dependency>
 			<dependency>
 				<groupId>org.ow2.asm</groupId>

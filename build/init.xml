@@ -138,6 +138,7 @@
         <property name="source.jdbc.41" value="${module.source}/jdbc_41"/>
         <property name="source.jdbc.42" value="${module.source}/jdbc_42"/>
         <property name="source.jna-client" value="${module.source}/jna-client"/>
+        <property name="source.nativeoo" value="${module.source}/nativeoo"/>
         <property name="source.etc" value="${module.source}/etc"/>
         <property name="source.resources" value="${module.source}/resources"/>
         <property name="source.stylesheets" value="${module.source}/stylesheets"/>
@@ -146,6 +147,7 @@
         <property name="source.cryptoapi_security" value="${module.source}/cryptoapi_sec"/>
         <property name="source.test.42" value="${module.source}/test_42"/>
         <property name="source.test.jna" value="${module.source}/jna-test"/>
+        <property name="source.test.nativeoo" value="${module.source}/nativeoo-test"/>
         <property name="source.documentation" value="${module.source}/documentation"/>
 
         <property name="thirdparty" value="${module.root}/thirdparty"/>
@@ -248,9 +250,9 @@
             <pathelement location="${module.thirdparty}/fscontext.jar"/>
             <pathelement location="${module.thirdparty}/providerutil.jar"/>
             <pathelement location="${module.thirdparty}/platform-5.3.0.jar"/>
-            <pathelement location="${module.thirdparty}/log4j-1.2-api-2.12.1.jar"/>
-            <pathelement location="${module.thirdparty}/log4j-api-2.12.1.jar"/>
-            <pathelement location="${module.thirdparty}/log4j-core-2.12.1.jar"/>
+            <pathelement location="${module.thirdparty}/log4j-1.2-api-2.13.3.jar"/>
+            <pathelement location="${module.thirdparty}/log4j-api-2.13.3.jar"/>
+            <pathelement location="${module.thirdparty}/log4j-core-2.13.3.jar"/>
             <pathelement location="${module.thirdparty}/jna-5.3.0.jar"/>
             <fileset dir="${lib_test.dir}" includes="*.jar"/>
         </path>
@@ -258,9 +260,9 @@
         <path id="javac.cryptoapi.classpath">
             <pathelement location="${build.classes}"/>
             <pathelement location="${build.cryptoapi}"/>
-            <pathelement location="${module.thirdparty}/log4j-1.2-api-2.12.1.jar"/>
-            <pathelement location="${module.thirdparty}/log4j-api-2.12.1.jar"/>
-            <pathelement location="${module.thirdparty}/log4j-core-2.12.1.jar"/>
+            <pathelement location="${module.thirdparty}/log4j-1.2-api-2.13.3.jar"/>
+            <pathelement location="${module.thirdparty}/log4j-api-2.13.3.jar"/>
+            <pathelement location="${module.thirdparty}/log4j-core-2.13.3.jar"/>
             <pathelement location="${module.thirdparty}/platform-5.3.0.jar"/>
             <pathelement location="${module.thirdparty}/jna-5.3.0.jar"/>
         </path>
@@ -269,9 +271,9 @@
             <pathelement location="${build.classes}"/>
             <pathelement location="${build.cryptoapi}"/>
             <pathelement location="${build.cryptoapi_security}"/>
-            <pathelement location="${module.thirdparty}/log4j-1.2-api-2.12.1.jar"/>
-            <pathelement location="${module.thirdparty}/log4j-api-2.12.1.jar"/>
-            <pathelement location="${module.thirdparty}/log4j-core-2.12.1.jar"/>
+            <pathelement location="${module.thirdparty}/log4j-1.2-api-2.13.3.jar"/>
+            <pathelement location="${module.thirdparty}/log4j-api-2.13.3.jar"/>
+            <pathelement location="${module.thirdparty}/log4j-core-2.13.3.jar"/>
             <pathelement location="${module.thirdparty}/platform-5.3.0.jar"/>
             <pathelement location="${module.thirdparty}/jna-5.3.0.jar"/>
         </path>
