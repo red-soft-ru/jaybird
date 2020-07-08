@@ -144,6 +144,15 @@ public abstract class AbstractParameterConverter<D extends AbstractConnection<Fi
         if (props.getConnectTimeout() != FirebirdConnectionProperties.DEFAULT_CONNECT_TIMEOUT) {
             spb.addArgument(isc_spb_connect_timeout, props.getConnectTimeout());
         }
+        if (props.getNonStandardProperty("isc_spb_multi_factor_auth") != null) {
+            spb.addArgument(isc_spb_multi_factor_auth, props.getNonStandardProperty("isc_spb_multi_factor_auth"));
+        }
+        if (props.getNonStandardProperty("isc_spb_trusted_auth") != null) {
+            spb.addArgument(isc_spb_trusted_auth, props.getNonStandardProperty("isc_spb_trusted_auth"));
+        }
+        if (props.getNonStandardProperty("isc_spb_process_name") != null) {
+            spb.addArgument(isc_spb_process_name, props.getNonStandardProperty("isc_spb_process_name"));
+        }
     }
 
 }
