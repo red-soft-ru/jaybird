@@ -121,6 +121,9 @@ public abstract class AbstractParameterConverter<D extends AbstractConnection<Fi
         // Map standard properties
         populateDefaultProperties(connection, spb);
 
+        // Map non-standard properties
+        populateNonStandardProperties(connection, spb);
+
         return spb;
     }
 
@@ -144,15 +147,43 @@ public abstract class AbstractParameterConverter<D extends AbstractConnection<Fi
         if (props.getConnectTimeout() != FirebirdConnectionProperties.DEFAULT_CONNECT_TIMEOUT) {
             spb.addArgument(isc_spb_connect_timeout, props.getConnectTimeout());
         }
-        if (props.getNonStandardProperty("isc_spb_multi_factor_auth") != null) {
-            spb.addArgument(isc_spb_multi_factor_auth, props.getNonStandardProperty("isc_spb_multi_factor_auth"));
-        }
-        if (props.getNonStandardProperty("isc_spb_trusted_auth") != null) {
-            spb.addArgument(isc_spb_trusted_auth, props.getNonStandardProperty("isc_spb_trusted_auth"));
-        }
-        if (props.getNonStandardProperty("isc_spb_process_name") != null) {
-            spb.addArgument(isc_spb_process_name, props.getNonStandardProperty("isc_spb_process_name"));
-        }
     }
 
+    /**
+     * Populates the service parameter buffer with the non-standard properties.
+     *
+     *  @param connection
+     *         Service connection
+     * @param spb
+     *         Database parameter buffer to populate
+     */
+    protected void populateNonStandardProperties(S connection, final ServiceParameterBuffer spb) {
+
+        FirebirdConnectionProperties properties = connection.getAttachProperties();
+        ParameterTagMapping tagMapping = spb.getTagMapping();
+        if (properties.getNonStandardProperty("isc_spb_multi_factor_auth") != null) {
+            spb.addArgument(isc_spb_multi_factor_auth, properties.getNonStandardProperty("isc_spb_multi_factor_auth"));
+        }
+        if (properties.getNonStandardProperty("isc_spb_trusted_auth") != null) {
+            spb.addArgument(isc_spb_trusted_auth, properties.getNonStandardProperty("isc_spb_trusted_auth"));
+        }
+        if (properties.getNonStandardProperty("isc_spb_process_name") != null) {
+            spb.addArgument(isc_spb_process_name, properties.getNonStandardProperty("isc_spb_process_name"));
+        }
+        if (properties.getNonStandardProperty("isc_spb_config") != null) {
+            spb.addArgument(tagMapping.getConfigTag(), properties.getNonStandardProperty("isc_spb_config"));
+        }
+        if (properties.getNonStandardProperty("isc_spb_expected_db") != null) {
+            spb.addArgument(isc_spb_expected_db, properties.getNonStandardProperty("isc_spb_expected_db"));
+        }
+        if (properties.getNonStandardProperty("isc_spb_trusted_role") != null) {
+            spb.addArgument(isc_spb_trusted_role, properties.getNonStandardProperty("isc_spb_trusted_role"));
+        }
+        if (properties.getNonStandardProperty("isc_spb_process_id") != null) {
+            spb.addArgument(isc_spb_process_id, properties.getNonStandardProperty("isc_spb_process_id"));
+        }
+        if (properties.getNonStandardProperty("isc_spb_remote_protocol") != null) {
+            spb.addArgument(isc_spb_remote_protocol, properties.getNonStandardProperty("isc_spb_remote_protocol"));
+        }
+    }
 }
