@@ -20,6 +20,7 @@ package org.firebirdsql.gds.ng.wire.version10;
 
 import org.firebirdsql.gds.*;
 import org.firebirdsql.gds.impl.DatabaseParameterBufferImp;
+import org.firebirdsql.gds.impl.wire.WireProtocolConstants;
 import org.firebirdsql.gds.impl.wire.XdrOutputStream;
 import org.firebirdsql.gds.impl.wire.auth.AuthSspi;
 import org.firebirdsql.gds.ng.FbExceptionBuilder;
@@ -117,6 +118,11 @@ public class V10Service extends AbstractFbWireService implements FbWireService {
 
         final boolean trustedAuth = spb.hasArgument(ISCConstants.isc_spb_trusted_auth);
         final boolean multifactor = spb.hasArgument(ISCConstants.isc_spb_multi_factor_auth);
+
+        if (connection.getProtocolVersion() < PROTOCOL_VERSION13) {
+            if (trustedAuth && !multifactor)
+                throw new SQLException("Trusted authorization is not supported. Use multi factor authorization instead of this one.");
+        }
         
         AuthSspi sspi;
         if (multifactor) {
