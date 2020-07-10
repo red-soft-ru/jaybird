@@ -122,25 +122,27 @@ public class V10Service extends AbstractFbWireService implements FbWireService {
         if (connection.getProtocolVersion() < PROTOCOL_VERSION13) {
             if (trustedAuth && !multifactor)
                 throw new SQLException("Trusted authorization is not supported. Use multi factor authorization instead of this one.");
-        }
-        
-        AuthSspi sspi;
-        if (multifactor) {
-            if (!spb.hasArgument(ISCConstants.isc_dpb_password) && connection.getAttachProperties().getPassword() != null)
-                spb.addArgument(ISCConstants.isc_dpb_password, connection.getAttachProperties().getPassword());
-            sspi = new AuthSspi();
-            try {
-                sspi.setClumpletReaderType(ClumpletReader.Kind.Tagged);
-                if (spb.hasArgument(ISCConstants.isc_dpb_repository_pin))
-                    sspi.setRepositoryPin(connection.getAttachProperties().getRepositoryPin());
-                sspi.fillFactors(spb);
-            } catch (GDSException e) {
-                throw new SQLException(e.getMessage());
-            }
-        }
-        else sspi = null;
 
-        connection.setSspi(sspi);
+            AuthSspi sspi;
+            if (multifactor) {
+                if (!spb.hasArgument(ISCConstants.isc_dpb_password) && connection.getAttachProperties().getPassword() != null)
+                    spb.addArgument(ISCConstants.isc_dpb_password, connection.getAttachProperties().getPassword());
+                sspi = new AuthSspi();
+                try {
+                    sspi.setClumpletReaderType(ClumpletReader.Kind.Tagged);
+                    if (spb.hasArgument(ISCConstants.isc_dpb_repository_pin))
+                        sspi.setRepositoryPin(connection.getAttachProperties().getRepositoryPin());
+                    sspi.fillFactors(spb);
+                } catch (GDSException e) {
+                    throw new SQLException(e.getMessage());
+                }
+            } else sspi = null;
+
+            connection.setSspi(sspi);
+        } else {
+            if (spb.hasArgument(ISCConstants.isc_spb_multi_factor_auth))
+                spb.removeArgument(ISCConstants.isc_spb_multi_factor_auth); // no need to send it to server
+        }
 
         xdrOut.writeInt(op_service_attach);
         xdrOut.writeInt(0); // Service object ID
