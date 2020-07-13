@@ -221,11 +221,12 @@ public interface ISCConstants {
     int isc_dpb_security_authentication = 166;
     int isc_dpb_certificate_base64      = 167;
     int isc_dpb_exclude_crypto_plugins  = 168;
+    int isc_dpb_provider_id             = 169;
 
     // Lowest Jaybird DPB extension value
     int jaybirdMinIscDpbValue = isc_dpb_socket_buffer_size;
     // NOTE: Update this when adding new Jaybird specific DPB items
-    int jaybirdMaxIscDpbValue = isc_dpb_exclude_crypto_plugins;
+    int jaybirdMaxIscDpbValue = isc_dpb_provider_id;
 
     /*************************************/
     /* Transaction parameter block stuff */
@@ -289,6 +290,20 @@ public interface ISCConstants {
     int isc_spb_os_user                 = 122;
     int isc_spb_config					= 123;
     int isc_spb_expected_db				= 124;
+
+    /* Red Database security parameters */
+
+    int isc_spb_multi_factor_auth       = isc_dpb_multi_factor_auth;
+    int isc_spb_certificate             = isc_dpb_certificate;
+    int isc_spb_repository_name         = isc_dpb_repository_name;
+    int isc_spb_eye                     = isc_dpb_eye;
+    int isc_spb_session_key             = isc_dpb_session_key;
+    int isc_spb_session_key_iv          = isc_dpb_session_key_iv;
+    int isc_spb_svc_name                = 156;
+    int isc_spb_verify_server           = 157;
+    int isc_spb_hw_address              = 158;
+    int isc_spb_repository_pin          = isc_dpb_repository_pin;
+    int isc_spb_provider_id             = isc_dpb_provider_id;
 
     int isc_spb_connect_timeout         = isc_dpb_connect_timeout;
     int isc_spb_dummy_packet_interval   = isc_dpb_dummy_packet_interval;

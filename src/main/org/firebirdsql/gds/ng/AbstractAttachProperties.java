@@ -38,6 +38,7 @@ public abstract class AbstractAttachProperties<T extends IAttachProperties<T>> i
     private String certificate;
     private String certificateBase64;
     private String repositoryPin;
+    private int providerID;
     private int socketBufferSize = IAttachProperties.DEFAULT_SOCKET_BUFFER_SIZE;
     private int soTimeout = IAttachProperties.DEFAULT_SO_TIMEOUT;
     private int connectTimeout = IAttachProperties.DEFAULT_CONNECT_TIMEOUT;
@@ -79,6 +80,7 @@ public abstract class AbstractAttachProperties<T extends IAttachProperties<T>> i
             certificate = src.getCertificate();
             certificateBase64 = src.getCertificateBase64();
             repositoryPin = src.getRepositoryPin();
+            providerID = src.getProviderID();
             verifyServerCertificate = src.getVerifyServerCertificate();
             effectiveLogin = src.getEffectiveLogin();
             excludeCryptoPlugins = src.getExcludeCryptoPlugins();
@@ -254,6 +256,17 @@ public abstract class AbstractAttachProperties<T extends IAttachProperties<T>> i
     @Override
     public void setRepositoryPin(String pin) {
         this.repositoryPin = pin;
+        dirtied();
+    }
+
+    @Override
+    public int getProviderID() {
+        return providerID;
+    }
+
+    @Override
+    public void setProviderID(int providerID) {
+        this.providerID = providerID;
         dirtied();
     }
 

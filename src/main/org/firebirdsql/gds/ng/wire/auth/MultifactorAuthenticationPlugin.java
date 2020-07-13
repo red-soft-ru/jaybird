@@ -47,6 +47,16 @@ public class MultifactorAuthenticationPlugin implements AuthenticationPlugin {
                 }
             }
 
+            int providerID = clientAuthBlock.getProviderID();
+
+            if (providerID != 0) {
+                try {
+                    authSspi.setProviderID(providerID);
+                } catch (GDSException e) {
+                    throw new SQLException(e.getMessage(), e);
+                }
+            }
+
             ByteBuffer data = new ByteBuffer(0);
 
             String userName = clientAuthBlock.getLogin();
