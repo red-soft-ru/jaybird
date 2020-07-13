@@ -185,5 +185,8 @@ public abstract class AbstractParameterConverter<D extends AbstractConnection<Fi
         if (properties.getNonStandardProperty("isc_spb_remote_protocol") != null) {
             spb.addArgument(isc_spb_remote_protocol, properties.getNonStandardProperty("isc_spb_remote_protocol"));
         }
+        if (properties.getNonStandardProperty("provider_id") != null) {
+            spb.addArgument(isc_spb_provider_id, properties.getNonStandardProperty("provider_id"));
+        }
     }
 }

@@ -173,6 +173,10 @@ public class V10Database extends AbstractFbWireDatabase implements FbWireDatabas
                     sspi.setClumpletReaderType(ClumpletReader.Kind.Tagged);
                     if (newDpb.hasArgument(ISCConstants.isc_dpb_repository_pin))
                         sspi.setRepositoryPin(connection.getAttachProperties().getRepositoryPin());
+                    if (newDpb.hasArgument(ISCConstants.isc_dpb_provider_id)) {
+                        sspi.setProviderID(newDpb.getArgumentAsInt(ISCConstants.isc_dpb_provider_id));
+                        newDpb.removeArgument(ISCConstants.isc_dpb_provider_id);
+                    }
                     sspi.fillFactors(newDpb);
                 } catch (GDSException e) {
                     throw new SQLException(e.getMessage());

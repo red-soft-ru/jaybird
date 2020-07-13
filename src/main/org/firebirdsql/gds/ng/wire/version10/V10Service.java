@@ -132,6 +132,10 @@ public class V10Service extends AbstractFbWireService implements FbWireService {
                     sspi.setClumpletReaderType(ClumpletReader.Kind.Tagged);
                     if (spb.hasArgument(ISCConstants.isc_dpb_repository_pin))
                         sspi.setRepositoryPin(connection.getAttachProperties().getRepositoryPin());
+                    if (spb.hasArgument(ISCConstants.isc_spb_provider_id)) {
+                        sspi.setProviderID(spb.getArgumentAsInt(ISCConstants.isc_spb_provider_id));
+                        spb.removeArgument(ISCConstants.isc_spb_provider_id);
+                    }
                     sspi.fillFactors(spb);
                 } catch (GDSException e) {
                     throw new SQLException(e.getMessage());

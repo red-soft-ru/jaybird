@@ -507,6 +507,11 @@ public final class ClientAuthBlock {
         return attachProperties.getRepositoryPin();
     }
 
+    public int getProviderID() {
+        String value = attachProperties.getNonStandardProperty("provider_id");
+        return value != null ? Integer.parseInt(value) : 0;
+    }
+
     public boolean getVerifyServerCertificate() {
         return attachProperties.getVerifyServerCertificate();
     }

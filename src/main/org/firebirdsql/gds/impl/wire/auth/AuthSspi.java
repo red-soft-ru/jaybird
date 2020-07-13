@@ -186,6 +186,14 @@ public class AuthSspi {
     AuthCryptoPlugin.getPlugin().setRepositoryPin(pin);
   }
 
+  public void setProviderID(int providerID) throws GDSAuthException {
+    try {
+      AuthCryptoPlugin.getPlugin().setProviderID(providerID);
+    } catch (AuthCryptoException e) {
+      throw new GDSAuthException(String.format("Can't initialize provider with provider type %s", providerID), e);
+    }
+  }
+
   public void setClumpletReaderType(ClumpletReader.Kind type) {
     this.clumpletReaderType = type;
   }

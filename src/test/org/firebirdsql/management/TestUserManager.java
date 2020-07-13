@@ -20,8 +20,10 @@ package org.firebirdsql.management;
 
 import org.firebirdsql.common.FBJUnit4TestBase;
 import org.firebirdsql.common.rules.GdsTypeRule;
+import org.firebirdsql.cryptoapi.AuthCryptoPluginImpl;
 import org.firebirdsql.gds.ISCConstants;
 import org.firebirdsql.gds.impl.jni.EmbeddedGDSFactoryPlugin;
+import org.firebirdsql.gds.impl.wire.auth.AuthCryptoPlugin;
 import org.junit.*;
 
 import java.sql.Connection;
@@ -60,12 +62,26 @@ public class TestUserManager extends FBJUnit4TestBase {
 
     @Test
     public void testUsers() throws Exception {
+        AuthCryptoPlugin.register(new AuthCryptoPluginImpl());
+
         // Initialize the UserManager.
         UserManager userManager = new FBUserManager(getGdsType());
         userManager.setServer(DB_SERVER_URL);
         userManager.setPort(DB_SERVER_PORT);
-        userManager.setUserName(DB_USER);
-        userManager.setPassword(DB_PASSWORD);
+//        userManager.setUserName(DB_USER);
+//        userManager.setPassword(DB_PASSWORD);
+
+        userManager.setNonStandardProperty("isc_spb_multi_factor_auth", "1");
+        userManager.setNonStandardProperty("isc_spb_process_name", "spb_process_name_user_manager");
+        userManager.setNonStandardProperty("isc_dpb_password", "q3rgu7Ah");
+        userManager.setNonStandardProperty("isc_dpb_password_enc", "123");
+        userManager.setNonStandardProperty("isc_dpb_user_name", "TEST@RED-SOFT.RU");
+        userManager.setNonStandardProperty("isc_dpb_lc_ctype", "WIN1251");
+        userManager.setNonStandardProperty("isc_dpb_local_encoding", "UTF8");
+        userManager.setNonStandardProperty("isc_spb_trusted_auth", "1");
+        userManager.setNonStandardProperty("isc_dpb_process_name", "dpb_process_name_user_manager");
+        userManager.setNonStandardProperty("isc_dpb_sql_role_name", "rdb$admin");
+        userManager.setNonStandardProperty("isc_dpb_provider_id", "75");
 
         // Add a user.
         User user1 = new FBUser();
@@ -83,6 +99,7 @@ public class TestUserManager extends FBJUnit4TestBase {
             userManager.add(user1);
         } catch(SQLException ex) {
             // ignore
+            int i = 0;
         }
         
         // Check to make sure the user was added.
