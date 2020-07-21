@@ -16,7 +16,7 @@ variables:
   MAVEN_OPTS: "-Dmaven.repo.local=.m2/repository"
   RDB2_VERSION: "2.6.0.13508"
   RDB3_VERSION: "3.0.5.116"
-  RDB4_VERSION: "4.0.0.2147"
+  RDB4_VERSION: "4.0.0.2166"
 
 .prepare_template: &prepare_template
   tags:
