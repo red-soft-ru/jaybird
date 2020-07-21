@@ -94,7 +94,6 @@
 		<test.db.lc_ctype>NONE</test.db.lc_ctype>
 		<test.report.dir>${basedir}/../../reports</test.report.dir>
 		<test.java8.jvm>/usr/lib/jvm/jre-1.8.0/bin/java</test.java8.jvm>
-		<test.jni.skip>true</test.jni.skip>
 		<report_name>jdk8</report_name>
 	</properties>
 	<build>
@@ -250,43 +249,19 @@
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>2.22.2</version>
 				<configuration>
-					<skip>true</skip>
+					<includes>
+						<include>**/Test*.java</include>
+					</includes>
+					<excludes>
+						<exclude>**/jni/Test*.java</exclude>
+						<exclude>**/TestAll.java</exclude>
+						<exclude>**/TestXABase*.java</exclude>
+						<exclude>**/TestConst.java</exclude>
+						<exclude>**/*$$*.java</exclude>
+					</excludes>
 					<testFailureIgnore>true</testFailureIgnore>
 					<jvm>${test.java8.jvm}</jvm>
 				</configuration>
-				<executions>
-					<execution>
-						<id>test-without-jni</id>
-						<goals>
-							<goal>test</goal>
-						</goals>
-						<configuration>
-							<skip>false</skip>
-							<includes>
-								<include>**/Test*.java</include>
-							</includes>
-							<excludes>
-								<exclude>**/jni/Test*.java</exclude>
-								<exclude>**/TestAll.java</exclude>
-								<exclude>**/TestXABase*.java</exclude>
-								<exclude>**/TestConst.java</exclude>
-								<exclude>**/*$$*.java</exclude>
-							</excludes>
-						</configuration>
-					</execution>
-					<execution>
-						<id>test-jni-only</id>
-						<goals>
-							<goal>test</goal>
-						</goals>
-						<configuration>
-							<skip>${test.jni.skip}</skip>
-							<includes>
-								<include>**/jni/Test*.java</include>
-							</includes>
-						</configuration>
-					</execution>
-				</executions>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
