@@ -25,7 +25,6 @@ import org.firebirdsql.gds.ISCConstants;
 import org.firebirdsql.gds.TransactionParameterBuffer;
 import org.firebirdsql.gds.impl.TransactionParameterBufferImpl;
 import org.firebirdsql.gds.ng.fields.RowValue;
-import org.firebirdsql.jdbc.FBConnection;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -168,6 +167,19 @@ public abstract class AbstractTransactionTest extends FBJUnit4TestBase {
 
         assertEquals(TransactionState.ROLLED_BACK, transaction.getState());
         assertValueForKey(key, false, null);
+    }
+
+    @Test
+    public void testTransactionWithZeroLockTimeout() throws Exception {
+        expectedException.expect(SQLException.class);
+
+        TransactionParameterBuffer tpb = new TransactionParameterBufferImpl();
+        tpb.addArgument(ISCConstants.isc_tpb_read_committed);
+        tpb.addArgument(ISCConstants.isc_tpb_rec_version);
+        tpb.addArgument(ISCConstants.isc_tpb_write);
+        tpb.addArgument(ISCConstants.isc_tpb_wait);
+        tpb.addArgument(ISCConstants.isc_tpb_lock_timeout, 0);
+        final FbTransaction transaction = db.startTransaction(tpb);
     }
 
     protected final void assertValueForKey(int key, boolean hasRow, String expectedValue) throws SQLException {

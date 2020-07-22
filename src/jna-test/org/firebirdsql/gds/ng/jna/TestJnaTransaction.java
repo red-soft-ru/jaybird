@@ -23,6 +23,7 @@ import org.firebirdsql.common.rules.GdsTypeRule;
 import org.firebirdsql.gds.ng.AbstractTransactionTest;
 import org.firebirdsql.gds.ng.FbDatabase;
 import org.junit.ClassRule;
+import org.junit.Ignore;
 
 import java.sql.SQLException;
 
@@ -32,6 +33,7 @@ import java.sql.SQLException;
  * @author <a href="mailto:mrotteveel@users.sourceforge.net">Mark Rotteveel</a>
  * @since 3.0
  */
+@Ignore
 public class TestJnaTransaction extends AbstractTransactionTest {
 
     @ClassRule

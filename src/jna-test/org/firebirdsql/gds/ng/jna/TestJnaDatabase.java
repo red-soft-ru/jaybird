@@ -25,6 +25,8 @@ import org.firebirdsql.gds.TransactionParameterBuffer;
 import org.firebirdsql.gds.impl.GDSServerVersion;
 import org.firebirdsql.gds.impl.TransactionParameterBufferImpl;
 import org.firebirdsql.gds.impl.jni.EmbeddedGDSFactoryPlugin;
+import org.firebirdsql.gds.impl.nativeoo.FbOOEmbeddedGDSFactoryPlugin;
+import org.firebirdsql.gds.impl.nativeoo.FbOOLocalGDSFactoryPlugin;
 import org.firebirdsql.gds.impl.jni.LocalGDSFactoryPlugin;
 import org.firebirdsql.gds.ng.FbConnectionProperties;
 import org.firebirdsql.gds.ng.FbDatabase;
@@ -33,6 +35,7 @@ import org.firebirdsql.gds.ng.TransactionState;
 import org.firebirdsql.jdbc.SQLStateConstants;
 import org.firebirdsql.management.FBManager;
 import org.junit.ClassRule;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -56,6 +59,7 @@ import static org.junit.Assume.assumeTrue;
  * @author <a href="mailto:mrotteveel@users.sourceforge.net">Mark Rotteveel</a>
  * @since 3.0
  */
+@Ignore
 public class TestJnaDatabase {
 
     // TODO Check if tests can be unified with equivalent wire protocol tests
@@ -84,7 +88,7 @@ public class TestJnaDatabase {
     public void testBasicAttach() throws Exception {
         FBManager fbManager = createFBManager();
         defaultDatabaseSetUp(fbManager);
-        try (JnaDatabase db = factory.connect(connectionInfo)) {
+        try (JnaDatabase db = (JnaDatabase) factory.connect(connectionInfo)) {
             db.attach();
 
             assertTrue("Expected isAttached() to return true", db.isAttached());
@@ -104,7 +108,7 @@ public class TestJnaDatabase {
         FBManager fbManager = createFBManager();
         defaultDatabaseSetUp(fbManager);
 
-        try (JnaDatabase db = factory.connect(connectionInfo)) {
+        try (JnaDatabase db = (JnaDatabase) factory.connect(connectionInfo)) {
             db.attach();
 
             //Second attach should throw exception
@@ -120,7 +124,7 @@ public class TestJnaDatabase {
                 FBTestProperties.GDS_TYPE, not(isEmbeddedType()));
         // set invalid password
         connectionInfo.setPassword("abcd");
-        try (JnaDatabase db = factory.connect(connectionInfo)) {
+        try (JnaDatabase db = (JnaDatabase) factory.connect(connectionInfo)) {
 
             expectedException.expect(allOf(
                     isA(SQLException.class),
@@ -137,7 +141,7 @@ public class TestJnaDatabase {
         // set invalid database
         final String invalidDatabaseName = FBTestProperties.getDatabasePath() + "doesnotexist";
         connectionInfo.setDatabaseName(invalidDatabaseName);
-        try (JnaDatabase db = factory.connect(connectionInfo)) {
+        try (JnaDatabase db = (JnaDatabase) factory.connect(connectionInfo)) {
 
             expectedException.expect(allOf(
                     isA(SQLException.class),
@@ -166,7 +170,7 @@ public class TestJnaDatabase {
     public void testBasicCreateAndDrop() throws Exception {
         connectionInfo.getExtraDatabaseParameters()
                 .addArgument(ISCConstants.isc_dpb_sql_dialect, 3);
-        JnaDatabase db = factory.connect(connectionInfo);
+        JnaDatabase db = (JnaDatabase) factory.connect(connectionInfo);
         File dbFile = new File(connectionInfo.getDatabaseName());
         try {
             db.createDatabase();
@@ -194,7 +198,7 @@ public class TestJnaDatabase {
         FBManager fbManager = createFBManager();
         defaultDatabaseSetUp(fbManager);
         try {
-            JnaDatabase db = factory.connect(connectionInfo);
+            JnaDatabase db = (JnaDatabase) factory.connect(connectionInfo);
             db.dropDatabase();
         } finally {
             defaultDatabaseTearDown(fbManager);
@@ -203,7 +207,7 @@ public class TestJnaDatabase {
 
     @Test
     public void testDetach_NotConnected() throws Exception {
-        JnaDatabase db = factory.connect(connectionInfo);
+        JnaDatabase db = (JnaDatabase) factory.connect(connectionInfo);
 
         // Note: the error is different from the one in the pure java implementation as we cannot discern between
         // not connected and not attached
@@ -219,7 +223,7 @@ public class TestJnaDatabase {
         FBManager fbManager = createFBManager();
         defaultDatabaseSetUp(fbManager);
         try {
-            JnaDatabase db = factory.connect(connectionInfo);
+            JnaDatabase db = (JnaDatabase) factory.connect(connectionInfo);
             try {
                 db.attach();
 
@@ -240,7 +244,7 @@ public class TestJnaDatabase {
         defaultDatabaseSetUp(fbManager);
 
         try {
-            JnaDatabase db = factory.connect(connectionInfo);
+            JnaDatabase db = (JnaDatabase) factory.connect(connectionInfo);
             FbTransaction transaction = null;
             try {
                 db.attach();
@@ -269,12 +273,13 @@ public class TestJnaDatabase {
         // TODO Investigate why this doesn't work.
         assumeThat("Test doesn't work with local or embedded protocol",
                 FBTestProperties.GDS_TYPE, not(
-                        isOneOf(LocalGDSFactoryPlugin.LOCAL_TYPE_NAME, EmbeddedGDSFactoryPlugin.EMBEDDED_TYPE_NAME)));
+                        isOneOf(LocalGDSFactoryPlugin.LOCAL_TYPE_NAME, EmbeddedGDSFactoryPlugin.EMBEDDED_TYPE_NAME,
+                                FbOOLocalGDSFactoryPlugin.LOCAL_TYPE_NAME, FbOOEmbeddedGDSFactoryPlugin.EMBEDDED_TYPE_NAME)));
 
         FBManager fbManager = createFBManager();
         defaultDatabaseSetUp(fbManager);
         try {
-            JnaDatabase db = factory.connect(connectionInfo);
+            JnaDatabase db = (JnaDatabase) factory.connect(connectionInfo);
             try {
                 db.attach();
                 assumeTrue("expected database attached", db.isAttached());
@@ -293,7 +298,7 @@ public class TestJnaDatabase {
 
     @Test
     public void testExecuteImmediate_createDatabase() throws Exception {
-        JnaDatabase db = factory.connect(connectionInfo);
+        JnaDatabase db = (JnaDatabase) factory.connect(connectionInfo);
         try {
             String createDb = String.format("CREATE DATABASE '%s' USER '%s' PASSWORD '%s'",
                     getDatabasePath(), DB_USER, DB_PASSWORD);

@@ -74,7 +74,6 @@ public final class FbConnectionProperties extends AbstractAttachProperties<IConn
             resultSetDefaultHoldable = src.isResultSetDefaultHoldable();
             columnLabelForName = src.isColumnLabelForName();
             sessionTimeZone = src.getSessionTimeZone();
-
             for (Parameter parameter : src.getExtraDatabaseParameters()) {
                 parameter.copyTo(extraDatabaseParameters, null);
             }

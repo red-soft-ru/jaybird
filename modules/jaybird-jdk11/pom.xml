@@ -147,6 +147,7 @@
 								<source>../../src/jdbc_42</source>
 								<source>../../src/jna-client</source>
 								<source>../../src/openoffice</source>
+								<source>../../src/nativeoo</source>
 							</sources>
 						</configuration>
 					</execution>
@@ -162,6 +163,7 @@
 								<source>../../src/test/</source>
 								<source>../../src/test_42/</source>
 								<source>../../src/jna-test/</source>
+								<source>../../src/nativeoo-test/</source>
 							</sources>
 						</configuration>
 					</execution>
@@ -232,6 +234,7 @@
 						../../src/jna-client:
 						../../src/jdbc_42:
 						../../src/openoffice
+						../../src/nativeoo:
 					</sourcepath>
 					<excludePackageNames>${excludedPackages}</excludePackageNames>
 					<links>
@@ -259,12 +262,15 @@
 				<configuration>
 					<includes>
 						<include>**/Test*.java</include>
+						<include>**/nativeoo/**</include>
+					</includes>
+					<excludes>
 						<exclude>**/jni/Test*.java</exclude>
 						<exclude>**/TestAll.java</exclude>
 						<exclude>**/TestXABase*.java</exclude>
 						<exclude>**/TestConst.java</exclude>
 						<exclude>**/*$$*.java</exclude>
-					</includes>
+					</excludes>
 					<testFailureIgnore>true</testFailureIgnore>
 					<jvm>${test.java.jvm}</jvm>
 				</configuration>

@@ -32,6 +32,7 @@ import org.firebirdsql.jna.fbclient.FbClientLibrary;
 import org.firebirdsql.jna.fbclient.ISC_STATUS;
 import org.junit.After;
 import org.junit.ClassRule;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.sql.SQLException;
@@ -47,6 +48,7 @@ import static org.junit.Assert.assertTrue;
  * @author <a href="mailto:mrotteveel@users.sourceforge.net">Mark Rotteveel</a>
  * @since 3.0
  */
+@Ignore
 public class TestJnaEvents extends FBJUnit4TestBase {
 
     @ClassRule
@@ -95,7 +97,7 @@ public class TestJnaEvents extends FBJUnit4TestBase {
 
     @Test
     public void testCreateEventHandle() throws Exception {
-        db = factory.connect(connectionInfo);
+        db = (JnaDatabase) factory.connect(connectionInfo);
         db.attach();
 
         JnaEventHandle eventHandle = db.createEventHandle("TEST_EVENT", new EventHandler() {
@@ -109,7 +111,7 @@ public class TestJnaEvents extends FBJUnit4TestBase {
 
     @Test
     public void testQueueEvent_andNotification() throws Exception {
-        db = factory.connect(connectionInfo);
+        db = (JnaDatabase) factory.connect(connectionInfo);
         db.attach();
 
         FbTransaction transaction = getTransaction(db);
@@ -176,7 +178,7 @@ public class TestJnaEvents extends FBJUnit4TestBase {
 
     @Test
     public void cancelAfterCallback_directJNA() throws Exception {
-        db = factory.connect(connectionInfo);
+        db = (JnaDatabase) factory.connect(connectionInfo);
         db.attach();
 
         FbClientLibrary lib = db.getClientLibrary();
