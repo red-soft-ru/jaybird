@@ -1,9 +1,10 @@
 package org.firebirdsql.nativeoo.gds.ng;
 
-import org.firebirdsql.gds.impl.GDSFactory;
-import org.firebirdsql.gds.impl.GDSType;
+import org.firebirdsql.common.FBTestProperties;
+import org.firebirdsql.common.rules.GdsTypeRule;
 import org.firebirdsql.gds.ng.AbstractTransactionTest;
 import org.firebirdsql.gds.ng.FbDatabase;
+import org.junit.ClassRule;
 
 import java.sql.SQLException;
 
@@ -14,10 +15,11 @@ import java.sql.SQLException;
  */
 public class ITransactionImplTest extends AbstractTransactionTest {
 
-    private static final String gdsType = "FBOONATIVE";
+    @ClassRule
+    public static final GdsTypeRule testType = GdsTypeRule.supportsFBOONativeOnly();
 
     private AbstractNativeOODatabaseFactory factory =
-            (AbstractNativeOODatabaseFactory) GDSFactory.getDatabaseFactoryForType(GDSType.getType(gdsType));
+            (AbstractNativeOODatabaseFactory) FBTestProperties.getFbDatabaseFactory();
 
     @Override
     protected FbDatabase createDatabase() throws SQLException {

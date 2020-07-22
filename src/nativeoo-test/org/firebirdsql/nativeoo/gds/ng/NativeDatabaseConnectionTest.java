@@ -1,11 +1,11 @@
 package org.firebirdsql.nativeoo.gds.ng;
 
 import org.firebirdsql.common.FBTestProperties;
-import org.firebirdsql.gds.impl.GDSFactory;
-import org.firebirdsql.gds.impl.GDSType;
+import org.firebirdsql.common.rules.GdsTypeRule;
 import org.firebirdsql.gds.ng.FbConnectionProperties;
 import org.firebirdsql.gds.ng.FbDatabase;
 import org.firebirdsql.jna.fbclient.FbClientLibrary;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -16,11 +16,15 @@ import static org.junit.Assert.*;
 
 public class NativeDatabaseConnectionTest {
 
+    @ClassRule
+    public static final GdsTypeRule testType = GdsTypeRule.supportsFBOONativeOnly();
+
+    private AbstractNativeOODatabaseFactory factory =
+            (AbstractNativeOODatabaseFactory) FBTestProperties.getFbDatabaseFactory();
+
     @Rule
     public final ExpectedException expectedException = ExpectedException.none();
 
-    private final AbstractNativeOODatabaseFactory factory =
-            (AbstractNativeOODatabaseFactory) GDSFactory.getDatabaseFactoryForType(GDSType.getType("FBOONATIVE"));
     private final FbConnectionProperties connectionInfo;
     {
         connectionInfo = new FbConnectionProperties();

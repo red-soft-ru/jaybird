@@ -1,16 +1,18 @@
 package org.firebirdsql.nativeoo.gds.ng;
 
 import org.firebirdsql.common.FBTestProperties;
+import org.firebirdsql.common.rules.GdsTypeRule;
 import org.firebirdsql.gds.ISCConstants;
 import org.firebirdsql.gds.ServiceRequestBuffer;
-import org.firebirdsql.gds.impl.GDSFactory;
+
 import org.firebirdsql.gds.impl.GDSServerVersion;
-import org.firebirdsql.gds.impl.GDSType;
+
 import org.firebirdsql.gds.impl.nativeoo.FbOOEmbeddedGDSFactoryPlugin;
 import org.firebirdsql.gds.ng.FbServiceProperties;
-import org.firebirdsql.gds.ng.jna.AbstractNativeDatabaseFactory;
+
 import org.firebirdsql.management.FBManager;
 import org.firebirdsql.management.FBStatisticsManager;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -35,13 +37,16 @@ import static org.junit.Assume.assumeTrue;
 
 public class IServiceImplTest {
 
-    private static final String gdsType = "FBOONATIVE";
+    @ClassRule
+    public static final GdsTypeRule testType = GdsTypeRule.supportsFBOONativeOnly();
+
+    private AbstractNativeOODatabaseFactory factory =
+            (AbstractNativeOODatabaseFactory) FBTestProperties.getFbDatabaseFactory();
 
     @Rule
     public final ExpectedException expectedException = ExpectedException.none();
 
-    private AbstractNativeOODatabaseFactory factory =
-            (AbstractNativeOODatabaseFactory) GDSFactory.getDatabaseFactoryForType(GDSType.getType(gdsType));
+
 
     private final FbServiceProperties connectionInfo;
     {
