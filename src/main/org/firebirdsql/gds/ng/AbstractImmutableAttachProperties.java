@@ -44,6 +44,7 @@ public abstract class AbstractImmutableAttachProperties<T extends IAttachPropert
     private final String certificate;
     private final String certificateBase64;
     private final String repositoryPin;
+    private final int providerID;
     private final String effectiveLogin;
 
     /**
@@ -75,6 +76,7 @@ public abstract class AbstractImmutableAttachProperties<T extends IAttachPropert
         certificate = src.getCertificate();
         certificateBase64 = src.getCertificateBase64();
         repositoryPin = src.getRepositoryPin();
+        providerID = src.getProviderID();
         effectiveLogin = src.getEffectiveLogin();
     }
 
@@ -205,6 +207,16 @@ public abstract class AbstractImmutableAttachProperties<T extends IAttachPropert
 
     @Override
     public void setRepositoryPin(final String pin) {
+        immutable();
+    }
+
+    @Override
+    public int getProviderID() {
+        return providerID;
+    }
+
+    @Override
+    public void setProviderID(final int providerID) {
         immutable();
     }
 

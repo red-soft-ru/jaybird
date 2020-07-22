@@ -1,5 +1,7 @@
 package org.firebirdsql.gds.impl.wire.auth;
 
+import org.firebirdsql.gds.ISCConstants;
+
 /**
  * @author roman.kisluhin
  * @version 1.0
@@ -11,7 +13,7 @@ public abstract class AuthCryptoPlugin {
 
   public static AuthCryptoPlugin getPlugin() throws GDSAuthException {
     if (_plugin == null)
-      throw new GDSAuthException("Crypto plugin is not installed. Please, register with AuthCryptoPlugin#register(AuthCryptoPlugin).");
+      throw new GDSAuthException(ISCConstants.isc_login, "Crypto plugin is not installed. Please, register with AuthCryptoPlugin#register(AuthCryptoPlugin).");
     return _plugin;
   }
 
@@ -53,6 +55,8 @@ public abstract class AuthCryptoPlugin {
   public abstract byte[] ccfiSign(final AuthPrivateKeyContext userKey, final byte[] data, final String certBase64, final int keySpec) throws AuthCryptoException;
 
   public abstract void setRepositoryPin(String pin);
+
+  public abstract void setProviderID(int providerID) throws AuthCryptoException;
 
   public abstract byte[] generateRandom(Object provHandle, int size) throws AuthCryptoException;
 

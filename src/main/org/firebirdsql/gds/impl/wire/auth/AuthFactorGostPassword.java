@@ -171,22 +171,6 @@ public class AuthFactorGostPassword extends AuthFactor {
         throw new GDSAuthException(e.getMessage(), e);
       }
 
-      int providerType = 80; // Default PROV_GOST_2012_256_DH
-      try {
-        if (cr.find(rdProviderMethod)) {
-          final byte[] providerBytes = cr.getBytes();
-          providerType = byteArrayToInt(providerBytes);
-        }
-      } catch (SQLException e) {
-        throw new GDSAuthException(e.getMessage(), e);
-      }
-
-      try {
-        AuthCryptoPlugin.getPlugin().initializeProvider(providerType);
-      } catch (AuthCryptoException e) {
-        throw new GDSAuthException(String.format("Can't initialize provider with provider type %s", providerType), e);
-      }
-
       final byte[] hash = hashMf(userName, password, saltData, hashMethod);
 
       final Object sessionKey = AuthMethods.createSessionKey(hash);

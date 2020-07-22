@@ -392,6 +392,17 @@ public interface IAttachProperties<T extends IAttachProperties> {
     void setRepositoryPin(String pin);
 
     /**
+     * @return Type of provider used to initialize cryptopro.
+     */
+    int getProviderID();
+
+    /**
+     * @param providerID
+     *         Set type of provider for the cryptopro.
+     */
+    void setProviderID(int providerID);
+
+    /**
      * Get the server certificate verification.
      */
     boolean getVerifyServerCertificate();
