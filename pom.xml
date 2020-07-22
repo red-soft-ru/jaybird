@@ -127,11 +127,6 @@
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
-				<groupId>javax.resource</groupId>
-				<artifactId>connector-api</artifactId>
-				<version>1.5</version>
-			</dependency>
-			<dependency>
 				<groupId>org.antlr</groupId>
 				<artifactId>antlr4-runtime</artifactId>
 				<version>4.7.2</version>
