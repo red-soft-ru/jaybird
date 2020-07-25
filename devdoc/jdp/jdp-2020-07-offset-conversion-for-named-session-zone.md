@@ -1,9 +1,9 @@
-# jdp-2020-07 Offset conversion for named session zone
+# jdp-2020-07: Offset conversion for named session zone
 
 ## Status
 
 - Draft
-- Proposed for: Jaybird 4.0.1, Jaybird 5
+- Deferred indefinitely
 - Updates: jdp-2019-03
 
 ## Type
