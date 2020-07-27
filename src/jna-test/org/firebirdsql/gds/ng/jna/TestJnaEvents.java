@@ -32,7 +32,7 @@ import org.firebirdsql.jna.fbclient.FbClientLibrary;
 import org.firebirdsql.jna.fbclient.ISC_STATUS;
 import org.junit.After;
 import org.junit.ClassRule;
-import org.junit.Ignore;
+
 import org.junit.Test;
 
 import java.sql.SQLException;
@@ -48,7 +48,6 @@ import static org.junit.Assert.assertTrue;
  * @author <a href="mailto:mrotteveel@users.sourceforge.net">Mark Rotteveel</a>
  * @since 3.0
  */
-@Ignore
 public class TestJnaEvents extends FBJUnit4TestBase {
 
     @ClassRule
