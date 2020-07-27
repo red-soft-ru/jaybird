@@ -29,7 +29,7 @@ import java.util.List;
 import static org.firebirdsql.cryptoapi.windows.Wincrypt.*;
 import static org.firebirdsql.cryptoapi.windows.advapi.Advapi.cryptSetKeyParam;
 
-public class AuthCryptoPluginImpl extends AuthCryptoPlugin {
+public class AuthCryptoPluginImpl extends AuthCryptoPlugin implements AutoCloseable {
   private Pointer provider;
   private Pointer myStore;
   private String repositoryPin;
@@ -264,12 +264,11 @@ public class AuthCryptoPluginImpl extends AuthCryptoPlugin {
   }
 
   @Override
-  protected void finalize() throws Throwable {
+  public void close() {
     if (provider != null)
       Advapi.cryptReleaseContext(provider);
     if (myStore != null)
       Crypt32.certCloseStore(myStore);
-    super.finalize();
   }
 
   @Override
