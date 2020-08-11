@@ -4,6 +4,14 @@ Jaybird 4.0.x changelog
 Changes per Jaybird 4 release. See also [What's new in Jaybird 4](#whats-new-in-jaybird-4). For known
 issues, consult [Known Issues](#known-issues).
 
+Jaybird 4.0.2
+-------------
+
+The following has been changed or fixed since Jaybird 4.0.1
+
+-   Fixed: First letter of JDBC escape was case-sensitive ([JDBC-632](http://tracker.firebirdsql.org/browse/JDBC-632)) \
+    This was a regression compared to 2.2.x. Fix was also backported to 3.0.10.
+
 Jaybird 4.0.1
 -------------
 
@@ -23,7 +31,7 @@ The following has been changed or fixed since Jaybird 4.0.0
     to the JNA `NativeLibrary` ([JDBC-620](http://tracker.firebirdsql.org/browse/JDBC-620))
 -   Fixed: When updating a row through an updatable result set, selected but
     not updated blob fields were set to `NULL` ([JDBC-623](http://tracker.firebirdsql.org/browse/JDBC-623))
--   Added: Support for type `INT128` (reported as JDBC type `NUMERIC`) ([JDBC-624](http://tracker.firebirdsql.org/browse/JDBC-624) \
+-   Added: Support for type `INT128` (reported as JDBC type `NUMERIC`) ([JDBC-624](http://tracker.firebirdsql.org/browse/JDBC-624)) \
     See also [Firebird 4 INT128 support](#firebird-4-int128-support).
 -   Added: A static utility method `FBDriver.normalizeProperties` which, given a
     JDBC url and a `Properties` object, returns a `Map<String, String>`
@@ -54,7 +62,7 @@ The following has been changed or fixed since Jaybird 4.0.0
     For `TIME WITH TIME ZONE`, the returned value is rebased on the current
     date.
 -   Fixed: `Connection.setNetworkTimeout` incorrectly used the provided
-    `Executor` to set the timeout ([JDBC-631](tracker.firebirdsql.org/browse/JDBC-631))) \ 
+    `Executor` to set the timeout ([JDBC-631](tracker.firebirdsql.org/browse/JDBC-631)) \
     This caused a race condition where the timeout was possibly applied too
     late, and when `connection.close()` was called immediately after, this could
     trigger a `NullPointerException` that would bubble up into the executor.
