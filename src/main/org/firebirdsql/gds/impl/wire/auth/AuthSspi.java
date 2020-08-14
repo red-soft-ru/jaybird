@@ -3,10 +3,7 @@ package org.firebirdsql.gds.impl.wire.auth;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.firebirdsql.gds.ClumpletReader;
-import org.firebirdsql.gds.DatabaseParameterBuffer;
-import org.firebirdsql.gds.GDSException;
-import org.firebirdsql.gds.ISCConstants;
+import org.firebirdsql.gds.*;
 import org.firebirdsql.gds.impl.wire.ByteBuffer;
 
 import static org.firebirdsql.gds.ClumpletReader.Kind.WideTagged;
@@ -87,7 +84,7 @@ public class AuthSspi {
     return true;
   }
 
-  public void fillFactors(final DatabaseParameterBuffer dpb) throws GDSException {
+  public void fillFactors(final ConnectionParameterBuffer dpb) throws GDSException {
     // Password factor
     if (dpb.hasArgument(ISCConstants.isc_dpb_password) || dpb.hasArgument(ISCConstants.isc_dpb_user_name)) {
       final AuthFactorPassword f = new AuthFactorPassword(this);
@@ -187,6 +184,14 @@ public class AuthSspi {
 
   public void setRepositoryPin(String pin) throws GDSAuthException {
     AuthCryptoPlugin.getPlugin().setRepositoryPin(pin);
+  }
+
+  public void setProviderID(int providerID) throws GDSAuthException {
+    try {
+      AuthCryptoPlugin.getPlugin().setProviderID(providerID);
+    } catch (AuthCryptoException e) {
+      throw new GDSAuthException(String.format("Can't initialize provider with provider type %s", providerID), e);
+    }
   }
 
   public void setClumpletReaderType(ClumpletReader.Kind type) {

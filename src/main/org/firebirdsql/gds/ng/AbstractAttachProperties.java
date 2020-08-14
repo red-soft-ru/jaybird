@@ -37,6 +37,7 @@ public abstract class AbstractAttachProperties<T extends IAttachProperties> impl
     private String encoding;
     private String certificate;
     private String certificateBase64;
+    private int providerID;
     private String repositoryPin;
     private int socketBufferSize = IAttachProperties.DEFAULT_SOCKET_BUFFER_SIZE;
     private int soTimeout = IAttachProperties.DEFAULT_SO_TIMEOUT;
@@ -74,6 +75,7 @@ public abstract class AbstractAttachProperties<T extends IAttachProperties> impl
             useGSSAuth = src.isUseGSSAuth();
             certificate = src.getCertificate();
             certificateBase64 = src.getCertificateBase64();
+            providerID = src.getProviderID();
             repositoryPin = src.getRepositoryPin();
             verifyServerCertificate = src.getVerifyServerCertificate();
             effectiveLogin = src.getEffectiveLogin();
@@ -250,6 +252,17 @@ public abstract class AbstractAttachProperties<T extends IAttachProperties> impl
     @Override
     public void setCertificateBase64(String certificateBase64) {
         this.certificateBase64 = certificateBase64;
+        dirtied();
+    }
+
+    @Override
+    public int getProviderID() {
+        return providerID;
+    }
+
+    @Override
+    public void setProviderID(int providerID) {
+        this.providerID = providerID;
         dirtied();
     }
 

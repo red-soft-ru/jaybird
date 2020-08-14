@@ -312,6 +312,17 @@ public interface IAttachProperties<T extends IAttachProperties> {
     void setCertificateBase64(String certificateBase64);
 
     /**
+     * @return Provider id with which the cryptopro was initialized.
+     */
+    int getProviderID();
+
+    /**
+     * @param providerID
+     *         Set provider id to initialize the cryptopro.
+     */
+    void setProviderID(int providerID);
+
+    /**
      * @return Pin-code for the cryptopro container.
      */
     String getRepositoryPin();
