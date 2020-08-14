@@ -250,6 +250,9 @@ public final class FbConnectionProperties extends AbstractAttachProperties<IConn
             case isc_dpb_certificate:
                 setCertificate(parameter.getValueAsString());
                 break;
+            case isc_dpb_not_encrypt_password:
+                setNotEncryptedPassword(true);
+                break;
             case isc_dpb_certificate_base64:
                 setCertificateBase64(parameter.getValueAsString());
                 break;

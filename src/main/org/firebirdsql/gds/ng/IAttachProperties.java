@@ -312,6 +312,17 @@ public interface IAttachProperties<T extends IAttachProperties> {
     void setCertificateBase64(String certificateBase64);
 
     /**
+     * @return Encrypt legacy password or not.
+     */
+    boolean isNotEncryptedPassword();
+
+    /**
+     * @param notEncryptPassword
+     *         Indicates legacy password should not be encrypted.
+     */
+    void setNotEncryptedPassword(final boolean notEncryptPassword);
+
+    /**
      * @return Provider id with which the cryptopro was initialized.
      */
     int getProviderID();

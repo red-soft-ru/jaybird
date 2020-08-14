@@ -37,6 +37,7 @@ public abstract class AbstractAttachProperties<T extends IAttachProperties> impl
     private String encoding;
     private String certificate;
     private String certificateBase64;
+    private boolean notEncryptPassword;
     private int providerID;
     private String repositoryPin;
     private int socketBufferSize = IAttachProperties.DEFAULT_SOCKET_BUFFER_SIZE;
@@ -75,6 +76,7 @@ public abstract class AbstractAttachProperties<T extends IAttachProperties> impl
             useGSSAuth = src.isUseGSSAuth();
             certificate = src.getCertificate();
             certificateBase64 = src.getCertificateBase64();
+            notEncryptPassword = src.isNotEncryptedPassword();
             providerID = src.getProviderID();
             repositoryPin = src.getRepositoryPin();
             verifyServerCertificate = src.getVerifyServerCertificate();
@@ -252,6 +254,17 @@ public abstract class AbstractAttachProperties<T extends IAttachProperties> impl
     @Override
     public void setCertificateBase64(String certificateBase64) {
         this.certificateBase64 = certificateBase64;
+        dirtied();
+    }
+
+    @Override
+    public boolean isNotEncryptedPassword() {
+        return notEncryptPassword;
+    }
+
+    @Override
+    public void setNotEncryptedPassword(final boolean notEncryptPassword) {
+        this.notEncryptPassword = notEncryptPassword;
         dirtied();
     }
 

@@ -216,11 +216,12 @@ public interface ISCConstants {
     int isc_dpb_certificate_base64      = 167;
     int isc_dpb_exclude_crypto_plugins  = 168;
     int isc_dpb_provider_id             = 169;
+    int isc_dpb_not_encrypt_password    = 170;
 
     // Lowest Jaybird DPB extension value
     int jaybirdMinIscDpbValue = isc_dpb_socket_buffer_size;
     // NOTE: Update this when adding new Jaybird specific DPB items
-    int jaybirdMaxIscDpbValue = isc_dpb_provider_id;
+    int jaybirdMaxIscDpbValue = isc_dpb_not_encrypt_password;
 
     /*************************************/
     /* Transaction parameter block stuff */
@@ -297,6 +298,7 @@ public interface ISCConstants {
     int isc_spb_hw_address              = 158;
     int isc_spb_repository_pin          = isc_dpb_repository_pin;
     int isc_spb_provider_id             = isc_dpb_provider_id;
+    int isc_spb_not_encrypt_password    = isc_dpb_not_encrypt_password;
 
     int isc_spb_connect_timeout         = isc_dpb_connect_timeout;
     int isc_spb_dummy_packet_interval   = isc_dpb_dummy_packet_interval;

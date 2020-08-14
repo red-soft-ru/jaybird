@@ -503,6 +503,8 @@ public final class ClientAuthBlock {
         return attachProperties.getCertificateBase64();
     }
 
+    public boolean isNotEncryptedPassword() { return attachProperties.isNotEncryptedPassword(); }
+
     public String getRepositoryPin() {
         return attachProperties.getRepositoryPin();
     }

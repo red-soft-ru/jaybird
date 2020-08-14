@@ -41,6 +41,7 @@ public abstract class AbstractImmutableAttachProperties<T extends IAttachPropert
     private final String excludeCryptoPlugins;
     private final String certificate;
     private final String certificateBase64;
+    private final boolean notEncryptPassword;
     private final int providerID;
     private final String repositoryPin;
     private final String effectiveLogin;
@@ -70,6 +71,7 @@ public abstract class AbstractImmutableAttachProperties<T extends IAttachPropert
         dbCryptConfig = src.getDbCryptConfig();
         certificate = src.getCertificate();
         certificateBase64 = src.getCertificateBase64();
+        notEncryptPassword = src.isNotEncryptedPassword();
         providerID = src.getProviderID();
         repositoryPin = src.getRepositoryPin();
         excludeCryptoPlugins = src.getExcludeCryptoPlugins();
@@ -213,6 +215,16 @@ public abstract class AbstractImmutableAttachProperties<T extends IAttachPropert
 
     @Override
     public void setCertificateBase64(final String certificateBase64) {
+        immutable();
+    }
+
+    @Override
+    public boolean isNotEncryptedPassword() {
+        return notEncryptPassword;
+    }
+
+    @Override
+    public void setNotEncryptedPassword(final boolean notEncryptPassword) {
         immutable();
     }
 
