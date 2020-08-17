@@ -269,6 +269,8 @@
 						<exclude>**/TestXABase*.java</exclude>
 						<exclude>**/TestConst.java</exclude>
 						<exclude>**/*$$*.java</exclude>
+						<exclude>**/cryptoapi/**.java</exclude>
+						<exclude>**/TestAuthSspi.java</exclude>
 					</excludes>
 					<testFailureIgnore>true</testFailureIgnore>
 					<skipTests>${test.java7.skip}</skipTests>
