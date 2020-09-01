@@ -23,6 +23,7 @@ import javax.resource.cci.ConnectionSpec;
 import javax.resource.spi.ConnectionRequestInfo;
 
 import org.firebirdsql.gds.DatabaseParameterBuffer;
+import org.firebirdsql.gds.ISCConstants;
 import org.firebirdsql.gds.impl.DatabaseParameterBufferExtension;
 
 /**
@@ -127,8 +128,18 @@ public class FBConnectionRequestInfo implements DatabaseParameterBufferExtension
                 addArgument(DatabaseParameterBufferExtension.PASSWORD, password);
             }
             else {
-                String passwordEnc = FBDes.crypt(password, "9z");
-                addArgument(DatabaseParameterBufferExtension.PASSWORD_ENC, passwordEnc.substring(2));					
+                if (dpb.hasArgument(ISCConstants.isc_dpb_not_encrypt_password)) {
+                    removeArgument(ISCConstants.isc_dpb_not_encrypt_password);
+                    byte[] nullInd = new byte[] { 0 };
+                    byte[] passwd = password.getBytes();
+                    byte[] data = new byte[nullInd.length + passwd.length];
+                    System.arraycopy(nullInd, 0, data, 0, nullInd.length);
+                    System.arraycopy(passwd, 0, data, nullInd.length, passwd.length);
+                    addArgument(DatabaseParameterBufferExtension.PASSWORD_ENC, data);
+                } else {
+                    String passwordEnc = FBDes.crypt(password, "9z");
+                    addArgument(DatabaseParameterBufferExtension.PASSWORD_ENC, passwordEnc.substring(2));
+                }
             }
         }
     }

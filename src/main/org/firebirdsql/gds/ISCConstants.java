@@ -162,6 +162,7 @@ public interface ISCConstants {
     public final static int isc_dpb_column_label_for_name   = 142;
     public final static int isc_dpb_use_firebird_autocommit = 143;
     public final static int isc_dpb_certificate_base64      = 144;
+    public final static int isc_dpb_not_encrypt_password    = 145;
 
     /* Red Database security parameters */
     public final static int isc_dpb_mac_plugin				= 148;
@@ -253,6 +254,7 @@ public interface ISCConstants {
     public final static int isc_spb_connect_timeout         = isc_dpb_connect_timeout;
     public final static int isc_spb_dummy_packet_interval   = isc_dpb_dummy_packet_interval;
     public final static int isc_spb_sql_role_name           = isc_dpb_sql_role_name;
+    public final static int isc_spb_not_encrypt_password    = isc_dpb_not_encrypt_password;
 
     /*****************************************
      * Parameters for isc_action_svc_nbak    *
