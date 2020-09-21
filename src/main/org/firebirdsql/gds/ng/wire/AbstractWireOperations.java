@@ -30,10 +30,10 @@ import org.firebirdsql.gds.impl.wire.XdrOutputStream;
 import org.firebirdsql.gds.impl.wire.auth.AuthSspi;
 import org.firebirdsql.gds.impl.wire.auth.GDSAuthException;
 import org.firebirdsql.gds.ng.FbExceptionBuilder;
-import org.firebirdsql.gds.ng.IAttachProperties;
 import org.firebirdsql.gds.ng.WarningMessageCallback;
 import org.firebirdsql.gds.ng.wire.auth.ClientAuthBlock;
 import org.firebirdsql.gds.ng.wire.crypt.EncryptionIdentifier;
+import org.firebirdsql.jdbc.FirebirdConnectionProperties;
 import org.firebirdsql.logging.Logger;
 import org.firebirdsql.logging.LoggerFactory;
 
@@ -370,7 +370,7 @@ public abstract class AbstractWireOperations implements FbWireOperations {
     /**
      * @return Immutable attach properties
      */
-    protected final IAttachProperties<?> getAttachProperties() {
+    protected final FirebirdConnectionProperties getAttachProperties() {
         return connection.getAttachProperties().asImmutable();
     }
 

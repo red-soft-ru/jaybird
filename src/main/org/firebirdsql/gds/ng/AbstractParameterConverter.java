@@ -21,6 +21,7 @@ package org.firebirdsql.gds.ng;
 import org.firebirdsql.gds.*;
 import org.firebirdsql.gds.impl.DatabaseParameterBufferImp;
 import org.firebirdsql.gds.impl.ServiceParameterBufferImp;
+import org.firebirdsql.jdbc.FirebirdConnectionProperties;
 
 import java.sql.SQLException;
 
@@ -32,7 +33,7 @@ import static org.firebirdsql.gds.ISCConstants.*;
  * @author <a href="mailto:mrotteveel@users.sourceforge.net">Mark Rotteveel</a>
  * @since 3.0
  */
-public abstract class AbstractParameterConverter<D extends AbstractConnection<IConnectionProperties, ?>, S extends AbstractConnection<IServiceProperties, ?>>
+public abstract class AbstractParameterConverter<D extends AbstractConnection<FirebirdConnectionProperties, ?>, S extends AbstractConnection<FirebirdConnectionProperties, ?>>
         implements ParameterConverter<D, S> {
 
     protected DatabaseParameterBuffer createDatabaseParameterBuffer(final D connection) {
@@ -71,8 +72,8 @@ public abstract class AbstractParameterConverter<D extends AbstractConnection<IC
      */
     protected void populateDefaultProperties(final D connection, final DatabaseParameterBuffer dpb) throws SQLException {
         dpb.addArgument(isc_dpb_lc_ctype, connection.getEncodingDefinition().getFirebirdEncodingName());
-        IConnectionProperties props = connection.getAttachProperties();
-        if (props.getPageCacheSize() != IConnectionProperties.DEFAULT_BUFFERS_NUMBER) {
+        FirebirdConnectionProperties props = connection.getAttachProperties();
+        if (props.getPageCacheSize() != FirebirdConnectionProperties.DEFAULT_BUFFERS_NUMBER) {
             dpb.addArgument(isc_dpb_num_buffers, props.getPageCacheSize());
         }
         populateAuthenticationProperties(connection, dpb);
@@ -80,7 +81,7 @@ public abstract class AbstractParameterConverter<D extends AbstractConnection<IC
             dpb.addArgument(isc_dpb_sql_role_name, props.getRoleName());
         }
         dpb.addArgument(isc_dpb_sql_dialect, props.getConnectionDialect());
-        if (props.getConnectTimeout() != IConnectionProperties.DEFAULT_CONNECT_TIMEOUT) {
+        if (props.getConnectTimeout() != FirebirdConnectionProperties.DEFAULT_CONNECT_TIMEOUT) {
             dpb.addArgument(isc_dpb_connect_timeout, props.getConnectTimeout());
         }
     }
@@ -100,7 +101,7 @@ public abstract class AbstractParameterConverter<D extends AbstractConnection<IC
 
     /**
      * Populates the database parameter buffer with the non-standard properties (in
-     * {@link org.firebirdsql.gds.ng.IConnectionProperties#getExtraDatabaseParameters()}).
+     * {@link org.firebirdsql.jdbc.FirebirdConnectionProperties#getExtraDatabaseParameters()}).
      *
      *  @param connection
      *         Database connection
@@ -120,6 +121,9 @@ public abstract class AbstractParameterConverter<D extends AbstractConnection<IC
         // Map standard properties
         populateDefaultProperties(connection, spb);
 
+        // Map non-standard properties
+        populateNonStandardProperties(connection, spb);
+
         return spb;
     }
 
@@ -136,13 +140,53 @@ public abstract class AbstractParameterConverter<D extends AbstractConnection<IC
      */
     protected void populateDefaultProperties(final S connection, final ServiceParameterBuffer spb) throws SQLException {
         populateAuthenticationProperties(connection, spb);
-        IServiceProperties props = connection.getAttachProperties();
+        FirebirdConnectionProperties props = connection.getAttachProperties();
         if (props.getRoleName() != null) {
             spb.addArgument(isc_spb_sql_role_name, props.getRoleName());
         }
-        if (props.getConnectTimeout() != IConnectionProperties.DEFAULT_CONNECT_TIMEOUT) {
+        if (props.getConnectTimeout() != FirebirdConnectionProperties.DEFAULT_CONNECT_TIMEOUT) {
             spb.addArgument(isc_spb_connect_timeout, props.getConnectTimeout());
         }
     }
 
+    /**
+     * Populates the service parameter buffer with the non-standard properties.
+     *
+     *  @param connection
+     *         Service connection
+     * @param spb
+     *         Database parameter buffer to populate
+     */
+    protected void populateNonStandardProperties(S connection, final ServiceParameterBuffer spb) {
+
+        FirebirdConnectionProperties properties = connection.getAttachProperties();
+        ParameterTagMapping tagMapping = spb.getTagMapping();
+        if (properties.getNonStandardProperty("isc_spb_multi_factor_auth") != null) {
+            spb.addArgument(isc_spb_multi_factor_auth, properties.getNonStandardProperty("isc_spb_multi_factor_auth"));
+        }
+        if (properties.getNonStandardProperty("isc_spb_trusted_auth") != null) {
+            spb.addArgument(isc_spb_trusted_auth, properties.getNonStandardProperty("isc_spb_trusted_auth"));
+        }
+        if (properties.getNonStandardProperty("isc_spb_process_name") != null) {
+            spb.addArgument(isc_spb_process_name, properties.getNonStandardProperty("isc_spb_process_name"));
+        }
+        if (properties.getNonStandardProperty("isc_spb_config") != null) {
+            spb.addArgument(tagMapping.getConfigTag(), properties.getNonStandardProperty("isc_spb_config"));
+        }
+        if (properties.getNonStandardProperty("isc_spb_expected_db") != null) {
+            spb.addArgument(isc_spb_expected_db, properties.getNonStandardProperty("isc_spb_expected_db"));
+        }
+        if (properties.getNonStandardProperty("isc_spb_trusted_role") != null) {
+            spb.addArgument(isc_spb_trusted_role, properties.getNonStandardProperty("isc_spb_trusted_role"));
+        }
+        if (properties.getNonStandardProperty("isc_spb_process_id") != null) {
+            spb.addArgument(isc_spb_process_id, properties.getNonStandardProperty("isc_spb_process_id"));
+        }
+        if (properties.getNonStandardProperty("isc_spb_remote_protocol") != null) {
+            spb.addArgument(isc_spb_remote_protocol, properties.getNonStandardProperty("isc_spb_remote_protocol"));
+        }
+        if (properties.getNonStandardProperty("provider_id") != null) {
+            spb.addArgument(isc_spb_provider_id, properties.getNonStandardProperty("provider_id"));
+        }
+    }
 }

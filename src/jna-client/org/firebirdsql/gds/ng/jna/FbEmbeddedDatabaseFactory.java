@@ -20,7 +20,7 @@ package org.firebirdsql.gds.ng.jna;
 
 import com.sun.jna.Native;
 import com.sun.jna.Platform;
-import org.firebirdsql.gds.ng.IAttachProperties;
+import org.firebirdsql.jdbc.FirebirdConnectionProperties;
 import org.firebirdsql.jna.fbclient.FbClientLibrary;
 import org.firebirdsql.jna.fbclient.WinFbClientLibrary;
 import org.firebirdsql.logging.Logger;
@@ -51,10 +51,10 @@ public class FbEmbeddedDatabaseFactory extends AbstractNativeDatabaseFactory {
     }
 
     @Override
-    protected <T extends IAttachProperties<T>> T filterProperties(T attachProperties) {
-        T attachPropertiesCopy = attachProperties.asNewMutable();
+    protected <T extends FirebirdConnectionProperties> FirebirdConnectionProperties filterProperties(T attachProperties) {
+        FirebirdConnectionProperties attachPropertiesCopy = attachProperties.asNewMutable();
         // Clear server name
-        attachPropertiesCopy.setServerName(null);
+        attachPropertiesCopy.setServer(null);
         return attachPropertiesCopy;
     }
 

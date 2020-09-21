@@ -23,9 +23,9 @@ import org.firebirdsql.common.FBJUnit4TestBase;
 import org.firebirdsql.common.FBTestProperties;
 import org.firebirdsql.common.rules.GdsTypeRule;
 import org.firebirdsql.encodings.EncodingFactory;
-import org.firebirdsql.gds.ng.FbConnectionProperties;
 import org.firebirdsql.gds.ng.wire.version10.Version10Descriptor;
 import org.firebirdsql.gds.ng.wire.version13.Version13Descriptor;
+import org.firebirdsql.jdbc.FBConnectionProperties;
 import org.junit.ClassRule;
 import org.junit.Test;
 
@@ -56,13 +56,13 @@ public class TestWireDatabaseConnection extends FBJUnit4TestBase {
      */
     private static final double TIMEOUT_DELTA_MS = 200;
     
-    private final FbConnectionProperties connectionInfo;
+    private final FBConnectionProperties connectionInfo;
     {
-        connectionInfo = new FbConnectionProperties();
-        connectionInfo.setServerName(FBTestProperties.DB_SERVER_URL);
-        connectionInfo.setPortNumber(FBTestProperties.DB_SERVER_PORT);
-        connectionInfo.setDatabaseName(FBTestProperties.getDatabasePath());
-        connectionInfo.setUser(FBTestProperties.DB_USER);
+        connectionInfo = new FBConnectionProperties();
+        connectionInfo.setServer(FBTestProperties.DB_SERVER_URL);
+        connectionInfo.setPort(FBTestProperties.DB_SERVER_PORT);
+        connectionInfo.setDatabase(FBTestProperties.getDatabasePath());
+        connectionInfo.setUserName(FBTestProperties.DB_USER);
         connectionInfo.setPassword(FBTestProperties.DB_PASSWORD);
         // TODO consider keeping NONE the default in WireConnection if not specified
         connectionInfo.setEncoding("NONE");
@@ -155,7 +155,7 @@ public class TestWireDatabaseConnection extends FBJUnit4TestBase {
     public void testConnectTimeout_nonExistentServer() {
         long startTime = System.currentTimeMillis();
         try {
-            connectionInfo.setServerName(NON_EXISTENT_IP);
+            connectionInfo.setServer(NON_EXISTENT_IP);
             connectionInfo.setConnectTimeout(2);
             WireDatabaseConnection gdsConnection = new WireDatabaseConnection(connectionInfo);
             gdsConnection.socketConnect();
@@ -186,8 +186,8 @@ public class TestWireDatabaseConnection extends FBJUnit4TestBase {
 
         long startTime = System.currentTimeMillis();
         try {
-            connectionInfo.setPortNumber(server.getPort());
-            connectionInfo.setDatabaseName("somedb");
+            connectionInfo.setPort(server.getPort());
+            connectionInfo.setDatabase("somedb");
             connectionInfo.setConnectTimeout(2);
             WireDatabaseConnection gdsConnection = new WireDatabaseConnection(connectionInfo);
             gdsConnection.socketConnect();
@@ -222,8 +222,8 @@ public class TestWireDatabaseConnection extends FBJUnit4TestBase {
 
         long startTime = System.currentTimeMillis();
         try {
-            connectionInfo.setPortNumber(server.getPort());
-            connectionInfo.setDatabaseName("somedb");
+            connectionInfo.setPort(server.getPort());
+            connectionInfo.setDatabase("somedb");
             connectionInfo.setSoTimeout(2000);
             WireDatabaseConnection gdsConnection = new WireDatabaseConnection(connectionInfo);
             gdsConnection.socketConnect();

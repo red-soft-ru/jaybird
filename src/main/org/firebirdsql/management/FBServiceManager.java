@@ -18,12 +18,16 @@
  */
 package org.firebirdsql.management;
 
+import org.firebirdsql.gds.DatabaseParameterBuffer;
 import org.firebirdsql.gds.ServiceParameterBuffer;
 import org.firebirdsql.gds.ServiceRequestBuffer;
+import org.firebirdsql.gds.TransactionParameterBuffer;
 import org.firebirdsql.gds.impl.GDSFactory;
 import org.firebirdsql.gds.impl.GDSServerVersion;
 import org.firebirdsql.gds.impl.GDSType;
 import org.firebirdsql.gds.ng.*;
+import org.firebirdsql.jdbc.FBConnectionProperties;
+import org.firebirdsql.jdbc.FirebirdConnectionProperties;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -40,7 +44,7 @@ import static org.firebirdsql.gds.VaxEncoding.iscVaxInteger2;
  */
 public class FBServiceManager implements ServiceManager {
 
-    private final IServiceProperties serviceProperties = new FbServiceProperties();
+    private final FirebirdConnectionProperties serviceProperties = new FBConnectionProperties();
     private FbDatabaseFactory dbFactory;
     private String database;
     private OutputStream logger;
@@ -86,6 +90,16 @@ public class FBServiceManager implements ServiceManager {
     public String getCharSet() {
         return serviceProperties.getCharSet();
     }
+    
+    @Override
+    public String getEncoding() {
+        return serviceProperties.getEncoding();
+    }
+
+    @Override
+    public void setEncoding(String encoding) {
+        serviceProperties.setEncoding(encoding);
+    }
 
     /**
      * Set the name of the user that performs the operation.
@@ -93,8 +107,8 @@ public class FBServiceManager implements ServiceManager {
      * @param user
      *         name of the user.
      */
-    public void setUser(String user) {
-        serviceProperties.setUser(user);
+    public void setUserName(String user) {
+        serviceProperties.setUserName(user);
     }
 
     /**
@@ -102,8 +116,8 @@ public class FBServiceManager implements ServiceManager {
      *
      * @return name of the user that performs the operation.
      */
-    public String getUser() {
-        return serviceProperties.getUser();
+    public String getUserName() {
+        return serviceProperties.getUserName();
     }
 
     /**
@@ -120,9 +134,180 @@ public class FBServiceManager implements ServiceManager {
     public String getPassword() {
         return serviceProperties.getPassword();
     }
+    
+    @Override
+    public int getBuffersNumber() {
+        return serviceProperties.getBuffersNumber();
+    }
+
+    @Override
+    public void setBuffersNumber(int buffersNumber) {
+        serviceProperties.setBuffersNumber(buffersNumber);
+    }
+
+    @Override
+    public String getNonStandardProperty(String key) {
+        return serviceProperties.getNonStandardProperty(key);
+    }
+
+    @Override
+    public void setNonStandardProperty(String key, String value) {
+        serviceProperties.setNonStandardProperty(key, value);
+    }
+
+    @Override
+    public void setNonStandardProperty(String propertyMapping) {
+        serviceProperties.setNonStandardProperty(propertyMapping);
+    }
+
+    @Override
+    public DatabaseParameterBuffer getDatabaseParameterBuffer() throws SQLException {
+        return serviceProperties.getDatabaseParameterBuffer();
+    }
+
+    @Override
+    public String getTpbMapping() {
+        return serviceProperties.getTpbMapping();
+    }
+
+    @Override
+    public void setTpbMapping(String tpbMapping) {
+        serviceProperties.setTpbMapping(tpbMapping);
+    }
+
+    @Override
+    public int getDefaultTransactionIsolation() {
+        return serviceProperties.getDefaultTransactionIsolation();
+    }
+
+    @Override
+    public void setDefaultTransactionIsolation(int defaultIsolationLevel) {
+        serviceProperties.setDefaultTransactionIsolation(defaultIsolationLevel);
+    }
+
+    @Override
+    public String getDefaultIsolation() {
+        return serviceProperties.getDefaultIsolation();
+    }
+
+    @Override
+    public void setDefaultIsolation(String isolation) {
+        serviceProperties.setDefaultIsolation(isolation);
+    }
+
+    @Override
+    public TransactionParameterBuffer getTransactionParameters(int isolation) {
+        return serviceProperties.getTransactionParameters(isolation);
+    }
+
+    @Override
+    public void setTransactionParameters(int isolation, TransactionParameterBuffer tpb) {
+        serviceProperties.setTransactionParameters(isolation, tpb);
+    }
+
+    @Override
+    public boolean isDefaultResultSetHoldable() {
+        return serviceProperties.isDefaultResultSetHoldable();
+    }
+
+    @Override
+    public void setDefaultResultSetHoldable(boolean isHoldable) {
+        serviceProperties.setDefaultResultSetHoldable(isHoldable);
+    }
+
+    @Override
+    public int getSoTimeout() {
+        return serviceProperties.getSoTimeout();
+    }
+
+    @Override
+    public void setSoTimeout(int soTimeout) {
+        serviceProperties.setSoTimeout(soTimeout);
+    }
+
+    @Override
+    public int getConnectTimeout() {
+        return serviceProperties.getConnectTimeout();
+    }
+
+    @Override
+    public void setConnectTimeout(int connectTimeout) {
+        serviceProperties.setConnectTimeout(connectTimeout);
+    }
+
+    @Override
+    public boolean isUseFirebirdAutocommit() {
+        return serviceProperties.isUseFirebirdAutocommit();
+    }
+
+    @Override
+    public void setUseFirebirdAutocommit(boolean useFirebirdAutocommit) {
+        serviceProperties.setUseFirebirdAutocommit(useFirebirdAutocommit);
+    }
+
+    @Override
+    public boolean isUseGSSAuth() {
+        return serviceProperties.isUseGSSAuth();
+    }
+
+    @Override
+    public void setUseGSSAuth(boolean useGSSAuth) {
+        serviceProperties.setUseGSSAuth(useGSSAuth);
+    }
+
+    @Override
+    public String getCertificate() {
+        return serviceProperties.getCertificate();
+    }
+
+    @Override
+    public void setCertificate(String certificate) {
+        serviceProperties.setCertificate(certificate);
+    }
+
+    @Override
+    public String getRepositoryPin() {
+        return serviceProperties.getRepositoryPin();
+    }
+
+    @Override
+    public void setRepositoryPin(String pin) {
+        serviceProperties.setRepositoryPin(pin);
+    }
+
+    @Override
+    public int getProviderID() {
+        return serviceProperties.getProviderID();
+    }
+
+    @Override
+    public void setProviderID(int providerID) {
+        serviceProperties.setProviderID(providerID);
+    }
+
+    @Override
+    public boolean isNotEncryptedPassword() {
+        return serviceProperties.isNotEncryptedPassword();
+    }
+
+    @Override
+    public void setNotEncryptedPassword(final boolean notEncryptPassword) {
+        serviceProperties.setNotEncryptedPassword(notEncryptPassword);
+    }
+
+    @Override
+    public boolean getVerifyServerCertificate() {
+        return serviceProperties.getVerifyServerCertificate();
+    }
+
+    @Override
+    public void setVerifyServerCertificate(boolean verify) {
+        serviceProperties.setVerifyServerCertificate(verify);
+    }
 
     public void setDatabase(String database) {
         this.database = database;
+        this.serviceProperties.setDatabase(database);
     }
 
     public String getDatabase() {
@@ -132,23 +317,23 @@ public class FBServiceManager implements ServiceManager {
     /**
      * @return Returns the host.
      */
-    public String getHost() {
-        return serviceProperties.getServerName();
+    public String getServer() {
+        return serviceProperties.getServer();
     }
 
     /**
      * @param host
      *         The host to set.
      */
-    public void setHost(String host) {
-        serviceProperties.setServerName(host);
+    public void setServer(String host) {
+        serviceProperties.setServer(host);
     }
 
     /**
      * @return Returns the port.
      */
     public int getPort() {
-        return serviceProperties.getPortNumber();
+        return serviceProperties.getPort();
     }
 
     /**
@@ -156,13 +341,33 @@ public class FBServiceManager implements ServiceManager {
      *         The port to set.
      */
     public void setPort(int port) {
-        serviceProperties.setPortNumber(port);
+        serviceProperties.setPort(port);
+    }
+
+    @Override
+    public String getType() {
+        return serviceProperties.getType();
+    }
+
+    @Override
+    public void setType(String type) {
+        serviceProperties.setType(type);
+    }
+
+    @Override
+    public int getBlobBufferSize() {
+        return serviceProperties.getBlobBufferSize();
+    }
+
+    @Override
+    public void setBlobBufferSize(int bufferSize) {
+        serviceProperties.setBlobBufferSize(bufferSize);
     }
 
     /**
      * @return Returns the role.
      */
-    public String getRole() {
+    public String getRoleName() {
         return serviceProperties.getRoleName();
     }
 
@@ -170,17 +375,77 @@ public class FBServiceManager implements ServiceManager {
      * @param role
      *         The role to set.
      */
-    public void setRole(String role) {
+    public void setRoleName(String role) {
         serviceProperties.setRoleName(role);
     }
 
     @Override
-    public WireCrypt getWireCrypt() {
+    public String getSqlDialect() {
+        return serviceProperties.getSqlDialect();
+    }
+
+    @Override
+    public void setSqlDialect(String sqlDialect) {
+        serviceProperties.setSqlDialect(sqlDialect);
+    }
+
+    @Override
+    public String getUseTranslation() {
+        return serviceProperties.getUseTranslation();
+    }
+
+    @Override
+    public void setUseTranslation(String translationPath) {
+        serviceProperties.setUseTranslation(translationPath);
+    }
+
+    @Override
+    public boolean isUseStreamBlobs() {
+        return serviceProperties.isUseStreamBlobs();
+    }
+
+    @Override
+    public void setUseStreamBlobs(boolean useStreamBlobs) {
+        serviceProperties.setUseStreamBlobs(useStreamBlobs);
+    }
+
+    @Override
+    public boolean isUseStandardUdf() {
+        return serviceProperties.isUseStandardUdf();
+    }
+
+    @Override
+    public void setUseStandardUdf(boolean useStandardUdf) {
+        serviceProperties.setUseStandardUdf(useStandardUdf);
+    }
+
+    @Override
+    public int getSocketBufferSize() {
+        return serviceProperties.getSocketBufferSize();
+    }
+
+    @Override
+    public void setSocketBufferSize(int socketBufferSize) {
+        serviceProperties.setSocketBufferSize(socketBufferSize);
+    }
+
+    @Override
+    public boolean isTimestampUsesLocalTimezone() {
+        return serviceProperties.isTimestampUsesLocalTimezone();
+    }
+
+    @Override
+    public void setTimestampUsesLocalTimezone(boolean timestampUsesLocalTimezone) {
+        serviceProperties.setTimestampUsesLocalTimezone(timestampUsesLocalTimezone);
+    }
+
+    @Override
+    public String getWireCrypt() {
         return serviceProperties.getWireCrypt();
     }
 
     @Override
-    public void setWireCrypt(WireCrypt wireCrypt) {
+    public void setWireCrypt(String wireCrypt) {
         serviceProperties.setWireCrypt(wireCrypt);
     }
 
@@ -192,6 +457,16 @@ public class FBServiceManager implements ServiceManager {
     @Override
     public void setDbCryptConfig(String dbCryptConfig) {
         serviceProperties.setDbCryptConfig(dbCryptConfig);
+    }
+
+    @Override
+    public boolean isIgnoreProcedureType() {
+        return serviceProperties.isIgnoreProcedureType();
+    }
+
+    @Override
+    public void setIgnoreProcedureType(boolean ignoreProcedureType) {
+        serviceProperties.setIgnoreProcedureType(ignoreProcedureType);
     }
 
     /**
@@ -211,9 +486,9 @@ public class FBServiceManager implements ServiceManager {
 
     public String getServiceName() {
         StringBuilder sb = new StringBuilder();
-        if (getHost() != null) {
+        if (getServer() != null) {
 
-            sb.append(getHost());
+            sb.append(getServer());
 
             if (getPort() != 3050) {
                 sb.append('/');
@@ -226,6 +501,96 @@ public class FBServiceManager implements ServiceManager {
         return sb.toString();
     }
 
+    @Override
+    public void setServiceName(String serviceName) {
+        serviceProperties.setServiceName(serviceName);
+    }
+
+    @Override
+    public short getConnectionDialect() {
+        return serviceProperties.getConnectionDialect();
+    }
+
+    @Override
+    public void setConnectionDialect(short connectionDialect) {
+        serviceProperties.setConnectionDialect(connectionDialect);
+    }
+
+    @Override
+    public int getPageCacheSize() {
+        return serviceProperties.getPageCacheSize();
+    }
+
+    @Override
+    public void setPageCacheSize(int pageCacheSize) {
+        serviceProperties.setPageCacheSize(pageCacheSize);
+    }
+
+    @Override
+    public boolean isResultSetDefaultHoldable() {
+        return serviceProperties.isResultSetDefaultHoldable();
+    }
+
+    @Override
+    public void setResultSetDefaultHoldable(boolean holdable) {
+        serviceProperties.setResultSetDefaultHoldable(holdable);
+    }
+
+    @Override
+    public boolean isColumnLabelForName() {
+        return serviceProperties.isColumnLabelForName();
+    }
+
+    @Override
+    public void setColumnLabelForName(boolean columnLabelForName) {
+        serviceProperties.setColumnLabelForName(columnLabelForName);
+    }
+
+    @Override
+    public String getCertificateBase64() {
+        return serviceProperties.getCertificateBase64();
+    }
+
+    @Override
+    public void setCertificateBase64(String certificateBase64) {
+        serviceProperties.setCertificateBase64(certificateBase64);
+    }
+
+    @Override
+    public String getEffectiveLogin() {
+        return serviceProperties.getEffectiveLogin();
+    }
+
+    @Override
+    public void setEffectiveLogin(String effectiveLogin) {
+        serviceProperties.setEffectiveLogin(effectiveLogin);
+    }
+
+    @Override
+    public String getExcludeCryptoPlugins() {
+        return serviceProperties.getExcludeCryptoPlugins();
+    }
+
+    @Override
+    public void setExcludeCryptoPlugins(String excludeCryptoPlugins) {
+        serviceProperties.setExcludeCryptoPlugins(excludeCryptoPlugins);
+    }
+
+    @Override
+    public DatabaseParameterBuffer getExtraDatabaseParameters() {
+        return serviceProperties.getExtraDatabaseParameters();
+    }
+
+    @Override
+    public FirebirdConnectionProperties asImmutable() {
+        return serviceProperties.asImmutable();
+    }
+
+    @Override
+    public FirebirdConnectionProperties asNewMutable() {
+        return serviceProperties.asNewMutable();
+    }
+
     public FbService attachServiceManager() throws SQLException {
         FbService fbService = dbFactory.serviceConnect(serviceProperties);
         fbService.attach();
@@ -236,13 +601,7 @@ public class FBServiceManager implements ServiceManager {
         if (database == null) {
             throw new SQLException("Property database needs to be set.");
         }
-        FbConnectionProperties connectionProperties = new FbConnectionProperties();
-        connectionProperties.setServerName(serviceProperties.getServerName());
-        connectionProperties.setPortNumber(serviceProperties.getPortNumber());
-        connectionProperties.setUser(serviceProperties.getUser());
-        connectionProperties.setPassword(serviceProperties.getPassword());
-        connectionProperties.setDatabaseName(database);
-        FbDatabase fbDatabase = dbFactory.connect(connectionProperties);
+        FbDatabase fbDatabase = dbFactory.connect(serviceProperties);
         fbDatabase.attach();
         return fbDatabase;
     }

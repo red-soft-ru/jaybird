@@ -26,6 +26,7 @@ package org.firebirdsql.management;
 
 import org.firebirdsql.gds.impl.GDSServerVersion;
 import org.firebirdsql.gds.ng.WireCrypt;
+import org.firebirdsql.jdbc.FirebirdConnectionProperties;
 
 import java.io.OutputStream;
 import java.sql.SQLException;
@@ -36,141 +37,7 @@ import java.sql.SQLException;
  * @author <a href="mailto:rrokytskyy@users.sourceforge.net">Roman Rokytskyy</a>
  * @author <a href="mailto:sjardine@users.sourceforge.net">Steven Jardine</a>
  */
-public interface ServiceManager {
-
-    /**
-     * Sets the encoding used for encoding or decoding string values.
-     * <p>
-     * If not set (or null), defaults to the value of system property {@code file.encoding}/
-     * </p>
-     *
-     * @param charSet Java charset name.
-     */
-    void setCharSet(String charSet);
-
-    String getCharSet();
-
-    /**
-     * Sets the username for the connection to the service manager.
-     *
-     * @param user
-     *         for the connection to the service manager.
-     */
-    void setUser(String user);
-
-    /**
-     * Returns the username for the connection to the service manager.
-     *
-     * @return the username for the connection to the service manager.
-     */
-    String getUser();
-
-    /**
-     * Sets the password for the connection to the service manager.
-     *
-     * @param password
-     *         for the connection to the service manager.
-     */
-    void setPassword(String password);
-
-    /**
-     * Returns the password for the connection to the service manager.
-     *
-     * @return the password for the connection to the service manager.
-     */
-    String getPassword();
-
-    /**
-     * Sets the database path for the connection to the service manager.
-     *
-     * @param database
-     *         path for the connection to the service manager.
-     */
-    void setDatabase(String database);
-
-    /**
-     * Returns the database path for the connection to the service manager.
-     *
-     * @return the database path for the connection to the service manager.
-     */
-    String getDatabase();
-
-    /**
-     * Returns the host for the connection to the service manager.
-     *
-     * @return the host for the connection to the service manager.
-     */
-    String getHost();
-
-    /**
-     * Sets the host for the connection to the service manager.
-     *
-     * @param host
-     *         for the connection to the service manager.
-     */
-    void setHost(String host);
-
-    /**
-     * Returns the port for the connection to the service manager.
-     *
-     * @return the port for the connection to the service manager.
-     */
-    int getPort();
-
-    /**
-     * Sets the port for the connection to the service manager.
-     *
-     * @param port
-     *         for the connection to the service manager.
-     */
-    void setPort(int port);
-
-    /**
-     * Returns the role for the connection to the service manager.
-     *
-     * @return the role for the connection to the service manager.
-     */
-    String getRole();
-
-    /**
-     * Sets the role for the connection to the service manager.
-     *
-     * @param role
-     *         for the connection to the service manager.
-     */
-    void setRole(String role);
-
-    /**
-     * Get the wire encryption level.
-     *
-     * @return Wire encryption level
-     * @since 3.0.4
-     */
-    WireCrypt getWireCrypt();
-
-    /**
-     * Set the wire encryption level.
-     *
-     * @param wireCrypt Wire encryption level ({@code null} not allowed)
-     * @since 3.0.4
-     */
-    void setWireCrypt(WireCrypt wireCrypt);
-
-    /**
-     * Get the database encryption plugin configuration.
-     *
-     * @return Database encryption plugin configuration, meaning plugin specific
-     * @since 3.0.4
-     */
-    String getDbCryptConfig();
-
-    /**
-     * Sets the database encryption plugin configuration.
-     *
-     * @param dbCryptConfig Database encryption plugin configuration, meaning plugin specific
-     * @since 3.0.4
-     */
-    void setDbCryptConfig(String dbCryptConfig);
+public interface ServiceManager extends FirebirdConnectionProperties {
 
     /**
      * Returns the logger for the connection to the service manager.

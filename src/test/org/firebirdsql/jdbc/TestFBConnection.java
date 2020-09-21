@@ -30,7 +30,6 @@ import org.firebirdsql.gds.impl.jni.NativeGDSFactoryPlugin;
 import org.firebirdsql.gds.impl.oo.OOGDSFactoryPlugin;
 import org.firebirdsql.gds.impl.wire.WireGDSFactoryPlugin;
 import org.firebirdsql.gds.ng.FbDatabase;
-import org.firebirdsql.gds.ng.IConnectionProperties;
 import org.firebirdsql.gds.ng.WireCrypt;
 import org.firebirdsql.gds.ng.wire.crypt.FBSQLEncryptException;
 import org.firebirdsql.jca.FBManagedConnection;
@@ -347,7 +346,7 @@ public class TestFBConnection {
                 assertNotNull("Expected a warning for not specifying connection character set", warnings);
                 assertEquals("Unexpected warning message for not specifying connection character set",
                         FBManagedConnection.WARNING_NO_CHARSET + "WIN1252", warnings.getMessage());
-                IConnectionProperties connectionProperties =
+                FirebirdConnectionProperties connectionProperties =
                         con.unwrap(FirebirdConnection.class).getFbDatabase().getConnectionProperties();
                 assertEquals("Unexpected connection encoding", "WIN1252", connectionProperties.getEncoding());
             }
@@ -378,7 +377,7 @@ public class TestFBConnection {
             assertNotNull("Expected a warning for not specifying connection character set", warnings);
             assertEquals("Unexpected warning message for not specifying connection character set",
                     FBManagedConnection.WARNING_NO_CHARSET + "NONE", warnings.getMessage());
-            IConnectionProperties connectionProperties =
+            FirebirdConnectionProperties connectionProperties =
                     connection.unwrap(FirebirdConnection.class).getFbDatabase().getConnectionProperties();
             assertEquals("Unexpected connection encoding", "NONE", connectionProperties.getEncoding());
         }
@@ -421,7 +420,7 @@ public class TestFBConnection {
         try (Connection con = DriverManager.getConnection(getUrl(), props)) {
             SQLWarning warnings = con.getWarnings();
             assertNull("Expected no warning when specifying connection character set", warnings);
-            IConnectionProperties connectionProperties =
+            FirebirdConnectionProperties connectionProperties =
                     con.unwrap(FirebirdConnection.class).getFbDatabase().getConnectionProperties();
             assertEquals("Unexpected connection encoding", "WIN1252", connectionProperties.getEncoding());
         }
@@ -439,7 +438,7 @@ public class TestFBConnection {
         try (Connection con = DriverManager.getConnection(getUrl(), props)) {
             SQLWarning warnings = con.getWarnings();
             assertNull("Expected no warning when specifying connection character set", warnings);
-            IConnectionProperties connectionProperties =
+            FirebirdConnectionProperties connectionProperties =
                     con.unwrap(FirebirdConnection.class).getFbDatabase().getConnectionProperties();
             assertEquals("Unexpected connection encoding", "WIN1254", connectionProperties.getEncoding());
         }

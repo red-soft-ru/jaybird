@@ -189,10 +189,10 @@ public class DatabaseEncryptionTest {
     public void testServiceManagerConnection_gstatException() throws Exception {
         FBStatisticsManager statManager = new FBStatisticsManager(getGdsType());
         if (getGdsType() == GDSType.getType("PURE_JAVA") || getGdsType() == GDSType.getType("NATIVE")) {
-            statManager.setHost(DB_SERVER_URL);
+            statManager.setServer(DB_SERVER_URL);
             statManager.setPort(DB_SERVER_PORT);
         }
-        statManager.setUser(DB_USER);
+        statManager.setUserName(DB_USER);
         statManager.setPassword(DB_PASSWORD);
         statManager.setDatabase(CRYPTTEST_DB);
         statManager.setDbCryptConfig(ENCRYPTION_KEY);
@@ -211,10 +211,10 @@ public class DatabaseEncryptionTest {
     public void testDatabaseValidation() throws Exception {
         FBMaintenanceManager maintenanceManager = new FBMaintenanceManager(getGdsType());
         if (getGdsType() == GDSType.getType("PURE_JAVA") || getGdsType() == GDSType.getType("NATIVE")) {
-            maintenanceManager.setHost(DB_SERVER_URL);
+            maintenanceManager.setServer(DB_SERVER_URL);
             maintenanceManager.setPort(DB_SERVER_PORT);
         }
-        maintenanceManager.setUser(DB_USER);
+        maintenanceManager.setUserName(DB_USER);
         maintenanceManager.setPassword(DB_PASSWORD);
         maintenanceManager.setDatabase(CRYPTTEST_DB);
         maintenanceManager.setDbCryptConfig(ENCRYPTION_KEY);

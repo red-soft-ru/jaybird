@@ -26,10 +26,10 @@ import org.firebirdsql.gds.impl.GDSServerVersion;
 import org.firebirdsql.gds.impl.TransactionParameterBufferImpl;
 import org.firebirdsql.gds.impl.jni.EmbeddedGDSFactoryPlugin;
 import org.firebirdsql.gds.impl.jni.LocalGDSFactoryPlugin;
-import org.firebirdsql.gds.ng.FbConnectionProperties;
 import org.firebirdsql.gds.ng.FbDatabase;
 import org.firebirdsql.gds.ng.FbTransaction;
 import org.firebirdsql.gds.ng.TransactionState;
+import org.firebirdsql.jdbc.FBConnectionProperties;
 import org.firebirdsql.jdbc.SQLStateConstants;
 import org.firebirdsql.management.FBManager;
 import org.junit.ClassRule;
@@ -67,14 +67,14 @@ public class TestJnaDatabase {
 
     private final AbstractNativeDatabaseFactory factory =
             (AbstractNativeDatabaseFactory) FBTestProperties.getFbDatabaseFactory();
-    private final FbConnectionProperties connectionInfo;
+    private final FBConnectionProperties connectionInfo;
     {
-        connectionInfo = new FbConnectionProperties();
-        connectionInfo.setServerName(FBTestProperties.DB_SERVER_URL);
-        connectionInfo.setPortNumber(FBTestProperties.DB_SERVER_PORT);
-        connectionInfo.setUser(DB_USER);
+        connectionInfo = new FBConnectionProperties();
+        connectionInfo.setServer(FBTestProperties.DB_SERVER_URL);
+        connectionInfo.setPort(FBTestProperties.DB_SERVER_PORT);
+        connectionInfo.setUserName(DB_USER);
         connectionInfo.setPassword(DB_PASSWORD);
-        connectionInfo.setDatabaseName(FBTestProperties.getDatabasePath());
+        connectionInfo.setDatabase(FBTestProperties.getDatabasePath());
         connectionInfo.setEncoding("NONE");
     }
 
@@ -134,7 +134,7 @@ public class TestJnaDatabase {
     public void testBasicStatusVectorProcessing_wrongDatabase() throws Exception {
         // set invalid database
         final String invalidDatabaseName = FBTestProperties.getDatabasePath() + "doesnotexist";
-        connectionInfo.setDatabaseName(invalidDatabaseName);
+        connectionInfo.setDatabase(invalidDatabaseName);
         try (JnaDatabase db = factory.connect(connectionInfo)) {
 
             expectedException.expect(allOf(
@@ -165,7 +165,7 @@ public class TestJnaDatabase {
         connectionInfo.getExtraDatabaseParameters()
                 .addArgument(ISCConstants.isc_dpb_sql_dialect, 3);
         JnaDatabase db = factory.connect(connectionInfo);
-        File dbFile = new File(connectionInfo.getDatabaseName());
+        File dbFile = new File(connectionInfo.getDatabase());
         try {
             db.createDatabase();
             assertTrue("Database should be attached after create", db.isAttached());

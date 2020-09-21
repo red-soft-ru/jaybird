@@ -21,6 +21,7 @@ package org.firebirdsql.gds.ng.jna;
 import com.sun.jna.Pointer;
 import org.firebirdsql.encodings.IEncodingFactory;
 import org.firebirdsql.gds.ng.*;
+import org.firebirdsql.jdbc.FirebirdConnectionProperties;
 import org.firebirdsql.jna.fbclient.FbClientLibrary;
 import org.firebirdsql.jna.fbclient.ISC_STATUS;
 import org.firebirdsql.logging.Logger;
@@ -43,7 +44,7 @@ import static org.firebirdsql.gds.ISCConstants.*;
  * @author <a href="mailto:mrotteveel@users.sourceforge.net">Mark Rotteveel</a>
  * @since 3.0
  */
-public abstract class JnaConnection<T extends IAttachProperties<T>, C extends JnaAttachment>
+public abstract class JnaConnection<T extends FirebirdConnectionProperties, C extends JnaAttachment>
         extends AbstractConnection<T, C> {
 
     private static final Logger log = LoggerFactory.getLogger(JnaConnection.class);

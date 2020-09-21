@@ -19,6 +19,8 @@
 package org.firebirdsql.gds.ng.wire.version10;
 
 import org.firebirdsql.gds.*;
+import org.firebirdsql.gds.impl.DatabaseParameterBufferImp;
+import org.firebirdsql.gds.impl.wire.WireProtocolConstants;
 import org.firebirdsql.gds.impl.wire.XdrOutputStream;
 import org.firebirdsql.gds.impl.wire.auth.AuthSspi;
 import org.firebirdsql.gds.ng.FbExceptionBuilder;

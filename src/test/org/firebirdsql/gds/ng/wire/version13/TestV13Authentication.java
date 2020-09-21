@@ -122,9 +122,9 @@ public class TestV13Authentication {
         final String password = "legacy";
         databaseUserRule.createUser(username, password, "Legacy_UserManager");
         final FBServiceManager fbServiceManager = new FBServiceManager(FBTestProperties.getGdsType());
-        fbServiceManager.setHost(FBTestProperties.DB_SERVER_URL);
+        fbServiceManager.setServer(FBTestProperties.DB_SERVER_URL);
         fbServiceManager.setPort(FBTestProperties.DB_SERVER_PORT);
-        fbServiceManager.setUser(username);
+        fbServiceManager.setUserName(username);
         fbServiceManager.setPassword(password);
 
         final GDSServerVersion serverVersion = fbServiceManager.getServerVersion();
@@ -146,9 +146,9 @@ public class TestV13Authentication {
         final String password = "srp";
         databaseUserRule.createUser(username, password, "Srp");
         final FBServiceManager fbServiceManager = new FBServiceManager(FBTestProperties.getGdsType());
-        fbServiceManager.setHost(FBTestProperties.DB_SERVER_URL);
+        fbServiceManager.setServer(FBTestProperties.DB_SERVER_URL);
         fbServiceManager.setPort(FBTestProperties.DB_SERVER_PORT);
-        fbServiceManager.setUser(username);
+        fbServiceManager.setUserName(username);
         fbServiceManager.setPassword(password);
 
         final GDSServerVersion serverVersion = fbServiceManager.getServerVersion();

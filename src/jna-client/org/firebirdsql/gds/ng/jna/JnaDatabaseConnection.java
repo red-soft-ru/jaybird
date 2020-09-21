@@ -21,7 +21,7 @@ package org.firebirdsql.gds.ng.jna;
 import org.firebirdsql.encodings.EncodingDefinition;
 import org.firebirdsql.encodings.EncodingFactory;
 import org.firebirdsql.encodings.IEncodingFactory;
-import org.firebirdsql.gds.ng.IConnectionProperties;
+import org.firebirdsql.jdbc.FirebirdConnectionProperties;
 import org.firebirdsql.jna.fbclient.FbClientLibrary;
 
 import java.sql.SQLException;
@@ -32,7 +32,7 @@ import java.sql.SQLException;
  * @author <a href="mailto:mrotteveel@users.sourceforge.net">Mark Rotteveel</a>
  * @since 3.0
  */
-public class JnaDatabaseConnection extends JnaConnection<IConnectionProperties, JnaDatabase>  {
+public class JnaDatabaseConnection extends JnaConnection<FirebirdConnectionProperties, JnaDatabase>  {
 
     /**
      * Creates a JnaDatabaseConnection (without establishing a connection to the server).
@@ -42,7 +42,7 @@ public class JnaDatabaseConnection extends JnaConnection<IConnectionProperties, 
      * @param connectionProperties
      *         Connection properties
      */
-    public JnaDatabaseConnection(FbClientLibrary clientLibrary, IConnectionProperties connectionProperties)
+    public JnaDatabaseConnection(FbClientLibrary clientLibrary, FirebirdConnectionProperties connectionProperties)
             throws SQLException {
         this(clientLibrary, connectionProperties, EncodingFactory.getPlatformDefault());
     }
@@ -57,7 +57,7 @@ public class JnaDatabaseConnection extends JnaConnection<IConnectionProperties, 
      * @param encodingFactory
      *         Factory for encoding definitions
      */
-    public JnaDatabaseConnection(FbClientLibrary clientLibrary, IConnectionProperties connectionProperties,
+    public JnaDatabaseConnection(FbClientLibrary clientLibrary, FirebirdConnectionProperties connectionProperties,
             IEncodingFactory encodingFactory) throws SQLException {
         super(clientLibrary, connectionProperties, encodingFactory);
     }
@@ -71,5 +71,10 @@ public class JnaDatabaseConnection extends JnaConnection<IConnectionProperties, 
     @Override
     public JnaDatabase identify() throws SQLException {
         return new JnaDatabase(this);
+    }
+
+    @Override
+    public final String getAttachObjectName() {
+        return getAttachProperties().getDatabase();
     }
 }

@@ -126,7 +126,7 @@ public class V13WireOperations extends V11WireOperations {
                     processAttachCallback.processAttachResponse(response);
                     addServerKeys(response.getData());
 
-                    WireCrypt wireCrypt = getAttachProperties().getWireCrypt();
+                    WireCrypt wireCrypt = WireCrypt.fromString(getAttachProperties().getWireCrypt());
 
                     if (!wasAuthComplete && wireCrypt != WireCrypt.DISABLED) {
                         tryKnownServerKeys();
@@ -207,7 +207,7 @@ public class V13WireOperations extends V11WireOperations {
         }
 
         if (!initializedEncryption
-                && getAttachProperties().getWireCrypt() == WireCrypt.REQUIRED) {
+                && WireCrypt.fromString(getAttachProperties().getWireCrypt()) == WireCrypt.REQUIRED) {
             FbExceptionBuilder exceptionBuilder = new FbExceptionBuilder()
                     .nonTransientException(ISCConstants.isc_wirecrypt_incompatible);
             if (chainBuilder.hasException()) {

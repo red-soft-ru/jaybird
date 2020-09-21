@@ -31,6 +31,7 @@ import org.firebirdsql.gds.ng.wire.AbstractFbWireDatabase;
 import org.firebirdsql.gds.ng.wire.FbWireDatabase;
 import org.firebirdsql.gds.ng.wire.ProtocolCollection;
 import org.firebirdsql.gds.ng.wire.WireDatabaseConnection;
+import org.firebirdsql.jdbc.FirebirdConnectionProperties;
 import org.firebirdsql.jdbc.SQLStateConstants;
 import org.firebirdsql.management.FBManager;
 import org.junit.ClassRule;
@@ -81,7 +82,7 @@ public class TestV10Database {
         this.commonConnectionInfo = commonConnectionInfo;
     }
 
-    protected final IConnectionProperties getConnectionInfo() {
+    protected final FirebirdConnectionProperties getConnectionInfo() {
         return commonConnectionInfo.getDatabaseConnectionInfo();
     }
 
@@ -202,11 +203,11 @@ public class TestV10Database {
      */
     @Test
     public void testBasicCreateAndDrop() throws Exception {
-        IConnectionProperties connectionProperties = getConnectionInfo();
+        FirebirdConnectionProperties connectionProperties = getConnectionInfo();
         connectionProperties.getExtraDatabaseParameters()
                 .addArgument(ISCConstants.isc_dpb_sql_dialect, 3);
 
-        File dbFile = new File(connectionProperties.getAttachObjectName());
+        File dbFile = new File(connectionProperties.getDatabase());
         try (WireDatabaseConnection gdsConnection = new WireDatabaseConnection(connectionProperties,
                 EncodingFactory.getPlatformDefault(), getProtocolCollection())) {
             gdsConnection.socketConnect();

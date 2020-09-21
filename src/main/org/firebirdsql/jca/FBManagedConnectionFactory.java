@@ -302,6 +302,26 @@ public class FBManagedConnectionFactory implements ManagedConnectionFactory, Fir
         connectionProperties.setDatabase(database);
     }
 
+    @Override
+    public String getServer() {
+        return connectionProperties.getServer();
+    }
+
+    @Override
+    public void setServer(String server) {
+        connectionProperties.setServer(server);
+    }
+
+    @Override
+    public int getPort() {
+        return connectionProperties.getPort();
+    }
+
+    @Override
+    public void setPort(int port) {
+        connectionProperties.setPort(port);
+    }
+
     public void setDefaultIsolation(String isolation) {
         connectionProperties.setDefaultIsolation(isolation);
     }
@@ -481,6 +501,122 @@ public class FBManagedConnectionFactory implements ManagedConnectionFactory, Fir
     public void setVerifyServerCertificate(boolean verify) {
         connectionProperties.setVerifyServerCertificate(verify);
     }
+
+    @Override
+    public int getProviderID() {
+        return connectionProperties.getProviderID();
+    }
+
+    @Override
+    public void setProviderID(int providerID) {
+        connectionProperties.setProviderID(providerID);
+    }
+
+    @Override
+    public boolean isNotEncryptedPassword() {
+        return connectionProperties.isNotEncryptedPassword();
+    }
+
+    @Override
+    public void setNotEncryptedPassword(final boolean notEncryptPassword) {
+        connectionProperties.setNotEncryptedPassword(notEncryptPassword);
+    }
+
+    @Override
+    public String getServiceName() {
+        return connectionProperties.getServiceName();
+    }
+
+    @Override
+    public void setServiceName(String serviceName) {
+        connectionProperties.setServiceName(serviceName);
+    }
+
+    @Override
+    public short getConnectionDialect() {
+        return connectionProperties.getConnectionDialect();
+    }
+
+    @Override
+    public void setConnectionDialect(short connectionDialect) {
+        connectionProperties.setConnectionDialect(connectionDialect);
+    }
+
+    @Override
+    public int getPageCacheSize() {
+        return connectionProperties.getPageCacheSize();
+    }
+
+    @Override
+    public void setPageCacheSize(int pageCacheSize) {
+        connectionProperties.setPageCacheSize(pageCacheSize);
+    }
+
+    @Override
+    public boolean isResultSetDefaultHoldable() {
+        return connectionProperties.isResultSetDefaultHoldable();
+    }
+
+    @Override
+    public void setResultSetDefaultHoldable(boolean holdable) {
+        connectionProperties.setResultSetDefaultHoldable(holdable);
+    }
+
+    @Override
+    public boolean isColumnLabelForName() {
+        return connectionProperties.isColumnLabelForName();
+    }
+
+    @Override
+    public void setColumnLabelForName(boolean columnLabelForName) {
+        connectionProperties.setColumnLabelForName(columnLabelForName);
+    }
+
+    @Override
+    public String getCertificateBase64() {
+        return connectionProperties.getCertificateBase64();
+    }
+
+    @Override
+    public void setCertificateBase64(String certificateBase64) {
+        connectionProperties.setCertificateBase64(certificateBase64);
+    }
+
+    @Override
+    public String getEffectiveLogin() {
+        return connectionProperties.getEffectiveLogin();
+    }
+
+    @Override
+    public void setEffectiveLogin(String effectiveLogin) {
+        connectionProperties.setEffectiveLogin(effectiveLogin);
+    }
+
+    @Override
+    public String getExcludeCryptoPlugins() {
+        return connectionProperties.getExcludeCryptoPlugins();
+    }
+
+    @Override
+    public void setExcludeCryptoPlugins(String excludeCryptoPlugins) {
+        connectionProperties.setExcludeCryptoPlugins(excludeCryptoPlugins);
+    }
+
+    @Override
+    public DatabaseParameterBuffer getExtraDatabaseParameters() {
+        return connectionProperties.getExtraDatabaseParameters();
+    }
+
+    @Override
+    public FirebirdConnectionProperties asImmutable() {
+        return connectionProperties.asImmutable();
+    }
+
+    @Override
+    public FirebirdConnectionProperties asNewMutable() {
+        return connectionProperties.asNewMutable();
+    }
+
 
     public int hashCode() {
         if (hashCode != 0) 

@@ -26,6 +26,7 @@ import org.firebirdsql.gds.ng.*;
 import org.firebirdsql.gds.ng.fields.FieldValue;
 import org.firebirdsql.gds.ng.fields.RowValue;
 import org.firebirdsql.gds.ng.wire.SimpleStatementListener;
+import org.firebirdsql.jdbc.FBConnectionProperties;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -436,7 +437,7 @@ public class TestJnaBlob extends BaseTestBlob {
     }
 
     @Override
-    protected JnaDatabase createFbDatabase(FbConnectionProperties connectionInfo) throws SQLException {
+    protected JnaDatabase createFbDatabase(FBConnectionProperties connectionInfo) throws SQLException {
         final JnaDatabase db = factory.connect(connectionInfo);
         db.attach();
         return db;

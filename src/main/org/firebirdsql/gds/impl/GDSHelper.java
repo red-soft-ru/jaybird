@@ -26,6 +26,7 @@ package org.firebirdsql.gds.impl;
 
 import org.firebirdsql.gds.*;
 import org.firebirdsql.gds.ng.*;
+import org.firebirdsql.jdbc.FirebirdConnectionProperties;
 import org.firebirdsql.jdbc.Synchronizable;
 
 import java.sql.SQLException;
@@ -71,7 +72,7 @@ public final class GDSHelper implements Synchronizable {
         return database;
     }
 
-    public IConnectionProperties getConnectionProperties() {
+    public FirebirdConnectionProperties getConnectionProperties() {
         return database.getConnectionProperties();
     }
 
@@ -274,7 +275,7 @@ public final class GDSHelper implements Synchronizable {
      * @return The username of the current database user
      */
     public String getUserName() {
-        return database.getConnectionProperties().getUser();
+        return database.getConnectionProperties().getUserName();
     }
 
     /**

@@ -26,6 +26,7 @@ import org.firebirdsql.gds.TransactionParameterBuffer;
 import org.firebirdsql.gds.impl.TransactionParameterBufferImpl;
 import org.firebirdsql.gds.ng.fields.FieldValue;
 import org.firebirdsql.gds.ng.fields.RowValue;
+import org.firebirdsql.jdbc.FBConnectionProperties;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -62,15 +63,15 @@ public abstract class AbstractTransactionTest extends FBJUnit4TestBase {
     @Rule
     public final ExpectedException expectedException = ExpectedException.none();
 
-    protected final FbConnectionProperties connectionInfo;
+    protected final FBConnectionProperties connectionInfo;
 
     {
-        connectionInfo = new FbConnectionProperties();
-        connectionInfo.setServerName(FBTestProperties.DB_SERVER_URL);
-        connectionInfo.setPortNumber(FBTestProperties.DB_SERVER_PORT);
-        connectionInfo.setUser(DB_USER);
+        connectionInfo = new FBConnectionProperties();
+        connectionInfo.setServer(FBTestProperties.DB_SERVER_URL);
+        connectionInfo.setPort(FBTestProperties.DB_SERVER_PORT);
+        connectionInfo.setUserName(DB_USER);
         connectionInfo.setPassword(DB_PASSWORD);
-        connectionInfo.setDatabaseName(FBTestProperties.getDatabasePath());
+        connectionInfo.setDatabase(FBTestProperties.getDatabasePath());
         connectionInfo.setEncoding("NONE");
     }
 

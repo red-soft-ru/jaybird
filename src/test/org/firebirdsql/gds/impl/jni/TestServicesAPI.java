@@ -21,8 +21,8 @@ package org.firebirdsql.gds.impl.jni;
 import org.firebirdsql.common.rules.GdsTypeRule;
 import org.firebirdsql.gds.ng.FbDatabaseFactory;
 import org.firebirdsql.gds.ng.FbService;
-import org.firebirdsql.gds.ng.FbServiceProperties;
-import org.firebirdsql.gds.ng.IServiceProperties;
+import org.firebirdsql.jdbc.FBConnectionProperties;
+import org.firebirdsql.jdbc.FirebirdConnectionProperties;
 import org.firebirdsql.logging.Logger;
 import org.firebirdsql.logging.LoggerFactory;
 import org.firebirdsql.jdbc.FBDriver;
@@ -215,9 +215,9 @@ public class TestServicesAPI {
         return service;
     }
 
-    private IServiceProperties createServiceProperties() {
-        IServiceProperties serviceProperties = new FbServiceProperties();
-        serviceProperties.setUser("SYSDBA");
+    private FirebirdConnectionProperties createServiceProperties() {
+        FirebirdConnectionProperties serviceProperties = new FBConnectionProperties();
+        serviceProperties.setUserName("SYSDBA");
         serviceProperties.setPassword("masterkey");
 
         return serviceProperties;
