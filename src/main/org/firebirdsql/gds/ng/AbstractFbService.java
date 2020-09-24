@@ -22,6 +22,7 @@ import org.firebirdsql.gds.ServiceParameterBuffer;
 import org.firebirdsql.gds.ServiceRequestBuffer;
 import org.firebirdsql.gds.ng.listeners.ServiceListener;
 import org.firebirdsql.gds.ng.listeners.ServiceListenerDispatcher;
+import org.firebirdsql.jdbc.FirebirdConnectionProperties;
 import org.firebirdsql.logging.Logger;
 import org.firebirdsql.logging.LoggerFactory;
 
@@ -38,7 +39,7 @@ import static org.firebirdsql.gds.VaxEncoding.iscVaxInteger2;
  * @author <a href="mailto:mrotteveel@users.sourceforge.net">Mark Rotteveel</a>
  * @since 3.0
  */
-public abstract class AbstractFbService<T extends AbstractConnection<IServiceProperties, ? extends FbService>>
+public abstract class AbstractFbService<T extends AbstractConnection<FirebirdConnectionProperties, ? extends FbService>>
         extends AbstractFbAttachment<T> implements FbService {
 
     private static final Logger log = LoggerFactory.getLogger(AbstractFbService.class);

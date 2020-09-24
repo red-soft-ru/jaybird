@@ -1,20 +1,21 @@
 package org.firebirdsql.nativeoo.gds.ng;
 
 import org.firebirdsql.gds.ng.*;
+import org.firebirdsql.jdbc.FirebirdConnectionProperties;
 import org.firebirdsql.jna.fbclient.FbClientLibrary;
 
 import java.sql.SQLException;
 
 public abstract class AbstractNativeOODatabaseFactory implements FbDatabaseFactory {
     @Override
-    public FbDatabase connect(IConnectionProperties connectionProperties) throws SQLException {
+    public FbDatabase connect(FirebirdConnectionProperties connectionProperties) throws SQLException {
         final NativeDatabaseConnection databaseConnection = new NativeDatabaseConnection(getClientLibrary(),
                 filterProperties(connectionProperties));
         return databaseConnection.identify();
     }
 
     @Override
-    public FbService serviceConnect(IServiceProperties serviceProperties) throws SQLException {
+    public FbService serviceConnect(FirebirdConnectionProperties serviceProperties) throws SQLException {
         final IServiceConnectionImpl serviceConnection = new IServiceConnectionImpl(getClientLibrary(),
                 filterProperties(serviceProperties));
         return serviceConnection.identify();
@@ -33,7 +34,7 @@ public abstract class AbstractNativeOODatabaseFactory implements FbDatabaseFacto
      * @param <T> Type of attach properties
      * @return Filtered properties
      */
-    protected <T extends IAttachProperties<T>> T filterProperties(T attachProperties) {
+    protected <T extends FirebirdConnectionProperties> FirebirdConnectionProperties filterProperties(T attachProperties) {
         return attachProperties;
     }
 }

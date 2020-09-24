@@ -19,6 +19,7 @@
 package org.firebirdsql.management;
 
 import org.firebirdsql.gds.ServiceRequestBuffer;
+import org.firebirdsql.gds.impl.DbAttachInfo;
 import org.firebirdsql.gds.impl.GDSType;
 import org.firebirdsql.gds.ng.FbService;
 
@@ -120,8 +121,21 @@ public abstract class FBBackupManagerBase extends FBServiceManager implements Ba
     }
 
     public void setDatabase(String database) {
-        super.setDatabase(database);
-        addRestorePath(database, -1);
+        try {
+            final DbAttachInfo dbAttachInfo = DbAttachInfo.parseConnectString(database);
+            if (dbAttachInfo.getServer().length() > 1) {
+                super.setServer(dbAttachInfo.getServer());
+                super.setPort(dbAttachInfo.getPort());
+                super.setDatabase(dbAttachInfo.getFileName());
+                addRestorePath(dbAttachInfo.getFileName(), -1);
+            } else {
+                super.setDatabase(database);
+                addRestorePath(database, -1);
+            }
+        } catch (SQLException e) {
+            super.setDatabase(database);
+            addRestorePath(database, -1);
+        }
         noLimitRestore = true;
     }
 

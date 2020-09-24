@@ -65,10 +65,10 @@ public class TestFBStreamingBackupManager {
         System.out.println(tempFolder);
         backupManager = new FBStreamingBackupManager(getGdsType());
         if (getGdsType() == GDSType.getType("PURE_JAVA") || getGdsType() == GDSType.getType("NATIVE")) {
-            backupManager.setHost(DB_SERVER_URL);
+            backupManager.setServer(DB_SERVER_URL);
             backupManager.setPort(DB_SERVER_PORT);
         }
-        backupManager.setUser(DB_USER);
+        backupManager.setUserName(DB_USER);
         backupManager.setPassword(DB_PASSWORD);
         backupManager.setDatabase(getDatabasePath());
         backupManager.setLogger(System.out);

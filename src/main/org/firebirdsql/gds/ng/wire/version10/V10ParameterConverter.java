@@ -23,11 +23,10 @@ import org.firebirdsql.gds.ISCConstants;
 import org.firebirdsql.gds.ParameterTagMapping;
 import org.firebirdsql.gds.ng.AbstractConnection;
 import org.firebirdsql.gds.ng.AbstractParameterConverter;
-import org.firebirdsql.gds.ng.IAttachProperties;
-import org.firebirdsql.gds.ng.IConnectionProperties;
 import org.firebirdsql.gds.ng.wire.WireDatabaseConnection;
 import org.firebirdsql.gds.ng.wire.WireServiceConnection;
 import org.firebirdsql.gds.ng.wire.auth.legacy.UnixCrypt;
+import org.firebirdsql.jdbc.FirebirdConnectionProperties;
 
 import java.sql.SQLException;
 
@@ -44,14 +43,17 @@ public class V10ParameterConverter extends AbstractParameterConverter<WireDataba
     @Override
     protected void populateAuthenticationProperties(final AbstractConnection connection,
             final ConnectionParameterBuffer pb) throws SQLException {
-        IAttachProperties props = connection.getAttachProperties();
+        FirebirdConnectionProperties props = connection.getAttachProperties();
         ParameterTagMapping tagMapping = pb.getTagMapping();
-        if (props.getUser() != null) {
-            pb.addArgument(tagMapping.getUserNameTag(), props.getUser());
+        if (props.getUserName() != null) {
+            pb.addArgument(tagMapping.getUserNameTag(), props.getUserName());
         }
         if (props.getPassword() != null) {
             pb.addArgument(tagMapping.getEncryptedPasswordTag(), UnixCrypt.crypt(props.getPassword(),
                     LEGACY_PASSWORD_SALT).substring(2, 13));
+        }
+        if (props.getNonStandardProperty("isc_dpb_password_enc") != null) {
+            pb.addArgument(tagMapping.getEncryptedPasswordTag(), props.getNonStandardProperty("isc_dpb_password_enc"));
         }
         if (props.getEffectiveLogin() != null) {
             pb.addArgument(tagMapping.getEffectiveLoginTag(), props.getEffectiveLogin());

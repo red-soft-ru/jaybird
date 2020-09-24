@@ -25,6 +25,8 @@ import org.firebirdsql.gds.ISCConstants;
 import org.firebirdsql.gds.ng.*;
 import org.firebirdsql.gds.ng.fields.RowValue;
 import org.firebirdsql.gds.ng.wire.SimpleStatementListener;
+import org.firebirdsql.jdbc.FBConnectionProperties;
+import org.firebirdsql.jdbc.FirebirdConnectionProperties;
 import org.junit.*;
 import org.junit.rules.ExpectedException;
 
@@ -436,7 +438,7 @@ public class IBlobImplTest extends BaseTestBlob {
     }
 
     @Override
-    protected IDatabaseImpl createFbDatabase(FbConnectionProperties connectionInfo) throws SQLException {
+    protected IDatabaseImpl createFbDatabase(FBConnectionProperties connectionInfo) throws SQLException {
         final IDatabaseImpl db = (IDatabaseImpl) factory.connect(connectionInfo);
         db.attach();
         return db;

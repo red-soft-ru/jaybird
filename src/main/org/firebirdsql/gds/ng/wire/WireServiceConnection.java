@@ -19,7 +19,7 @@
 package org.firebirdsql.gds.ng.wire;
 
 import org.firebirdsql.encodings.IEncodingFactory;
-import org.firebirdsql.gds.ng.IServiceProperties;
+import org.firebirdsql.jdbc.FirebirdConnectionProperties;
 
 import java.sql.SQLException;
 
@@ -29,7 +29,7 @@ import java.sql.SQLException;
  * @author <a href="mailto:mrotteveel@users.sourceforge.net">Mark Rotteveel</a>
  * @since 3.0
  */
-public class WireServiceConnection extends WireConnection<IServiceProperties, FbWireService> {
+public class WireServiceConnection extends WireConnection<FirebirdConnectionProperties, FbWireService> {
 
     /**
      * Creates a WireServiceConnection (without establishing a connection to the  server) with the default
@@ -38,7 +38,7 @@ public class WireServiceConnection extends WireConnection<IServiceProperties, Fb
      * @param serviceProperties
      *         Service properties
      */
-    public WireServiceConnection(IServiceProperties serviceProperties) throws SQLException {
+    public WireServiceConnection(FirebirdConnectionProperties serviceProperties) throws SQLException {
         super(serviceProperties);
     }
 
@@ -52,7 +52,7 @@ public class WireServiceConnection extends WireConnection<IServiceProperties, Fb
      * @param protocols
      *         The collection of protocols to use for this connection.
      */
-    public WireServiceConnection(IServiceProperties serviceProperties, IEncodingFactory encodingFactory,
+    public WireServiceConnection(FirebirdConnectionProperties serviceProperties, IEncodingFactory encodingFactory,
             ProtocolCollection protocols) throws SQLException {
         super(serviceProperties, encodingFactory, protocols);
     }
@@ -60,5 +60,10 @@ public class WireServiceConnection extends WireConnection<IServiceProperties, Fb
     @Override
     protected FbWireService createConnectionHandle(ProtocolDescriptor protocolDescriptor) {
         return protocolDescriptor.createService(this);
+    }
+
+    @Override
+    public final String getAttachObjectName() {
+        return getAttachProperties().getServiceName();
     }
 }

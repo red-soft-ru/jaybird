@@ -2,8 +2,8 @@ package org.firebirdsql.nativeoo.gds.ng;
 
 import org.firebirdsql.common.FBTestProperties;
 import org.firebirdsql.common.rules.GdsTypeRule;
-import org.firebirdsql.gds.ng.FbConnectionProperties;
 import org.firebirdsql.gds.ng.FbDatabase;
+import org.firebirdsql.jdbc.FBConnectionProperties;
 import org.firebirdsql.jna.fbclient.FbClientLibrary;
 import org.junit.ClassRule;
 import org.junit.Rule;
@@ -25,14 +25,14 @@ public class NativeDatabaseConnectionTest {
     @Rule
     public final ExpectedException expectedException = ExpectedException.none();
 
-    private final FbConnectionProperties connectionInfo;
+    private final FBConnectionProperties connectionInfo;
     {
-        connectionInfo = new FbConnectionProperties();
-        connectionInfo.setServerName(FBTestProperties.DB_SERVER_URL);
-        connectionInfo.setPortNumber(FBTestProperties.DB_SERVER_PORT);
-        connectionInfo.setUser(DB_USER);
+        connectionInfo = new FBConnectionProperties();
+        connectionInfo.setServer(FBTestProperties.DB_SERVER_URL);
+        connectionInfo.setPort(FBTestProperties.DB_SERVER_PORT);
+        connectionInfo.setUserName(DB_USER);
         connectionInfo.setPassword(DB_PASSWORD);
-        connectionInfo.setDatabaseName(FBTestProperties.getDatabasePath());
+        connectionInfo.setDatabase(FBTestProperties.getDatabasePath());
         connectionInfo.setEncoding("NONE");
     }
 

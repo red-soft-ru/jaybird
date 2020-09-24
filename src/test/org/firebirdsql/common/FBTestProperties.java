@@ -147,10 +147,10 @@ public final class FBTestProperties {
                 if (gdsType == GDSType.getType("PURE_JAVA")
                         || gdsType == GDSType.getType("NATIVE")
                         || gdsType == GDSType.getType("OOREMOTE") ) {
-                    fbServiceManager.setHost(DB_SERVER_URL);
+                    fbServiceManager.setServer(DB_SERVER_URL);
                     fbServiceManager.setPort(DB_SERVER_PORT);
                 }
-                fbServiceManager.setUser(FBTestProperties.DB_USER);
+                fbServiceManager.setUserName(FBTestProperties.DB_USER);
                 fbServiceManager.setPassword(FBTestProperties.DB_PASSWORD);
                 firebirdSupportInfo = FirebirdSupportInfo.supportInfoFor(fbServiceManager.getServerVersion());
             }

@@ -24,6 +24,7 @@ import org.firebirdsql.gds.impl.GDSServerVersion;
 import org.firebirdsql.gds.impl.GDSServerVersionException;
 import org.firebirdsql.gds.ng.listeners.ExceptionListener;
 import org.firebirdsql.gds.ng.listeners.ExceptionListenerDispatcher;
+import org.firebirdsql.jdbc.FirebirdConnectionProperties;
 import org.firebirdsql.logging.Logger;
 import org.firebirdsql.logging.LoggerFactory;
 
@@ -38,7 +39,7 @@ import static java.util.Objects.requireNonNull;
  * @author <a href="mailto:mrotteveel@users.sourceforge.net">Mark Rotteveel</a>
  * @since 3.0
  */
-public abstract class AbstractFbAttachment<T extends AbstractConnection<? extends IAttachProperties<?>, ? extends FbAttachment>>
+public abstract class AbstractFbAttachment<T extends AbstractConnection<? extends FirebirdConnectionProperties, ? extends FbAttachment>>
         implements FbAttachment {
 
     private static final Logger log = LoggerFactory.getLogger(AbstractFbAttachment.class);

@@ -2,7 +2,7 @@ package org.firebirdsql.nativeoo.gds.ng;
 
 import org.firebirdsql.encodings.EncodingFactory;
 import org.firebirdsql.encodings.IEncodingFactory;
-import org.firebirdsql.gds.ng.IServiceProperties;
+import org.firebirdsql.jdbc.FirebirdConnectionProperties;
 import org.firebirdsql.jna.fbclient.FbClientLibrary;
 
 import java.sql.SQLException;
@@ -13,7 +13,7 @@ import java.sql.SQLException;
  * @author <a href="mailto:vasiliy.yashkov@red-soft.ru">Vasiliy Yashkov</a>
  * @since 4.0
  */
-public class IServiceConnectionImpl extends AbstractNativeConnection<IServiceProperties, IServiceImpl> {
+public class IServiceConnectionImpl extends AbstractNativeConnection<FirebirdConnectionProperties, IServiceImpl> {
     /**
      * Creates a IServiceConnectionImpl (without establishing a connection to the server).
      *
@@ -22,7 +22,7 @@ public class IServiceConnectionImpl extends AbstractNativeConnection<IServicePro
      * @param connectionProperties
      *         Connection properties
      */
-    public IServiceConnectionImpl(FbClientLibrary clientLibrary, IServiceProperties connectionProperties)
+    public IServiceConnectionImpl(FbClientLibrary clientLibrary, FirebirdConnectionProperties connectionProperties)
             throws SQLException {
         this(clientLibrary, connectionProperties, EncodingFactory.getPlatformDefault());
     }
@@ -37,7 +37,7 @@ public class IServiceConnectionImpl extends AbstractNativeConnection<IServicePro
      * @param encodingFactory
      *         Factory for encoding definitions
      */
-    public IServiceConnectionImpl(FbClientLibrary clientLibrary, IServiceProperties connectionProperties,
+    public IServiceConnectionImpl(FbClientLibrary clientLibrary, FirebirdConnectionProperties connectionProperties,
                                   IEncodingFactory encodingFactory) throws SQLException {
         super(clientLibrary, connectionProperties, encodingFactory);
     }
@@ -51,5 +51,10 @@ public class IServiceConnectionImpl extends AbstractNativeConnection<IServicePro
     @Override
     public IServiceImpl identify() throws SQLException {
         return new IServiceImpl(this);
+    }
+
+    @Override
+    public final String getAttachObjectName() {
+        return getAttachProperties().getServiceName();
     }
 }

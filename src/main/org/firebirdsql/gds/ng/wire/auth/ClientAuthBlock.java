@@ -24,7 +24,7 @@ import org.firebirdsql.gds.ISCConstants;
 import org.firebirdsql.gds.JaybirdErrorCodes;
 import org.firebirdsql.gds.ParameterTagMapping;
 import org.firebirdsql.gds.ng.FbExceptionBuilder;
-import org.firebirdsql.gds.ng.IAttachProperties;
+import org.firebirdsql.jdbc.FirebirdConnectionProperties;
 import org.firebirdsql.logging.Logger;
 import org.firebirdsql.logging.LoggerFactory;
 
@@ -55,20 +55,20 @@ public final class ClientAuthBlock {
     private static final String DEFAULT_AUTH_PLUGINS = "Srp256,Srp,Certificate,GostPassword,Gss,Multifactor";
     private static final Map<String, AuthenticationPluginSpi> PLUGIN_MAPPING = getAvailableAuthenticationPlugins();
 
-    private final IAttachProperties<?> attachProperties;
+    private final FirebirdConnectionProperties attachProperties;
     private List<AuthenticationPluginSpi> pluginProviders;
     private final Set<String> serverPlugins = new LinkedHashSet<>();
     private AuthenticationPlugin currentPlugin;
     private boolean authComplete;
     private boolean firstTime = true;
 
-    public ClientAuthBlock(IAttachProperties<?> attachProperties) throws SQLException {
+    public ClientAuthBlock(FirebirdConnectionProperties attachProperties) throws SQLException {
         this.attachProperties = attachProperties;
         resetClient(null);
     }
 
     public String getLogin() {
-        return attachProperties.getUser();
+        return attachProperties.getUserName();
     }
 
     public String getNormalizedLogin() {

@@ -136,7 +136,112 @@ public class FBSimpleDataSource extends RootCommonDataSource implements DataSour
     public void setDatabase(String name) {
         mcf.setDatabase(name);
     }
-    
+
+    @Override
+    public String getServer() {
+        return mcf.getServer();
+    }
+
+    @Override
+    public void setServer(String server) {
+        mcf.setServer(server);
+    }
+
+    @Override
+    public void setPort(int port) {
+        mcf.setPort(port);
+    }
+
+    @Override
+    public int getPort() {
+        return mcf.getPort();
+    }
+
+    @Override
+    public short getConnectionDialect() {
+        return mcf.getConnectionDialect();
+    }
+
+    @Override
+    public void setConnectionDialect(short connectionDialect) {
+        mcf.setConnectionDialect(connectionDialect);
+    }
+
+    @Override
+    public int getPageCacheSize() {
+        return mcf.getPageCacheSize();
+    }
+
+    @Override
+    public void setPageCacheSize(int pageCacheSize) {
+        mcf.setPageCacheSize(pageCacheSize);
+    }
+
+    @Override
+    public boolean isResultSetDefaultHoldable() {
+        return mcf.isResultSetDefaultHoldable();
+    }
+
+    @Override
+    public void setResultSetDefaultHoldable(boolean holdable) {
+        mcf.setResultSetDefaultHoldable(holdable);
+    }
+
+    @Override
+    public boolean isColumnLabelForName() {
+        return mcf.isColumnLabelForName();
+    }
+
+    @Override
+    public void setColumnLabelForName(boolean columnLabelForName) {
+        mcf.setColumnLabelForName(columnLabelForName);
+    }
+
+    @Override
+    public String getCertificateBase64() {
+        return mcf.getCertificateBase64();
+    }
+
+    @Override
+    public void setCertificateBase64(String certificateBase64) {
+        mcf.setCertificateBase64(certificateBase64);
+    }
+
+    @Override
+    public String getEffectiveLogin() {
+        return mcf.getEffectiveLogin();
+    }
+
+    @Override
+    public void setEffectiveLogin(String effectiveLogin) {
+        mcf.setEffectiveLogin(effectiveLogin);
+    }
+
+    @Override
+    public String getExcludeCryptoPlugins() {
+        return mcf.getExcludeCryptoPlugins();
+    }
+
+    @Override
+    public void setExcludeCryptoPlugins(String excludeCryptoPlugins) {
+        mcf.setExcludeCryptoPlugins(excludeCryptoPlugins);
+    }
+
+    @Override
+    public DatabaseParameterBuffer getExtraDatabaseParameters() {
+        return mcf.getExtraDatabaseParameters();
+    }
+
+    @Override
+    public FirebirdConnectionProperties asImmutable() {
+        return mcf.asImmutable();
+    }
+
+    @Override
+    public FirebirdConnectionProperties asNewMutable() {
+        return mcf.asNewMutable();
+    }
+
     /**
      * Get user name that is used in {@link #getConnection()} method.
      * 
@@ -500,7 +605,37 @@ public class FBSimpleDataSource extends RootCommonDataSource implements DataSour
     public void setVerifyServerCertificate(boolean verify) {
         mcf.setVerifyServerCertificate(verify);
     }
-    
+
+    @Override
+    public int getProviderID() {
+        return mcf.getProviderID();
+    }
+
+    @Override
+    public void setProviderID(int providerID) {
+        mcf.setProviderID(providerID);
+    }
+
+    @Override
+    public boolean isNotEncryptedPassword() {
+        return mcf.isNotEncryptedPassword();
+    }
+
+    @Override
+    public void setNotEncryptedPassword(final boolean notEncryptPassword) {
+        mcf.setNotEncryptedPassword(notEncryptPassword);
+    }
+
+    @Override
+    public String getServiceName() {
+        return mcf.getServiceName();
+    }
+
+    @Override
+    public void setServiceName(String serviceName) {
+        mcf.setServiceName(serviceName);
+    }
+
     /*
      * INTERFACES IMPLEMENTATION
      */

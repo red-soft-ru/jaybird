@@ -42,9 +42,9 @@ public class TestFBServiceManager extends FBJUnit4TestBase{
     @Test
     public void testGetServerVersion() throws Exception {
         final FBServiceManager fbServiceManager = new FBServiceManager(FBTestProperties.getGdsType());
-        fbServiceManager.setHost(FBTestProperties.DB_SERVER_URL);
+        fbServiceManager.setServer(FBTestProperties.DB_SERVER_URL);
         fbServiceManager.setPort(FBTestProperties.DB_SERVER_PORT);
-        fbServiceManager.setUser(FBTestProperties.DB_USER);
+        fbServiceManager.setUserName(FBTestProperties.DB_USER);
         fbServiceManager.setPassword(FBTestProperties.DB_PASSWORD);
 
         final GDSServerVersion serverVersion = fbServiceManager.getServerVersion();
