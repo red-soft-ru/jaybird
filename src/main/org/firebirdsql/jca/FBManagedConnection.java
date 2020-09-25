@@ -633,6 +633,9 @@ public class FBManagedConnection implements ManagedConnection, XAResource, Excep
                     throw new javax.resource.spi.IllegalStateException(
                             "Can't destroy managed connection with active transaction");
 
+                if (parent != null)
+                    return;
+
                 gdsHelper.detachDatabase();
             }
         } catch (SQLException ge) {
