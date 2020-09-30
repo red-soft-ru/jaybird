@@ -31,10 +31,12 @@ import java.beans.BeanInfo;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
+import java.sql.Connection;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.firebirdsql.jdbc.FBTpbMapper.TRANSACTION_READ_COMMITTED;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
@@ -161,10 +163,10 @@ public class FBConnectionPropertiesTest {
 
     @Test
     public void testWireCrypt() {
-        assertEquals(WireCrypt.DEFAULT, info.getWireCrypt());
+        assertEquals(WireCrypt.DEFAULT.name(), info.getWireCrypt());
         final WireCrypt wireCrypt = WireCrypt.DISABLED;
         info.setWireCrypt(wireCrypt.name());
-        assertEquals(wireCrypt, info.getWireCrypt());
+        assertEquals(wireCrypt.name(), info.getWireCrypt());
     }
 
     @Test
@@ -229,16 +231,30 @@ public class FBConnectionPropertiesTest {
             }
             Class<?> parameterType = method.getParameterTypes()[0];
             if (parameterType == int.class) {
-                Object value = intValue++;
-                method.invoke(info, value);
-                testValues.put(descriptor.getName(), value);
+                if (method.getName().equals("setDefaultTransactionIsolation")) {
+                    Object value = Connection.TRANSACTION_READ_COMMITTED;
+                    method.invoke(info, value);
+                    testValues.put(descriptor.getName(), value);
+                } else {
+                    Object value = intValue++;
+                    method.invoke(info, value);
+                    testValues.put(descriptor.getName(), value);
+                }
             } else if (parameterType == short.class) {
                 Object value = (short) (intValue++);
                 method.invoke(info, value);
                 testValues.put(descriptor.getName(), value);
             } else if (parameterType == String.class) {
-                method.invoke(info, method.getName());
-                testValues.put(descriptor.getName(), method.getName());
+                if (method.getName().equals("setDefaultIsolation")) {
+                    method.invoke(info, TRANSACTION_READ_COMMITTED);
+                    testValues.put(descriptor.getName(), TRANSACTION_READ_COMMITTED);
+                } else if (method.getName().equals("setSqlDialect")) {
+                    method.invoke(info, "3");
+                    testValues.put(descriptor.getName(), "3");
+                } else {
+                    method.invoke(info, method.getName());
+                    testValues.put(descriptor.getName(), method.getName());
+                }
             } else if (parameterType == boolean.class) {
                 method.invoke(info, true);
                 testValues.put(descriptor.getName(), true);
@@ -253,7 +269,8 @@ public class FBConnectionPropertiesTest {
         FirebirdConnectionProperties immutable = info.asImmutable();
         BeanInfo immutableBean = Introspector.getBeanInfo(FBImmutableConnectionProperties.class, Object.class);
         for (PropertyDescriptor descriptor : immutableBean.getPropertyDescriptors()) {
-            if (Arrays.asList("attachObjectName").contains(descriptor.getName())) {
+            if (Arrays.asList("attachObjectName", "databaseParameterBuffer", "mapper",
+                    "nonStandardProperty", "transactionParameters").contains(descriptor.getName())) {
                 continue;
             }
             if ("extraDatabaseParameters".equals(descriptor.getName())) {
