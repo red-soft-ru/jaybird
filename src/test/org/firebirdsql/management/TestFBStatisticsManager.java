@@ -65,7 +65,7 @@ public class TestFBStatisticsManager extends FBJUnit4TestBase {
             statManager.setServer(DB_SERVER_URL);
             statManager.setPort(DB_SERVER_PORT);
         }
-        statManager.setServer(DB_USER);
+        statManager.setUserName(DB_USER);
         statManager.setPassword(DB_PASSWORD);
         statManager.setDatabase(getDatabasePath());
         statManager.setLogger(loggingStream);
