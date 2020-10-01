@@ -200,15 +200,6 @@ public class FBConnectionProperties extends AbstractFBConnectionProperties imple
             return;
         }
         setStringProperty(LOCAL_ENCODING_PROPERTY, encodingDefinition.getJavaEncodingName());
-
-        if (getStringProperty(ENCODING_PROPERTY) != null) {
-            return;
-        }
-
-        String encoding = encodingDefinition.getFirebirdEncodingName();
-        if (encoding != null) {
-            setStringProperty(ENCODING_PROPERTY, encoding);
-        }
     }
 
     public void setEncoding(String encoding) {
@@ -217,15 +208,6 @@ public class FBConnectionProperties extends AbstractFBConnectionProperties imple
         }
         setStringProperty(ENCODING_PROPERTY, encoding);
         dirtied();
-        if (getStringProperty(LOCAL_ENCODING_PROPERTY) != null) {
-            return;
-        }
-
-        final EncodingDefinition encodingDefinition = EncodingFactory.getPlatformDefault()
-                .getEncodingDefinitionByFirebirdName(encoding);
-        if (encodingDefinition != null && !encodingDefinition.isInformationOnly()) {
-            setStringProperty(LOCAL_ENCODING_PROPERTY, encodingDefinition.getJavaEncodingName());
-        }
     }
 
     public void setRoleName(String roleName) {
@@ -326,6 +308,8 @@ public class FBConnectionProperties extends AbstractFBConnectionProperties imple
 
     @Override
     public void setWireCrypt(String wireCrypt) {
+        if (wireCrypt == null)
+            throw new NullPointerException("wireCrypt is null");
         setStringProperty(WIRE_CRYPT_LEVEL, wireCrypt);
         dirtied();
     }

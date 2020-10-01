@@ -5,6 +5,7 @@ import org.firebirdsql.gds.DatabaseParameterBuffer;
 import org.firebirdsql.gds.ParameterBufferHelper;
 import org.firebirdsql.gds.TransactionParameterBuffer;
 import org.firebirdsql.gds.impl.DatabaseParameterBufferImp;
+import org.firebirdsql.gds.ng.WireCrypt;
 import org.firebirdsql.jca.FBResourceException;
 
 import java.io.Serializable;
@@ -62,6 +63,7 @@ public abstract class AbstractFBConnectionProperties implements FirebirdConnecti
         this.soTimeout = src.soTimeout;
         this.connectTimeout = src.connectTimeout;
         this.sessionTimeZone = src.sessionTimeZone;
+        this.serviceName = src.serviceName;
         this.extraDatabaseParameters = src.extraDatabaseParameters.deepCopy();
     }
 
@@ -279,7 +281,10 @@ public abstract class AbstractFBConnectionProperties implements FirebirdConnecti
 
     @Override
     public String getWireCrypt() {
-        return getStringProperty(WIRE_CRYPT_LEVEL);
+        String wireCrypt = getStringProperty(WIRE_CRYPT_LEVEL);
+        if (wireCrypt == null)
+            return WireCrypt.DEFAULT.name();
+        return wireCrypt;
     }
 
     @Override
@@ -344,7 +349,7 @@ public abstract class AbstractFBConnectionProperties implements FirebirdConnecti
 
     @Override
     public void setServiceName(String serviceName) {
-        this.serviceName = serviceName;
+        immutable();
     }
 
     @Override
