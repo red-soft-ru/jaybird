@@ -37,6 +37,7 @@ import org.firebirdsql.gds.ng.wire.crypt.EncryptionPluginSpi;
 import org.firebirdsql.gds.ng.wire.crypt.arc4.Arc4EncryptionPluginSpi;
 import org.firebirdsql.gds.ng.dbcrypt.DbCryptCallback;
 import org.firebirdsql.gds.ng.dbcrypt.DbCryptData;
+import org.firebirdsql.gds.ng.wire.crypt.wincrypt.WireWinCryptEncryptionPluginSpi;
 import org.firebirdsql.gds.ng.wire.version11.V11WireOperations;
 import org.firebirdsql.logging.Logger;
 import org.firebirdsql.logging.LoggerFactory;
@@ -181,7 +182,9 @@ public class V13WireOperations extends V11WireOperations {
         // TODO Define separately and make configurable
         Map<EncryptionIdentifier, EncryptionPluginSpi> supportedEncryptionPlugins = new HashMap<>();
         EncryptionPluginSpi encryptionPluginSpi = new Arc4EncryptionPluginSpi();
+        EncryptionPluginSpi wireWinCryptEncryptionPluginSpi = new WireWinCryptEncryptionPluginSpi();
         supportedEncryptionPlugins.put(encryptionPluginSpi.getEncryptionIdentifier(), encryptionPluginSpi);
+        supportedEncryptionPlugins.put(wireWinCryptEncryptionPluginSpi.getEncryptionIdentifier(), wireWinCryptEncryptionPluginSpi);
 
         for (EncryptionIdentifier encryptionIdentifier : getEncryptionIdentifiers()) {
             EncryptionPluginSpi currentEncryptionSpi =
