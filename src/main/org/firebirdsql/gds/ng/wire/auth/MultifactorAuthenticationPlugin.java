@@ -131,12 +131,18 @@ public class MultifactorAuthenticationPlugin implements AuthenticationPlugin {
 
     @Override
     public boolean generatesSessionKey() {
-        return false;
+        return true;
     }
 
     @Override
     public byte[] getSessionKey() throws SQLException {
-        throw new SQLException("MultifactorAuthenticationPlugin cannot generate a session key");
+        if (this.authSspi != null && authSspi.getWireKeyData() != null)
+            return authSspi.getWireKeyData();
+        try {
+            return AuthMethods.generateRandom(null, 20);
+        } catch (GDSAuthException e) {
+            throw new SQLException("Can't generate session key", e);
+        }
     }
 
     @Override
