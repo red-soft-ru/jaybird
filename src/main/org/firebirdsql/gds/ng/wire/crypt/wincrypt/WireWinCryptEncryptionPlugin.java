@@ -98,7 +98,7 @@ public class WireWinCryptEncryptionPlugin implements EncryptionPlugin {
             throw new FbExceptionBuilder().nonTransientException(jb_cryptAlgorithmNotAvailable)
                     .messageParameter(getEncryptionIdentifier().toString())
                     .cause(e).toFlatSQLException();
-        } catch (InvalidKeyException e) {
+        } catch (InvalidKeyException | IllegalArgumentException e) {
             throw new FbExceptionBuilder().nonTransientException(jb_cryptInvalidKey)
                     .messageParameter(getEncryptionIdentifier().toString())
                     .cause(e).toFlatSQLException();
