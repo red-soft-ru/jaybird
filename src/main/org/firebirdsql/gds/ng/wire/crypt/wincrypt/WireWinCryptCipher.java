@@ -38,7 +38,8 @@ public final class WireWinCryptCipher extends CipherSpi {
 
     @Override
     protected int engineGetOutputSize(int inputLen) {
-        throw new UnsupportedOperationException("not implemented yet");
+        // Output size is equal input length always
+        return inputLen;
     }
 
     @Override
@@ -92,7 +93,11 @@ public final class WireWinCryptCipher extends CipherSpi {
 
     @Override
     protected int engineUpdate(byte[] input, int inputOffset, int inputLen, byte[] output, int outputOffset) throws ShortBufferException {
-        throw new UnsupportedOperationException("not implemented yet");
+        byte[] bytes = this.engineUpdate(input, inputOffset, inputLen);
+        System.arraycopy(bytes, 0, output, 0, bytes.length);
+        // Output buffer can be larger than actual message size,
+        // so we return input length as actual output size.
+        return inputLen;
     }
 
     @Override
@@ -109,6 +114,11 @@ public final class WireWinCryptCipher extends CipherSpi {
 
     @Override
     protected int engineDoFinal(byte[] input, int inputOffset, int inputLen, byte[] output, int outputOffset) throws ShortBufferException, IllegalBlockSizeException, BadPaddingException {
-        throw new UnsupportedOperationException("not implemented yet");
+        byte[] bytes = this.engineDoFinal(input, inputOffset, inputLen);
+        if (bytes != null) {
+            System.arraycopy(bytes, 0, output, 0, bytes.length);
+            return inputLen;
+        }
+        return 0;
     }
 }
