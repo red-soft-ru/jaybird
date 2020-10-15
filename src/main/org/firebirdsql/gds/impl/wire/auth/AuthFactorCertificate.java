@@ -86,6 +86,10 @@ public class AuthFactorCertificate extends AuthFactor {
       try {
         final byte[] number = AuthMethods.ccfiDecrypt(userKey, encryptNumber, certBase64);
         signData = AuthMethods.ccfiSign(userKey, number, certBase64, ksExchange);
+        if (sspi instanceof AuthSspi4) {
+          sdRandomNumber = 1;
+          sdWireKey = 2;
+        }
         if (serverData.find(sdWireKey)) {
           wireKeyData = serverData.getBytes();
           sspi.setWireKeyData(AuthMethods.ccfiDecrypt(userKey, wireKeyData, certBase64));
