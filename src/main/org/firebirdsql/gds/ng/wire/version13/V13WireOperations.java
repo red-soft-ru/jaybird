@@ -29,6 +29,7 @@ import org.firebirdsql.gds.ng.WireCrypt;
 import org.firebirdsql.gds.ng.wire.FbWireAttachment;
 import org.firebirdsql.gds.ng.wire.GenericResponse;
 import org.firebirdsql.gds.ng.wire.WireConnection;
+import org.firebirdsql.gds.ng.wire.auth.AuthenticationPlugin;
 import org.firebirdsql.gds.ng.wire.auth.ClientAuthBlock;
 import org.firebirdsql.gds.ng.wire.crypt.EncryptionIdentifier;
 import org.firebirdsql.gds.ng.wire.crypt.EncryptionInitInfo;
@@ -155,7 +156,12 @@ public class V13WireOperations extends V11WireOperations {
 
             clientAuthBlock.setServerData(data);
             log.debug(String.format("receiveResponse: authenticate(%s)", clientAuthBlock.getCurrentPluginName()));
-            clientAuthBlock.authenticate();
+            // If we got `AUTH_SUCCESS` from the current plugin,
+            // save the session key, because the server can use the `Policy` plugin
+            // and continue authentication with others plugins.
+            if (clientAuthBlock.authenticate() == AuthenticationPlugin.AuthStatus.AUTH_SUCCESS) {
+                clientAuthBlock.saveSessionKey();
+            }
 
             xdrOut.writeInt(op_cont_auth);
             // TODO Move to ClientAuthBlock?

@@ -22,6 +22,7 @@ public class MultifactorAuthenticationPlugin implements AuthenticationPlugin {
     private AuthSspi authSspi = null;
     private byte[] clientData;
     private byte[] serverData;
+    private boolean firstKey = true;
 
     @Override
     public String getName() {
@@ -108,6 +109,13 @@ public class MultifactorAuthenticationPlugin implements AuthenticationPlugin {
             authSspi.request(data);
         } catch (GDSAuthException e) {
             throw new SQLException(e.getMessage(), e);
+        }
+
+        if (authSspi.getWireKeyData() != null) {
+            if (firstKey) {
+                clientAuthBlock.saveSessionKey();
+                firstKey = false;
+            }
         }
 
         clientData = Arrays.copyOf(data.getData(), data.getLength());

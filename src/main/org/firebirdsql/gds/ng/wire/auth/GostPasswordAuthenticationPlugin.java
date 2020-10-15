@@ -68,6 +68,9 @@ public class GostPasswordAuthenticationPlugin implements AuthenticationPlugin {
             throw new SQLException(e);
         }
 
+        if (authSspi.getWireKeyData() != null)
+            clientAuthBlock.saveSessionKey();
+
         clientData = Arrays.copyOf(data.getData(), data.getLength());
         return AuthStatus.AUTH_MORE_DATA;
     }
