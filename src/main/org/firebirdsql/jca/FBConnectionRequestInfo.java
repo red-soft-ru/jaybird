@@ -130,12 +130,8 @@ public class FBConnectionRequestInfo implements DatabaseParameterBufferExtension
             else {
                 if (dpb.hasArgument(ISCConstants.isc_dpb_not_encrypt_password)) {
                     removeArgument(ISCConstants.isc_dpb_not_encrypt_password);
-                    byte[] nullInd = new byte[] { 0 };
-                    byte[] passwd = password.getBytes();
-                    byte[] data = new byte[nullInd.length + passwd.length];
-                    System.arraycopy(nullInd, 0, data, 0, nullInd.length);
-                    System.arraycopy(passwd, 0, data, nullInd.length, passwd.length);
-                    addArgument(DatabaseParameterBufferExtension.PASSWORD_ENC, data);
+                    removeArgument(ISCConstants.isc_dpb_not_encrypt_password);
+                    addArgument(DatabaseParameterBuffer.PASSWORD_ENC, "\u0000" + password);
                 } else {
                     String passwordEnc = FBDes.crypt(password, "9z");
                     addArgument(DatabaseParameterBufferExtension.PASSWORD_ENC, passwordEnc.substring(2));
