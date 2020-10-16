@@ -214,6 +214,10 @@ public interface WireProtocolConstants {
     int CNCT_login = 9; // Same data as isc_dpb_user_name
     int CNCT_plugin_list = 10; // List of plugins, available on client
     int CNCT_client_crypt = 11; // Client encyption level (DISABLED/ENABLED/REQUIRED)
+    int CNCT_certificate = 12;	// User certificate
+    int CNCT_repository_pin = 13;	// PIN for certificate's private key
+    int CNCT_verify_server = 14;	// Verify server certificate
+    int CNCT_effective_login = 15;	// Login for trusted user
     int WIRE_CRYPT_DISABLED = 0;
     int WIRE_CRYPT_ENABLED = 1;
     int WIRE_CRYPT_REQUIRED = 2;
