@@ -183,6 +183,15 @@ public class AuthCryptoPluginImpl extends AuthCryptoPlugin implements AutoClosea
   }
 
   @Override
+  public byte[] encrypt(final Object keyHandle, final byte[] data, final boolean isFinal) throws AuthCryptoException {
+    try {
+      return Advapi.cryptEncrypt((Pointer) keyHandle, null, isFinal, data);
+    } catch (Exception e) {
+      throw new AuthCryptoException("Can't create session key.", e);
+    }
+  }
+
+  @Override
   public Object createHash(final byte[] data) throws AuthCryptoException {
     try {
       final int algID = CertUtils.getAlgorithmIDByProvider(provider);
@@ -258,6 +267,15 @@ public class AuthCryptoPluginImpl extends AuthCryptoPlugin implements AutoClosea
   public byte[] decrypt(final Object keyHandle, final byte[] data) throws AuthCryptoException {
     try {
       return Advapi.cryptDecrypt((Pointer) keyHandle, null, true, 0, data);
+    } catch (Exception e) {
+      throw new AuthCryptoException("Can't create session key.", e);
+    }
+  }
+
+  @Override
+  public byte[] decrypt(final Object keyHandle, final byte[] data, final boolean isFinal) throws AuthCryptoException {
+    try {
+      return Advapi.cryptDecrypt((Pointer) keyHandle, null, isFinal, 0, data);
     } catch (Exception e) {
       throw new AuthCryptoException("Can't create session key.", e);
     }

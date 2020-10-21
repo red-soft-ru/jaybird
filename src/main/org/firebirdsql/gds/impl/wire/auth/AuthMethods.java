@@ -47,6 +47,30 @@ public class AuthMethods {
     }
   }
 
+  public static byte[] symmetricDecrypt(Object sessionKeyHandle, byte[] data) throws GDSAuthException {
+    try {
+      return AuthCryptoPlugin.getPlugin().decrypt(sessionKeyHandle, data);
+    } catch (AuthCryptoException e) {
+      throw new GDSAuthException("Error decrypting data: " + e.getMessage(), e);
+    }
+  }
+
+  public static byte[] symmetricEncrypt(Object sessionKeyHandle, byte[] data, final boolean isFinal) throws GDSAuthException {
+    try {
+      return AuthCryptoPlugin.getPlugin().encrypt(sessionKeyHandle, data, isFinal);
+    } catch (AuthCryptoException e) {
+      throw new GDSAuthException("Error encrypting data: " + e.getMessage(), e);
+    }
+  }
+
+  public static byte[] symmetricDecrypt(Object sessionKeyHandle, byte[] data, final boolean isFinal) throws GDSAuthException {
+    try {
+      return AuthCryptoPlugin.getPlugin().decrypt(sessionKeyHandle, data, isFinal);
+    } catch (AuthCryptoException e) {
+      throw new GDSAuthException("Error decrypting data: " + e.getMessage(), e);
+    }
+  }
+
   public static void createSessionKey(AuthSspi sspi, final String data) throws GDSAuthException {
     createSessionKey(sspi, data.getBytes());
   }

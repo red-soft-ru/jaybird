@@ -19,6 +19,9 @@
 package org.firebirdsql.common.rules;
 
 import org.firebirdsql.common.FBTestProperties;
+import org.firebirdsql.cryptoapi.AuthCryptoPluginImpl;
+import org.firebirdsql.cryptoapi.cryptopro.exception.CryptoException;
+import org.firebirdsql.gds.impl.wire.auth.AuthCryptoPlugin;
 import org.firebirdsql.management.FBManager;
 import org.junit.rules.ExternalResource;
 
@@ -47,6 +50,11 @@ public final class UsesDatabase extends ExternalResource {
     private UsesDatabase(boolean initialCreate) {
         // No outside instantiation
         this.initialCreate = initialCreate;
+        try {
+            AuthCryptoPlugin.register(new AuthCryptoPluginImpl());
+        } catch (CryptoException e) {
+            throw new NullPointerException("Cannot register crypto plugin");
+        }
     }
 
     /**

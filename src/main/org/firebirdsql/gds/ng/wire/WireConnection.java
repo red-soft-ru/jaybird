@@ -395,6 +395,15 @@ public abstract class WireConnection<T extends IAttachProperties<T>, C extends F
         userId.write(hostBytes, 0, hostLength);
         userId.write(CNCT_user_verification);
         userId.write(0);
+
+        if (attachProperties.getEffectiveLogin() != null) {
+            final byte[] effectiveUserBytes = attachProperties.getEffectiveLogin().getBytes(StandardCharsets.UTF_8);
+            userId.write(CNCT_effective_login);
+            int effectiveUserLength = Math.min(effectiveUserBytes.length, 255);
+            userId.write(effectiveUserLength);
+            userId.write(effectiveUserBytes, 0, effectiveUserLength);
+        }
+
         return userId.toByteArray();
     }
 

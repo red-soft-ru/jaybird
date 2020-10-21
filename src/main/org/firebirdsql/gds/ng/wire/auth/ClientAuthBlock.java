@@ -61,6 +61,7 @@ public final class ClientAuthBlock {
     private AuthenticationPlugin currentPlugin;
     private boolean authComplete;
     private boolean firstTime = true;
+    private byte[] lastSessionKey; // session key for the last successfully authenticated plugin
 
     public ClientAuthBlock(IAttachProperties<?> attachProperties) throws SQLException {
         this.attachProperties = attachProperties;
@@ -134,6 +135,7 @@ public final class ClientAuthBlock {
     }
 
     public void resetClient(byte[] serverInfo) throws SQLException {
+        lastSessionKey = null;
         if (serverInfo != null) {
             if (currentPlugin != null && currentPlugin.hasServerData()) {
                 // We should not change plugins iterator now
@@ -322,6 +324,9 @@ public final class ClientAuthBlock {
         if (currentPlugin == null) {
             throw new SQLException("No authentication plugin available");
         }
+        // Have we already generated session key? If we have, return it.
+        if (lastSessionKey != null)
+            return lastSessionKey;
         return currentPlugin.getSessionKey();
     }
 
@@ -522,5 +527,14 @@ public final class ClientAuthBlock {
 
     public boolean getVerifyServerCertificate() {
         return attachProperties.getVerifyServerCertificate();
+    }
+
+    /**
+     * If the current plugin has authenticated successfully, save session key from the plugin to use it later
+     * @throws SQLException If a session key cannot be saved
+     */
+    public void saveSessionKey() throws SQLException {
+        if (supportsEncryption())
+            lastSessionKey = currentPlugin.getSessionKey();
     }
 }

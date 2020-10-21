@@ -19,7 +19,8 @@ import static org.firebirdsql.gds.ClumpletReader.Kind.WideTagged;
  *          Time: 22:56
  */
 public class AuthFactorCertificate extends AuthFactor {
-  private int sdRandomNumber = ISCConstants.isc_dpb_certificate_body;
+  private int sdRandomNumber = 1;
+  private int sdWireKey = 2;
   private String certBase64;
   private ClumpletReader.Kind clumpletReaderType = WideTagged;
 
@@ -81,9 +82,20 @@ public class AuthFactorCertificate extends AuthFactor {
         throw new GDSAuthException("No private key found for certificate: " + e.getMessage(), e);
       }
       final byte[] signData;
+      final byte[] wireKeyData;
       try {
         final byte[] number = AuthMethods.ccfiDecrypt(userKey, encryptNumber, certBase64);
         signData = AuthMethods.ccfiSign(userKey, number, certBase64, ksExchange);
+        if (sspi instanceof AuthSspi3) {
+          sdRandomNumber = ISCConstants.isc_dpb_certificate_body;
+          sdWireKey = 1;
+        }
+        if (serverData.find(sdWireKey)) {
+          wireKeyData = serverData.getBytes();
+          sspi.setWireKeyData(AuthMethods.ccfiDecrypt(userKey, wireKeyData, certBase64));
+        }
+      } catch (SQLException e) {
+        throw new GDSAuthException(e.getMessage(), e);
       } finally {
         userKey.free(p);
       }
