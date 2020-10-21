@@ -24,6 +24,7 @@ public class AuthSspi {
   private boolean securityAuthentication;
   private boolean sessionEncyption;
   private ClumpletReader.Kind clumpletReaderType = WideTagged;
+  private byte[] wireKeyData;
 
   public AuthSspi() {
     // set the current factor
@@ -196,5 +197,13 @@ public class AuthSspi {
 
   public void setClumpletReaderType(ClumpletReader.Kind type) {
     this.clumpletReaderType = type;
+  }
+
+  public void setWireKeyData(byte[] wireKeyData) {
+    this.wireKeyData = wireKeyData;
+  }
+
+  public byte[] getWireKeyData() {
+    return wireKeyData;
   }
 }

@@ -29,6 +29,7 @@ import org.firebirdsql.gds.ng.WireCrypt;
 import org.firebirdsql.gds.ng.wire.FbWireAttachment;
 import org.firebirdsql.gds.ng.wire.GenericResponse;
 import org.firebirdsql.gds.ng.wire.WireConnection;
+import org.firebirdsql.gds.ng.wire.auth.AuthenticationPlugin;
 import org.firebirdsql.gds.ng.wire.auth.ClientAuthBlock;
 import org.firebirdsql.gds.ng.wire.crypt.EncryptionIdentifier;
 import org.firebirdsql.gds.ng.wire.crypt.EncryptionInitInfo;
@@ -37,6 +38,7 @@ import org.firebirdsql.gds.ng.wire.crypt.EncryptionPluginSpi;
 import org.firebirdsql.gds.ng.wire.crypt.arc4.Arc4EncryptionPluginSpi;
 import org.firebirdsql.gds.ng.dbcrypt.DbCryptCallback;
 import org.firebirdsql.gds.ng.dbcrypt.DbCryptData;
+import org.firebirdsql.gds.ng.wire.crypt.wincrypt.WireWinCryptEncryptionPluginSpi;
 import org.firebirdsql.gds.ng.wire.version11.V11WireOperations;
 import org.firebirdsql.logging.Logger;
 import org.firebirdsql.logging.LoggerFactory;
@@ -154,7 +156,12 @@ public class V13WireOperations extends V11WireOperations {
 
             clientAuthBlock.setServerData(data);
             log.debug(String.format("receiveResponse: authenticate(%s)", clientAuthBlock.getCurrentPluginName()));
-            clientAuthBlock.authenticate();
+            // If we got `AUTH_SUCCESS` from the current plugin,
+            // save the session key, because the server can use the `Policy` plugin
+            // and continue authentication with others plugins.
+            if (clientAuthBlock.authenticate() == AuthenticationPlugin.AuthStatus.AUTH_SUCCESS) {
+                clientAuthBlock.saveSessionKey();
+            }
 
             xdrOut.writeInt(op_cont_auth);
             // TODO Move to ClientAuthBlock?
@@ -181,7 +188,9 @@ public class V13WireOperations extends V11WireOperations {
         // TODO Define separately and make configurable
         Map<EncryptionIdentifier, EncryptionPluginSpi> supportedEncryptionPlugins = new HashMap<>();
         EncryptionPluginSpi encryptionPluginSpi = new Arc4EncryptionPluginSpi();
+        EncryptionPluginSpi wireWinCryptEncryptionPluginSpi = new WireWinCryptEncryptionPluginSpi();
         supportedEncryptionPlugins.put(encryptionPluginSpi.getEncryptionIdentifier(), encryptionPluginSpi);
+        supportedEncryptionPlugins.put(wireWinCryptEncryptionPluginSpi.getEncryptionIdentifier(), wireWinCryptEncryptionPluginSpi);
 
         for (EncryptionIdentifier encryptionIdentifier : getEncryptionIdentifiers()) {
             EncryptionPluginSpi currentEncryptionSpi =

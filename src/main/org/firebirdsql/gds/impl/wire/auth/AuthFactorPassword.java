@@ -25,6 +25,7 @@ public class AuthFactorPassword extends AuthFactor {
   public static final byte rdPasswordEnc = 5;
   public static final byte rdSalt = 6;
   public static final byte rdProviderMethod = 7;
+  public static final byte rdWireKey = 8;
   public static final int HASHING_COUNT = 200000;
 
   private String userName;
@@ -181,6 +182,11 @@ public class AuthFactorPassword extends AuthFactor {
 
         final byte[] ivData = cr.getBytes();
         randomData = AuthMethods.decrypt(cryptData, sessionKey, ivData);
+
+        if (cr.find(rdWireKey)) {
+          final byte[] wireKeyData = cr.getBytes();
+          sspi.setWireKeyData(AuthMethods.decrypt(wireKeyData, sessionKey, ivData));
+        }
       } catch (SQLException e) {
         throw new GDSAuthException(e.getMessage(), e);
       } finally {

@@ -47,6 +47,10 @@ public class CertificateAuthenticationPlugin implements AuthenticationPlugin {
 
             String certificate = clientAuthBlock.getCertificate();
             String certificateBase64 = clientAuthBlock.getCertificateBase64();
+
+            if (certificate == null && certificateBase64 == null)
+                return  AuthStatus.AUTH_CONTINUE;
+
             if ((certificate != null && !certificate.isEmpty()) ||
                     (certificateBase64 != null && !certificateBase64.isEmpty())) {
                 AuthFactorCertificate authFactorCertificate = new AuthFactorCertificate(authSspi);
@@ -69,9 +73,6 @@ public class CertificateAuthenticationPlugin implements AuthenticationPlugin {
                 data.add((byte) AuthFactor.TYPE_SERVER_CERT);
             }
 
-            if (certificate == null && certificateBase64 == null)
-                return  AuthStatus.AUTH_CONTINUE;
-
             clientData = Arrays.copyOf(data.getData(), data.getLength());
 
             return AuthStatus.AUTH_MORE_DATA;
@@ -86,6 +87,9 @@ public class CertificateAuthenticationPlugin implements AuthenticationPlugin {
         } catch (GDSAuthException e) {
             throw new SQLException(e);
         }
+
+        if (authSspi.getWireKeyData() != null)
+            clientAuthBlock.saveSessionKey();
 
         clientData = Arrays.copyOf(data.getData(), data.getLength());
         return AuthStatus.AUTH_MORE_DATA;
@@ -108,12 +112,18 @@ public class CertificateAuthenticationPlugin implements AuthenticationPlugin {
 
     @Override
     public boolean generatesSessionKey() {
-        return false;
+        return true;
     }
 
     @Override
     public byte[] getSessionKey() throws SQLException {
-        throw new SQLException("CertificateAuthenticationPlugin cannot generate a session key");
+        if (this.authSspi != null && authSspi.getWireKeyData() != null)
+            return authSspi.getWireKeyData();
+        try {
+            return AuthMethods.generateRandom(null, 20);
+        } catch (GDSAuthException e) {
+            throw new SQLException("Can't generate session key", e);
+        }
     }
 
     @Override
