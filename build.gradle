@@ -60,9 +60,6 @@ dependencies {
     implementation 'org.antlr:antlr4-runtime:4.7.2'
     nativeImplementation 'net.java.dev.jna:jna:5.5.0'
     nativeImplementation 'net.java.dev.jna:jna-platform:5.5.0'
-    nativeImplementation 'org.apache.logging.log4j:log4j-1.2-api:2.13.3'
-    nativeImplementation 'org.apache.logging.log4j:log4j-api:2.13.3'
-    nativeImplementation 'org.apache.logging.log4j:log4j-core:2.13.3'
 
     compileOnly 'javax.servlet:javax.servlet-api:3.1.0'
 
