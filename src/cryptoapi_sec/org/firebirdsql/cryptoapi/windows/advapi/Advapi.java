@@ -5,9 +5,10 @@ import com.sun.jna.Platform;
 import com.sun.jna.Pointer;
 import com.sun.jna.ptr.IntByReference;
 import com.sun.jna.ptr.PointerByReference;
-import org.apache.log4j.Logger;
 import org.firebirdsql.cryptoapi.cryptopro.exception.CryptoException;
 import org.firebirdsql.cryptoapi.windows.*;
+import org.firebirdsql.logging.Logger;
+import org.firebirdsql.logging.LoggerFactory;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -17,7 +18,7 @@ import java.util.List;
 import static org.firebirdsql.cryptoapi.windows.Wincrypt.*;
 
 public class Advapi {
-  private static Logger LOG = Logger.getLogger(Advapi.class);
+  private static Logger LOG = LoggerFactory.getLogger(Advapi.class);
 
   private static final String ADVAPI_LIB_NAME = Platform.isWindows() ?"advapi32" : "capi20";
   private final static AdvapiLib lib;

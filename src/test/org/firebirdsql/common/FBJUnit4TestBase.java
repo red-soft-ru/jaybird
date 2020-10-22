@@ -24,6 +24,9 @@ import static org.firebirdsql.common.FBTestProperties.createFBManager;
 import static org.firebirdsql.common.FBTestProperties.defaultDatabaseSetUp;
 import static org.firebirdsql.common.FBTestProperties.defaultDatabaseTearDown;
 
+import org.firebirdsql.cryptoapi.AuthCryptoPluginImpl;
+import org.firebirdsql.cryptoapi.cryptopro.exception.CryptoException;
+import org.firebirdsql.gds.impl.wire.auth.AuthCryptoPlugin;
 import org.firebirdsql.logging.Logger;
 import org.firebirdsql.logging.LoggerFactory;
 import org.firebirdsql.management.FBManager;
@@ -49,6 +52,11 @@ public abstract class FBJUnit4TestBase {
      */
     @Before
     public void basicSetUp() throws Exception {
+        try {
+            AuthCryptoPlugin.register(new AuthCryptoPluginImpl());
+        } catch (CryptoException e) {
+            System.err.println("Cannot register crypto plugin");
+        }
         fbManager = createFBManager();
         defaultDatabaseSetUp(fbManager);
     }
@@ -60,6 +68,11 @@ public abstract class FBJUnit4TestBase {
      */
     @After
     public void basicTearDown() throws Exception {
+        try {
+            AuthCryptoPlugin.register(new AuthCryptoPluginImpl());
+        } catch (CryptoException e) {
+            System.err.println("Cannot register crypto plugin");
+        }
         defaultDatabaseTearDown(fbManager);
         fbManager = null;
     }
