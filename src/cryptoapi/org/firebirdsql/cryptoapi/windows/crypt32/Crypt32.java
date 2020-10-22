@@ -4,13 +4,14 @@ import com.sun.jna.*;
 import com.sun.jna.platform.win32.WinError;
 import com.sun.jna.ptr.IntByReference;
 import com.sun.jna.ptr.PointerByReference;
-import org.apache.log4j.Logger;
 import org.firebirdsql.cryptoapi.cryptopro.exception.CryptoException;
 import org.firebirdsql.cryptoapi.windows.CryptoUtil;
 import org.firebirdsql.cryptoapi.windows.JnaUtils;
 import org.firebirdsql.cryptoapi.windows.Win32Api;
 import org.firebirdsql.cryptoapi.windows.Wincrypt;
 import org.firebirdsql.cryptoapi.windows.advapi.Advapi;
+import org.firebirdsql.logging.Logger;
+import org.firebirdsql.logging.LoggerFactory;
 
 import java.util.Arrays;
 
@@ -28,7 +29,7 @@ import static org.firebirdsql.cryptoapi.windows.Wincrypt.X509_ASN_ENCODING;
 @SuppressWarnings("UnusedDeclaration")
 public class Crypt32 {
 
-  private static Logger LOG = Logger.getLogger(Crypt32.class);
+  private static Logger LOG = LoggerFactory.getLogger(Crypt32.class);
   private static final boolean LOGGING = false;
 
   private static final String CRYPT_LIB_NAME = Platform.isWindows() ? "Crypt32" : "capi20";

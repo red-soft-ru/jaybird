@@ -1,8 +1,5 @@
 package org.firebirdsql.gds.impl.wire.auth;
 
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.core.config.Configurator;
-import org.apache.logging.log4j.core.config.DefaultConfiguration;
 import org.firebirdsql.common.FBJUnit4TestBase;
 import org.firebirdsql.common.FBTestProperties;
 import org.firebirdsql.common.JdbcResourceHelper;
@@ -30,14 +27,8 @@ import static org.junit.Assert.fail;
  */
 public class TestAuthSspi extends FBJUnit4TestBase {
 
-    public static void initLogger() {
-        Configurator.initialize(new DefaultConfiguration());
-        Configurator.setRootLevel(Level.INFO);
-    }
-
     @Test
     public void testMultifactorAuthCertificateOnly() throws Exception {
-        initLogger();
 
         try (Connection connection = getConnectionViaDriverManager();
             Statement statement = connection.createStatement()) {
@@ -84,7 +75,6 @@ public class TestAuthSspi extends FBJUnit4TestBase {
 
     @Test
     public void testMultifactorAuthPasswordOnly() throws Exception {
-        initLogger();
 
         AuthCryptoPlugin.register(new AuthCryptoPluginImpl());
 
@@ -122,7 +112,6 @@ public class TestAuthSspi extends FBJUnit4TestBase {
 
     @Test
     public void testMultifactorAuthPasswordAndCertificate() throws Exception {
-        initLogger();
 
         try (Connection connection = getConnectionViaDriverManager();
              Statement statement = connection.createStatement()) {
@@ -170,7 +159,6 @@ public class TestAuthSspi extends FBJUnit4TestBase {
 
     @Test
     public void testTrustedCertificate() throws Exception {
-        initLogger();
 
         AuthCryptoPlugin.register(new AuthCryptoPluginImpl());
 
@@ -206,7 +194,6 @@ public class TestAuthSspi extends FBJUnit4TestBase {
 
     @Test
     public void testVerifyServerCertificate() throws Exception {
-        initLogger();
 
         AuthCryptoPlugin.register(new AuthCryptoPluginImpl());
 
@@ -244,7 +231,6 @@ public class TestAuthSspi extends FBJUnit4TestBase {
 
     @Test
     public void testTrustedUser() throws Exception {
-        initLogger();
 
         AuthCryptoPlugin.register(new AuthCryptoPluginImpl());
 

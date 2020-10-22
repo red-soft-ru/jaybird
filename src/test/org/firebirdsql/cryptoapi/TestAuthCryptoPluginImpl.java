@@ -1,8 +1,5 @@
 package org.firebirdsql.cryptoapi;
 
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.core.config.Configurator;
-import org.apache.logging.log4j.core.config.DefaultConfiguration;
 import org.firebirdsql.common.FBJUnit4TestBase;
 import org.firebirdsql.gds.impl.wire.auth.AuthCryptoPlugin;
 import org.firebirdsql.gds.impl.wire.auth.AuthPrivateKeyContext;
@@ -42,14 +39,8 @@ public class TestAuthCryptoPluginImpl extends FBJUnit4TestBase {
         }
     }
 
-    public static void initLogger() {
-        Configurator.initialize(new DefaultConfiguration());
-        Configurator.setRootLevel(Level.INFO);
-    }
-
     @Test
     public void testAuthCryptoPlugin_register() throws Exception {
-        initLogger();
         AuthCryptoPlugin.register(new AuthCryptoPluginImpl());
     }
 

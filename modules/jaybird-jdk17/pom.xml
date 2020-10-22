@@ -27,18 +27,6 @@
 			<artifactId>jna-platform</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.logging.log4j</groupId>
-			<artifactId>log4j-1.2-api</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.logging.log4j</groupId>
-			<artifactId>log4j-api</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.logging.log4j</groupId>
-			<artifactId>log4j-core</artifactId>
-		</dependency>
-		<dependency>
 			<groupId>org.ow2.asm</groupId>
 			<artifactId>asm</artifactId>
 		</dependency>
@@ -270,8 +258,6 @@
 						<exclude>**/TestXABase*.java</exclude>
 						<exclude>**/TestConst.java</exclude>
 						<exclude>**/*$$*.java</exclude>
-						<exclude>**/cryptoapi/**.java</exclude>
-						<exclude>**/TestAuthSspi.java</exclude>
 					</excludes>
 					<testFailureIgnore>true</testFailureIgnore>
 					<skipTests>${test.java7.skip}</skipTests>

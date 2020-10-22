@@ -55,7 +55,7 @@ public abstract class FBJUnit4TestBase {
         try {
             AuthCryptoPlugin.register(new AuthCryptoPluginImpl());
         } catch (CryptoException e) {
-            System.out.println("Cannot register crypto plugin");
+            System.err.println("Cannot register crypto plugin");
         }
         fbManager = createFBManager();
         defaultDatabaseSetUp(fbManager);
@@ -71,7 +71,7 @@ public abstract class FBJUnit4TestBase {
         try {
             AuthCryptoPlugin.register(new AuthCryptoPluginImpl());
         } catch (CryptoException e) {
-            System.out.println("Cannot register crypto plugin");
+            System.err.println("Cannot register crypto plugin");
         }
         defaultDatabaseTearDown(fbManager);
         fbManager = null;
