@@ -6,7 +6,6 @@ import com.sun.jna.Pointer;
 import com.sun.jna.WString;
 import com.sun.jna.ptr.IntByReference;
 import com.sun.jna.ptr.PointerByReference;
-import org.apache.log4j.Logger;
 import org.firebirdsql.cryptoapi.cryptopro.exception.CryptoException;
 import org.firebirdsql.cryptoapi.util.Base64;
 import org.firebirdsql.cryptoapi.windows.Win32Api;
@@ -18,6 +17,8 @@ import org.firebirdsql.cryptoapi.windows.crypt32._CERT_CONTEXT.PCCERT_CONTEXT;
 import org.firebirdsql.cryptoapi.windows.crypt32._CERT_CONTEXT.PCERT_CONTEXT;
 import org.firebirdsql.cryptoapi.windows.crypt32._CRYPT_KEY_PROV_INFO.PCRYPT_KEY_PROV_INFO;
 import org.firebirdsql.cryptoapi.windows.crypt32._CRYPT_OID_INFO;
+import org.firebirdsql.logging.Logger;
+import org.firebirdsql.logging.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -41,7 +42,7 @@ import static org.firebirdsql.cryptoapi.windows.Winerror.ERROR_NO_MORE_ITEMS;
  */
 @SuppressWarnings("UnusedDeclaration")
 public class CertUtils {
-  public final static Logger LOGGER = Logger.getLogger(CertUtils.class);
+  public final static Logger LOGGER = LoggerFactory.getLogger(CertUtils.class);
   public static final String CA_STORE = "CA";
   public static final String ROOT_STORE = "ROOT";
 
