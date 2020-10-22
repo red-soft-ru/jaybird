@@ -32,6 +32,7 @@ import org.firebirdsql.gds.TransactionParameterBuffer;
 import org.firebirdsql.gds.ng.fields.RowDescriptor;
 import org.firebirdsql.gds.ng.listeners.DatabaseListener;
 import org.firebirdsql.gds.ng.listeners.ExceptionListenable;
+import org.firebirdsql.jdbc.FirebirdConnectionProperties;
 
 import java.sql.SQLException;
 
@@ -324,7 +325,7 @@ public interface FbDatabase extends FbAttachment {
     /**
      * @return An immutable copy of the connection properties of this database
      */
-    IConnectionProperties getConnectionProperties();
+    FirebirdConnectionProperties getConnectionProperties();
 
     /**
      * @return A potentially cached empty row descriptor for this database.

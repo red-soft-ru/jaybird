@@ -21,6 +21,8 @@ package org.firebirdsql.gds.ng.wire.version10;
 import org.firebirdsql.common.FBTestProperties;
 import org.firebirdsql.gds.ng.*;
 import org.firebirdsql.gds.ng.wire.*;
+import org.firebirdsql.jdbc.FBConnectionProperties;
+import org.firebirdsql.jdbc.FirebirdConnectionProperties;
 
 import java.sql.SQLException;
 
@@ -50,23 +52,23 @@ public class V10CommonConnectionInfo {
         this.expectedServiceType = expectedServiceType;
     }
 
-    public final IConnectionProperties getDatabaseConnectionInfo() {
-        IConnectionProperties connectionInfo = new FbConnectionProperties();
+    public final FirebirdConnectionProperties getDatabaseConnectionInfo() {
+        FirebirdConnectionProperties connectionInfo = new FBConnectionProperties();
         setAttachProperties(connectionInfo);
-        connectionInfo.setDatabaseName(FBTestProperties.getDatabasePath());
+        connectionInfo.setDatabase(FBTestProperties.getDatabasePath());
         return connectionInfo;
     }
 
-    public final IServiceProperties getServiceConnectionInfo() {
-        IServiceProperties connectionInfo = new FbServiceProperties();
+    public final FirebirdConnectionProperties getServiceConnectionInfo() {
+        FirebirdConnectionProperties connectionInfo = new FBConnectionProperties();
         setAttachProperties(connectionInfo);
         return connectionInfo;
     }
 
-    private void setAttachProperties(IAttachProperties<?> attachProperties) {
-        attachProperties.setServerName(FBTestProperties.DB_SERVER_URL);
-        attachProperties.setPortNumber(FBTestProperties.DB_SERVER_PORT);
-        attachProperties.setUser(DB_USER);
+    private void setAttachProperties(FirebirdConnectionProperties attachProperties) {
+        attachProperties.setServer(FBTestProperties.DB_SERVER_URL);
+        attachProperties.setPort(FBTestProperties.DB_SERVER_PORT);
+        attachProperties.setUserName(DB_USER);
         attachProperties.setPassword(DB_PASSWORD);
         attachProperties.setEncoding("NONE");
     }
@@ -80,7 +82,7 @@ public class V10CommonConnectionInfo {
     }
 
     public final WireDatabaseConnection getDummyDatabaseConnection() throws SQLException {
-        FbConnectionProperties connectionInfo = new FbConnectionProperties();
+        FirebirdConnectionProperties connectionInfo = new FBConnectionProperties();
         connectionInfo.setEncoding("NONE");
         return new WireDatabaseConnection(connectionInfo);
     }
@@ -90,7 +92,7 @@ public class V10CommonConnectionInfo {
     }
 
     public final WireServiceConnection getDummyServiceConnection() throws SQLException {
-        FbServiceProperties connectionInfo = new FbServiceProperties();
+        FirebirdConnectionProperties connectionInfo = new FBConnectionProperties();
         connectionInfo.setEncoding("NONE");
         return new WireServiceConnection(connectionInfo);
     }

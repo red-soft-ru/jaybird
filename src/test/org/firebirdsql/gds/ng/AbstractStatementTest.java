@@ -30,6 +30,7 @@ import org.firebirdsql.gds.ng.fields.FieldDescriptor;
 import org.firebirdsql.gds.ng.fields.RowDescriptor;
 import org.firebirdsql.gds.ng.fields.RowValue;
 import org.firebirdsql.gds.ng.wire.SimpleStatementListener;
+import org.firebirdsql.jdbc.FBConnectionProperties;
 import org.firebirdsql.util.FirebirdSupportInfo;
 import org.junit.After;
 import org.junit.Before;
@@ -124,14 +125,14 @@ public abstract class AbstractStatementTest {
     protected FbDatabase db;
     private FbTransaction transaction;
     protected FbStatement statement;
-    protected final FbConnectionProperties connectionInfo;
+    protected final FBConnectionProperties connectionInfo;
     {
-        connectionInfo = new FbConnectionProperties();
-        connectionInfo.setServerName(FBTestProperties.DB_SERVER_URL);
-        connectionInfo.setPortNumber(FBTestProperties.DB_SERVER_PORT);
-        connectionInfo.setUser(DB_USER);
+        connectionInfo = new FBConnectionProperties();
+        connectionInfo.setServer(FBTestProperties.DB_SERVER_URL);
+        connectionInfo.setPort(FBTestProperties.DB_SERVER_PORT);
+        connectionInfo.setUserName(DB_USER);
         connectionInfo.setPassword(DB_PASSWORD);
-        connectionInfo.setDatabaseName(FBTestProperties.getDatabasePath());
+        connectionInfo.setDatabase(FBTestProperties.getDatabasePath());
         connectionInfo.setEncoding("NONE");
     }
 

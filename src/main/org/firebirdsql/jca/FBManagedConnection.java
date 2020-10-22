@@ -32,6 +32,7 @@ import org.firebirdsql.gds.ng.listeners.DefaultDatabaseListener;
 import org.firebirdsql.gds.ng.listeners.DefaultStatementListener;
 import org.firebirdsql.gds.ng.listeners.ExceptionListener;
 import org.firebirdsql.jdbc.FBConnection;
+import org.firebirdsql.jdbc.FBConnectionProperties;
 import org.firebirdsql.jdbc.FBTpbMapper;
 import org.firebirdsql.jdbc.SQLStateConstants;
 import org.firebirdsql.jdbc.Synchronizable;
@@ -132,24 +133,24 @@ public class FBManagedConnection implements ManagedConnection, XAResource, Excep
                 dpb.addArgument(DatabaseParameterBuffer.CONNECT_TIMEOUT, DriverManager.getLoginTimeout());
             }
 
-            final FbConnectionProperties connectionProperties = new FbConnectionProperties();
+            final FBConnectionProperties connectionProperties = new FBConnectionProperties();
             connectionProperties.fromDpb(dpb);
             // TODO Move this logic to the GDSType or database factory?
             final String gdsTypeName = mcf.getGDSType().toString();
             if (!(EmbeddedGDSFactoryPlugin.EMBEDDED_TYPE_NAME.equals(gdsTypeName)
                     || LocalGDSFactoryPlugin.LOCAL_TYPE_NAME.equals(gdsTypeName))) {
                 final DbAttachInfo dbAttachInfo = DbAttachInfo.parseConnectString(mcf.getDatabase());
-                connectionProperties.setServerName(dbAttachInfo.getServer());
-                connectionProperties.setPortNumber(dbAttachInfo.getPort());
-                connectionProperties.setDatabaseName(dbAttachInfo.getFileName());
+                connectionProperties.setServer(dbAttachInfo.getServer());
+                connectionProperties.setPort(dbAttachInfo.getPort());
+                connectionProperties.setDatabase(dbAttachInfo.getFileName());
             } else if (!(FbOOEmbeddedGDSFactoryPlugin.EMBEDDED_TYPE_NAME.equals(gdsTypeName)
                     || FbOOLocalGDSFactoryPlugin.LOCAL_TYPE_NAME.equals(gdsTypeName))) {
                 final DbAttachInfo dbAttachInfo = DbAttachInfo.parseConnectString(mcf.getDatabase());
-                connectionProperties.setServerName(dbAttachInfo.getServer());
-                connectionProperties.setPortNumber(dbAttachInfo.getPort());
-                connectionProperties.setDatabaseName(dbAttachInfo.getFileName());
+                connectionProperties.setServer(dbAttachInfo.getServer());
+                connectionProperties.setPort(dbAttachInfo.getPort());
+                connectionProperties.setDatabase(dbAttachInfo.getFileName());
             } else {
-                connectionProperties.setDatabaseName(mcf.getDatabase());
+                connectionProperties.setDatabase(mcf.getDatabase());
             }
 
             if (dpb.hasArgument(DatabaseParameterBuffer.GSS_AUTH)) {
@@ -631,6 +632,9 @@ public class FBManagedConnection implements ManagedConnection, XAResource, Excep
                 if (inTransaction())
                     throw new javax.resource.spi.IllegalStateException(
                             "Can't destroy managed connection with active transaction");
+
+                if (parent != null)
+                    return;
 
                 gdsHelper.detachDatabase();
             }

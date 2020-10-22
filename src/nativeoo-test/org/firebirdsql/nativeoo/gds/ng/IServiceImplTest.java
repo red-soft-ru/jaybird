@@ -6,7 +6,7 @@ import org.firebirdsql.gds.ISCConstants;
 import org.firebirdsql.gds.ServiceRequestBuffer;
 import org.firebirdsql.gds.impl.GDSServerVersion;
 import org.firebirdsql.gds.impl.nativeoo.FbOOEmbeddedGDSFactoryPlugin;
-import org.firebirdsql.gds.ng.FbServiceProperties;
+import org.firebirdsql.jdbc.FBConnectionProperties;
 import org.firebirdsql.management.FBManager;
 import org.firebirdsql.management.FBStatisticsManager;
 import org.junit.ClassRule;
@@ -43,12 +43,12 @@ public class IServiceImplTest {
     @Rule
     public final ExpectedException expectedException = ExpectedException.none();
 
-    private final FbServiceProperties connectionInfo;
+    private final FBConnectionProperties connectionInfo;
     {
-        connectionInfo = new FbServiceProperties();
-        connectionInfo.setServerName(FBTestProperties.DB_SERVER_URL);
-        connectionInfo.setPortNumber(FBTestProperties.DB_SERVER_PORT);
-        connectionInfo.setUser(DB_USER);
+        connectionInfo = new FBConnectionProperties();
+        connectionInfo.setServer(FBTestProperties.DB_SERVER_URL);
+        connectionInfo.setPort(FBTestProperties.DB_SERVER_PORT);
+        connectionInfo.setUserName(DB_USER);
         connectionInfo.setPassword(DB_PASSWORD);
     }
 

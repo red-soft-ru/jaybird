@@ -29,12 +29,12 @@ import org.firebirdsql.gds.impl.wire.XdrOutputStream;
 import org.firebirdsql.gds.impl.wire.auth.AuthSspi;
 import org.firebirdsql.gds.ng.AbstractConnection;
 import org.firebirdsql.gds.ng.FbExceptionBuilder;
-import org.firebirdsql.gds.ng.IAttachProperties;
-import org.firebirdsql.gds.ng.IConnectionProperties;
+import org.firebirdsql.gds.ng.WireCrypt;
 import org.firebirdsql.gds.ng.dbcrypt.DbCryptCallback;
 import org.firebirdsql.gds.ng.wire.auth.ClientAuthBlock;
 import org.firebirdsql.gds.ng.wire.crypt.EncryptionIdentifier;
 import org.firebirdsql.gds.ng.wire.crypt.KnownServerKey;
+import org.firebirdsql.jdbc.FirebirdConnectionProperties;
 import org.firebirdsql.logging.Logger;
 import org.firebirdsql.logging.LoggerFactory;
 
@@ -64,7 +64,7 @@ import static org.firebirdsql.gds.impl.wire.WireProtocolConstants.*;
  * @author <a href="mailto:mrotteveel@users.sourceforge.net">Mark Rotteveel</a>
  * @since 3.0
  */
-public abstract class WireConnection<T extends IAttachProperties<T>, C extends FbWireAttachment>
+public abstract class WireConnection<T extends FirebirdConnectionProperties, C extends FbWireAttachment>
         extends AbstractConnection<T, C> implements Closeable {
 
     // TODO Check if methods currently throwing IOException should throw SQLException instead
@@ -220,7 +220,7 @@ public abstract class WireConnection<T extends IAttachProperties<T>, C extends F
             }
 
             final int socketBufferSize = attachProperties.getSocketBufferSize();
-            if (socketBufferSize != IConnectionProperties.DEFAULT_SOCKET_BUFFER_SIZE) {
+            if (socketBufferSize != FirebirdConnectionProperties.DEFAULT_SOCKET_BUFFER_SIZE) {
                 socket.setReceiveBufferSize(socketBufferSize);
                 socket.setSendBufferSize(socketBufferSize);
             }
@@ -382,7 +382,7 @@ public abstract class WireConnection<T extends IAttachProperties<T>, C extends F
         clientAuthBlock.writePluginDataTo(userId);
 
         userId.write(CNCT_client_crypt);
-        VaxEncoding.encodeVaxInteger(userId, attachProperties.getWireCrypt().getWireProtocolCryptLevel());
+        VaxEncoding.encodeVaxInteger(userId, WireCrypt.fromString(attachProperties.getWireCrypt()).getWireProtocolCryptLevel());
 
         userId.write(CNCT_user);
         int userLength = Math.min(userBytes.length, 255);

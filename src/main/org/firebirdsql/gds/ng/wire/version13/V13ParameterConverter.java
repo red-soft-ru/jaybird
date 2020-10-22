@@ -23,12 +23,12 @@ import org.firebirdsql.gds.*;
 import org.firebirdsql.gds.impl.DatabaseParameterBufferImp;
 import org.firebirdsql.gds.impl.ServiceParameterBufferImp;
 import org.firebirdsql.gds.ng.AbstractConnection;
-import org.firebirdsql.gds.ng.IAttachProperties;
 import org.firebirdsql.gds.ng.wire.WireConnection;
 import org.firebirdsql.gds.ng.wire.WireDatabaseConnection;
 import org.firebirdsql.gds.ng.wire.WireServiceConnection;
 import org.firebirdsql.gds.ng.wire.auth.ClientAuthBlock;
 import org.firebirdsql.gds.ng.wire.version12.V12ParameterConverter;
+import org.firebirdsql.jdbc.FirebirdConnectionProperties;
 import org.firebirdsql.jaybird.Version;
 
 import java.sql.SQLException;
@@ -80,11 +80,11 @@ public class V13ParameterConverter extends V12ParameterConverter {
         if (clientAuthBlock == null || clientAuthBlock.isAuthComplete()) {
             return;
         }
-        
-        IAttachProperties props = connection.getAttachProperties();
+
+        FirebirdConnectionProperties props = connection.getAttachProperties();
         ParameterTagMapping tagMapping = pb.getTagMapping();
-        if (props.getUser() != null) {
-            pb.addArgument(tagMapping.getUserNameTag(), props.getUser());
+        if (props.getUserName() != null) {
+            pb.addArgument(tagMapping.getUserNameTag(), props.getUserName());
         }
         if (props.getEffectiveLogin() != null) {
             pb.addArgument(tagMapping.getEffectiveLoginTag(), props.getEffectiveLogin());

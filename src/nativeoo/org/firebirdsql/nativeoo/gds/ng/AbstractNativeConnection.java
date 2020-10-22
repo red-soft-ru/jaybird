@@ -7,6 +7,7 @@ import org.firebirdsql.gds.ISCConstants;
 import org.firebirdsql.gds.ng.*;
 import org.firebirdsql.gds.ng.jna.BigEndianDatatypeCoder;
 import org.firebirdsql.gds.ng.jna.LittleEndianDatatypeCoder;
+import org.firebirdsql.jdbc.FirebirdConnectionProperties;
 import org.firebirdsql.jna.fbclient.FbClientLibrary;
 import org.firebirdsql.logging.Logger;
 import org.firebirdsql.logging.LoggerFactory;
@@ -27,7 +28,7 @@ import static org.firebirdsql.gds.ISCConstants.isc_arg_end;
  * @param <C> Type of connection handle
  * @since 4.0
  */
-public abstract class AbstractNativeConnection<T extends IAttachProperties<T>, C extends FbAttachment>
+public abstract class AbstractNativeConnection<T extends FirebirdConnectionProperties, C extends FbAttachment>
         extends AbstractConnection<T, C> {
     private static final Logger log = LoggerFactory.getLogger(AbstractNativeConnection.class);
     private static final boolean bigEndian = ByteOrder.nativeOrder() == ByteOrder.BIG_ENDIAN;

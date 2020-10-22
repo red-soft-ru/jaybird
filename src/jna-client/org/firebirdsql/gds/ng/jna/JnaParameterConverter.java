@@ -22,8 +22,8 @@ import org.firebirdsql.gds.ConnectionParameterBuffer;
 import org.firebirdsql.gds.ParameterTagMapping;
 import org.firebirdsql.gds.ng.AbstractConnection;
 import org.firebirdsql.gds.ng.AbstractParameterConverter;
-import org.firebirdsql.gds.ng.IAttachProperties;
 import org.firebirdsql.gds.ng.WireCrypt;
+import org.firebirdsql.jdbc.FirebirdConnectionProperties;
 
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -40,10 +40,10 @@ public class JnaParameterConverter extends AbstractParameterConverter<JnaDatabas
     @Override
     protected void populateAuthenticationProperties(final AbstractConnection connection,
             final ConnectionParameterBuffer pb) throws SQLException {
-        IAttachProperties props = connection.getAttachProperties();
+        FirebirdConnectionProperties props = connection.getAttachProperties();
         ParameterTagMapping tagMapping = pb.getTagMapping();
-        if (props.getUser() != null) {
-            pb.addArgument(tagMapping.getUserNameTag(), props.getUser());
+        if (props.getUserName() != null) {
+            pb.addArgument(tagMapping.getUserNameTag(), props.getUserName());
         }
         if (props.getPassword() != null) {
             pb.addArgument(tagMapping.getPasswordTag(), props.getPassword());
@@ -54,8 +54,8 @@ public class JnaParameterConverter extends AbstractParameterConverter<JnaDatabas
 
         Map<String, String> configMap = new HashMap<>();
 
-        if (props.getWireCrypt() != WireCrypt.DEFAULT) {
-            configMap.put("WireCrypt", props.getWireCrypt().name());
+        if (WireCrypt.fromString(props.getWireCrypt()) != WireCrypt.DEFAULT) {
+            configMap.put("WireCrypt", props.getWireCrypt());
         }
 
         String authPlugins = props.getAuthPlugins();

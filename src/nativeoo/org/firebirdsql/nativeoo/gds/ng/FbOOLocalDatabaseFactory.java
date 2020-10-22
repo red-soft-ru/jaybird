@@ -1,6 +1,6 @@
 package org.firebirdsql.nativeoo.gds.ng;
 
-import org.firebirdsql.gds.ng.*;
+import org.firebirdsql.jdbc.FirebirdConnectionProperties;
 import org.firebirdsql.jna.fbclient.FbClientLibrary;
 
 public class FbOOLocalDatabaseFactory extends AbstractNativeOODatabaseFactory {
@@ -13,10 +13,10 @@ public class FbOOLocalDatabaseFactory extends AbstractNativeOODatabaseFactory {
     }
 
     @Override
-    protected <T extends IAttachProperties<T>> T filterProperties(T attachProperties) {
-        T attachPropertiesCopy = attachProperties.asNewMutable();
+    protected <T extends FirebirdConnectionProperties> FirebirdConnectionProperties filterProperties(T attachProperties) {
+        FirebirdConnectionProperties attachPropertiesCopy = attachProperties.asNewMutable();
         // Clear server name
-        attachPropertiesCopy.setServerName(null);
+        attachPropertiesCopy.setServer(null);
         return attachPropertiesCopy;
     }
 

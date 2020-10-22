@@ -20,6 +20,7 @@ package org.firebirdsql.gds.ng.jna;
 
 import org.firebirdsql.gds.JaybirdErrorCodes;
 import org.firebirdsql.gds.ng.*;
+import org.firebirdsql.jdbc.FirebirdConnectionProperties;
 import org.firebirdsql.jna.fbclient.FbClientLibrary;
 import org.firebirdsql.logging.Logger;
 import org.firebirdsql.logging.LoggerFactory;
@@ -44,7 +45,7 @@ public abstract class AbstractNativeDatabaseFactory implements FbDatabaseFactory
     private FbClientResource resource;
 
     @Override
-    public JnaDatabase connect(IConnectionProperties connectionProperties) throws SQLException {
+    public JnaDatabase connect(FirebirdConnectionProperties connectionProperties) throws SQLException {
         try {
             final JnaDatabaseConnection jnaDatabaseConnection = new JnaDatabaseConnection(getClientLibrary(),
                     filterProperties(connectionProperties));
@@ -58,7 +59,7 @@ public abstract class AbstractNativeDatabaseFactory implements FbDatabaseFactory
     }
 
     @Override
-    public JnaService serviceConnect(IServiceProperties serviceProperties) throws SQLException {
+    public JnaService serviceConnect(FirebirdConnectionProperties serviceProperties) throws SQLException {
         try {
             final JnaServiceConnection jnaServiceConnection = new JnaServiceConnection(getClientLibrary(),
                     filterProperties(serviceProperties));
@@ -161,7 +162,7 @@ public abstract class AbstractNativeDatabaseFactory implements FbDatabaseFactory
      *         Type of attach properties
      * @return Filtered properties
      */
-    protected <T extends IAttachProperties<T>> T filterProperties(T attachProperties) {
+    protected <T extends FirebirdConnectionProperties> FirebirdConnectionProperties filterProperties(T attachProperties) {
         return attachProperties;
     }
 

@@ -64,9 +64,9 @@ public class TestUserManager extends FBJUnit4TestBase {
     public void testUsers() throws Exception {
         // Initialize the UserManager.
         UserManager userManager = new FBUserManager(getGdsType());
-        userManager.setHost(DB_SERVER_URL);
+        userManager.setServer(DB_SERVER_URL);
         userManager.setPort(DB_SERVER_PORT);
-        userManager.setUser(DB_USER);
+        userManager.setUserName(DB_USER);
         userManager.setPassword(DB_PASSWORD);
 
         // Add a user.

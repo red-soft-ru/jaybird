@@ -32,8 +32,9 @@ import org.firebirdsql.gds.ServiceRequestBuffer;
 import org.firebirdsql.gds.impl.GDSType;
 import org.firebirdsql.gds.ng.FbDatabaseFactory;
 import org.firebirdsql.gds.ng.FbService;
-import org.firebirdsql.gds.ng.FbServiceProperties;
-import org.firebirdsql.gds.ng.IServiceProperties;
+import org.firebirdsql.jdbc.FBConnectionProperties;
+import org.firebirdsql.jdbc.FirebirdConnection;
+import org.firebirdsql.jdbc.FirebirdConnectionProperties;
 import org.firebirdsql.logging.Logger;
 import org.firebirdsql.logging.LoggerFactory;
 import org.firebirdsql.management.FBManager;
@@ -250,9 +251,9 @@ public class TestJaybirdBlobBackupProblem {
         return service;
     }
 
-    private IServiceProperties createServiceProperties() {
-        IServiceProperties serviceProperties = new FbServiceProperties();
-        serviceProperties.setUser("SYSDBA");
+    private FirebirdConnectionProperties createServiceProperties() {
+        FirebirdConnectionProperties serviceProperties = new FBConnectionProperties();
+        serviceProperties.setUserName("SYSDBA");
         serviceProperties.setPassword("masterkey");
 
         return serviceProperties;

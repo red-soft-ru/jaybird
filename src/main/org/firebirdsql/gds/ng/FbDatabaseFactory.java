@@ -24,6 +24,7 @@
  */
 package org.firebirdsql.gds.ng;
 
+import org.firebirdsql.jdbc.FirebirdConnectionProperties;
 import java.sql.SQLException;
 
 /**
@@ -47,7 +48,7 @@ public interface FbDatabaseFactory {
      * @param connectionProperties Connection properties
      * @return Database instance
      */
-    FbDatabase connect(IConnectionProperties connectionProperties) throws SQLException;
+    FbDatabase connect(FirebirdConnectionProperties connectionProperties) throws SQLException;
 
     /**
      * Connects to the service manager of a Firebird server with the supplied service properties.
@@ -55,5 +56,5 @@ public interface FbDatabaseFactory {
      * @param serviceProperties Service properties
      * @return Service instance
      */
-    FbService serviceConnect(IServiceProperties serviceProperties) throws SQLException;
+    FbService serviceConnect(FirebirdConnectionProperties serviceProperties) throws SQLException;
 }

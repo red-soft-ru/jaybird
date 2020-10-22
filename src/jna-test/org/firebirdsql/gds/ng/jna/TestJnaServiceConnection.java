@@ -21,7 +21,7 @@ package org.firebirdsql.gds.ng.jna;
 import org.firebirdsql.common.FBTestProperties;
 import org.firebirdsql.common.rules.GdsTypeRule;
 import org.firebirdsql.gds.ng.FbService;
-import org.firebirdsql.gds.ng.FbServiceProperties;
+import org.firebirdsql.jdbc.FBConnectionProperties;
 import org.firebirdsql.jna.fbclient.FbClientLibrary;
 import org.junit.ClassRule;
 import org.junit.Rule;
@@ -47,12 +47,12 @@ public class TestJnaServiceConnection {
 
     private final AbstractNativeDatabaseFactory factory =
             (AbstractNativeDatabaseFactory) FBTestProperties.getFbDatabaseFactory();
-    private final FbServiceProperties connectionInfo;
+    private final FBConnectionProperties connectionInfo;
     {
-        connectionInfo = new FbServiceProperties();
-        connectionInfo.setServerName(FBTestProperties.DB_SERVER_URL);
-        connectionInfo.setPortNumber(FBTestProperties.DB_SERVER_PORT);
-        connectionInfo.setUser(DB_USER);
+        connectionInfo = new FBConnectionProperties();
+        connectionInfo.setServer(FBTestProperties.DB_SERVER_URL);
+        connectionInfo.setPort(FBTestProperties.DB_SERVER_PORT);
+        connectionInfo.setUserName(DB_USER);
         connectionInfo.setPassword(DB_PASSWORD);
     }
 

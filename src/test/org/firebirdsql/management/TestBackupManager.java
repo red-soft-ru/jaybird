@@ -74,10 +74,10 @@ public class TestBackupManager {
         backupManager = new FBBackupManager(getGdsType());
         if (getGdsType() == GDSType.getType("PURE_JAVA") || getGdsType() == GDSType.getType("NATIVE")) {
             assumeTrue("Test needs to run on localhost for proper clean up", isLocalHost(DB_SERVER_URL));
-            backupManager.setHost(DB_SERVER_URL);
+            backupManager.setServer(DB_SERVER_URL);
             backupManager.setPort(DB_SERVER_PORT);
         }
-        backupManager.setUser(DB_USER);
+        backupManager.setUserName(DB_USER);
         backupManager.setPassword(DB_PASSWORD);
         backupManager.setDatabase(getDatabasePath());
         backupManager.setBackupPath(getBackupPath());

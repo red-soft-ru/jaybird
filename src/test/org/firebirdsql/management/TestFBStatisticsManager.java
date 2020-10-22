@@ -62,10 +62,10 @@ public class TestFBStatisticsManager extends FBJUnit4TestBase {
     
         statManager = new FBStatisticsManager(getGdsType());
         if (getGdsType() == GDSType.getType("PURE_JAVA") || getGdsType() == GDSType.getType("NATIVE")) {
-            statManager.setHost(DB_SERVER_URL);
+            statManager.setServer(DB_SERVER_URL);
             statManager.setPort(DB_SERVER_PORT);
         }
-        statManager.setUser(DB_USER);
+        statManager.setUserName(DB_USER);
         statManager.setPassword(DB_PASSWORD);
         statManager.setDatabase(getDatabasePath());
         statManager.setLogger(loggingStream);

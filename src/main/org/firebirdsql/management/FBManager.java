@@ -21,10 +21,10 @@ package org.firebirdsql.management;
 import org.firebirdsql.gds.ISCConstants;
 import org.firebirdsql.gds.impl.GDSFactory;
 import org.firebirdsql.gds.impl.GDSType;
-import org.firebirdsql.gds.ng.FbConnectionProperties;
 import org.firebirdsql.gds.ng.FbDatabase;
 import org.firebirdsql.gds.ng.FbDatabaseFactory;
-import org.firebirdsql.gds.ng.IConnectionProperties;
+import org.firebirdsql.jdbc.FBConnectionProperties;
+import org.firebirdsql.jdbc.FirebirdConnectionProperties;
 import org.firebirdsql.logging.Logger;
 import org.firebirdsql.logging.LoggerFactory;
 
@@ -258,8 +258,8 @@ public class FBManager implements FBManagerMBean {
     public synchronized void createDatabase(String fileName, String user, String password) throws Exception {
         checkStarted();
         try {
-            IConnectionProperties connectionProperties = createDefaultConnectionProperties(user, password);
-            connectionProperties.setDatabaseName(fileName);
+            FirebirdConnectionProperties connectionProperties = createDefaultConnectionProperties(user, password);
+            connectionProperties.setDatabase(fileName);
             FbDatabase db = dbFactory.connect(connectionProperties);
             db.attach();
 
@@ -276,8 +276,8 @@ public class FBManager implements FBManagerMBean {
         }
 
         try {
-            IConnectionProperties connectionProperties = createDefaultConnectionProperties(user, password);
-            connectionProperties.setDatabaseName(fileName);
+            FirebirdConnectionProperties connectionProperties = createDefaultConnectionProperties(user, password);
+            connectionProperties.setDatabase(fileName);
             connectionProperties.setConnectionDialect((short) dialect);
             if (getPageSize() != -1) {
                 connectionProperties.getExtraDatabaseParameters()
@@ -300,8 +300,8 @@ public class FBManager implements FBManagerMBean {
     public synchronized void dropDatabase(String fileName, String user, String password) throws Exception {
         checkStarted();
         try {
-            IConnectionProperties connectionProperties = createDefaultConnectionProperties(user, password);
-            connectionProperties.setDatabaseName(fileName);
+            FirebirdConnectionProperties connectionProperties = createDefaultConnectionProperties(user, password);
+            connectionProperties.setDatabase(fileName);
             FbDatabase db = dbFactory.connect(connectionProperties);
             db.attach();
             db.dropDatabase();
@@ -315,8 +315,8 @@ public class FBManager implements FBManagerMBean {
     public synchronized boolean isDatabaseExists(String fileName, String user, String password) throws Exception {
         checkStarted();
         try {
-            IConnectionProperties connectionProperties = createDefaultConnectionProperties(user, password);
-            connectionProperties.setDatabaseName(fileName);
+            FirebirdConnectionProperties connectionProperties = createDefaultConnectionProperties(user, password);
+            connectionProperties.setDatabase(fileName);
             FbDatabase db = dbFactory.connect(connectionProperties);
             db.attach();
             db.close();
@@ -326,12 +326,12 @@ public class FBManager implements FBManagerMBean {
         }
     }
 
-    private IConnectionProperties createDefaultConnectionProperties(String user, String password) {
-        FbConnectionProperties connectionProperties = new FbConnectionProperties();
-        connectionProperties.setUser(user);
+    private FirebirdConnectionProperties createDefaultConnectionProperties(String user, String password) {
+        FBConnectionProperties connectionProperties = new FBConnectionProperties();
+        connectionProperties.setUserName(user);
         connectionProperties.setPassword(password);
-        connectionProperties.setServerName(getServer());
-        connectionProperties.setPortNumber(getPort());
+        connectionProperties.setServer(getServer());
+        connectionProperties.setPort(getPort());
         return connectionProperties;
     }
 

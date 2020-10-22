@@ -8,6 +8,7 @@ import org.firebirdsql.gds.ISCConstants;
 import org.firebirdsql.gds.TransactionParameterBuffer;
 import org.firebirdsql.gds.impl.BatchParameterBufferImpl;
 import org.firebirdsql.gds.impl.TransactionParameterBufferImpl;
+import org.firebirdsql.jdbc.FBConnectionProperties;
 import org.firebirdsql.jdbc.FirebirdConnection;
 import org.firebirdsql.management.FBManager;
 import org.firebirdsql.util.FirebirdSupportInfo;
@@ -111,15 +112,15 @@ public abstract class AbstractBatchTest {
     protected FbMetadataBuilder metadataBuilder;
 
     //    protected FbStatement statement;
-    protected final FbConnectionProperties connectionInfo;
+    protected final FBConnectionProperties connectionInfo;
 
     {
-        connectionInfo = new FbConnectionProperties();
-        connectionInfo.setServerName(FBTestProperties.DB_SERVER_URL);
-        connectionInfo.setPortNumber(FBTestProperties.DB_SERVER_PORT);
-        connectionInfo.setUser(DB_USER);
+        connectionInfo = new FBConnectionProperties();
+        connectionInfo.setServer(FBTestProperties.DB_SERVER_URL);
+        connectionInfo.setPort(FBTestProperties.DB_SERVER_PORT);
+        connectionInfo.setUserName(DB_USER);
         connectionInfo.setPassword(DB_PASSWORD);
-        connectionInfo.setDatabaseName(FBTestProperties.getDatabasePath());
+        connectionInfo.setDatabase(FBTestProperties.getDatabasePath());
         connectionInfo.setEncoding("NONE");
     }
 

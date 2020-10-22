@@ -24,6 +24,7 @@ import org.firebirdsql.encodings.IEncodingFactory;
 import org.firebirdsql.gds.ng.dbcrypt.DbCryptCallback;
 import org.firebirdsql.gds.ng.dbcrypt.DbCryptCallbackSpi;
 import org.firebirdsql.gds.ng.dbcrypt.simple.StaticValueDbCryptCallbackSpi;
+import org.firebirdsql.jdbc.FirebirdConnectionProperties;
 import org.firebirdsql.jdbc.SQLStateConstants;
 import org.firebirdsql.util.InternalApi;
 
@@ -40,11 +41,11 @@ import static org.firebirdsql.gds.JaybirdErrorCodes.jb_dbCryptCallbackInitError;
  * @author <a href="mailto:mrotteveel@users.sourceforge.net">Mark Rotteveel</a>
  * @since 3.0
  */
-public abstract class AbstractConnection<T extends IAttachProperties<T>, C extends FbAttachment> {
+public abstract class AbstractConnection<T extends FirebirdConnectionProperties, C extends FbAttachment> {
 
     private static final DbCryptCallbackSpi DEFAULT_DB_CRYPT_CALLBACK_SPI = new StaticValueDbCryptCallbackSpi();
 
-    protected final T attachProperties;
+    protected final FirebirdConnectionProperties attachProperties;
     private final EncodingDefinition encodingDefinition;
     private final IEncodingFactory encodingFactory;
 
@@ -83,21 +84,19 @@ public abstract class AbstractConnection<T extends IAttachProperties<T>, C exten
     public abstract C identify() throws SQLException;
 
     public final String getServerName() {
-        return attachProperties.getServerName();
+        return attachProperties.getServer();
     }
 
     public final int getPortNumber() {
-        return attachProperties.getPortNumber();
+        return attachProperties.getPort();
     }
 
-    public final String getAttachObjectName() {
-        return attachProperties.getAttachObjectName();
-    }
+    public abstract String getAttachObjectName();
 
     /**
      * @return An immutable copy of the current attach properties.
      */
-    public final T getAttachProperties() {
+    public final FirebirdConnectionProperties getAttachProperties() {
         return attachProperties.asImmutable();
     }
 
