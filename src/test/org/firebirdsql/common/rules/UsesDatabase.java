@@ -53,7 +53,7 @@ public final class UsesDatabase extends ExternalResource {
         try {
             AuthCryptoPlugin.register(new AuthCryptoPluginImpl());
         } catch (CryptoException e) {
-            throw new NullPointerException("Cannot register crypto plugin");
+            System.out.println("Cannot register crypto plugin");
         }
     }
 
