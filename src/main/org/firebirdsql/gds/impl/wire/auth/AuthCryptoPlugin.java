@@ -40,6 +40,10 @@ public abstract class AuthCryptoPlugin {
 
   public abstract byte[] decrypt(final Object keyHandle, final byte[] data) throws AuthCryptoException;
 
+  public abstract byte[] encrypt(final Object keyHandle, final byte[] data, final boolean isFinal) throws AuthCryptoException;
+
+  public abstract byte[] decrypt(final Object keyHandle, final byte[] data, final boolean isFinal) throws AuthCryptoException;
+
   public abstract Object createHash(final byte[] data) throws AuthCryptoException;
 
   public abstract boolean destroyHash(Object hashHandle);

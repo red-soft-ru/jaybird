@@ -24,6 +24,7 @@ public class MultifactorAuthenticationPlugin implements AuthenticationPlugin {
     private AuthSspi authSspi = null;
     private byte[] clientData;
     private byte[] serverData;
+    private boolean firstKey = true;
 
     @Override
     public String getName() {
@@ -113,6 +114,13 @@ public class MultifactorAuthenticationPlugin implements AuthenticationPlugin {
             throw new SQLException(e.getMessage(), e);
         }
 
+        if (authSspi.getWireKeyData() != null) {
+            if (firstKey) {
+                clientAuthBlock.saveSessionKey();
+                firstKey = false;
+            }
+        }
+
         clientData = Arrays.copyOf(data.getData(), data.getLength());
         return AuthStatus.AUTH_MORE_DATA;
     }
@@ -134,12 +142,18 @@ public class MultifactorAuthenticationPlugin implements AuthenticationPlugin {
 
     @Override
     public boolean generatesSessionKey() {
-        return false;
+        return true;
     }
 
     @Override
     public byte[] getSessionKey() throws SQLException {
-        throw new SQLException("MultifactorAuthenticationPlugin cannot generate a session key");
+        if (this.authSspi != null && authSspi.getWireKeyData() != null)
+            return authSspi.getWireKeyData();
+        try {
+            return AuthMethods.generateRandom(null, 20);
+        } catch (GDSAuthException e) {
+            throw new SQLException("Can't generate session key", e);
+        }
     }
 
     @Override

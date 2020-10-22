@@ -32,12 +32,14 @@ import org.firebirdsql.gds.ng.wire.FbWireAttachment;
 import org.firebirdsql.gds.ng.wire.FbWireOperations;
 import org.firebirdsql.gds.ng.wire.GenericResponse;
 import org.firebirdsql.gds.ng.wire.WireConnection;
+import org.firebirdsql.gds.ng.wire.auth.AuthenticationPlugin;
 import org.firebirdsql.gds.ng.wire.auth.ClientAuthBlock;
 import org.firebirdsql.gds.ng.wire.crypt.EncryptionIdentifier;
 import org.firebirdsql.gds.ng.wire.crypt.EncryptionInitInfo;
 import org.firebirdsql.gds.ng.wire.crypt.EncryptionPlugin;
 import org.firebirdsql.gds.ng.wire.crypt.EncryptionPluginSpi;
 import org.firebirdsql.gds.ng.wire.crypt.arc4.Arc4EncryptionPluginSpi;
+import org.firebirdsql.gds.ng.wire.crypt.wincrypt.WireWinCryptEncryptionPluginSpi;
 import org.firebirdsql.gds.ng.wire.version11.V11WireOperations;
 import org.firebirdsql.logging.Logger;
 import org.firebirdsql.logging.LoggerFactory;
@@ -60,6 +62,7 @@ public class V13WireOperations extends V11WireOperations {
 
     private static final Logger log = LoggerFactory.getLogger(V13WireOperations.class);
     private static final EncryptionPluginSpi ARC4_ENCRYPTION_PLUGIN_SPI = new Arc4EncryptionPluginSpi();
+    private static final EncryptionPluginSpi WIRE_WINCRYPT_ENCRYPTION_PLUGIN_SPI = new WireWinCryptEncryptionPluginSpi();
 
     public V13WireOperations(WireConnection<?, ?> connection,
             WarningMessageCallback defaultWarningMessageCallback, Object syncObject) {
@@ -156,7 +159,12 @@ public class V13WireOperations extends V11WireOperations {
 
             clientAuthBlock.setServerData(data);
             log.debug(String.format("receiveResponse: authenticate(%s)", clientAuthBlock.getCurrentPluginName()));
-            clientAuthBlock.authenticate();
+            // If we got `AUTH_SUCCESS` from the current plugin,
+            // save the session key, because the server can use the `Policy` plugin
+            // and continue authentication with others plugins.
+            if (clientAuthBlock.authenticate() == AuthenticationPlugin.AuthStatus.AUTH_SUCCESS) {
+                clientAuthBlock.saveSessionKey();
+            }
 
             xdrOut.writeInt(op_cont_auth);
             // TODO Move to ClientAuthBlock?
@@ -183,6 +191,7 @@ public class V13WireOperations extends V11WireOperations {
         // TODO Define separately and make configurable
         Map<EncryptionIdentifier, EncryptionPluginSpi> supportedEncryptionPlugins = new HashMap<>();
         supportedEncryptionPlugins.put(ARC4_ENCRYPTION_PLUGIN_SPI.getEncryptionIdentifier(), ARC4_ENCRYPTION_PLUGIN_SPI);
+        supportedEncryptionPlugins.put(WIRE_WINCRYPT_ENCRYPTION_PLUGIN_SPI.getEncryptionIdentifier(), WIRE_WINCRYPT_ENCRYPTION_PLUGIN_SPI);
 
         for (EncryptionIdentifier encryptionIdentifier : getEncryptionIdentifiers()) {
             EncryptionPluginSpi currentEncryptionSpi =
