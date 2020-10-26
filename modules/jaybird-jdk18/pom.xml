@@ -82,12 +82,6 @@
 			<version>4.0.0-SNAPSHOT</version>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
-			<groupId>ru.red-soft.jdbc</groupId>
-			<artifactId>jaybird-cryptoapi-jdk18</artifactId>
-			<version>4.0.0-SNAPSHOT</version>
-			<scope>test</scope>
-		</dependency>
 	</dependencies>
 	<properties>
 		<project.doc.name>Jaybird</project.doc.name>
