@@ -61,7 +61,8 @@ public class TestFBStatisticsManager extends FBJUnit4TestBase {
         loggingStream = new ByteArrayOutputStream();
     
         statManager = new FBStatisticsManager(getGdsType());
-        if (getGdsType() == GDSType.getType("PURE_JAVA") || getGdsType() == GDSType.getType("NATIVE")) {
+        if (getGdsType() == GDSType.getType("PURE_JAVA") || getGdsType() == GDSType.getType("NATIVE")
+                || getGdsType() == GDSType.getType("FBOONATIVE")) {
             statManager.setServer(DB_SERVER_URL);
             statManager.setPort(DB_SERVER_PORT);
         }

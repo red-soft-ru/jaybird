@@ -72,7 +72,8 @@ public class TestBackupManager {
         tempFolder.getParentFile().setWritable(true, false);
         System.out.println(tempFolder);
         backupManager = new FBBackupManager(getGdsType());
-        if (getGdsType() == GDSType.getType("PURE_JAVA") || getGdsType() == GDSType.getType("NATIVE")) {
+        if (getGdsType() == GDSType.getType("PURE_JAVA") || getGdsType() == GDSType.getType("NATIVE")
+                || getGdsType() == GDSType.getType("FBOONATIVE")) {
             assumeTrue("Test needs to run on localhost for proper clean up", isLocalHost(DB_SERVER_URL));
             backupManager.setServer(DB_SERVER_URL);
             backupManager.setPort(DB_SERVER_PORT);

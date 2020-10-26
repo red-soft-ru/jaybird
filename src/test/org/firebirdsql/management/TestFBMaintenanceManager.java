@@ -50,7 +50,8 @@ public class TestFBMaintenanceManager extends FBJUnit4TestBase {
     @Before
     public void setUp() throws Exception {
         maintenanceManager = new FBMaintenanceManager(getGdsType());
-        if (getGdsType() == GDSType.getType("PURE_JAVA") || getGdsType() == GDSType.getType("NATIVE")) {
+        if (getGdsType() == GDSType.getType("PURE_JAVA") || getGdsType() == GDSType.getType("NATIVE")
+                || getGdsType() == GDSType.getType("FBOONATIVE")) {
             maintenanceManager.setServer(DB_SERVER_URL);
             maintenanceManager.setPort(DB_SERVER_PORT);
         }
