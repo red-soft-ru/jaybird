@@ -25,7 +25,7 @@ public class IEventImpl extends AbstractEventHandle {
     private final PointerByReference eventBuffer = new PointerByReference();
     private final PointerByReference resultBuffer = new PointerByReference();
     private IEventCallback callback = new IEventCallback(new IEventCallbackImpl());
-    private int referenceCount = 0;
+    private volatile int referenceCount = 0;
 
     IEventImpl(String eventName, EventHandler eventHandler, Encoding encoding) {
         super(eventName, eventHandler);
@@ -109,27 +109,21 @@ public class IEventImpl extends AbstractEventHandle {
 
         @Override
         public void addRef() {
-            synchronized (this) {
-                ++referenceCount;
-            }
+            ++referenceCount;
         }
 
         @Override
         public int release() {
-            synchronized (this) {
-                return --referenceCount;
-            }
+            return --referenceCount;
         }
 
         @Override
         public void eventCallbackFunction(int length, com.sun.jna.Pointer events) {
-            synchronized (this) {
-                if (events != null) {
-                    resultBuffer.getValue().write(0, events.getByteArray(0, length), 0, length);
-                    this.release();
+            if (events != null) {
+                resultBuffer.getValue().write(0, events.getByteArray(0, length), 0, length);
+                this.release();
 
-                    onEventOccurred();
-                }
+                onEventOccurred();
             }
         }
 
