@@ -546,6 +546,9 @@ public class FBConnectionProperties extends AbstractFBConnectionProperties imple
                 case isc_dpb_certificate_base64:
                     setCertificateBase64(parameter.getValueAsString());
                     break;
+                case isc_dpb_not_encrypt_password:
+                    setNotEncryptedPassword(true);
+                    break;
                 case isc_dpb_repository_pin:
                     setRepositoryPin(parameter.getValueAsString());
                     break;

@@ -50,11 +50,7 @@ class LegacyAuthenticationPlugin implements AuthenticationPlugin {
             return AuthStatus.AUTH_CONTINUE;
         }
         if (clientAuthBlock.isNotEncryptedPassword()) {
-            byte[] nullInd = new byte[] { 0 };
-            byte[] passwd = clientAuthBlock.getPassword().getBytes(StandardCharsets.US_ASCII);
-            clientData = new byte[nullInd.length + passwd.length];
-            System.arraycopy(nullInd, 0, clientData, 0, nullInd.length);
-            System.arraycopy(passwd, 0, clientData, nullInd.length, passwd.length);
+            clientData = ("\u0000" + clientAuthBlock.getPassword()).getBytes(StandardCharsets.US_ASCII);
         } else {
             clientData = UnixCrypt.crypt(clientAuthBlock.getPassword(), LEGACY_PASSWORD_SALT).substring(2, 13)
                     .getBytes(StandardCharsets.US_ASCII);
