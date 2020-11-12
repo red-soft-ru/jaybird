@@ -24,6 +24,7 @@ public class AuthSspi {
   private boolean securityAuthentication;
   private boolean sessionEncyption;
   private ClumpletReader.Kind clumpletReaderType = WideTagged;
+  private boolean skipWireKeyTag;
   private byte[] wireKeyData;
 
   public AuthSspi() {
@@ -197,6 +198,14 @@ public class AuthSspi {
 
   public void setClumpletReaderType(ClumpletReader.Kind type) {
     this.clumpletReaderType = type;
+  }
+
+  public boolean isSkipWireKeyTag() {
+    return skipWireKeyTag;
+  }
+
+  public void setSkipWireKeyTag(boolean skip) {
+    this.skipWireKeyTag = skip;
   }
 
   public void setWireKeyData(byte[] wireKeyData) {
