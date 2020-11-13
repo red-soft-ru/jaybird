@@ -3,7 +3,7 @@
 	<parent>
 		<groupId>ru.red-soft.jdbc</groupId>
 		<artifactId>jaybird-parent</artifactId>
-		<version>3.0.14</version>
+		<version>3.0.15-SNAPSHOT</version>
 		<relativePath>../../pom.xml</relativePath>
 	</parent>
 	<artifactId>jaybird-jdk17</artifactId>
