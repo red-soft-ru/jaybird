@@ -183,7 +183,7 @@ public class AuthFactorPassword extends AuthFactor {
         final byte[] ivData = cr.getBytes();
         randomData = AuthMethods.decrypt(cryptData, sessionKey, ivData);
 
-        if (!sspi.isSkipWireKeyTag()) {
+        if (!sspi.isSkipWireKeyTag()) { // skip sdWireKey for old protocols
           if (cr.find(rdWireKey)) {
             final byte[] wireKeyData = cr.getBytes();
             sspi.setWireKeyData(AuthMethods.decrypt(wireKeyData, sessionKey, ivData));
