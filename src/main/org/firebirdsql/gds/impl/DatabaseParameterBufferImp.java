@@ -106,5 +106,10 @@ public final class DatabaseParameterBufferImp extends ParameterBufferBase implem
         public final ArgumentType getIntegerArgumentType(int tag) {
             return argumentType;
         }
+
+        @Override
+        public final ArgumentType getSingleArgumentType(int tag) {
+            return argumentType;
+        }
     }
 }
