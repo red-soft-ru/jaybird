@@ -128,6 +128,7 @@ public class V10Service extends AbstractFbWireService implements FbWireService {
                 sspi = new AuthSspi();
                 try {
                     sspi.setClumpletReaderType(ClumpletReader.Kind.Tagged);
+                    sspi.setSkipWireKeyTag(true);
                     if (spb.hasArgument(ISCConstants.isc_dpb_repository_pin))
                         sspi.setRepositoryPin(connection.getAttachProperties().getRepositoryPin());
                     if (spb.hasArgument(ISCConstants.isc_spb_provider_id)) {

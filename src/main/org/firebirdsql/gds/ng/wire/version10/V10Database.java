@@ -184,6 +184,7 @@ public class V10Database extends AbstractFbWireDatabase implements FbWireDatabas
                 sspi = AuthSspiFactory.createAuthSspi(AuthSspiFactory.Type.TYPE3);
                 try {
                     sspi.setClumpletReaderType(ClumpletReader.Kind.Tagged);
+                    sspi.setSkipWireKeyTag(true);
                     if (newDpb.hasArgument(ISCConstants.isc_dpb_repository_pin))
                         sspi.setRepositoryPin(connection.getAttachProperties().getRepositoryPin());
                     if (newDpb.hasArgument(ISCConstants.isc_dpb_provider_id)) {
