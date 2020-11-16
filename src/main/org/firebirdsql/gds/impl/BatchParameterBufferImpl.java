@@ -49,10 +49,5 @@ public class BatchParameterBufferImpl extends ParameterBufferBase implements Bat
         public final ArgumentType getIntegerArgumentType(int tag) {
             return ArgumentType.Wide;
         }
-
-        @Override
-        public ArgumentType getSingleArgumentType(int tag) {
-            return ArgumentType.SingleTpb;
-        }
     }
 }
