@@ -90,9 +90,11 @@ public class AuthFactorCertificate extends AuthFactor {
           sdRandomNumber = ISCConstants.isc_dpb_certificate_body;
           sdWireKey = 1;
         }
-        if (serverData.find(sdWireKey)) {
-          wireKeyData = serverData.getBytes();
-          sspi.setWireKeyData(AuthMethods.ccfiDecrypt(userKey, wireKeyData, certBase64));
+        if (!sspi.isSkipWireKeyTag()) { // skip sdWireKey for old protocols
+          if (serverData.find(sdWireKey)) {
+            wireKeyData = serverData.getBytes();
+            sspi.setWireKeyData(AuthMethods.ccfiDecrypt(userKey, wireKeyData, certBase64));
+          }
         }
       } catch (SQLException e) {
         throw new GDSAuthException(e.getMessage(), e);
