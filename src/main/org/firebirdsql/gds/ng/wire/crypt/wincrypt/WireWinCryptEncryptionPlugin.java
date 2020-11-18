@@ -13,6 +13,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.security.*;
 import java.sql.SQLException;
+import java.util.Arrays;
 
 import static org.firebirdsql.gds.JaybirdErrorCodes.*;
 
@@ -88,7 +89,12 @@ public class WireWinCryptEncryptionPlugin implements EncryptionPlugin {
         try {
             // Important! Since JCE policy prohibits the use of unsigned ciphers,
             // we initialize the object through reflection
-            Constructor<Cipher> constructor = (Constructor<Cipher>) Cipher.class.getDeclaredConstructors()[1];
+            final Constructor<Cipher>[] constructors = (Constructor<Cipher>[]) Cipher.class.getDeclaredConstructors();
+            final Constructor<Cipher> constructor = Arrays.stream(constructors)
+                    .filter(cipherConstructor -> cipherConstructor.getParameterCount() == 2 &&
+                            javax.crypto.CipherSpi.class.isAssignableFrom(cipherConstructor.getParameterTypes()[0]) &&
+                            java.lang.String.class.isAssignableFrom(cipherConstructor.getParameterTypes()[1]))
+                    .findAny().get();
             constructor.setAccessible(true);
             Cipher instance = constructor.newInstance(new WireWinCryptCipher(), "WireWinCrypt");
             SecretKeySpec wireWinCryptKey = new SecretKeySpec(key, "WireWinCryptKey");
