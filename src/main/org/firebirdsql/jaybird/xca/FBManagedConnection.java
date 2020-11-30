@@ -400,6 +400,8 @@ public class FBManagedConnection implements ExceptionListener, Synchronizable {
                     // TODO should we skip disassociation in this case?
                     throw new SQLException("Can't destroy managed connection with active transaction");
                 }
+                if (parent != null)
+                    return;
 
                 gdsHelper.detachDatabase();
             }
