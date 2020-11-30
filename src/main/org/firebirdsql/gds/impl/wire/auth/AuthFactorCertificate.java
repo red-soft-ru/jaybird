@@ -60,6 +60,10 @@ public class AuthFactorCertificate extends AuthFactor {
   private final Stage TRANSFER = new Stage() {
     @Override
     public boolean stage(final ByteBuffer data) throws GDSAuthException {
+      if (sspi instanceof AuthSspi3) {
+        sdRandomNumber = ISCConstants.isc_dpb_certificate_body;
+        sdWireKey = 1;
+      }
       final ClumpletReader serverData = new ClumpletReader(clumpletReaderType, data.getData());
       try {
         if (!serverData.find(sdRandomNumber))
@@ -86,10 +90,6 @@ public class AuthFactorCertificate extends AuthFactor {
       try {
         final byte[] number = AuthMethods.ccfiDecrypt(userKey, encryptNumber, certBase64);
         signData = AuthMethods.ccfiSign(userKey, number, certBase64, ksExchange);
-        if (sspi instanceof AuthSspi3) {
-          sdRandomNumber = ISCConstants.isc_dpb_certificate_body;
-          sdWireKey = 1;
-        }
         if (!sspi.isSkipWireKeyTag()) { // skip sdWireKey for old protocols
           if (serverData.find(sdWireKey)) {
             wireKeyData = serverData.getBytes();
