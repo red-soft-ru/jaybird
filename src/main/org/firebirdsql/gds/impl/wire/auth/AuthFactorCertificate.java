@@ -22,7 +22,7 @@ public class AuthFactorCertificate extends AuthFactor {
   private int sdRandomNumber = 1;
   private int sdWireKey = 2;
   private String certBase64;
-  private ClumpletReader.Kind clumpletReaderType = WideTagged;
+  private ClumpletReader.Kind clumpletReaderType;
 
   public static int ksExchange = 1;
   public static int ksSignature = 2;
@@ -120,6 +120,7 @@ public class AuthFactorCertificate extends AuthFactor {
   public AuthFactorCertificate(AuthSspi sspi) {
     super(AuthFactor.TYPE_CERT_X509, sspi);
     setStage(CHALLENGE);
+    this.clumpletReaderType = sspi.getClumpletReaderType();
   }
 
   public void setCertBase64(final String certBase64) {
@@ -150,9 +151,5 @@ public class AuthFactorCertificate extends AuthFactor {
 
   public void setSdRandomNumber(int sdRandomNumber) {
     this.sdRandomNumber = sdRandomNumber;
-  }
-
-  public void setClumpletReaderType(ClumpletReader.Kind clumpletReaderType) {
-    this.clumpletReaderType = clumpletReaderType;
   }
 }

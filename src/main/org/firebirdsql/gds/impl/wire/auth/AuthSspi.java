@@ -72,7 +72,6 @@ public class AuthSspi {
     // Certificate factor
     if (dpb.hasArgument(ISCConstants.isc_dpb_certificate) || dpb.hasArgument(ISCConstants.isc_dpb_certificate_base64)) {
       final AuthFactorCertificate f = new AuthFactorCertificate(this);
-      f.setClumpletReaderType(this.clumpletReaderType);
       if (dpb.hasArgument(ISCConstants.isc_dpb_certificate)) {
         final String filePath = dpb.getArgumentAsString(ISCConstants.isc_dpb_certificate);
         f.loadFromFile(filePath);
@@ -165,6 +164,10 @@ public class AuthSspi {
 
   public void setClumpletReaderType(ClumpletReader.Kind type) {
     this.clumpletReaderType = type;
+  }
+
+  public ClumpletReader.Kind getClumpletReaderType() {
+    return clumpletReaderType;
   }
 
   public boolean isSkipWireKeyTag() {
