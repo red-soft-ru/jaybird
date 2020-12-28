@@ -264,6 +264,7 @@ public final class FbConnectionProperties extends AbstractAttachProperties<IConn
             case isc_dpb_set_bind:
             case isc_dpb_decfloat_round:
             case isc_dpb_decfloat_traps:
+            case isc_dpb_password_enc:
                 parameter.copyTo(extraDatabaseParameters, null);
                 dirtied();
                 break;
