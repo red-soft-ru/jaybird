@@ -19,6 +19,7 @@ variables:
   RDB4_VERSION: "4.0.0.2459"
   http_proxy: http://git.red-soft.biz:3128
   https_proxy: http://git.red-soft.biz:3128
+  no_proxy: localhost,172.0.0.0/8,127.0.0.0/8,.red-soft.biz
 
 .prepare_template: &prepare_template
   tags:
