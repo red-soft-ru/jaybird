@@ -98,7 +98,7 @@ build_and_test:jdk18:rdb4:
     TEST_LIST: "**"
     RDB_VERSION: $RDB4_VERSION
   image:
-    name: registry.red-soft.biz:5000/docker-images/rdbbuildenv:rdb4-1
+    name: registry.red-soft.biz:5000/docker-images/rdbbuildenv:rdb4-2
 
 build_and_test:jdk18:rdb4_native:
   <<: *build_and_test_template
@@ -111,7 +111,7 @@ build_and_test:jdk18:rdb4_native:
     RDB_VERSION: $RDB4_VERSION
     REPORT_PREFIX: rdb4_native_jdk18_
   image:
-    name: registry.red-soft.biz:5000/docker-images/rdbbuildenv:rdb4-1
+    name: registry.red-soft.biz:5000/docker-images/rdbbuildenv:rdb4-2
 
 build_and_test:jdk18:rdb4_fboonative:
   <<: *build_and_test_template
@@ -124,7 +124,7 @@ build_and_test:jdk18:rdb4_fboonative:
     RDB_VERSION: $RDB4_VERSION
     REPORT_PREFIX: rdb4_fboonative_jdk18_
   image:
-    name: registry.red-soft.biz:5000/docker-images/rdbbuildenv:rdb4-1
+    name: registry.red-soft.biz:5000/docker-images/rdbbuildenv:rdb4-2
 
 build_and_test:jdk18:rdb4_embedded:
   <<: *build_and_test_template
@@ -137,7 +137,7 @@ build_and_test:jdk18:rdb4_embedded:
     RDB_VERSION: $RDB4_VERSION
     REPORT_PREFIX: rdb4_embedded_jdk18_
   image:
-    name: registry.red-soft.biz:5000/docker-images/rdbbuildenv:rdb4-1
+    name: registry.red-soft.biz:5000/docker-images/rdbbuildenv:rdb4-2
 
 build_and_test:jdk18:rdb4_fbooembedded:
   <<: *build_and_test_template
@@ -150,7 +150,7 @@ build_and_test:jdk18:rdb4_fbooembedded:
     RDB_VERSION: $RDB4_VERSION
     REPORT_PREFIX: rdb4_fbooembedded_jdk18_
   image:
-    name: registry.red-soft.biz:5000/docker-images/rdbbuildenv:rdb4-1
+    name: registry.red-soft.biz:5000/docker-images/rdbbuildenv:rdb4-2
 
 build_and_test:jdk18:rdb3:
   <<: *build_and_test_template
@@ -162,7 +162,7 @@ build_and_test:jdk18:rdb3:
     TEST_JAVA7_JVM: /usr/lib/jvm/jre-1.7.0/bin/java
     EXTRA_DEPENDENCIES: icu
   image:
-    name: registry.red-soft.biz:5000/docker-images/rdbbuildenv:rdb4-1
+    name: registry.red-soft.biz:5000/docker-images/rdbbuildenv:rdb4-2
 
 build_and_test:jdk11:rdb3:
   <<: *build_and_test_template
@@ -175,7 +175,7 @@ build_and_test:jdk11:rdb3:
     EXTRA_DEPENDENCIES: icu java-11-openjdk
     REPORT_PREFIX: jdk11_
   image:
-    name: registry.red-soft.biz:5000/docker-images/rdbbuildenv:rdb4-1
+    name: registry.red-soft.biz:5000/docker-images/rdbbuildenv:rdb4-2
 
 build_and_test:liberica_jdk8:rdb3:
   <<: *build_and_test_template
@@ -189,7 +189,7 @@ build_and_test:liberica_jdk8:rdb3:
     EXTRA_DEPENDENCIES: icu
     REPORT_PREFIX: liberica_jdk8_
   image:
-    name: registry.red-soft.biz:5000/docker-images/rdbbuildenv:rdb4-1
+    name: registry.red-soft.biz:5000/docker-images/rdbbuildenv:rdb4-2
 
 build_and_test:liberica_jdk11:rdb3:
   <<: *build_and_test_template
@@ -203,7 +203,7 @@ build_and_test:liberica_jdk11:rdb3:
     EXTRA_DEPENDENCIES: icu
     REPORT_PREFIX: liberica_jdk11_
   image:
-    name: registry.red-soft.biz:5000/docker-images/rdbbuildenv:rdb4-1
+    name: registry.red-soft.biz:5000/docker-images/rdbbuildenv:rdb4-2
 
 build_and_test:jdk18:rdb2_6:
   <<: *build_and_test_template
@@ -215,7 +215,7 @@ build_and_test:jdk18:rdb2_6:
     TEST_LIST: "**,!**/nativeoo/**"
     EXTRA_DEPENDENCIES: icu xinetd
   image:
-    name: registry.red-soft.biz:5000/docker-images/rdbbuildenv:rdb4-1
+    name: registry.red-soft.biz:5000/docker-images/rdbbuildenv:rdb4-2
 
 deploy:internal:
   <<: *deploy_template
