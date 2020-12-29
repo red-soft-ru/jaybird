@@ -169,7 +169,7 @@ build_and_test:jdk18:rdb3:
   variables:
     JAVA_HOME: /usr/lib/jvm/jre-1.8.0
     RDB_VERSION: $RDB3_VERSION
-    SKIP_JAVA7_TEST: "false"
+    SKIP_JAVA7_TEST: "true"
     TEST_JAVA8_JVM: /usr/lib/jvm/jre-1.8.0/bin/java
     TEST_JAVA7_JVM: /usr/lib/jvm/jre-1.7.0/bin/java
     EXTRA_DEPENDENCIES: icu
