@@ -82,6 +82,7 @@ prepare:release:
     - tester
   stage: build_and_test
   before_script:
+    - echo proxy=$http_proxy >> /etc/yum.conf
     - yum install -y maven krb5-server krb5-workstation expect $EXTRA_DEPENDENCIES
     - /opt/cprocsp/sbin/amd64/cpconfig -license -set $LICENSE_CRYPTOPRO4
     - ./ci/configure_kerberos.sh
