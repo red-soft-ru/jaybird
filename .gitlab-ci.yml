@@ -82,7 +82,8 @@ prepare:release:
     - tester
   stage: build_and_test
   before_script:
-    - echo | sudo tee /etc/yum.repos.d/bellsoft.repo > /dev/null << EOF
+    - |
+        echo | sudo tee /etc/yum.repos.d/bellsoft.repo > /dev/null << EOF
         [BellSoft]
         name=BellSoft Repository
         baseurl=https://yum.bell-sw.com
