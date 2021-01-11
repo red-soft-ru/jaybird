@@ -93,6 +93,7 @@ prepare:release:
         priority=1
         EOF
     - echo proxy=$http_proxy >> /etc/yum.conf
+    - yum install -y oracle-epel-release-el7
     - yum install -y maven krb5-server krb5-workstation expect $EXTRA_DEPENDENCIES
     - /opt/cprocsp/sbin/amd64/cpconfig -license -set $LICENSE_CRYPTOPRO4
     - ./ci/configure_kerberos.sh
