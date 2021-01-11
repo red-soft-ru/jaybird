@@ -88,7 +88,16 @@ public class WireWinCryptEncryptionPlugin implements EncryptionPlugin {
         try {
             // Important! Since JCE policy prohibits the use of unsigned ciphers,
             // we initialize the object through reflection
-            Constructor<Cipher> constructor = (Constructor<Cipher>) Cipher.class.getDeclaredConstructors()[1];
+            final Constructor<Cipher>[] constructors = (Constructor<Cipher>[]) Cipher.class.getDeclaredConstructors();
+            Constructor<Cipher> constructor = null;
+            for (Constructor<Cipher> cipherConstructor: constructors) {
+                if (cipherConstructor.getParameterTypes().length == 2 &&
+                        javax.crypto.CipherSpi.class.isAssignableFrom(cipherConstructor.getParameterTypes()[0]) &&
+                        java.lang.String.class.isAssignableFrom(cipherConstructor.getParameterTypes()[1])) {
+                    constructor = cipherConstructor;
+                    break;
+                }
+            }
             constructor.setAccessible(true);
             Cipher instance = constructor.newInstance(new WireWinCryptCipher(), "WireWinCrypt");
             SecretKeySpec wireWinCryptKey = new SecretKeySpec(key, "WireWinCryptKey");
