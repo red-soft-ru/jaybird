@@ -17,6 +17,9 @@ variables:
   RDB2_VERSION: "2.6.0.13508"
   RDB3_VERSION: "3.0.5.354"
   RDB4_VERSION: "4.0.0.2459"
+  http_proxy: http://git.red-soft.biz:3128
+  https_proxy: http://git.red-soft.biz:3128
+  no_proxy: localhost,172.0.0.0/8,127.0.0.0/8,.red-soft.biz
 
 .prepare_template: &prepare_template
   tags:
@@ -81,6 +84,7 @@ prepare:release:
     - tester
   stage: build_and_test
   before_script:
+    - echo proxy=$http_proxy >> /etc/yum.conf
     - yum install -y maven krb5-server krb5-workstation expect $EXTRA_DEPENDENCIES
     - /opt/cprocsp/sbin/amd64/cpconfig -license -set $LICENSE_CRYPTOPRO4
     - ./ci/configure_kerberos.sh
