@@ -344,6 +344,46 @@ public class FBServiceManager implements ServiceManager {
         serviceProperties.setPort(port);
     }
 
+    public String getDatabaseName() {
+        return getDatabase();
+    }
+
+    public void setDatabaseName(String databaseName) {
+        setDatabase(databaseName);
+    }
+
+    public String getHost() {
+        return getServer();
+    }
+
+    public void setHost(String host) {
+        setServer(host);
+    }
+
+    public int getPortNumber() {
+        return getPort();
+    }
+
+    public void setPortNumber(int portNumber) {
+        setPort(portNumber);
+    }
+
+    public String getServerName() {
+        return getServer();
+    }
+
+    public void setServerName(String serverName) {
+        setServer(serverName);
+    }
+
+    public String getUser() {
+        return getUserName();
+    }
+
+    public void setUser(String userName) {
+        setUserName(userName);
+    }
+
     @Override
     public String getType() {
         return serviceProperties.getType();
