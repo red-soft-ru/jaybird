@@ -17,6 +17,8 @@
 		<releasehub-plugin.version>1.1</releasehub-plugin.version>
 		<project.build.outputTimestamp>2020-01-03T15:00:00Z</project.build.outputTimestamp>
 		<project.name>Jaybird</project.name>
+		<project.maven.name>${project.name}</project.maven.name>
+		<project.version.maven>${project.version}</project.version.maven>
 	</properties>	
 	<profiles>
 		<profile>
