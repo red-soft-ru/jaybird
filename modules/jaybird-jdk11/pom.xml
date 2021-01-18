@@ -103,15 +103,13 @@
 					<exclude>log4j.properties</exclude>
 					<exclude>META-INF/ra.xml</exclude>
 					<exclude>**/reserved_words*.txt</exclude>
-					<exclude>org/firebirdsql/jaybird/version.properties</exclude>
-					<exclude>org/firebirdsql/version_maven.properties</exclude>
 				</excludes>
 			</resource>
 			<resource>
 				<directory>../../src/resources</directory>
 				<filtering>true</filtering>
 				<includes>
-					<include>org/firebirdsql/version_maven.properties</include>
+					<include>org/firebirdsql/jaybird/version.properties</include>
 				</includes>
 			</resource>
 		</resources>
@@ -176,24 +174,6 @@
 						<arg>-Xpkginfo:always</arg>
 					</compilerArgs>
 				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>com.coderplus.maven.plugins</groupId>
-				<artifactId>copy-rename-maven-plugin</artifactId>
-				<version>1.0.1</version>
-				<executions>
-					<execution>
-						<id>rename-file</id>
-						<phase>compile</phase>
-						<goals>
-							<goal>rename</goal>
-						</goals>
-						<configuration>
-							<sourceFile>${project.build.outputDirectory}/org/firebirdsql/version_maven.properties</sourceFile>
-							<destinationFile>${project.build.outputDirectory}/org/firebirdsql/version.properties</destinationFile>
-						</configuration>
-					</execution>
-				</executions>
 			</plugin>
 			<plugin>
 				<artifactId>maven-source-plugin</artifactId>
