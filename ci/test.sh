@@ -196,12 +196,8 @@ echo "Start RDB..."
 
 if [[ "$RDB_MAJOR_VERSION" == "2" ]]; then
   /etc/init.d/firebird restart
-
-  "$INSTALLDIR/bin/gsec" -user SYSDBA -password masterkey -add TEST@RED-SOFT.RU -pw q3rgu7Ah
-  "$INSTALLDIR/bin/gsec" -user SYSDBA -password masterkey -add trusted_user -pw trusted
 elif [[ "$RDB_MAJOR_VERSION" == "FB3.0.5" ]]; then
   /etc/init.d/firebird restart
-  "$INSTALLDIR/bin/gsec" -modify SYSDBA -password masterkey -user SYSDBA
 else
   "$INSTALLDIR"/bin/rdbguard -daemon -forever
 fi
@@ -217,6 +213,13 @@ while ! $NC localhost 3050 </dev/null; do
         die "Unable to connect to RDB..."
     fi
 done
+
+if [[ "$RDB_MAJOR_VERSION" == "2" ]]; then
+  "$INSTALLDIR/bin/gsec" -user SYSDBA -password masterkey -add TEST@RED-SOFT.RU -pw q3rgu7Ah
+  "$INSTALLDIR/bin/gsec" -user SYSDBA -password masterkey -add trusted_user -pw trusted
+elif [[ "$RDB_MAJOR_VERSION" == "FB3.0.5" ]]; then
+  "$INSTALLDIR/bin/gsec" -modify SYSDBA -password masterkey -user SYSDBA
+fi
 
 echo rdb_server | kinit rdb_server/localhost
 klist
