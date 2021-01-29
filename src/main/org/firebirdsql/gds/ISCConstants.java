@@ -282,7 +282,7 @@ public interface ISCConstants {
     public final static int isc_action_svc_remove_license =10;	/* Removes a license from the license file */
     public final static int isc_action_svc_db_stats	      =11;	/* Retrieves database statistics */
     public final static int isc_action_svc_get_ib_log     =12;	/* Retrieves the InterBase log file from the server */
-    int isc_action_svc_get_fb_log     = 12;	/* Retrieves the Firebird log file from the server */
+    public final static int isc_action_svc_get_fb_log     = 12;	/* Retrieves the Firebird log file from the server */
     // NBackup - New with Firebird 2.5
     public final static int isc_action_svc_nbak   		  = 20; // Starts Nbackup
     public final static int isc_action_svc_nrest  		  = 21; // Restores Nbackup
@@ -438,12 +438,12 @@ public interface ISCConstants {
     public final static int isc_spb_tra_advise_commit	=	30;
     public final static int isc_spb_tra_advise_rollback	=	31;
     public final static int isc_spb_tra_advise_unknown	=	33;
-    int isc_spb_tra_id_64			=	46;
-    int isc_spb_single_tra_id_64	=	47;
-    int isc_spb_multi_tra_id_64		=	48;
-    int isc_spb_rpr_commit_trans_64	=	49;
-    int isc_spb_rpr_rollback_trans_64		=50;
-    int isc_spb_rpr_recover_two_phase_64	=51;
+    public final static int isc_spb_tra_id_64			=	46;
+    public final static int isc_spb_single_tra_id_64	=	47;
+    public final static int isc_spb_multi_tra_id_64		=	48;
+    public final static int isc_spb_rpr_commit_trans_64	=	49;
+    public final static int isc_spb_rpr_rollback_trans_64		=50;
+    public final static int isc_spb_rpr_recover_two_phase_64	=51;
 
     public final static int isc_spb_rpr_validate_db		=	0x01;
     public final static int isc_spb_rpr_sweep_db		=	0x02;
@@ -453,7 +453,7 @@ public interface ISCConstants {
     public final static int isc_spb_rpr_ignore_checksum	=	0x20;
     public final static int isc_spb_rpr_kill_shadows	=	0x40;
     public final static int isc_spb_rpr_full			=	0x80;
-    int isc_spb_rpr_icu				= 0x0800;
+    public final static int isc_spb_rpr_icu				= 0x0800;
 
     /*****************************************
      * Parameters for isc_action_svc_restore *
@@ -497,7 +497,7 @@ public interface ISCConstants {
     public final static int isc_spb_sts_record_versions = 0x20;
     public final static int isc_spb_sts_table       =   0x40;
     public final static int isc_spb_sts_nocreation  =   0x80;
-    int isc_spb_sts_encryption	=  0x100;
+    public final static int isc_spb_sts_encryption	=  0x100;
 
     /****************************/
     /* Common, structural codes */
@@ -1528,6 +1528,74 @@ public interface ISCConstants {
     public final static int isc_gbak_mode_req                    = 336331031;
     public final static int isc_dsql_table_not_found             = 336397206;
     public final static int isc_dsql_view_not_found              = 336397207;
+    public final static int isc_dsql_create_alter_func_failed    = 336397262;
+    public final static int isc_dsql_drop_func_failed            = 336397263;
+    public final static int isc_dsql_recreate_func_failed        = 336397264;
+    public final static int isc_dsql_create_proc_failed          = 336397265;
+    public final static int isc_dsql_alter_proc_failed           = 336397266;
+    public final static int isc_dsql_create_alter_proc_failed    = 336397267;
+    public final static int isc_dsql_drop_proc_failed            = 336397268;
+    public final static int isc_dsql_recreate_proc_failed        = 336397269;
+    public final static int isc_dsql_create_trigger_failed       = 336397270;
+    public final static int isc_dsql_alter_trigger_failed        = 336397271;
+    public final static int isc_dsql_create_alter_trigger_failed = 336397272;
+    public final static int isc_dsql_drop_trigger_failed         = 336397273;
+    public final static int isc_dsql_recreate_trigger_failed     = 336397274;
+    public final static int isc_dsql_create_collation_failed     = 336397275;
+    public final static int isc_dsql_drop_collation_failed       = 336397276;
+    public final static int isc_dsql_create_domain_failed        = 336397277;
+    public final static int isc_dsql_alter_domain_failed         = 336397278;
+    public final static int isc_dsql_drop_domain_failed          = 336397279;
+    public final static int isc_dsql_create_except_failed        = 336397280;
+    public final static int isc_dsql_alter_except_failed         = 336397281;
+    public final static int isc_dsql_create_alter_except_failed  = 336397282;
+    public final static int isc_dsql_recreate_except_failed      = 336397283;
+    public final static int isc_dsql_drop_except_failed          = 336397284;
+    public final static int isc_dsql_create_sequence_failed      = 336397285;
+    public final static int isc_dsql_create_table_failed         = 336397286;
+    public final static int isc_dsql_alter_table_failed          = 336397287;
+    public final static int isc_dsql_drop_table_failed           = 336397288;
+    public final static int isc_dsql_recreate_table_failed       = 336397289;
+    public final static int isc_dsql_create_pack_failed          = 336397290;
+    public final static int isc_dsql_alter_pack_failed           = 336397291;
+    public final static int isc_dsql_create_alter_pack_failed    = 336397292;
+    public final static int isc_dsql_drop_pack_failed            = 336397293;
+    public final static int isc_dsql_recreate_pack_failed        = 336397294;
+    public final static int isc_dsql_create_pack_body_failed     = 336397295;
+    public final static int isc_dsql_drop_pack_body_failed       = 336397296;
+    public final static int isc_dsql_recreate_pack_body_failed   = 336397297;
+    public final static int isc_dsql_create_view_failed          = 336397298;
+    public final static int isc_dsql_alter_view_failed           = 336397299;
+    public final static int isc_dsql_create_alter_view_failed    = 336397300;
+    public final static int isc_dsql_recreate_view_failed        = 336397301;
+    public final static int isc_dsql_drop_view_failed            = 336397302;
+    public final static int isc_dsql_drop_sequence_failed        = 336397303;
+    public final static int isc_dsql_recreate_sequence_failed    = 336397304;
+    public final static int isc_dsql_drop_index_failed           = 336397305;
+    public final static int isc_dsql_drop_filter_failed          = 336397306;
+    public final static int isc_dsql_drop_shadow_failed          = 336397307;
+    public final static int isc_dsql_drop_role_failed            = 336397308;
+    public final static int isc_dsql_drop_user_failed            = 336397309;
+    public final static int isc_dsql_create_role_failed          = 336397310;
+    public final static int isc_dsql_alter_role_failed           = 336397311;
+    public final static int isc_dsql_alter_index_failed          = 336397312;
+    public final static int isc_dsql_alter_database_failed       = 336397313;
+    public final static int isc_dsql_create_shadow_failed        = 336397314;
+    public final static int isc_dsql_create_filter_failed        = 336397315;
+    public final static int isc_dsql_create_index_failed         = 336397316;
+    public final static int isc_dsql_create_user_failed          = 336397317;
+    public final static int isc_dsql_alter_user_failed           = 336397318;
+    public final static int isc_dsql_grant_failed                = 336397319;
+    public final static int isc_dsql_revoke_failed               = 336397320;
+    public final static int isc_dsql_cte_recursive_aggregate     = 336397321;
+    public final static int isc_dsql_mapping_failed              = 336397322;
+    public final static int isc_dsql_alter_sequence_failed       = 336397323;
+    public final static int isc_dsql_create_generator_failed     = 336397324;
+    public final static int isc_dsql_set_generator_failed        = 336397325;
+    public final static int isc_dsql_wlock_simple                = 336397326;
+    public final static int isc_dsql_firstskip_rows              = 336397327;
+    public final static int isc_dsql_wlock_aggregates            = 336397328;
+    public final static int isc_dsql_wlock_conflict              = 336397329;
     public final static int isc_gsec_cant_open_db                = 336723983;
     public final static int isc_gsec_switches_error              = 336723984;
     public final static int isc_gsec_no_op_spec                  = 336723985;
@@ -1587,8 +1655,70 @@ public interface ISCConstants {
     public final static int isc_gstat_open_err                   = 336920605;
     public final static int isc_gstat_read_err                   = 336920606;
     public final static int isc_gstat_sysmemex                   = 336920607;
+    public final static int isc_fbsvcmgr_bad_am                  = 336986113;
+    public final static int isc_fbsvcmgr_bad_wm                  = 336986114;
+    public final static int isc_fbsvcmgr_bad_rs                  = 336986115;
     public final static int isc_fbsvcmgr_info_err                = 336986116;
-    public final static int isc_err_max                          = 689;
+    public final static int isc_fbsvcmgr_query_err               = 336986117;
+    public final static int isc_fbsvcmgr_switch_unknown          = 336986118;
+    public final static int isc_fbsvcmgr_bad_sm                  = 336986159;
+    public final static int isc_fbsvcmgr_fp_open                 = 336986160;
+    public final static int isc_fbsvcmgr_fp_read                 = 336986161;
+    public final static int isc_fbsvcmgr_fp_empty                = 336986162;
+    public final static int isc_fbsvcmgr_bad_arg                 = 336986164;
+    public final static int isc_utl_trusted_switch               = 337051649;
+    public final static int isc_nbackup_missing_param            = 337117213;
+    public final static int isc_nbackup_allowed_switches         = 337117214;
+    public final static int isc_nbackup_unknown_param            = 337117215;
+    public final static int isc_nbackup_unknown_switch           = 337117216;
+    public final static int isc_nbackup_nofetchpw_svc            = 337117217;
+    public final static int isc_nbackup_pwfile_error             = 337117218;
+    public final static int isc_nbackup_size_with_lock           = 337117219;
+    public final static int isc_nbackup_no_switch                = 337117220;
+    public final static int isc_nbackup_err_read                 = 337117223;
+    public final static int isc_nbackup_err_write                = 337117224;
+    public final static int isc_nbackup_err_seek                 = 337117225;
+    public final static int isc_nbackup_err_opendb               = 337117226;
+    public final static int isc_nbackup_err_fadvice              = 337117227;
+    public final static int isc_nbackup_err_createdb             = 337117228;
+    public final static int isc_nbackup_err_openbk               = 337117229;
+    public final static int isc_nbackup_err_createbk             = 337117230;
+    public final static int isc_nbackup_err_eofdb                = 337117231;
+    public final static int isc_nbackup_fixup_wrongstate         = 337117232;
+    public final static int isc_nbackup_err_db                   = 337117233;
+    public final static int isc_nbackup_userpw_toolong           = 337117234;
+    public final static int isc_nbackup_lostrec_db               = 337117235;
+    public final static int isc_nbackup_lostguid_db              = 337117236;
+    public final static int isc_nbackup_err_eofhdrdb             = 337117237;
+    public final static int isc_nbackup_db_notlock               = 337117238;
+    public final static int isc_nbackup_lostguid_bk              = 337117239;
+    public final static int isc_nbackup_page_changed             = 337117240;
+    public final static int isc_nbackup_dbsize_inconsistent      = 337117241;
+    public final static int isc_nbackup_failed_lzbk              = 337117242;
+    public final static int isc_nbackup_err_eofhdrbk             = 337117243;
+    public final static int isc_nbackup_invalid_incbk            = 337117244;
+    public final static int isc_nbackup_unsupvers_incbk          = 337117245;
+    public final static int isc_nbackup_invlevel_incbk           = 337117246;
+    public final static int isc_nbackup_wrong_orderbk            = 337117247;
+    public final static int isc_nbackup_err_eofbk                = 337117248;
+    public final static int isc_nbackup_err_copy                 = 337117249;
+    public final static int isc_nbackup_err_eofhdr_restdb        = 337117250;
+    public final static int isc_nbackup_lostguid_l0bk            = 337117251;
+    public final static int isc_nbackup_switchd_parameter        = 337117255;
+    public final static int isc_nbackup_user_stop                = 337117257;
+    public final static int isc_nbackup_deco_parse               = 337117259;
+    public final static int isc_trace_conflict_acts              = 337182750;
+    public final static int isc_trace_act_notfound               = 337182751;
+    public final static int isc_trace_switch_once                = 337182752;
+    public final static int isc_trace_param_val_miss             = 337182753;
+    public final static int isc_trace_param_invalid              = 337182754;
+    public final static int isc_trace_switch_unknown             = 337182755;
+    public final static int isc_trace_switch_svc_only            = 337182756;
+    public final static int isc_trace_switch_user_only           = 337182757;
+    public final static int isc_trace_switch_param_miss          = 337182758;
+    public final static int isc_trace_param_act_notcompat        = 337182759;
+    public final static int isc_trace_mandatory_switch_miss      = 337182760;
+    public final static int isc_err_max                          = 1237;
 
     /****************************/
     /* Red Database error codes */
@@ -1622,7 +1752,7 @@ public interface ISCConstants {
     /*******************/
     /* Other stuff     */
     /*******************/
-    int CS_NONE    = 0; /* No Character Set */
-    int CS_BINARY  = 1; /* BINARY BYTES */
-    int CS_dynamic = 127; // Pseudo number for runtime charset (see intl\charsets.h and references to it in Firebird)
+    public final static int CS_NONE    = 0; /* No Character Set */
+    public final static int CS_BINARY  = 1; /* BINARY BYTES */
+    public final static int CS_dynamic = 127; // Pseudo number for runtime charset (see intl\charsets.h and references to it in Firebird)
 }
