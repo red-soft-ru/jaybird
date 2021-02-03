@@ -184,9 +184,13 @@ public class AuthFactorPassword extends AuthFactor {
         randomData = AuthMethods.decrypt(cryptData, sessionKey, ivData);
 
         if (!sspi.isSkipWireKeyTag()) { // skip sdWireKey for old protocols
-          if (cr.find(rdWireKey)) {
-            final byte[] wireKeyData = cr.getBytes();
-            sspi.setWireKeyData(AuthMethods.decrypt(wireKeyData, sessionKey, ivData));
+          try {
+            if (cr.find(rdWireKey)) {
+              final byte[] wireKeyData = cr.getBytes();
+              sspi.setWireKeyData(AuthMethods.decrypt(wireKeyData, sessionKey, ivData));
+            }
+          } catch (SQLException e) {
+            // no wire key in protocol
           }
         }
       } catch (SQLException e) {
