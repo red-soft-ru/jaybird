@@ -82,6 +82,22 @@ class FBTimestampField extends FBField {
         return getDatatypeCoder().decodeTimestamp(getFieldData());
     }
 
+    public int getInt() throws SQLException {
+        final byte[] fieldData = getFieldData();
+        if (fieldData ==null) return INT_NULL_VALUE;
+        final int i = getDatatypeCoder().decodeInt(getFieldData());
+        return i;
+    }
+
+    public long getLong() throws SQLException {
+        final byte[] fieldData = getFieldData();
+        if (fieldData ==null) return LONG_NULL_VALUE;
+        final long d = getDatatypeCoder().decodeInt(getFieldData());
+        System.arraycopy(fieldData, 4, fieldData, 0, 4);
+        final int t = getDatatypeCoder().decodeInt(getFieldData());
+        return (d << 32) + t;
+    }
+
     public void setString(String value) throws SQLException {
         if (value == null) {
             setNull();

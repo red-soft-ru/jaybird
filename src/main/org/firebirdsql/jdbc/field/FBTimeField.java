@@ -64,6 +64,20 @@ final class FBTimeField extends FBField {
         return new Timestamp(getTime().getTime());
     }
 
+    public int getInt() throws SQLException {
+        final byte[] fieldData = getFieldData();
+        if (fieldData ==null) return INT_NULL_VALUE;
+        final int i = getDatatypeCoder().decodeInt(getFieldData());
+        return i;
+    }
+
+    public long getLong() throws SQLException {
+        final byte[] fieldData = getFieldData();
+        if (fieldData ==null) return LONG_NULL_VALUE;
+        final int i = getDatatypeCoder().decodeInt(getFieldData());
+        return i;
+    }
+
     //--- setXXX methods
 
     public void setString(String value) throws SQLException {

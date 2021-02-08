@@ -63,6 +63,20 @@ final class FBDateField extends FBField {
         return getDatatypeCoder().decodeDate(getFieldData()).toString();
     }
 
+    public int getInt() throws SQLException {
+        final byte[] fieldData = getFieldData();
+        if (fieldData ==null) return INT_NULL_VALUE;
+        final int i = getDatatypeCoder().decodeInt(getFieldData());
+        return i;
+    }
+
+    public long getLong() throws SQLException {
+        final byte[] fieldData = getFieldData();
+        if (fieldData ==null) return LONG_NULL_VALUE;
+        final long l = getDatatypeCoder().decodeInt(getFieldData());
+        return l << 32;
+    }
+
     public void setString(String value) throws SQLException {
         if (value == null) {
             setNull();
