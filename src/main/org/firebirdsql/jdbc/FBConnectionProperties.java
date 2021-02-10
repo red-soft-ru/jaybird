@@ -564,6 +564,10 @@ public class FBConnectionProperties extends AbstractFBConnectionProperties imple
                 case isc_dpb_multi_factor_auth:
                     parameter.copyTo(getExtraDatabaseParameters(), null);
                     break;
+                case isc_dpb_provider_id:
+                    setProviderID(parameter.getValueAsInt());
+                    parameter.copyTo(getExtraDatabaseParameters(), null);
+                    break;
                 default:
                     if (parameterType < jaybirdMinIscDpbValue || parameterType > jaybirdMaxIscDpbValue) {
                         log.warn(String.format(
