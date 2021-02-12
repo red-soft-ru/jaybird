@@ -85,8 +85,8 @@ cp fbt-repository/files/cert/REDSOFT.000/ $KEYS_DIR/firebird -rfv
 chmod 700 $KEYS_DIR/firebird/REDSOFT.000
 chown firebird:firebird -R $KEYS_DIR/firebird
 
-su - firebird -c "/opt/cprocsp/bin/$CPROCSP_ARCH/certmgr -inst -cont '\\.\HDIMAGE\REDSOFT'"
-su - firebird -c "/opt/cprocsp/bin/$CPROCSP_ARCH/csptest -passwd -cont '\\.\HDIMAGE\REDSOFT' -change 12345678"
+su - firebird -c "/opt/cprocsp/bin/$CPROCSP_ARCH/certmgr -inst -cont '\\\.\HDIMAGE\REDSOFT'"
+su - firebird -c "/opt/cprocsp/bin/$CPROCSP_ARCH/csptest -passwd -cont '\\\.\HDIMAGE\REDSOFT' -change 12345678"
 
 cp fbt-repository/files/cert/REDSOFT.cer /tmp/testuser.cer
 
