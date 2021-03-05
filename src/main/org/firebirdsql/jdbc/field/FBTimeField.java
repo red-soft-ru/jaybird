@@ -114,4 +114,22 @@ final class FBTimeField extends AbstractWithoutTimeZoneField {
         }
         setFieldData(getDatatypeCoder().encodeTimeRaw(raw));
     }
+
+    public void setInteger(int value) throws SQLException {
+        if (value == INT_NULL_VALUE) {
+            setNull();
+            return;
+        }
+
+        setFieldData(getDatatypeCoder().encodeInt(value));
+    }
+
+    public void setLong(long value) throws SQLException {
+        if (value == LONG_NULL_VALUE) {
+            setNull();
+            return;
+        }
+        final int t = (int)value;
+        setFieldData(getDatatypeCoder().encodeInt(t));
+    }
 }

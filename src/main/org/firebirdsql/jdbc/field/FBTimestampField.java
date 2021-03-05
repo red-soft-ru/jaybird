@@ -130,4 +130,26 @@ class FBTimestampField extends AbstractWithoutTimeZoneField {
         }
         setFieldData(getDatatypeCoder().encodeTimestampRaw(raw));
     }
+
+    public void setInteger(int value) throws SQLException {
+        if (value == INT_NULL_VALUE) {
+            setNull();
+            return;
+        }
+
+        setFieldData(getDatatypeCoder().encodeInt(value));
+    }
+
+    public void setLong(long value) throws SQLException {
+        if (value == LONG_NULL_VALUE) {
+            setNull();
+            return;
+        }
+        final int t = (int)value;
+        final int d = (int)(value >> 32);
+        final byte[] b = new byte[8];
+        System.arraycopy(getDatatypeCoder().encodeInt(d), 0, b, 0, 4);
+        System.arraycopy(getDatatypeCoder().encodeInt(t), 0, b, 4, 4);
+        setFieldData(b);
+    }
 }
