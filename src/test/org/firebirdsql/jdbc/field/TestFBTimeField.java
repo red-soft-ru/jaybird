@@ -49,6 +49,47 @@ public class TestFBTimeField extends BaseJUnit4TestFBField<FBTimeField, java.sql
 
     @Test
     @Override
+    public void getLongNonNull() throws SQLException {
+        toReturnLongExpectations(0);
+
+        long expectedValue = 0;
+        assertEquals("Unexpected value for getLong", expectedValue, field.getLong());
+    }
+
+    @Test
+    @Override
+    public void setLong() throws SQLException {
+        setIntegerExpectations(Integer.MAX_VALUE << 32);
+
+        field.setLong(Integer.MAX_VALUE);
+    }
+
+    @Test
+    public void getObject_Long() throws SQLException {
+        toReturnLongExpectations(0);
+
+        long expectedValue = 0;
+        assertEquals("Unexpected value for getLong", expectedValue, (long) field.getObject(Long.class));
+    }
+
+    @Test
+    @Override
+    public void getIntNonNull() throws SQLException {
+        toReturnLongExpectations(0);
+
+        assertEquals("Unexpected value for getInt", 0, field.getInt());
+    }
+
+    @Test
+    @Override
+    public void setInteger() throws SQLException {
+        setIntegerExpectations(4543 << 32);
+
+        field.setInteger(4543);
+    }
+
+    @Test
+    @Override
     public void getObjectNonNull() throws SQLException {
         java.sql.Time value = java.sql.Time.valueOf("13:37:59");
         toReturnTimeExpectations(value);
@@ -62,6 +103,14 @@ public class TestFBTimeField extends BaseJUnit4TestFBField<FBTimeField, java.sql
         setTimeExpectations(value);
 
         field.setObject(value);
+    }
+
+    @Test
+    @Override
+    public void getObject_Integer() throws SQLException {
+        toReturnIntegerExpectations(Integer.MAX_VALUE << 32);
+
+        assertEquals("Unexpected value for getObject(Integer.class)", Integer.MAX_VALUE, (int) field.getObject(Integer.class));
     }
 
     @Test
