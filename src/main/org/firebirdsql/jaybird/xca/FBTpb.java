@@ -48,6 +48,10 @@ public class FBTpb implements Serializable {
         this.transactionParams = transactionParams;
     }
 
+    public FBTpb(FBTpb tpb) {
+        this(tpb.getTransactionParameterBuffer());
+    }
+
     public boolean equals(Object other) {
         if (other == this) 
             return true; 
