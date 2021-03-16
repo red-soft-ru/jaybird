@@ -181,7 +181,7 @@ public class FBManagedConnection implements ManagedConnection, XAResource, Excep
         this.parent = mc;
         this.mcf = mc.mcf;
         this.cri = mc.cri;
-        this.tpb = mc.tpb;
+        this.tpb = new FBTpb(mc.tpb);
         this.transactionIsolation = mc.transactionIsolation;
         this.database = mc.database;
         this.syncObject = mc.syncObject;
