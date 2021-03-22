@@ -40,8 +40,8 @@ elif [[ "${RDB_VERSION:0:1}" -eq "3" ]]; then
 elif [[ "${RDB_VERSION:0:1}" -eq "2" ]]; then
   RDB_MAJOR_VERSION="2"
   REPORT_PREFIX=${REPORT_PREFIX:=rdb2_6_}
-elif [[ "${RDB_VERSION:0:7}" == "FB3.0.5" ]]; then
-  RDB_MAJOR_VERSION="FB3.0.5"
+elif [[ "${RDB_VERSION:0:7}" == "FB3.0.7" ]]; then
+  RDB_MAJOR_VERSION="FB3.0.7"
   INSTALLDIR=/opt/firebird
   REPORT_PREFIX=${REPORT_PREFIX:=fb3_}
 else
@@ -106,9 +106,9 @@ elif [[ "$RDB_MAJOR_VERSION" == "4" ]]; then
   RDB_URL=http://builds.red-soft.biz/release_hub/rdb40/${RDB_VERSION}/download/red-database:linux-${ARCH}-enterprise:${RDB_VERSION}:bin
 fi
 
-if [[ "$RDB_MAJOR_VERSION" == "FB3.0.5" ]]; then
-  FB_URL=http://github.com/FirebirdSQL/firebird/releases/download/R3_0_5/Firebird-3.0.5.33220-0.amd64.tar.gz
-  (curl -LJO "$FB_URL") || die "Unable to download Firebird 3.0.5"
+if [[ "$RDB_MAJOR_VERSION" == "FB3.0.7" ]]; then
+  FB_URL=https://github.com/FirebirdSQL/firebird/releases/download/R3_0_7/Firebird-3.0.7.33374-0.amd64.tar.gz
+  (curl -LJO "$FB_URL") || die "Unable to download Firebird 3.0.7"
 else
   (curl -s "$RDB_URL" -o /tmp/installer.bin && chmod +x /tmp/installer.bin) || die "Unable to download RedDatabase"
 fi
@@ -116,9 +116,9 @@ fi
 echo "Installing RedDatabase"
 if [[ "$RDB_MAJOR_VERSION" == "2" ]]; then
   /tmp/installer.bin --DBAPasswd masterkey --mode unattended --architecture $ARCHITECTURE || die "Unable to install RedDatabase"
-elif [[ "$RDB_MAJOR_VERSION" == "FB3.0.5" ]]; then
-  tar xf Firebird-3.0.5.33220-0.amd64.tar.gz
-  cd Firebird-3.0.5.33220-0.amd64
+elif [[ "$RDB_MAJOR_VERSION" == "FB3.0.7" ]]; then
+  tar xf Firebird-3.0.7.33374-0.amd64.tar.gz
+  cd Firebird-3.0.7.33374-0.amd64
   ./install.sh -silent
   cd ..
 else
@@ -174,7 +174,7 @@ elif [[ "$RDB_MAJOR_VERSION" == "3" ]]; then
   sed -i 's/#GSSLibrary = libgssapi_krb5.so/GSSLibrary = \/usr\/lib64\/libgssapi_krb5.so.2/g' "${INSTALLDIR}"/firebird.conf
 
   "${INSTALLDIR}"/bin/isql -user SYSDBA -password masterkey "${INSTALLDIR}"/security3.fdb -i "${SOURCES}"/ci/user3.sql
-elif [[ "$RDB_MAJOR_VERSION" == "FB3.0.5" ]]; then
+elif [[ "$RDB_MAJOR_VERSION" == "FB3.0.7" ]]; then
   sed -i 's/#AuthServer = Srp/AuthServer = Srp, Srp256, Legacy_Auth/g' "${INSTALLDIR}"/firebird.conf
   sed -i 's/#AuthClient = Srp, Srp256, Legacy_Auth\s*#Non Windows clients/AuthClient = Srp, Srp256, Legacy_Auth/g' "${INSTALLDIR}"/firebird.conf
   sed -i 's/#UserManager = Srp/UserManager = Srp, Legacy_UserManager/g' "${INSTALLDIR}"/firebird.conf
@@ -196,7 +196,7 @@ echo "Start RDB..."
 
 if [[ "$RDB_MAJOR_VERSION" == "2" ]]; then
   /etc/init.d/firebird restart
-elif [[ "$RDB_MAJOR_VERSION" == "FB3.0.5" ]]; then
+elif [[ "$RDB_MAJOR_VERSION" == "FB3.0.7" ]]; then
   /etc/init.d/firebird restart
 else
   "$INSTALLDIR"/bin/rdbguard -daemon -forever
@@ -217,7 +217,7 @@ done
 if [[ "$RDB_MAJOR_VERSION" == "2" ]]; then
   "$INSTALLDIR/bin/gsec" -user SYSDBA -password masterkey -add TEST@RED-SOFT.RU -pw q3rgu7Ah
   "$INSTALLDIR/bin/gsec" -user SYSDBA -password masterkey -add trusted_user -pw trusted
-elif [[ "$RDB_MAJOR_VERSION" == "FB3.0.5" ]]; then
+elif [[ "$RDB_MAJOR_VERSION" == "FB3.0.7" ]]; then
   "$INSTALLDIR/bin/gsec" -modify SYSDBA -password masterkey -user SYSDBA
 fi
 
