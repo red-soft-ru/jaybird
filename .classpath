@@ -22,13 +22,11 @@
 	<classpathentry kind="lib" path="src/lib/log4j-1.2-api-2.13.3.jar"/>
 	<classpathentry kind="lib" path="src/lib/log4j-api-2.13.3.jar"/>
 	<classpathentry kind="lib" path="src/lib/log4j-core-2.13.3.jar"/>
-	<classpathentry kind="lib" path="src/lib/platform-4.5.0.jar"/>
-	<classpathentry kind="lib" path="lib/testasm-6.1.jar.jar"/>
-	<classpathentry kind="lib" path="lib/test/cglib-3.2.6.jar"/>
-	<classpathentry kind="lib" path="lib/test/objenesis-2.6.jar"/>
-	<classpathentry kind="lib" path="lib/test/jmock-2.8.4.jar"/>
-	<classpathentry kind="lib" path="lib/test/jmock-junit4-2.8.4.jar"/>
-	<classpathentry kind="lib" path="lib/test/jmock-legacy-2.8.4.jar"/>
-	<classpathentry kind="lib" path="lib/test/hibernate-core-4.3.11.Final.jar"/>
+	<classpathentry kind="lib" path="lib/test/asm-7.3.1.jar"/>
+	<classpathentry kind="lib" path="lib/test/byte-buddy-1.10.22.jar"/>
+	<classpathentry kind="lib" path="lib/test/jmock-2.10.0-RC3.jar"/>
+	<classpathentry kind="lib" path="lib/test/jmock-imposters-2.10.0-RC3.jar"/>
+	<classpathentry kind="lib" path="lib/test/jmock-junit4-2.10.0-RC3.jar"/>
+	<classpathentry kind="lib" path="lib/test/objenesis-3.0.1.jar"/>
 	<classpathentry kind="output" path="classes/production/client-java"/>
 </classpath>
