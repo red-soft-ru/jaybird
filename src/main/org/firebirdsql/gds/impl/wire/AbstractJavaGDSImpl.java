@@ -464,13 +464,14 @@ public abstract class AbstractJavaGDSImpl extends AbstractGDS implements GDS {
                 }
 				if (newDpb.hasArgument(DatabaseParameterBuffer.PASSWORD)) {
 					String password = newDpb.getArgumentAsString(DatabaseParameterBuffer.PASSWORD);
-					newDpb.removeArgument(DatabaseParameterBuffer.PASSWORD);
 					if (newDpb.hasArgument(ISCConstants.isc_dpb_not_encrypt_password)) {
+						newDpb.removeArgument(DatabaseParameterBuffer.PASSWORD);
 						newDpb.removeArgument(ISCConstants.isc_dpb_not_encrypt_password);
 						newDpb.addArgument(DatabaseParameterBuffer.PASSWORD_ENC,
 								"\u0000" + password);
 					} else {
-						newDpb.addArgument(DatabaseParameterBuffer.PASSWORD_ENC,
+						databaseParameterBuffer.removeArgument(DatabaseParameterBuffer.PASSWORD);
+						databaseParameterBuffer.addArgument(DatabaseParameterBuffer.PASSWORD_ENC,
 								UnixCrypt.crypt(password, LEGACY_PASSWORD_SALT).substring(2, 13));
 					}
 				}
