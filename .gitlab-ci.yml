@@ -117,7 +117,7 @@ test:jdk18:rdb4:
   stage: test
   before_script:
     - /opt/cprocsp/sbin/amd64/cpconfig -license -set $LICENSE_CRYPTOPRO4
-    - yum install -y krb5-server krb5-workstation expect
+    - yum install -y krb5-server krb5-workstation expect java-1.8.0-openjdk-devel
     - ./ci/configure_kerberos.sh
     - export JAYBIRD_VERSION=`cat .ci/version`
     - export SRCDIR=`pwd`/jaybird-${JAYBIRD_VERSION}
@@ -153,7 +153,7 @@ test:jdk18:rdb3:
   stage: test
   before_script:
     - /opt/cprocsp/sbin/amd64/cpconfig -license -set $LICENSE_CRYPTOPRO4
-    - yum install -y krb5-server krb5-workstation expect icu
+    - yum install -y krb5-server krb5-workstation expect icu java-1.8.0-openjdk-devel
     - ./ci/configure_kerberos.sh
     - export JAYBIRD_VERSION=`cat .ci/version`
     - export SRCDIR=`pwd`/jaybird-${JAYBIRD_VERSION}
@@ -189,7 +189,7 @@ test:jdk18:rdb2_6:
   stage: test
   before_script:
     - /opt/cprocsp/sbin/amd64/cpconfig -license -set $LICENSE_CRYPTOPRO4
-    - yum install -y krb5-server krb5-workstation expect icu xinetd
+    - yum install -y krb5-server krb5-workstation expect icu xinetd java-1.8.0-openjdk-devel
     - ./ci/configure_kerberos.sh
     - export JAYBIRD_VERSION=`cat .ci/version`
     - export SRCDIR=`pwd`/jaybird-${JAYBIRD_VERSION}
