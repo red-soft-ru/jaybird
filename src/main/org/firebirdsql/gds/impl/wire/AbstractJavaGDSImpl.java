@@ -3198,6 +3198,7 @@ public abstract class AbstractJavaGDSImpl extends AbstractGDS implements GDS {
             this.port = port;
             connect();
             Thread eventThread = new Thread(this);
+            eventThread.setName("EventCoordinator" + eventThread.getName());
             eventThread.setDaemon(true);
             eventThread.start();
         }

@@ -79,6 +79,7 @@ public abstract class AbstractEventManager implements EventManager {
         connected = true;
         eventDispatcher = new EventDispatcher();
         dispatchThread = new Thread(eventDispatcher);
+        dispatchThread.setName("EventManager" + dispatchThread.getName());
         dispatchThread.setDaemon(true);
         dispatchThread.start();
     }
