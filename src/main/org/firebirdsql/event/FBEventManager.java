@@ -139,6 +139,7 @@ public class FBEventManager implements EventManager {
 
         eventDispatcher = new EventDispatcher();
         dispatchThread = new Thread(eventDispatcher);
+        dispatchThread.setName("EventManager" + dispatchThread.getName());
         dispatchThread.setDaemon(true);
         dispatchThread.start();
     }
