@@ -20,7 +20,7 @@ The driver supports all types of authentication provided by Red Database server.
 
 Support for multifactor authentication is implemented using the cryptographic provider CryptoPro.
 
-[![MavenCentral](https://maven-badges.herokuapp.com/maven-central/org.firebirdsql.jdbc/jaybird-jdk18/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.firebirdsql.jdbc/jaybird-jdk18/) [![image](https://img.shields.io/badge/red--soft--bintray-jaybird--releases-brightgreen)](https://bintray.com/beta/#/red-soft-ru/releases)
+[![MavenCentral](https://maven-badges.herokuapp.com/maven-central/org.firebirdsql.jdbc/jaybird-jdk18/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.firebirdsql.jdbc/jaybird-jdk18/) [![image](https://img.shields.io/badge/red--soft--nexus-releases-brightgreen)](http://nexus.red-soft.ru/repository/jaybird/ru/red-soft/jdbc/jaybird-parent/maven-metadata.xml)
 
 ## Resources
 
