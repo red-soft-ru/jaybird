@@ -24,6 +24,8 @@ The driver supports all types of authentication provided by Red Database server.
 
 Support for multifactor authentication is implemented using the cryptographic provider CryptoPro.
 
+[![image](https://img.shields.io/badge/red--soft--nexus-releases-brightgreen)](http://nexus.red-soft.ru/repository/jaybird/ru/red-soft/jdbc/jaybird-parent/maven-metadata.xml)
+
 ## Resources
 
 - [Downloads](https://www.firebirdsql.org/en/jdbc-driver/)
