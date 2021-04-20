@@ -80,6 +80,12 @@ public final class ClientAuthBlock {
         return attachProperties.getPassword();
     }
 
+    public String getPasswordEnc() {
+        if (attachProperties.getExtraDatabaseParameters().hasArgument(ISCConstants.isc_dpb_password_enc))
+            return attachProperties.getExtraDatabaseParameters().getArgumentAsString(ISCConstants.isc_dpb_password_enc);
+        return null;
+    }
+
     public boolean isAuthComplete() {
         return authComplete;
     }

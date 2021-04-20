@@ -46,14 +46,19 @@ class LegacyAuthenticationPlugin implements AuthenticationPlugin {
 
     @Override
     public AuthStatus authenticate(ClientAuthBlock clientAuthBlock) throws SQLException {
-        if (clientAuthBlock.getLogin() == null || clientAuthBlock.getPassword() == null) {
+        if (clientAuthBlock.getLogin() == null ||
+                (clientAuthBlock.getPassword() == null && clientAuthBlock.getPasswordEnc() == null)) {
             return AuthStatus.AUTH_CONTINUE;
         }
-        if (clientAuthBlock.isNotEncryptedPassword()) {
-            clientData = ("\u0000" + clientAuthBlock.getPassword()).getBytes(StandardCharsets.US_ASCII);
+        if (clientAuthBlock.getPassword() != null) {
+            if (clientAuthBlock.isNotEncryptedPassword()) {
+                clientData = ("\u0000" + clientAuthBlock.getPassword()).getBytes(StandardCharsets.US_ASCII);
+            } else {
+                clientData = UnixCrypt.crypt(clientAuthBlock.getPassword(), LEGACY_PASSWORD_SALT).substring(2, 13)
+                        .getBytes(StandardCharsets.US_ASCII);
+            }
         } else {
-            clientData = UnixCrypt.crypt(clientAuthBlock.getPassword(), LEGACY_PASSWORD_SALT).substring(2, 13)
-                    .getBytes(StandardCharsets.US_ASCII);
+            clientData = clientAuthBlock.getPasswordEnc().getBytes(StandardCharsets.US_ASCII);
         }
         return AuthStatus.AUTH_SUCCESS;
     }
