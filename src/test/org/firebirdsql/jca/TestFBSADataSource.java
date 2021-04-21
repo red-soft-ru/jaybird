@@ -6,6 +6,7 @@ import org.junit.Test;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 
 import static org.firebirdsql.common.DdlHelper.executeCreateTable;
 import static org.firebirdsql.common.FBTestProperties.DB_DATASOURCE_URL;
@@ -137,6 +138,32 @@ public class TestFBSADataSource extends TestXABase
 			}
 			rs.close();
 			c3.close();
+		}
+		finally {
+			dataSource.close();
+		}
+	}
+
+	@Test
+	public void testEncryptedPassword() throws Exception {
+
+		FBSADataSource dataSource =	new FBSADataSource();
+		// Set the standard properties
+		dataSource.setDatabase (DB_DATASOURCE_URL);
+		dataSource.setDescription ("An example database of employees");
+		dataSource.setUserName("sysdba");
+		dataSource.setEncoding("WIN1251");
+
+		// Legacy plugin use it
+		dataSource.setNonStandardProperty("isc_dpb_password_enc", "QP3LMZ/MJh.");
+		try (Connection connection = dataSource.getConnection()) {
+			PreparedStatement ps = connection.prepareStatement(
+					"select rdb$get_context('SYSTEM', 'ENGINE_VERSION') from rdb$database");
+			ResultSet rs = ps.executeQuery();
+			rs.next();
+			System.out.println(String.format("Engine version: %s", rs.getString(1)));
+			rs.close();
+			ps.close();
 		}
 		finally {
 			dataSource.close();
