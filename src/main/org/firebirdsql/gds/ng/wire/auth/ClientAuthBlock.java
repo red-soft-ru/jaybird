@@ -76,6 +76,12 @@ public final class ClientAuthBlock {
         return attachProperties.getPassword();
     }
 
+    public String getPasswordEnc() {
+        if (attachProperties.getExtraDatabaseParameters().hasArgument(ISCConstants.isc_dpb_password_enc))
+            return attachProperties.getExtraDatabaseParameters().getArgumentAsString(ISCConstants.isc_dpb_password_enc);
+        return null;
+    }
+
     public boolean isAuthComplete() {
         return authComplete;
     }
@@ -519,6 +525,8 @@ public final class ClientAuthBlock {
     public String getCertificateBase64() {
         return attachProperties.getCertificateBase64();
     }
+
+    public boolean isNotEncryptedPassword() { return attachProperties.isNotEncryptedPassword(); }
 
     public String getRepositoryPin() {
         return attachProperties.getRepositoryPin();

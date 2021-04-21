@@ -1,7 +1,12 @@
 package org.firebirdsql.jca;
 
+import org.firebirdsql.cryptoapi.AuthCryptoPluginImpl;
+import org.firebirdsql.cryptoapi.cryptopro.exception.CryptoException;
 import org.firebirdsql.gds.TransactionParameterBuffer;
+import org.firebirdsql.gds.impl.wire.auth.AuthCryptoPlugin;
 import org.firebirdsql.jdbc.FBConnection;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.sql.Connection;
@@ -148,6 +153,33 @@ public class TestFBSADataSource extends TestXABase {
             }
             rs.close();
             c3.close();
+        }
+        finally {
+            dataSource.close();
+        }
+    }
+
+    @Test
+    public void testEncryptedPassword() throws Exception {
+
+        FBSADataSource dataSource =	new FBSADataSource();
+        // Set the standard properties
+        dataSource.setDatabase (DB_DATASOURCE_URL);
+        dataSource.setDescription ("An example database of employees");
+        dataSource.setUserName("sysdba");
+        dataSource.setEncoding("WIN1251");
+
+        // Legacy plugin use it
+        dataSource.setNonStandardProperty("isc_dpb_password_enc", "QP3LMZ/MJh.");
+        dataSource.setNonStandardProperty("authPlugins", "Legacy_Auth");
+        try (Connection connection = dataSource.getConnection()) {
+            PreparedStatement ps = connection.prepareStatement(
+                    "select rdb$get_context('SYSTEM', 'ENGINE_VERSION') from rdb$database");
+            ResultSet rs = ps.executeQuery();
+            rs.next();
+            System.out.println(String.format("Engine version: %s", rs.getString(1)));
+            rs.close();
+            ps.close();
         }
         finally {
             dataSource.close();
