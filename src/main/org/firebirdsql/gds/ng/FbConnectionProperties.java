@@ -20,6 +20,7 @@ package org.firebirdsql.gds.ng;
 
 import org.firebirdsql.encodings.EncodingFactory;
 import org.firebirdsql.gds.DatabaseParameterBuffer;
+import org.firebirdsql.gds.ISCConstants;
 import org.firebirdsql.gds.JaybirdErrorCodes;
 import org.firebirdsql.gds.Parameter;
 import org.firebirdsql.gds.impl.DatabaseParameterBufferImp;
@@ -264,9 +265,11 @@ public final class FbConnectionProperties extends AbstractAttachProperties<IConn
             case isc_dpb_set_bind:
             case isc_dpb_decfloat_round:
             case isc_dpb_decfloat_traps:
-            case isc_dpb_password_enc:
                 parameter.copyTo(extraDatabaseParameters, null);
                 dirtied();
+                break;
+            case isc_dpb_password_enc:
+                setPasswordEnc(parameter.getValueAsString());
                 break;
             case isc_dpb_gss:
                 break;
@@ -275,6 +278,9 @@ public final class FbConnectionProperties extends AbstractAttachProperties<IConn
                 break;
             case isc_dpb_certificate_base64:
                 setCertificateBase64(parameter.getValueAsString());
+                break;
+            case isc_dpb_not_encrypt_password:
+                setNotEncryptedPassword(true);
                 break;
             case isc_dpb_repository_pin:
                 setRepositoryPin(parameter.getValueAsString());

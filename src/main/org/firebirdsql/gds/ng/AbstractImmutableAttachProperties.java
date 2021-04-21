@@ -30,6 +30,7 @@ public abstract class AbstractImmutableAttachProperties<T extends IAttachPropert
     private final int portNumber;
     private final String user;
     private final String password;
+    private final String passwordEnc;
     private final String roleName;
     private final String charSet;
     private final String encoding;
@@ -43,6 +44,7 @@ public abstract class AbstractImmutableAttachProperties<T extends IAttachPropert
     private final String excludeCryptoPlugins;
     private final String certificate;
     private final String certificateBase64;
+    private final boolean notEncryptPassword;
     private final String repositoryPin;
     private final int providerID;
     private final String effectiveLogin;
@@ -62,6 +64,7 @@ public abstract class AbstractImmutableAttachProperties<T extends IAttachPropert
         portNumber = src.getPortNumber();
         user = src.getUser();
         password = src.getPassword();
+        passwordEnc = src.getPasswordEnc();
         roleName = src.getRoleName();
         charSet = src.getCharSet();
         encoding = src.getEncoding();
@@ -75,6 +78,7 @@ public abstract class AbstractImmutableAttachProperties<T extends IAttachPropert
         excludeCryptoPlugins = src.getExcludeCryptoPlugins();
         certificate = src.getCertificate();
         certificateBase64 = src.getCertificateBase64();
+        notEncryptPassword = src.isNotEncryptedPassword();
         repositoryPin = src.getRepositoryPin();
         providerID = src.getProviderID();
         effectiveLogin = src.getEffectiveLogin();
@@ -117,6 +121,16 @@ public abstract class AbstractImmutableAttachProperties<T extends IAttachPropert
 
     @Override
     public void setPassword(final String password) {
+        immutable();
+    }
+
+    @Override
+    public String getPasswordEnc() {
+        return passwordEnc;
+    }
+
+    @Override
+    public void setPasswordEnc(final String password) {
         immutable();
     }
 
@@ -239,6 +253,17 @@ public abstract class AbstractImmutableAttachProperties<T extends IAttachPropert
     public void setCertificateBase64(final String certificateBase64) {
         immutable();
     }
+
+    @Override
+    public boolean isNotEncryptedPassword() {
+        return notEncryptPassword;
+    }
+
+    @Override
+    public void setNotEncryptedPassword(final boolean notEncryptPassword) {
+        immutable();
+    }
+
 
     @Override
     public String getAuthPlugins() {

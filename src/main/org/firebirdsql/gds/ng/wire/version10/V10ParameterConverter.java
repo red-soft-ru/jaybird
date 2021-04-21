@@ -50,8 +50,11 @@ public class V10ParameterConverter extends AbstractParameterConverter<WireDataba
             pb.addArgument(tagMapping.getUserNameTag(), props.getUser());
         }
         if (props.getPassword() != null) {
-            pb.addArgument(tagMapping.getEncryptedPasswordTag(), UnixCrypt.crypt(props.getPassword(),
-                    LEGACY_PASSWORD_SALT).substring(2, 13));
+            if (!props.isNotEncryptedPassword())
+                pb.addArgument(tagMapping.getEncryptedPasswordTag(), UnixCrypt.crypt(props.getPassword(),
+                        LEGACY_PASSWORD_SALT).substring(2, 13));
+            else
+                pb.addArgument(tagMapping.getPasswordTag(), props.getPassword());
         }
         if (props.getEffectiveLogin() != null) {
             pb.addArgument(tagMapping.getEffectiveLoginTag(), props.getEffectiveLogin());

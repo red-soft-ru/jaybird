@@ -80,6 +80,10 @@ public final class ClientAuthBlock {
         return attachProperties.getPassword();
     }
 
+    public String getPasswordEnc() {
+        return attachProperties.getPasswordEnc();
+    }
+
     public boolean isAuthComplete() {
         return authComplete;
     }
@@ -523,6 +527,8 @@ public final class ClientAuthBlock {
     public String getCertificateBase64() {
         return attachProperties.getCertificateBase64();
     }
+
+    public boolean isNotEncryptedPassword() { return attachProperties.isNotEncryptedPassword(); }
 
     public String getRepositoryPin() {
         return attachProperties.getRepositoryPin();

@@ -32,11 +32,13 @@ public abstract class AbstractAttachProperties<T extends IAttachProperties<T>> i
     private int portNumber = IAttachProperties.DEFAULT_PORT;
     private String user;
     private String password;
+    private String passwordEnc;
     private String roleName;
     private String charSet;
     private String encoding;
     private String certificate;
     private String certificateBase64;
+    private boolean notEncryptPassword;
     private String repositoryPin;
     private int providerID;
     private int socketBufferSize = IAttachProperties.DEFAULT_SOCKET_BUFFER_SIZE;
@@ -66,6 +68,7 @@ public abstract class AbstractAttachProperties<T extends IAttachProperties<T>> i
             portNumber = src.getPortNumber();
             user = src.getUser();
             password = src.getPassword();
+            passwordEnc = src.getPasswordEnc();
             roleName = src.getRoleName();
             charSet = src.getCharSet();
             encoding = src.getEncoding();
@@ -79,6 +82,7 @@ public abstract class AbstractAttachProperties<T extends IAttachProperties<T>> i
             wireCompression = src.isWireCompression();
             certificate = src.getCertificate();
             certificateBase64 = src.getCertificateBase64();
+            notEncryptPassword = src.isNotEncryptedPassword();
             repositoryPin = src.getRepositoryPin();
             providerID = src.getProviderID();
             verifyServerCertificate = src.getVerifyServerCertificate();
@@ -134,6 +138,17 @@ public abstract class AbstractAttachProperties<T extends IAttachProperties<T>> i
     @Override
     public void setPassword(String password) {
         this.password = password;
+        dirtied();
+    }
+
+    @Override
+    public String getPasswordEnc() {
+        return passwordEnc;
+    }
+
+    @Override
+    public void setPasswordEnc(String passwordEnc) {
+        this.passwordEnc = passwordEnc;
         dirtied();
     }
 
@@ -247,6 +262,18 @@ public abstract class AbstractAttachProperties<T extends IAttachProperties<T>> i
         this.certificateBase64 = certificateBase64;
         dirtied();
     }
+
+    @Override
+    public boolean isNotEncryptedPassword() {
+        return notEncryptPassword;
+    }
+
+    @Override
+    public void setNotEncryptedPassword(final boolean notEncryptPassword) {
+        this.notEncryptPassword = notEncryptPassword;
+        dirtied();
+    }
+
 
     @Override
     public String getRepositoryPin() {

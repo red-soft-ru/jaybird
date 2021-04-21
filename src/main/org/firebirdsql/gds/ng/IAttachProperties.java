@@ -114,6 +114,17 @@ public interface IAttachProperties<T extends IAttachProperties> {
     void setPassword(String password);
 
     /**
+     * @return Encrypted password to authenticate to the server.
+     */
+    String getPasswordEnc();
+
+    /**
+     * @param passwordEnc
+     *         Encrypted password to authenticate to the server.
+     */
+    void setPasswordEnc(String passwordEnc);
+
+    /**
      * @return SQL role to use.
      */
     String getRoleName();
@@ -379,6 +390,17 @@ public interface IAttachProperties<T extends IAttachProperties> {
      *         Set the certificate body in base64 format.
      */
     void setCertificateBase64(String certificateBase64);
+
+    /**
+     * @return Encrypt legacy password or not.
+     */
+    boolean isNotEncryptedPassword();
+
+    /**
+     * @param notEncryptPassword
+     *         Indicates legacy password should not be encrypted.
+     */
+    void setNotEncryptedPassword(final boolean notEncryptPassword);
 
     /**
      * @return Pin-code for the cryptopro container.
