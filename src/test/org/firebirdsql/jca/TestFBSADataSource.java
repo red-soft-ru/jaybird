@@ -1,17 +1,20 @@
 package org.firebirdsql.jca;
 
 import org.firebirdsql.gds.TransactionParameterBuffer;
+import org.firebirdsql.gds.impl.GDSType;
 import org.firebirdsql.jdbc.FBConnection;
+import org.firebirdsql.management.FBStatisticsManager;
 import org.junit.Test;
 
+import java.io.ByteArrayOutputStream;
+import java.io.OutputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
 import static org.firebirdsql.common.DdlHelper.executeCreateTable;
-import static org.firebirdsql.common.FBTestProperties.DB_DATASOURCE_URL;
-import static org.firebirdsql.common.FBTestProperties.getConnectionViaDriverManager;
+import static org.firebirdsql.common.FBTestProperties.*;
 import static org.junit.Assert.assertEquals;
 
 public class TestFBSADataSource extends TestXABase {
@@ -168,5 +171,25 @@ public class TestFBSADataSource extends TestXABase {
         } finally {
             dataSource.close();
         }
+    }
+
+    @Test
+    public void testEncryptedPasswordService() throws Exception {
+        OutputStream loggingStream = new ByteArrayOutputStream();
+        FBStatisticsManager statManager = new FBStatisticsManager(getGdsType());
+        if (getGdsType() == GDSType.getType("PURE_JAVA") || getGdsType() == GDSType.getType("NATIVE")) {
+            statManager.setServer(DB_SERVER_URL);
+            statManager.setPort(DB_SERVER_PORT);
+        }
+        statManager.setUserName("SYSDBA");
+        statManager.setNonStandardProperty("isc_dpb_password_enc", "QP3LMZ/MJh.");
+//        statManager.setNonStandardProperty("isc_dpb_password", "masterkey");
+        statManager.setDatabase(getDatabasePath());
+        statManager.setLogger(loggingStream);
+
+        statManager.getHeaderPage();
+        String headerPage = loggingStream.toString();
+        System.out.println(headerPage);
+
     }
 }

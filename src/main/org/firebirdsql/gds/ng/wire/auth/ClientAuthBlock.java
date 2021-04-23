@@ -83,6 +83,9 @@ public final class ClientAuthBlock {
     public String getPasswordEnc() {
         if (attachProperties.getExtraDatabaseParameters().hasArgument(ISCConstants.isc_dpb_password_enc))
             return attachProperties.getExtraDatabaseParameters().getArgumentAsString(ISCConstants.isc_dpb_password_enc);
+        if (attachProperties.getNonStandardProperty("isc_spb_password_enc") != null ||
+                attachProperties.getNonStandardProperty("password_enc") != null)
+            return attachProperties.getNonStandardProperty("password_enc");
         return null;
     }
 
