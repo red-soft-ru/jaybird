@@ -24,8 +24,8 @@ Support for multifactor authentication is implemented using the cryptographic pr
 
 ## Resources
 
-- [Downloads](http://www.firebirdsql.org/en/jdbc-driver/)
-- [Issue tracker](http://tracker.firebirdsql.org/browse/JDBC)
+- [Downloads](https://www.firebirdsql.org/en/jdbc-driver/)
+- [Issue tracker](https://github.com/FirebirdSQL/jaybird/issues/)
 - [Wiki](https://github.com/FirebirdSQL/jaybird/wiki)
 - [FAQ](src/documentation/faq.md)
 - [Release notes](src/documentation/release_notes.md)
