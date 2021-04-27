@@ -172,6 +172,7 @@ public class FBManagedConnection implements ManagedConnection, XAResource, Excep
         this.tpb = new FBTpb(mc.tpb);
         this.transactionIsolation = mc.transactionIsolation;
         this.database = mc.database;
+        this.database.addExceptionListener(this);
         this.syncObject = mc.syncObject;
 
         this.gdsHelper = new GDSHelper(database);
@@ -184,6 +185,9 @@ public class FBManagedConnection implements ManagedConnection, XAResource, Excep
     @Override
     public void errorOccurred(Object source, SQLException ex) {
         log.trace(ex.getMessage());
+
+        if (ex.getErrorCode() == ISCConstants.isc_att_shutdown)
+            xidMap.clear();
 
         if (!FatalGDSErrorHelper.isFatal(ex))
             return;
