@@ -31,18 +31,6 @@ INSTALLDIR=/opt/RedDatabase
 SOURCES=$(readlink -f $(dirname $0)/..)
 OS=linux
 
-if [[ "${RDB_VERSION:0:1}" -eq "4" ]]; then
-  RDB_MAJOR_VERSION="4"
-  REPORT_PREFIX=${REPORT_PREFIX:=rdb4_}
-elif [[ "${RDB_VERSION:0:1}" -eq "3" ]]; then
-  RDB_MAJOR_VERSION="3"
-  REPORT_PREFIX=${REPORT_PREFIX:=rdb3_}
-elif [[ "${RDB_VERSION:0:1}" -eq "2" ]]; then
-  RDB_MAJOR_VERSION="2"
-  REPORT_PREFIX=${REPORT_PREFIX:=rdb2_6_}
-else
-  die "Do not know how to test RDB ${RDB_VERSION}"
-fi
 TEST_DIR=/tmp/jaybird_test
 TMPFS=/tmpfs
 export FIREBIRD="$INSTALLDIR"

@@ -78,88 +78,68 @@ prepare:release:
     - export CONTEXT=`cat .ci/context`
     - apt update -y && apt install maven -y
 
-.build_and_test_template: &build_and_test_template
+build_and_test:
   tags:
     - docker
     - tester
   stage: build_and_test
+  variables:
+    JAVA_HOME: /usr/java11
+  image:
+    name: registry.red-soft.biz:5000/docker-images/rdbbuildenv:rdb4-3
   before_script:
     - |
-        cat << EOF > /etc/yum.repos.d/bellsoft.repo
-        [BellSoft]
-        name=BellSoft Repository
-        baseurl=https://yum.bell-sw.com
-        enabled=1
-        gpgcheck=1
-        gpgkey=https://download.bell-sw.com/pki/GPG-KEY-bellsoft
-        priority=1
-        EOF
+      if [[ "${RDB_VERSION:0:1}" -eq "4" ]]; then
+        export RDB_MAJOR_VERSION="4"
+        export REPORT_PREFIX=${REPORT_PREFIX:=rdb4_}
+      elif [[ "${RDB_VERSION:0:1}" -eq "3" ]]; then
+        export RDB_MAJOR_VERSION="3"
+        export REPORT_PREFIX=${REPORT_PREFIX:=rdb3_}
+        export EXTRA_DEPENDENCIES="$EXTRA_DEPENDENCIES icu" # Remove icu library dependency after 3.0.7 release
+      elif [[ "${RDB_VERSION:0:1}" -eq "2" ]]; then
+        export RDB_MAJOR_VERSION="2"
+        export REPORT_PREFIX=${REPORT_PREFIX:=rdb2_6_}
+        export EXTRA_DEPENDENCIES="$EXTRA_DEPENDENCIES icu xinetd"
+        export TEST_LIST="${TEST_LIST},!**/nativeoo/**"
+      else
+        die "Do not know how to test RDB ${RDB_VERSION}"
+      fi
+    - |
+      cat << EOF > /etc/yum.repos.d/bellsoft.repo
+      [BellSoft]
+      name=BellSoft Repository
+      baseurl=https://yum.bell-sw.com
+      enabled=1
+      gpgcheck=1
+      gpgkey=https://download.bell-sw.com/pki/GPG-KEY-bellsoft
+      priority=1
+      EOF
     - echo proxy=$http_proxy >> /etc/yum.conf
-    - yum install -y maven krb5-server krb5-workstation expect $EXTRA_DEPENDENCIES
+    - yum install -y maven krb5-server krb5-workstation expect java-11-openjdk $EXTRA_DEPENDENCIES
     - /opt/cprocsp/sbin/amd64/cpconfig -license -set $LICENSE_CRYPTOPRO4
     - ./ci/configure_kerberos.sh
     - export VERSION=`cat .ci/version`
     - ln -s `update-alternatives --display jre_11_openjdk | sed -n '2p;3q' | awk -F\" '{split($1, v, " ");printf("%s", v[5])}'` /usr/java11
   script:
     - ./ci/test.sh
-
-build_and_test:jdk11:rdb4:
-  <<: *build_and_test_template
-  variables:
-    JAVA_HOME: /usr/java11
-    TEST_JAVA_JVM: /usr/java11/bin/java
-    TEST_LIST: "**"
-    RDB_VERSION: $RDB4_VERSION
-    EXTRA_DEPENDENCIES: java-11-openjdk
-  image:
-    name: registry.red-soft.biz:5000/docker-images/rdbbuildenv:rdb4-3
-
-build_and_test:jdk11:rdb4_native_only:
-  <<: *build_and_test_template
-  variables:
-    JAVA_HOME: /usr/java11
-    TEST_JAVA_JVM: /usr/java11/bin/java
-    TEST_LIST: "**/nativeoo/**,**/jni/**,**/jna/**,**/jna/**"
-    RDB_VERSION: $RDB4_VERSION
-    EXTRA_DEPENDENCIES: java-11-openjdk
-    REPORT_PREFIX: rdb4_jdk11_native_
-  image:
-    name: registry.red-soft.biz:5000/docker-images/rdbbuildenv:rdb4-3
-
-build_and_test:jdk11:rdb3:
-  <<: *build_and_test_template
-  variables:
-    JAVA_HOME: /usr/java11
-    RDB_VERSION: $RDB3_VERSION
-    TEST_JAVA8_JVM: /usr/java11/bin/java
-    TEST_LIST: "**"
-    EXTRA_DEPENDENCIES: icu java-11-openjdk
-  image:
-    name: registry.red-soft.biz:5000/docker-images/rdbbuildenv:rdb4-3
-
-build_and_test:liberica_jdk11:rdb3:
-  <<: *build_and_test_template
-  variables:
-    JAVA_HOME: /usr/java11
-    RDB_VERSION: $RDB3_VERSION
-    TEST_JAVA_JVM: /usr/lib/jvm/bellsoft-java11-runtime.x86_64/bin/java
-    JDK_VER: 11-runtime
-    TEST_LIST: "**"
-    EXTRA_DEPENDENCIES: java-11-openjdk icu bellsoft-java11-runtime
-    REPORT_PREFIX: liberica_jdk11_
-  image:
-    name: registry.red-soft.biz:5000/docker-images/rdbbuildenv:rdb4-3
-
-build_and_test:jdk11:rdb2_6:
-  <<: *build_and_test_template
-  variables:
-    JAVA_HOME: /usr/java11
-    RDB_VERSION: $RDB2_VERSION
-    TEST_JAVA_JVM: /usr/java11/bin/java
-    TEST_LIST: "**,!**/nativeoo/**"
-    EXTRA_DEPENDENCIES: java-11-openjdk icu xinetd
-  image:
-    name: registry.red-soft.biz:5000/docker-images/rdbbuildenv:rdb4-3
+  parallel:
+    matrix:
+      - TYPE: JDK11
+        TEST_JAVA_JVM: /usr/java11/bin/java
+        TEST_LIST: "**"
+        RDB_VERSION: [ $RDB2_VERSION, $RDB3_VERSION, $RDB4_VERSION ]
+      - TYPE: JDK11_rdb4_native_only
+        TEST_JAVA_JVM: /usr/java11/bin/java
+        TEST_LIST: "**/nativeoo/**,**/jni/**,**/jna/**,**/jna/**"
+        REPORT_PREFIX: rdb4_jdk11_native_
+        RDB_VERSION: $RDB4_VERSION
+      - TYPE: JDK11_rdb3_liberica_11
+        TEST_JAVA_JVM: /usr/lib/jvm/bellsoft-java11-runtime.x86_64/bin/java
+        JDK_VER: 11-runtime
+        TEST_LIST: "**"
+        EXTRA_DEPENDENCIES: bellsoft-java11-runtime
+        REPORT_PREFIX: liberica_jdk11_
+        RDB_VERSION: $RDB3_VERSION
 
 deploy:internal:
   <<: *deploy_template
