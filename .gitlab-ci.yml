@@ -16,7 +16,7 @@ variables:
   MAVEN_OPTS: "-Dmaven.repo.local=.m2/repository"
   RDB2_VERSION: "2.6.0.13508"
   RDB3_VERSION: "3.0.5.354"
-  RDB4_VERSION: "4.0.0.2666"
+  RDB4_VERSION: "4.0.0.2688"
   http_proxy: http://git.red-soft.biz:3128
   https_proxy: http://git.red-soft.biz:3128
   no_proxy: localhost,172.0.0.0/8,127.0.0.0/8,.red-soft.biz
@@ -76,22 +76,50 @@ prepare:release:
     - export CONTEXT=`cat .ci/context`
     - apk --update add maven
 
-.build_and_test_template: &build_and_test_template
+build_and_test:
   tags:
     - docker
     - tester
   stage: build_and_test
+  image:
+    name: registry.red-soft.biz:5000/docker-images/rdbbuildenv:rdb4-3
   before_script:
     - |
-        cat << EOF > /etc/yum.repos.d/bellsoft.repo
-        [BellSoft]
-        name=BellSoft Repository
-        baseurl=https://yum.bell-sw.com
-        enabled=1
-        gpgcheck=1
-        gpgkey=https://download.bell-sw.com/pki/GPG-KEY-bellsoft
-        priority=1
-        EOF
+      if [[ "${RDB_VERSION:0:1}" -eq "4" ]]; then
+        export RDB_MAJOR_VERSION="4"
+        export REPORT_PREFIX=${TYPE}_RDB4_
+      elif [[ "${RDB_VERSION:0:1}" -eq "3" ]]; then
+        export RDB_MAJOR_VERSION="3"
+        export REPORT_PREFIX=${TYPE}_RDB3_
+        if [[ "${TEST_JAVA8_JVM}" == *"bellsoft-java8"* ]]; then
+          export REPORT_PREFIX=${TYPE}_8_RDB3_
+        elif [[ "${TEST_JAVA8_JVM}" == *"bellsoft-java11"* ]]; then
+          export REPORT_PREFIX=${TYPE}_11_RDB3_
+        fi
+        export EXTRA_DEPENDENCIES="$EXTRA_DEPENDENCIES icu" # Remove icu library dependency after 3.0.7 release
+      elif [[ "${RDB_VERSION:0:1}" -eq "2" ]]; then
+        export RDB_MAJOR_VERSION="2"
+        export REPORT_PREFIX=${TYPE}_RDB2_6_
+        export EXTRA_DEPENDENCIES="$EXTRA_DEPENDENCIES icu xinetd"
+        export TEST_LIST="${TEST_LIST},!**/nativeoo/**"
+      elif [[ "${RDB_VERSION:0:7}" == "FB3.0.7" ]]; then
+        export RDB_MAJOR_VERSION="FB3.0.7"
+        export INSTALLDIR=/opt/firebird
+        export REPORT_PREFIX=${TYPE}_${RDB_MAJOR_VERSION}_
+        export EXTRA_DEPENDENCIES="$EXTRA_DEPENDENCIES icu xinetd libtommath"
+      else
+        die "Do not know how to test RDB ${RDB_VERSION}"
+      fi
+    - |
+      cat << EOF > /etc/yum.repos.d/bellsoft.repo
+      [BellSoft]
+      name=BellSoft Repository
+      baseurl=https://yum.bell-sw.com
+      enabled=1
+      gpgcheck=1
+      gpgkey=https://download.bell-sw.com/pki/GPG-KEY-bellsoft
+      priority=1
+      EOF
     - echo proxy=$http_proxy >> /etc/yum.conf
     - yum install -y oracle-epel-release-el7
     - yum install -y maven krb5-server krb5-workstation expect $EXTRA_DEPENDENCIES
@@ -101,94 +129,36 @@ prepare:release:
     - ln -s `update-alternatives --display jre_11_openjdk | sed -n '2p;3q' | awk -F\" '{split($1, v, " ");printf("%s", v[5])}'` /usr/java11
   script:
     - ./ci/test.sh
-
-build_and_test:jdk18:rdb4:
-  <<: *build_and_test_template
-  variables:
-    JAVA_HOME: /usr/lib/jvm/jre-1.8.0
-    TEST_JAVA8_JVM: /usr/lib/jvm/jre-1.8.0/bin/java
-    SKIP_JAVA7_TEST: "true"
-    TEST_LIST: "**"
-    RDB_VERSION: $RDB4_VERSION
-  image:
-    name: registry.red-soft.biz:5000/docker-images/rdbbuildenv:rdb4-3
-
-build_and_test:jdk18:rdb3:
-  <<: *build_and_test_template
-  variables:
-    JAVA_HOME: /usr/lib/jvm/jre-1.8.0
-    RDB_VERSION: $RDB3_VERSION
-    SKIP_JAVA7_TEST: "false"
-    TEST_JAVA8_JVM: /usr/lib/jvm/jre-1.8.0/bin/java
-    TEST_JAVA7_JVM: /usr/lib/jvm/jre-1.7.0/bin/java
-    EXTRA_DEPENDENCIES: icu java-1.7.0-openjdk-headless
-  image:
-    name: registry.red-soft.biz:5000/docker-images/rdbbuildenv:rdb4-3
-
-build_and_test:jdk11:rdb3:
-  <<: *build_and_test_template
-  variables:
-    JAVA_HOME: /usr/lib/jvm/jre-1.8.0
-    RDB_VERSION: $RDB3_VERSION
-    SKIP_JAVA7_TEST: "true"
-    TEST_JAVA8_JVM: /usr/java11/bin/java
-    TEST_LIST: "**"
-    EXTRA_DEPENDENCIES: icu java-11-openjdk
-    REPORT_PREFIX: jdk11_
-  image:
-    name: registry.red-soft.biz:5000/docker-images/rdbbuildenv:rdb4-3
-
-build_and_test:liberica_jdk8:rdb3:
-  <<: *build_and_test_template
-  variables:
-    JAVA_HOME: /usr/lib/jvm/jre-1.8.0
-    RDB_VERSION: $RDB3_VERSION
-    SKIP_JAVA7_TEST: "true"
-    TEST_JAVA8_JVM: /usr/lib/jvm/bellsoft-java8-runtime.x86_64/bin/java
-    JDK_VER: 8-runtime
-    TEST_LIST: "**"
-    EXTRA_DEPENDENCIES: icu bellsoft-java8-runtime
-    REPORT_PREFIX: liberica_jdk8_
-  image:
-    name: registry.red-soft.biz:5000/docker-images/rdbbuildenv:rdb4-3
-
-build_and_test:liberica_jdk11:rdb3:
-  <<: *build_and_test_template
-  variables:
-    JAVA_HOME: /usr/lib/jvm/jre-1.8.0
-    RDB_VERSION: $RDB3_VERSION
-    SKIP_JAVA7_TEST: "true"
-    TEST_JAVA8_JVM: /usr/lib/jvm/bellsoft-java11-runtime.x86_64/bin/java
-    JDK_VER: 11-runtime
-    TEST_LIST: "**"
-    EXTRA_DEPENDENCIES: icu bellsoft-java11-runtime
-    REPORT_PREFIX: liberica_jdk11_
-  image:
-    name: registry.red-soft.biz:5000/docker-images/rdbbuildenv:rdb4-3
-
-build_and_test:jdk18:rdb2_6:
-  <<: *build_and_test_template
-  variables:
-    JAVA_HOME: /usr/lib/jvm/jre-1.8.0
-    RDB_VERSION: $RDB2_VERSION
-    SKIP_JAVA7_TEST: "true"
-    TEST_JAVA8_JVM: /usr/lib/jvm/jre-1.8.0/bin/java
-    TEST_LIST: "**,!**/nativeoo/**"
-    EXTRA_DEPENDENCIES: icu xinetd
-  image:
-    name: registry.red-soft.biz:5000/docker-images/rdbbuildenv:rdb4-3
-
-build_and_test:jdk18:fb3:
-  <<: *build_and_test_template
-  variables:
-    JAVA_HOME: /usr/lib/jvm/jre-1.8.0
-    RDB_VERSION: FB3.0.7
-    SKIP_JAVA7_TEST: "true"
-    TEST_JAVA8_JVM: /usr/lib/jvm/jre-1.8.0/bin/java
-    TEST_LIST: "**"
-    EXTRA_DEPENDENCIES: icu xinetd libtommath
-  image:
-    name: registry.red-soft.biz:5000/docker-images/rdbbuildenv:rdb4-3
+  parallel:
+    matrix:
+      - TYPE: JDK8
+        JAVA_HOME: /usr/lib/jvm/jre-1.8.0
+        TEST_JAVA8_JVM: /usr/lib/jvm/jre-1.8.0/bin/java
+        TEST_LIST: "**"
+        SKIP_JAVA7_TEST: "true"
+        RDB_VERSION: [ $RDB2_VERSION, $RDB4_VERSION, "FB3.0.7" ]
+      - TYPE: JDK8
+        JAVA_HOME: /usr/lib/jvm/jre-1.8.0
+        TEST_LIST: "**"
+        SKIP_JAVA7_TEST: "false"
+        TEST_JAVA8_JVM: /usr/lib/jvm/jre-1.8.0/bin/java
+        TEST_JAVA7_JVM: /usr/lib/jvm/jre-1.7.0/bin/java
+        EXTRA_DEPENDENCIES: java-1.7.0-openjdk-headless
+        RDB_VERSION: $RDB3_VERSION
+      - TYPE: JDK11
+        JAVA_HOME: /usr/lib/jvm/jre-1.8.0
+        TEST_LIST: "**"
+        SKIP_JAVA7_TEST: "true"
+        TEST_JAVA8_JVM: /usr/java11/bin/java
+        EXTRA_DEPENDENCIES: java-11-openjdk
+        RDB_VERSION: $RDB3_VERSION
+      - TYPE: Liberica
+        JAVA_HOME: /usr/lib/jvm/jre-1.8.0
+        TEST_LIST: "**"
+        SKIP_JAVA7_TEST: "true"
+        TEST_JAVA8_JVM: [ "/usr/lib/jvm/bellsoft-java8-runtime.x86_64/bin/java", "/usr/lib/jvm/bellsoft-java11-runtime.x86_64/bin/java" ]
+        EXTRA_DEPENDENCIES: bellsoft-java8-runtime bellsoft-java11-runtime
+        RDB_VERSION: $RDB3_VERSION
 
 deploy:internal:
   <<: *deploy_template
