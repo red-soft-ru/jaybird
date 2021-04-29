@@ -27,26 +27,12 @@ check_variable VERSION
 
 JAVA="${JAVA_HOME}/bin/java"
 JDK_VERSION=`$JAVA -version 2>&1|head -n 1|awk -F\" '{split($2, v, ".");printf("%s%s", v[1], v[2])}'`
-INSTALLDIR=/opt/RedDatabase
+if [[ -z "${INSTALLDIR}" ]]; then
+  INSTALLDIR=/opt/RedDatabase
+fi
 SOURCES=$(readlink -f $(dirname $0)/..)
 OS=linux
 
-if [[ "${RDB_VERSION:0:1}" -eq "4" ]]; then
-  RDB_MAJOR_VERSION="4"
-  REPORT_PREFIX=${REPORT_PREFIX:=rdb4_}
-elif [[ "${RDB_VERSION:0:1}" -eq "3" ]]; then
-  RDB_MAJOR_VERSION="3"
-  REPORT_PREFIX=${REPORT_PREFIX:=rdb3_}
-elif [[ "${RDB_VERSION:0:1}" -eq "2" ]]; then
-  RDB_MAJOR_VERSION="2"
-  REPORT_PREFIX=${REPORT_PREFIX:=rdb2_6_}
-elif [[ "${RDB_VERSION:0:7}" == "FB3.0.7" ]]; then
-  RDB_MAJOR_VERSION="FB3.0.7"
-  INSTALLDIR=/opt/firebird
-  REPORT_PREFIX=${REPORT_PREFIX:=fb3_}
-else
-  die "Do not know how to test RDB ${RDB_VERSION}"
-fi
 TEST_DIR=/tmp/jaybird_test
 TMPFS=/tmpfs
 export FIREBIRD="$INSTALLDIR"
