@@ -159,7 +159,7 @@ public final class ClientAuthBlock {
         pluginProviders = getSupportedPluginProviders();
 
         if (!serverPlugins.isEmpty()) {
-            LinkedList<AuthenticationPluginSpi> mergedProviderList = new LinkedList<>();
+            List<AuthenticationPluginSpi> mergedProviderList = new ArrayList<>();
             for (AuthenticationPluginSpi clientProvider : pluginProviders) {
                 if (serverPlugins.contains(clientProvider.getPluginName())) {
                     mergedProviderList.add(clientProvider);
