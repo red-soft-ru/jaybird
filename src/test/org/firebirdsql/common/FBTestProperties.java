@@ -234,6 +234,8 @@ public final class FBTestProperties {
         }
         fbManager.start();
         fbManager.setForceCreate(true);
+        // disable force write for minor increase in test throughput
+        fbManager.setForceWrite(false);
         fbManager.createDatabase(getDatabasePath(), DB_USER, DB_PASSWORD);
     }
 
