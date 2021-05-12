@@ -58,27 +58,32 @@ if [ "$ARCH" == "x86" ]; then
 	CPROCSP_ARCH=ia32
 fi
 
-useradd firebird
+echo "Creating request and getting certificate for testing"
 
-KEYS_DIR=/var/opt/cprocsp/keys
-mkdir -p $KEYS_DIR/root
-chmod 700 $KEYS_DIR/root
-cp fbt-repository/files/cert/REDSOFT.000/ $KEYS_DIR/root -rfv
-chmod 700 $KEYS_DIR/root/REDSOFT.000
+echo "Copying gamma to use CPSD random number generator"
 
-/opt/cprocsp/bin/$CPROCSP_ARCH/certmgr -inst -cont '\\.\HDIMAGE\REDSOFT'
-/opt/cprocsp/bin/$CPROCSP_ARCH/csptest -passwd -cont '\\.\HDIMAGE\REDSOFT' -change 12345678
+cp fbt-repository/files/cert/cpsd_gamma/db1/kis_1 /var/opt/cprocsp/dsrf/db1/kis_1
+cp fbt-repository/files/cert/cpsd_gamma/db2/kis_1 /var/opt/cprocsp/dsrf/db2/kis_1
 
-mkdir -p $KEYS_DIR/firebird
-chmod 700 $KEYS_DIR/firebird
-cp fbt-repository/files/cert/REDSOFT.000/ $KEYS_DIR/firebird -rfv
-chmod 700 $KEYS_DIR/firebird/REDSOFT.000
-chown firebird:firebird -R $KEYS_DIR/firebird
+echo "Configure CPSD"
 
-su - firebird -c "/opt/cprocsp/bin/$CPROCSP_ARCH/certmgr -inst -cont '\\\.\HDIMAGE\REDSOFT'"
-su - firebird -c "/opt/cprocsp/bin/$CPROCSP_ARCH/csptest -passwd -cont '\\\.\HDIMAGE\REDSOFT' -change 12345678"
+/opt/cprocsp/sbin/amd64/cpconfig -hardware rndm -del BIO_TUI
+/opt/cprocsp/sbin/amd64/cpconfig -hardware rndm -configure cpsd -add string fbt-repository/files/cert/cpsd_gamma/db1/kis_1 /var/opt/cprocsp/dsrf/db1/kis_1
+/opt/cprocsp/sbin/amd64/cpconfig -hardware rndm -configure cpsd -add string fbt-repository/files/cert/cpsd_gamma/db2/kis_1 /var/opt/cprocsp/dsrf/db2/kis_1
 
-cp fbt-repository/files/cert/REDSOFT.cer /tmp/testuser.cer
+echo "Creating certificate"
+
+echo o | /opt/cprocsp/bin/amd64/cryptcp -creatcert -provtype 80 -ex -provname 'Crypto-Pro GOST R 34.10-2012 KC1 CSP' -dn 'CN="Test Test Test", INN=532117570513, SNILS=15278361414, E=test@red-soft.ru, O="RS"' -cont '\\.\HDIMAGE\TESTA' -certusage 1.3.6.1.5.5.7.3.2,1.3.6.1.5.5.7.3.4,1.2.643.100.113.1,1.2.643.100.2.1 -pin 12345678
+
+echo "Getting serial number of certificate"
+
+CERT_SERIAL=`/opt/cprocsp/bin/amd64/certmgr -list | grep Serial | awk -F\0x '{print $2}'`
+
+echo "Exporting certificate to BASE64 file"
+
+/opt/cprocsp/bin/amd64/certmgr -export -base64 -dest /tmp/testuser.cer
+sed -i '1i-----BEGIN CERTIFICATE-----' /tmp/testuser.cer
+echo '-----END CERTIFICATE-----' >> /tmp/testuser.cer
 
 echo Will use build $RDB_VERSION for testing
 
@@ -129,9 +134,9 @@ if [[ "$RDB_MAJOR_VERSION" == "4" ]]; then
 
   sed -i 's/#VerifyCertificateChain = 1/VerifyCertificateChain = 0/g' "${INSTALLDIR}"/firebird.conf
   sed -i 's/#CertUsernameDN = CN/CertUsernameDN = E/g' "${INSTALLDIR}"/firebird.conf
-  sed -i 's/#ServerCertificate =/ServerCertificate = %D0%A2%D0%B5%D1%81%D1%82%20%D0%A2%D0%B5%D1%81%D1%82%20%D0%A2%D0%B5%D1%81%D1%82,%D0%A4%D0%B5%D0%B4%D0%B5%D1%80%D0%B0%D0%BB%D1%8C%D0%BD%D0%B0%D1%8F%20%D1%81%D0%BB%D1%83%D0%B6%D0%B1%D0%B0%20%D1%81%D1%83%D0%B4%D0%B5%D0%B1%D0%BD%D1%8B%D1%85%20%D0%BF%D1%80%D0%B8%D1%81%D1%82%D0%B0%D0%B2%D0%BE%D0%B2,1085DA7AC40CE4ABE91189EE414A7114/g' "${INSTALLDIR}"/firebird.conf
+  sed -i 's/#ServerCertificate =/ServerCertificate = Test Test Test,CRYPTO-PRO Test Center 2,'"$CERT_SERIAL"'/g' "${INSTALLDIR}"/firebird.conf
   sed -i 's/#ServerPrivatePin =/ServerPrivatePin = 12345678/g' "${INSTALLDIR}"/firebird.conf
-  sed -i 's/#TrustedCertificate =/TrustedCertificate = %D0%A2%D0%B5%D1%81%D1%82%20%D0%A2%D0%B5%D1%81%D1%82%20%D0%A2%D0%B5%D1%81%D1%82,%D0%A4%D0%B5%D0%B4%D0%B5%D1%80%D0%B0%D0%BB%D1%8C%D0%BD%D0%B0%D1%8F%20%D1%81%D0%BB%D1%83%D0%B6%D0%B1%D0%B0%20%D1%81%D1%83%D0%B4%D0%B5%D0%B1%D0%BD%D1%8B%D1%85%20%D0%BF%D1%80%D0%B8%D1%81%D1%82%D0%B0%D0%B2%D0%BE%D0%B2,1085DA7AC40CE4ABE91189EE414A7114/g' "${INSTALLDIR}"/firebird.conf
+  sed -i 's/#TrustedCertificate =/TrustedCertificate = Test Test Test,CRYPTO-PRO Test Center 2,'"$CERT_SERIAL"'/g' "${INSTALLDIR}"/firebird.conf
   sed -i 's/#TrustedUser =/TrustedUser = trusted_user/g' "${INSTALLDIR}"/firebird.conf
 
 "${INSTALLDIR}"/bin/isql -user SYSDBA -password masterkey "${INSTALLDIR}"/security4.fdb -i "${SOURCES}"/ci/user4.sql
@@ -150,9 +155,9 @@ elif [[ "$RDB_MAJOR_VERSION" == "3" ]]; then
 
   sed -i 's/#CertVerifyChain = 1/CertVerifyChain = 0/g' "${INSTALLDIR}"/firebird.conf
   sed -i 's/#CertUsernameDN = CN/CertUsernameDN = E/g' "${INSTALLDIR}"/firebird.conf
-  sed -i 's/#ServerCertificate =/ServerCertificate = %D0%A2%D0%B5%D1%81%D1%82%20%D0%A2%D0%B5%D1%81%D1%82%20%D0%A2%D0%B5%D1%81%D1%82,%D0%A4%D0%B5%D0%B4%D0%B5%D1%80%D0%B0%D0%BB%D1%8C%D0%BD%D0%B0%D1%8F%20%D1%81%D0%BB%D1%83%D0%B6%D0%B1%D0%B0%20%D1%81%D1%83%D0%B4%D0%B5%D0%B1%D0%BD%D1%8B%D1%85%20%D0%BF%D1%80%D0%B8%D1%81%D1%82%D0%B0%D0%B2%D0%BE%D0%B2,1085DA7AC40CE4ABE91189EE414A7114/g' "${INSTALLDIR}"/firebird.conf
+  sed -i 's/#ServerCertificate =/ServerCertificate = Test Test Test,CRYPTO-PRO Test Center 2,'"$CERT_SERIAL"'/g' "${INSTALLDIR}"/firebird.conf
   sed -i 's/#ServerPrivatePin =/ServerPrivatePin = 12345678/g' "${INSTALLDIR}"/firebird.conf
-  sed -i 's/#TrustedCertificate =/TrustedCertificate = %D0%A2%D0%B5%D1%81%D1%82%20%D0%A2%D0%B5%D1%81%D1%82%20%D0%A2%D0%B5%D1%81%D1%82,%D0%A4%D0%B5%D0%B4%D0%B5%D1%80%D0%B0%D0%BB%D1%8C%D0%BD%D0%B0%D1%8F%20%D1%81%D0%BB%D1%83%D0%B6%D0%B1%D0%B0%20%D1%81%D1%83%D0%B4%D0%B5%D0%B1%D0%BD%D1%8B%D1%85%20%D0%BF%D1%80%D0%B8%D1%81%D1%82%D0%B0%D0%B2%D0%BE%D0%B2,1085DA7AC40CE4ABE91189EE414A7114/g' "${INSTALLDIR}"/firebird.conf
+  sed -i 's/#TrustedCertificate =/TrustedCertificate = Test Test Test,CRYPTO-PRO Test Center 2,'"$CERT_SERIAL"'/g' "${INSTALLDIR}"/firebird.conf
   sed -i 's/#TrustedUser =/TrustedUser = trusted_user/g' "${INSTALLDIR}"/firebird.conf
 
   sed -i 's/#TraceAuthentication = 0/TraceAuthentication = 1/g' "${INSTALLDIR}"/firebird.conf
@@ -169,9 +174,9 @@ elif [[ "$RDB_MAJOR_VERSION" == "FB3.0.7" ]]; then
 else
   sed -i 's/#VerifyCertChain = 1/VerifyCertChain = 0/g' "${INSTALLDIR}/firebird.conf"
   sed -i 's/#CertUsernameDN = CN/CertUsernameDN = E/g' "${INSTALLDIR}/firebird.conf"
-  sed -i 's/#ServerCertificate =/ServerCertificate = %D0%A2%D0%B5%D1%81%D1%82%20%D0%A2%D0%B5%D1%81%D1%82%20%D0%A2%D0%B5%D1%81%D1%82,%D0%A4%D0%B5%D0%B4%D0%B5%D1%80%D0%B0%D0%BB%D1%8C%D0%BD%D0%B0%D1%8F%20%D1%81%D0%BB%D1%83%D0%B6%D0%B1%D0%B0%20%D1%81%D1%83%D0%B4%D0%B5%D0%B1%D0%BD%D1%8B%D1%85%20%D0%BF%D1%80%D0%B8%D1%81%D1%82%D0%B0%D0%B2%D0%BE%D0%B2,1085DA7AC40CE4ABE91189EE414A7114/g' "${INSTALLDIR}/firebird.conf"
+  sed -i 's/#ServerCertificate =/ServerCertificate = Test Test Test,CRYPTO-PRO Test Center 2,'"$CERT_SERIAL"'/g' "${INSTALLDIR}"/firebird.conf
   sed -i 's/#PrivateKeyPin = /PrivateKeyPin = 12345678/g' "${INSTALLDIR}/firebird.conf"
-  sed -i 's/#TrustedCertificate =/TrustedCertificate = %D0%A2%D0%B5%D1%81%D1%82%20%D0%A2%D0%B5%D1%81%D1%82%20%D0%A2%D0%B5%D1%81%D1%82,%D0%A4%D0%B5%D0%B4%D0%B5%D1%80%D0%B0%D0%BB%D1%8C%D0%BD%D0%B0%D1%8F%20%D1%81%D0%BB%D1%83%D0%B6%D0%B1%D0%B0%20%D1%81%D1%83%D0%B4%D0%B5%D0%B1%D0%BD%D1%8B%D1%85%20%D0%BF%D1%80%D0%B8%D1%81%D1%82%D0%B0%D0%B2%D0%BE%D0%B2,1085DA7AC40CE4ABE91189EE414A7114/g' "${INSTALLDIR}/firebird.conf"
+  sed -i 's/#TrustedCertificate =/TrustedCertificate = Test Test Test,CRYPTO-PRO Test Center 2,'"$CERT_SERIAL"'/g' "${INSTALLDIR}"/firebird.conf
   sed -i 's/#TraceAuthentication = 0/TraceAuthentication = 1/g' "${INSTALLDIR}/firebird.conf"
 
   sed -i 's/#ProviderName = 75/ProviderName = 80/g' "${INSTALLDIR}"/firebird.conf
