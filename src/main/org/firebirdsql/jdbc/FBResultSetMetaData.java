@@ -344,7 +344,7 @@ public class FBResultSetMetaData extends AbstractFieldMetaData implements Firebi
         DEFAULT {
             @Override
             String getColumnName(FieldDescriptor fieldDescriptor) {
-                return fieldDescriptor.getOriginalName() != null
+                return fieldDescriptor.getOriginalName() != null && !fieldDescriptor.getOriginalName().isEmpty()
                         ? fieldDescriptor.getOriginalName()
                         : getColumnLabel(fieldDescriptor);
             }
