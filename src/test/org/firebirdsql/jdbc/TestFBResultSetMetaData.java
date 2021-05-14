@@ -309,4 +309,20 @@ public class TestFBResultSetMetaData extends FBJUnit4TestBase {
             assertEquals(15, rsmd.getPrecision(1));
         }
     }
+
+    @Test
+    public void returnEmptyColumnNameWithAlias() throws Exception {
+        try (Connection connection = getConnectionViaDriverManager()) {
+            connection.setAutoCommit(false);
+            Statement stmt = connection.createStatement();
+            ResultSet rs = stmt.executeQuery("select (select count(1) from rdb$database) as \"AName\" from rdb$database\n" +
+                    "union\n" +
+                    "select 'a' as \"AName\" from rdb$database");
+            ResultSetMetaData rsmd = rs.getMetaData();
+
+            connection.commit();
+
+            assertEquals("AName", rsmd.getColumnName(1));
+        }
+    }
 }
