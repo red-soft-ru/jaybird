@@ -19,6 +19,7 @@
 package org.firebirdsql.management;
 
 import org.firebirdsql.gds.ServiceRequestBuffer;
+import org.firebirdsql.gds.impl.DbAttachInfo;
 import org.firebirdsql.gds.impl.GDSType;
 import org.firebirdsql.gds.ng.FbService;
 
@@ -123,7 +124,7 @@ public abstract class FBBackupManagerBase extends FBServiceManager implements Ba
         try {
             final DbAttachInfo dbAttachInfo = DbAttachInfo.parseConnectString(database);
             if (!dbAttachInfo.isDefaultServer())
-                super.setServer(dbAttachInfo.getServer());
+                super.setHost(dbAttachInfo.getServer());
             if (!dbAttachInfo.isDefaultPort())
                 super.setPort(dbAttachInfo.getPort());
             super.setDatabase(dbAttachInfo.getFileName());
