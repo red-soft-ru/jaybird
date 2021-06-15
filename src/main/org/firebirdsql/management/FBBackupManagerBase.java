@@ -123,15 +123,12 @@ public abstract class FBBackupManagerBase extends FBServiceManager implements Ba
     public void setDatabase(String database) {
         try {
             final DbAttachInfo dbAttachInfo = DbAttachInfo.parseConnectString(database);
-            if (dbAttachInfo.getServer().length() > 1) {
+            if (!dbAttachInfo.isDefaultServer())
                 super.setServer(dbAttachInfo.getServer());
+            if (!dbAttachInfo.isDefaultPort())
                 super.setPort(dbAttachInfo.getPort());
-                super.setDatabase(dbAttachInfo.getFileName());
-                addRestorePath(dbAttachInfo.getFileName(), -1);
-            } else {
-                super.setDatabase(database);
-                addRestorePath(database, -1);
-            }
+            super.setDatabase(dbAttachInfo.getFileName());
+            addRestorePath(dbAttachInfo.getFileName(), -1);
         } catch (SQLException e) {
             super.setDatabase(database);
             addRestorePath(database, -1);

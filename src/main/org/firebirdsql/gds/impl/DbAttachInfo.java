@@ -31,6 +31,8 @@ public class DbAttachInfo {
     private String server = "localhost";
     private int port = 3050;
     private String fileName;
+    private boolean isDefaultServer = true;
+    private boolean isDefaultPort = true;
 
     private DbAttachInfo(String server, Integer port, String fileName, String originalConnectString)
             throws SQLException {
@@ -43,9 +45,11 @@ public class DbAttachInfo {
         }
         if (server != null) {
             this.server = server;
+            this.isDefaultServer = false;
         }
         if (port != null) {
             this.port = port;
+            this.isDefaultPort = false;
         }
         this.fileName = fileName;
     }
@@ -60,6 +64,14 @@ public class DbAttachInfo {
 
     public String getFileName() {
         return fileName;
+    }
+
+    public boolean isDefaultServer() {
+        return isDefaultServer;
+    }
+
+    public boolean isDefaultPort() {
+        return isDefaultPort;
     }
 
     public static DbAttachInfo parseConnectString(String connectString) throws SQLException {
