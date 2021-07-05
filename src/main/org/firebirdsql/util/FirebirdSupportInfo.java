@@ -569,6 +569,34 @@ public final class FirebirdSupportInfo {
     }
 
     /**
+     * @return {@code true} when this Firebird version supports NBackup backup with GUID
+     */
+    public boolean supportsNBackupWithGuid() {
+        return isVersionEqualOrAbove(4, 0);
+    }
+
+    /**
+     * @return {@code true} when this Firebird version supports NBackup in-place restore
+     */
+    public boolean supportsNBackupInPlaceRestore() {
+        return isVersionEqualOrAbove(4, 0);
+    }
+
+    /**
+     * @return {@code true} when this Firebird version supports NBackup fixup
+     */
+    public boolean supportsNBackupFixup() {
+        return isVersionEqualOrAbove(4, 0);
+    }
+
+    /**
+     * @return {@code true} when this Firebird version supports NBackup preserve sequence
+     */
+    public boolean supportsNBackupPreserveSequence() {
+        return isVersionEqualOrAbove(4, 0);
+    }
+
+    /**
      * @param serverVersion
      *         Server version
      * @return FirebirdVersionSupport instance

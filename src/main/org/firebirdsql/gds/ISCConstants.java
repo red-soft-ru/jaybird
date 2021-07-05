@@ -324,7 +324,10 @@ public interface ISCConstants {
     int isc_spb_nbk_level  = 5;
     int isc_spb_nbk_file   = 6;
     int isc_spb_nbk_direct = 7;
+    int isc_spb_nbk_guid   = 8;
     int isc_spb_nbk_no_triggers = 0x01;
+    int isc_spb_nbk_inplace     = 0x02;
+    int isc_spb_nbk_sequence    = 0x04;
 
     /*****************************
      * Service action items      *
@@ -358,6 +361,7 @@ public interface ISCConstants {
     // Firebird 3
     int isc_action_svc_display_user_adm = 29; // Displays user(s) from security database with admin info
     int isc_action_svc_validate         = 30; // Starts database online validation
+    int isc_action_svc_nfix             = 31; // Fixup database after file system copy
 
     /*****************************************
      * Parameters for isc_action_svc_trace   *
