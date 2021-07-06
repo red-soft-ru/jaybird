@@ -56,32 +56,77 @@ if [ "$ARCH" == "x86" ]; then
 	CPROCSP_ARCH=ia32
 fi
 
-echo "Creating request and getting certificate for testing"
+update_keys=false
 
-echo "Copying gamma to use CPSD random number generator"
+mcli alias set myminio ${MINIO_SERVER} ${MINIO_USER} ${MINIO_PASSWORD}
 
-cp fbt-repository/files/cert/cpsd_gamma/db1/kis_1 /var/opt/cprocsp/dsrf/db1/kis_1
-cp fbt-repository/files/cert/cpsd_gamma/db2/kis_1 /var/opt/cprocsp/dsrf/db2/kis_1
+ARCHIVE_PREFIX=cryptopro-keys
 
-echo "Configure CPSD"
+if [ "$(mcli ls myminio/ci-keys/timestamp)" ]; then
 
-/opt/cprocsp/sbin/amd64/cpconfig -hardware rndm -del BIO_TUI
-/opt/cprocsp/sbin/amd64/cpconfig -hardware rndm -configure cpsd -add string fbt-repository/files/cert/cpsd_gamma/db1/kis_1 /var/opt/cprocsp/dsrf/db1/kis_1
-/opt/cprocsp/sbin/amd64/cpconfig -hardware rndm -configure cpsd -add string fbt-repository/files/cert/cpsd_gamma/db2/kis_1 /var/opt/cprocsp/dsrf/db2/kis_1
+  keys_ts=$(mcli cat myminio/ci-keys/timestamp)
+  current_ts=$(date +%s)
 
-echo "Creating certificate"
+  if [[ $current_ts > $keys_ts ]]; then
+    update_keys=true
+  fi
+else
+  update_keys=true
+fi
 
-echo o | /opt/cprocsp/bin/amd64/cryptcp -creatcert -provtype 80 -ex -provname 'Crypto-Pro GOST R 34.10-2012 KC1 CSP' -dn 'CN="Test Test Test", INN=532117570513, SNILS=15278361414, E=test@red-soft.ru, O="RS"' -cont '\\.\HDIMAGE\TESTA' -certusage 1.3.6.1.5.5.7.3.2,1.3.6.1.5.5.7.3.4,1.2.643.100.113.1,1.2.643.100.2.1 -pin 12345678
+if [ $update_keys == true ]; then
 
-echo "Getting serial number of certificate"
+  echo "Creating request and getting certificate for testing"
 
-CERT_SERIAL=`/opt/cprocsp/bin/amd64/certmgr -list | grep Serial | awk -F\0x '{print $2}'`
+  echo "Copying gamma to use CPSD random number generator"
 
-echo "Exporting certificate to BASE64 file"
+  cp fbt-repository/files/cert/cpsd_gamma/db1/kis_1 /var/opt/cprocsp/dsrf/db1/kis_1
+  cp fbt-repository/files/cert/cpsd_gamma/db2/kis_1 /var/opt/cprocsp/dsrf/db2/kis_1
 
-/opt/cprocsp/bin/amd64/certmgr -export -base64 -dest /tmp/testuser.cer
-sed -i '1i-----BEGIN CERTIFICATE-----' /tmp/testuser.cer
-echo '-----END CERTIFICATE-----' >> /tmp/testuser.cer
+  echo "Configure CPSD"
+
+  /opt/cprocsp/sbin/$CPROCSP_ARCH/cpconfig -hardware rndm -del BIO_TUI
+  /opt/cprocsp/sbin/$CPROCSP_ARCH/cpconfig -hardware rndm -configure cpsd -add string fbt-repository/files/cert/cpsd_gamma/db1/kis_1 /var/opt/cprocsp/dsrf/db1/kis_1
+  /opt/cprocsp/sbin/$CPROCSP_ARCH/cpconfig -hardware rndm -configure cpsd -add string fbt-repository/files/cert/cpsd_gamma/db2/kis_1 /var/opt/cprocsp/dsrf/db2/kis_1
+
+  echo "Creating certificate"
+
+  echo o | /opt/cprocsp/bin/$CPROCSP_ARCH/cryptcp -creatcert -provtype 80 -ex -provname 'Crypto-Pro GOST R 34.10-2012 KC1 CSP' -dn 'CN="Test Test Test", INN=532117570513, SNILS=15278361414, E=test@red-soft.ru, O="RS"' -cont '\\.\HDIMAGE\TestKeys' -certusage 1.3.6.1.5.5.7.3.2,1.3.6.1.5.5.7.3.4,1.2.643.100.113.1,1.2.643.100.2.1 -pin 12345678
+
+  echo "Getting serial number of certificate"
+
+  CERT_SERIAL=`/opt/cprocsp/bin/$CPROCSP_ARCH/certmgr -list | grep Serial | awk -F\0x '{print $2}'`
+
+  echo "Exporting certificate to BASE64 file"
+
+  /opt/cprocsp/bin/$CPROCSP_ARCH/certmgr -export -base64 -dest /tmp/testuser.cer
+  sed -i '1i-----BEGIN CERTIFICATE-----' /tmp/testuser.cer
+  echo '-----END CERTIFICATE-----' >> /tmp/testuser.cer
+
+  echo ${CERT_SERIAL} > cert_serial
+  mcli cp cert_serial myminio/ci-keys/
+
+  echo "Packing of generated keys"
+  cp /var/opt/cprocsp/keys/root/TestKeys.000/ .ci -rfv
+
+  cd .ci && tar cvzf $ARCHIVE_PREFIX.tar.gz * && mcli cp $ARCHIVE_PREFIX.tar.gz myminio/ci-keys/ && cd -
+
+  echo $(date +%s --date='+2 month') > timestamp
+  mcli cp timestamp myminio/ci-keys/
+else
+  mcli cp myminio/ci-keys/$ARCHIVE_PREFIX.tar.gz .ci
+  tar xf .ci/cryptopro-keys.tar.gz -C .ci
+  CERT_SERIAL=$(mcli cat myminio/ci-keys/cert_serial)
+
+  KEYS_DIR=/var/opt/cprocsp/keys
+  mkdir -p $KEYS_DIR/root
+  chmod 700 $KEYS_DIR/root
+  cp $CI_PROJECT_DIR/.ci/TestKeys.000/ $KEYS_DIR/root -rfv
+  chmod 700 $KEYS_DIR/root/TestKeys.000 -R
+  /opt/cprocsp/bin/$CPROCSP_ARCH/certmgr -inst -file "$CI_PROJECT_DIR/.ci/testuser.cer" -cont '\\.\HDIMAGE\TestKeys' -silent
+  /opt/cprocsp/bin/$CPROCSP_ARCH/csptest -keyset -enum_cont -fqcn -verifyc
+  /opt/cprocsp/bin/$CPROCSP_ARCH/csptest -passwd -cont '\\\.\HDIMAGE\TestKeys' -change 12345678
+fi
 
 sed -i '/\[Parameters\]/a warning_time_gen_2001=ll:9223372036854775807\nwarning_time_sign_2001=ll:9223372036854775807\n' /etc/opt/cprocsp/config64.ini
 
