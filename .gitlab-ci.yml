@@ -118,6 +118,7 @@ build_and_test:
       EOF
     - echo proxy=$http_proxy >> /etc/yum.conf
     - yum install -y maven krb5-server krb5-workstation expect $EXTRA_DEPENDENCIES
+    - yum install -y https://dl.min.io/client/mc/release/linux-amd64/mcli-20210613174822.0.0.x86_64.rpm
     - /opt/cprocsp/sbin/amd64/cpconfig -license -set $LICENSE_CRYPTOPRO4
     - ./ci/configure_kerberos.sh
     - export VERSION=`cat .ci/version`
