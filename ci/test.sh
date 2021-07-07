@@ -129,7 +129,7 @@ else
   chmod 700 $KEYS_DIR/root/TestKeys.000 -R
   /opt/cprocsp/bin/$CPROCSP_ARCH/certmgr -inst -file "$CI_PROJECT_DIR/.ci/testuser.cer" -cont '\\.\HDIMAGE\TestKeys' -silent
   /opt/cprocsp/bin/$CPROCSP_ARCH/csptest -keyset -enum_cont -fqcn -verifyc
-  /opt/cprocsp/bin/$CPROCSP_ARCH/csptest -passwd -cont '\\\.\HDIMAGE\TestKeys' -change 12345678
+  /opt/cprocsp/bin/$CPROCSP_ARCH/csptest -passwd -cont '\\.\HDIMAGE\TestKeys' -change 12345678
 fi
 
 echo Will use build $RDB_VERSION for testing
