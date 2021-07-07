@@ -108,6 +108,7 @@ if [ $update_keys == true ]; then
 
   echo "Packing of generated keys"
   cp /var/opt/cprocsp/keys/root/TestKeys.000/ .ci -rfv
+  cp /tmp/testuser.cer .ci
 
   cd .ci && tar cvzf $ARCHIVE_PREFIX.tar.gz * && mcli cp $ARCHIVE_PREFIX.tar.gz myminio/ci-keys/ && cd -
 
@@ -122,6 +123,7 @@ else
   mkdir -p $KEYS_DIR/root
   chmod 700 $KEYS_DIR/root
   cp $CI_PROJECT_DIR/.ci/TestKeys.000/ $KEYS_DIR/root -rfv
+  cp $CI_PROJECT_DIR/.ci/testuser.cer /tmp
   chmod 700 $KEYS_DIR/root/TestKeys.000 -R
   /opt/cprocsp/bin/$CPROCSP_ARCH/certmgr -inst -file "$CI_PROJECT_DIR/.ci/testuser.cer" -cont '\\.\HDIMAGE\TestKeys' -silent
   /opt/cprocsp/bin/$CPROCSP_ARCH/csptest -keyset -enum_cont -fqcn -verifyc
