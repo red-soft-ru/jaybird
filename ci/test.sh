@@ -128,7 +128,7 @@ else
   chmod 700 $KEYS_DIR/root/TestKeys.000 -R
   /opt/cprocsp/bin/$CPROCSP_ARCH/certmgr -inst -file "$CI_PROJECT_DIR/.ci/testuser.cer" -cont '\\.\HDIMAGE\TestKeys' -silent
   /opt/cprocsp/bin/$CPROCSP_ARCH/csptest -keyset -enum_cont -fqcn -verifyc
-  /opt/cprocsp/bin/$CPROCSP_ARCH/csptest -passwd -cont '\\\.\HDIMAGE\TestKeys' -change 12345678
+  /opt/cprocsp/bin/$CPROCSP_ARCH/csptest -passwd -cont '\\.\HDIMAGE\TestKeys' -change 12345678
 fi
 
 sed -i '/\[Parameters\]/a warning_time_gen_2001=ll:9223372036854775807\nwarning_time_sign_2001=ll:9223372036854775807\n' /etc/opt/cprocsp/config64.ini
