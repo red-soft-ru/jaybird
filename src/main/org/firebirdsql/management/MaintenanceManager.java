@@ -183,6 +183,11 @@ public interface MaintenanceManager extends ServiceManager {
     int SHUTDOWNEX_TRANSACTIONS = ISCConstants.isc_spb_prp_transactions_shutdown;
 
     /**
+     * Number of parallel workers.
+     */
+    int PARALLEL_WORKERS = ISCConstants.isc_spb_rpr_par_workers;
+
+    /**
      * Set the database to have read-write or read-only access.
      *
      * @param mode
@@ -380,6 +385,15 @@ public interface MaintenanceManager extends ServiceManager {
     // ----------- Sweeping -------------------------
 
     /**
+     * Set the number of parallel workers.
+     *
+     * @param parallelWorkers
+     *         Valid values must be greater than 1 (no parallelism).
+     *         Values less than 1 is silently ignored and default value of 1 is used.
+     */
+    void setParallelWorkers(int parallelWorkers);
+
+    /**
      * Set the database automatic sweep interval to a given number of
      * transactions.
      * <p>
@@ -401,6 +415,17 @@ public interface MaintenanceManager extends ServiceManager {
      *         if a database access error occurs
      */
     void sweepDatabase() throws SQLException;
+
+    /**
+     * Perform an immediate sweep of the database with the specified number of parallel workers.
+     *
+     * @param parallelWorkers
+     *         Number of parallel workers.
+     *
+     * @throws SQLException
+     *         if a database access error occurs
+     */
+    void sweepDatabase(int parallelWorkers) throws SQLException;
 
     // ----------- Shadow Files ------------------------------------
 

@@ -102,6 +102,10 @@ public interface BackupManager extends ServiceManager {
      */
     int RESTORE_USE_ALL_SPACE = ISCConstants.isc_spb_res_use_all_space;
 
+    /**
+     * Number of parallel workers for the backup/restore task.
+     */
+    int PARALLEL_WORKERS = ISCConstants.isc_spb_bkp_parallel_workers;
 
     /**
      * Sets the location of the backup file. This method is used to set the
@@ -256,6 +260,15 @@ public interface BackupManager extends ServiceManager {
      *         read-only, otherwise it will be read-write.
      */
     void setRestoreReadOnly(boolean readOnly);
+
+    /**
+     * Set the number of parallel workers for the backup/restore task.
+     *
+     * @param parallelWorkers
+     *         Valid values must be greater than 1 (no parallelism).
+     *         Values less than 1 is silently ignored and default value of 1 is used.
+     */
+    void setParallelWorkers(int parallelWorkers);
 
     /**
      * Perform the restore operation.
