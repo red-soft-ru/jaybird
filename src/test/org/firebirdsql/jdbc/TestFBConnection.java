@@ -673,10 +673,7 @@ public class TestFBConnection {
         Properties props = getDefaultPropertiesForConnection();
         props.setProperty("wireCrypt", "NOT_A_VALID_VALUE");
 
-        expectedException.expect(SQLException.class);
-        expectedException.expect(allOf(
-                errorCodeEquals(JaybirdErrorCodes.jb_invalidConnectionPropertyValue),
-                fbMessageStartsWith(JaybirdErrorCodes.jb_invalidConnectionPropertyValue, "NOT_A_VALID_VALUE", "wireCrypt")));
+        expectedException.expect(java.lang.IllegalArgumentException.class);
 
         DriverManager.getConnection(getUrl(), props);
     }

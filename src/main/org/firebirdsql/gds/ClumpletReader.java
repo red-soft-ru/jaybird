@@ -119,6 +119,7 @@ public class ClumpletReader {
             case isc_tpb_lock_write:
             case isc_tpb_lock_read:
             case isc_tpb_lock_timeout:
+            case isc_tpb_at_snapshot_number:
                 return ClumpletType.TraditionalDpb;
             }
             return ClumpletType.SingleTpb;
@@ -159,6 +160,7 @@ public class ClumpletReader {
                     return ClumpletType.StringSpb;
                 case isc_spb_bkp_factor:
                 case isc_spb_bkp_length:
+                case isc_spb_bkp_parallel_workers:
                 case isc_spb_res_length:
                 case isc_spb_res_buffers:
                 case isc_spb_res_page_size:
@@ -179,6 +181,7 @@ public class ClumpletReader {
                 case isc_spb_rpr_commit_trans:
                 case isc_spb_rpr_rollback_trans:
                 case isc_spb_rpr_recover_two_phase:
+                case isc_spb_rpr_par_workers:
                     return ClumpletType.IntSpb;
                 case isc_spb_rpr_commit_trans_64:
                 case isc_spb_rpr_rollback_trans_64:

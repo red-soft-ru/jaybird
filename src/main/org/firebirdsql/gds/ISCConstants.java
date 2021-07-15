@@ -163,6 +163,8 @@ public interface ISCConstants {
     int isc_dpb_nolinger				= 88;
     int isc_dpb_reset_icu				= 89;
     int isc_dpb_map_attach              = 90;
+    int isc_dpb_parallel_workers		= 100;
+    int isc_dpb_worker_attach			= 101;
 
     // Firebird 4 constants
     int isc_dpb_session_time_zone       = 91;
@@ -251,6 +253,7 @@ public interface ISCConstants {
     int isc_tpb_restart_requests        = 19;
     int isc_tpb_no_auto_undo            = 20;
     int isc_tpb_lock_timeout            = 21;
+    int isc_tpb_at_snapshot_number      = 23;
 
     /*************************************/
     /* Service parameter block stuff */
@@ -418,6 +421,7 @@ public interface ISCConstants {
     int isc_spb_bkp_length             =  7;
     int isc_spb_bkp_skip_data          =  8;
     int isc_spb_bkp_stat               =  15;
+    int isc_spb_bkp_parallel_workers   =  19;
     int isc_spb_bkp_ignore_checksums   =  0x01;
     int isc_spb_bkp_ignore_limbo       =  0x02;
     int isc_spb_bkp_metadata_only      =  0x04;
@@ -504,6 +508,7 @@ public interface ISCConstants {
     int isc_spb_rpr_commit_trans_64	=	49;
     int isc_spb_rpr_rollback_trans_64		=50;
     int isc_spb_rpr_recover_two_phase_64	=51;
+    int isc_spb_rpr_par_workers     =   100;
 
     int isc_spb_rpr_validate_db		=	0x01;
     int isc_spb_rpr_sweep_db		=	0x02;
@@ -526,6 +531,8 @@ public interface ISCConstants {
     int isc_spb_res_access_mode		=	12;
     int isc_spb_res_fix_fss_data	=	13;
     int isc_spb_res_fix_fss_metadata=	14;
+    int isc_spb_res_stat            =   isc_spb_bkp_stat;
+    int isc_spb_res_parallel_workers    =    isc_spb_bkp_parallel_workers;
     int isc_spb_res_deactivate_idx	=	0x0100;
     int isc_spb_res_no_shadow		=	0x0200;
     int isc_spb_res_no_validity		=	0x0400;
