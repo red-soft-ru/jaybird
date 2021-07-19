@@ -180,7 +180,7 @@ public abstract class AbstractParameterConverter<D extends AbstractConnection<Fi
             spb.addArgument(isc_spb_trusted_role, properties.getNonStandardProperty("isc_spb_trusted_role"));
         }
         if (properties.getNonStandardProperty("isc_spb_process_id") != null) {
-            spb.addArgument(isc_spb_process_id, properties.getNonStandardProperty("isc_spb_process_id"));
+            spb.addArgument(isc_spb_process_id, Integer.parseInt(properties.getNonStandardProperty("isc_spb_process_id")));
         }
         if (properties.getNonStandardProperty("isc_spb_remote_protocol") != null) {
             spb.addArgument(isc_spb_remote_protocol, properties.getNonStandardProperty("isc_spb_remote_protocol"));
