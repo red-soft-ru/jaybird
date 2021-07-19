@@ -15,9 +15,9 @@ variables:
   TAG_BRANCH: master
   MAVEN_CLI_OPTS: "-s .m2/settings.xml --batch-mode -U"
   MAVEN_OPTS: "-Dmaven.repo.local=.m2/repository"
-  RDB2_VERSION: "2.6.0.13508"
   RDB3_VERSION: "3.0.8.0-rc.4"
   RDB4_VERSION: "4.0.0-SNAPSHOT.34"
+  RDB5_VERSION: "5.0.0-SNAPSHOT.40"
   http_proxy: http://git.red-soft.biz:3128
   https_proxy: http://git.red-soft.biz:3128
   no_proxy: localhost,172.0.0.0/8,127.0.0.0/8,.red-soft.biz
@@ -90,18 +90,16 @@ build_and_test:
     name: registry.red-soft.biz:5000/docker-images/rdbbuildenv:rdb4-3
   before_script:
     - |
-      if [[ "${RDB_VERSION:0:1}" -eq "4" ]]; then
+      if [[ "${RDB_VERSION:0:1}" -eq "5" ]]; then
+        export RDB_MAJOR_VERSION="5"
+        export REPORT_PREFIX=${REPORT_PREFIX:=rdb5_}
+      elif [[ "${RDB_VERSION:0:1}" -eq "4" ]]; then
         export RDB_MAJOR_VERSION="4"
         export REPORT_PREFIX=${REPORT_PREFIX:=rdb4_}
       elif [[ "${RDB_VERSION:0:1}" -eq "3" ]]; then
         export RDB_MAJOR_VERSION="3"
         export REPORT_PREFIX=${REPORT_PREFIX:=rdb3_}
         export EXTRA_DEPENDENCIES="$EXTRA_DEPENDENCIES icu" # Remove icu library dependency after 3.0.7 release
-      elif [[ "${RDB_VERSION:0:1}" -eq "2" ]]; then
-        export RDB_MAJOR_VERSION="2"
-        export REPORT_PREFIX=${REPORT_PREFIX:=rdb2_6_}
-        export EXTRA_DEPENDENCIES="$EXTRA_DEPENDENCIES icu xinetd"
-        export TEST_LIST="${TEST_LIST},!**/nativeoo/**"
       else
         die "Do not know how to test RDB ${RDB_VERSION}"
       fi
@@ -129,12 +127,12 @@ build_and_test:
       - TYPE: JDK11
         TEST_JAVA_JVM: /usr/java11/bin/java
         TEST_LIST: "**"
-        RDB_VERSION: [ $RDB2_VERSION, $RDB3_VERSION, $RDB4_VERSION ]
-      - TYPE: JDK11_rdb4_native_only
+        RDB_VERSION: [ $RDB3_VERSION, $RDB4_VERSION, $RDB5_VERSION ]
+      - TYPE: JDK11_native_only
         TEST_JAVA_JVM: /usr/java11/bin/java
         TEST_LIST: "**/nativeoo/**,**/jni/**,**/jna/**,**/jna/**"
-        REPORT_PREFIX: rdb4_jdk11_native_
-        RDB_VERSION: $RDB4_VERSION
+        REPORT_PREFIX: jdk11_native_
+        RDB_VERSION: [ $RDB4_VERSION, $RDB5_VERSION ]
       - TYPE: JDK11_rdb3_liberica_11
         TEST_JAVA_JVM: /usr/lib/jvm/bellsoft-java11-runtime.x86_64/bin/java
         JDK_VER: 11-runtime
