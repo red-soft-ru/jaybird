@@ -353,9 +353,6 @@ public abstract class AbstractFbBlob implements FbBlob, TransactionListener, Dat
         try {
             synchronized (getSynchronizationObject()) {
                 checkDatabaseAttached();
-                if (getBlobId() == FbBlob.NO_BLOB_ID) {
-                    throw new FbExceptionBuilder().exception(ISCConstants.isc_bad_segstr_id).toSQLException();
-                }
                 final BlobLengthProcessor blobLengthProcessor = createBlobLengthProcessor();
                 return getBlobInfo(blobLengthProcessor.getBlobLengthItems(), 20, blobLengthProcessor);
             }
