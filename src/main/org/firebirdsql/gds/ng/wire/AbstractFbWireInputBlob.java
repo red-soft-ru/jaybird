@@ -36,7 +36,6 @@ public abstract class AbstractFbWireInputBlob extends AbstractFbWireBlob {
     protected AbstractFbWireInputBlob(FbWireDatabase database, FbWireTransaction transaction,
                                       BlobParameterBuffer blobParameterBuffer, long blobId) {
         super(database, transaction, blobParameterBuffer);
-        assert blobId != FbBlob.NO_BLOB_ID : "blobId must be non-zero for an input blob";
         this.blobId = blobId;
     }
 
