@@ -310,6 +310,9 @@ public class FBMaintenanceManager extends FBServiceManager implements Maintenanc
     }
 
     public void sweepDatabase() throws SQLException {
+        if (getNonStandardProperty("isc_spb_rpr_par_workers") != null && parallelWorkers <= 1) {
+            parallelWorkers = Integer.parseInt(getNonStandardProperty("isc_spb_rpr_par_workers"));
+        }
         if (parallelWorkers > 1) {
             try (FbService service = attachServiceManager()) {
                 ServiceRequestBuffer srb = createRepairSRB(service, isc_spb_rpr_sweep_db);

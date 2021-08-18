@@ -116,7 +116,7 @@ public class TestBackupManager {
     }
 
     @Test
-    public void testMultithreadingBackupParameter() throws Exception {
+    public void testMultithreadingBackupConstructorParameter() throws Exception {
         FBBackupManager localBackupManager = new FBBackupManager(getGdsType(), 8);
         if (getGdsType() == GDSType.getType("PURE_JAVA") || getGdsType() == GDSType.getType("NATIVE")) {
             assumeTrue("Test needs to run on localhost for proper clean up", isLocalHost(DB_SERVER_URL));
@@ -156,6 +156,23 @@ public class TestBackupManager {
         usesDatabase.addDatabase(restorePath.toString());
         backupManager.setDatabase(restorePath.toString());
         backupManager.restoreDatabase();
+
+        try (Connection c = DriverManager.getConnection(getUrl(restorePath.toString()), getDefaultPropertiesForConnection())) {
+            assertTrue(c.isValid(0));
+        }
+    }
+
+    @Test
+    public void testMultithreadingBackupParameter() throws Exception {
+        usesDatabase.createDefaultDatabase();
+        backupManager.backupDatabase(0, 8);
+
+        final Path restorePath = Paths.get(tempFolder.getAbsolutePath(), "testrestore.fdb");
+
+        backupManager.clearRestorePaths();
+        usesDatabase.addDatabase(restorePath.toString());
+        backupManager.setDatabase(restorePath.toString());
+        backupManager.restoreDatabase(0, 8);
 
         try (Connection c = DriverManager.getConnection(getUrl(restorePath.toString()), getDefaultPropertiesForConnection())) {
             assertTrue(c.isValid(0));

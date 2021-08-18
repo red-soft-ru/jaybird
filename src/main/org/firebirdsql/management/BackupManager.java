@@ -215,6 +215,21 @@ public interface BackupManager extends ServiceManager {
     void backupDatabase(int options) throws SQLException;
 
     /**
+     * Perform the parallel backup operation specifying the number of parallel workers.
+     *
+     * @param options
+     *         a bitmask combination of the {@code BACKUP_*} constants for the backup operation
+     *
+     * @param parallelWorkers
+     *         Valid values must be greater than 1 (no parallelism).
+     *         Values less than 1 is silently ignored and default value of 1 is used.
+     *
+     * @throws SQLException
+     *         if a database error occurs during the backup
+     */
+    void backupDatabase(int options, int parallelWorkers) throws SQLException;
+
+    /**
      * Set whether the operations of this {@code BackupManager} will result in verbose logging to the configured logger.
      *
      * @param verbose
@@ -287,4 +302,19 @@ public interface BackupManager extends ServiceManager {
      *         if a database error occurs during the restore
      */
     void restoreDatabase(int options) throws SQLException;
+
+    /**
+     * Perform the parallel restore operation specifying the number of parallel workers.
+     *
+     * @param options
+     *         A bitmask combination of {@code RESTORE_*} constants
+     *
+     * @param parallelWorkers
+     *         Valid values must be greater than 1 (no parallelism).
+     *         Values less than 1 is silently ignored and default value of 1 is used.
+     *
+     * @throws SQLException
+     *         if a database error occurs during the restore
+     */
+    void restoreDatabase(int options, int parallelWorkers) throws SQLException;
 }

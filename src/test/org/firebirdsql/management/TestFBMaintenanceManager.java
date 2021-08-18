@@ -481,6 +481,13 @@ public class TestFBMaintenanceManager extends FBJUnit4TestBase {
     }
 
     @Test
+    public void testSweepDatabaseParallelWorkersProperty() throws Exception {
+        maintenanceManager.setNonStandardProperty("isc_spb_rpr_par_workers", String.valueOf(8));
+        // Just run it to see if it throws an exception
+        maintenanceManager.sweepDatabase();
+    }
+
+    @Test
     public void testActivateShadowFile() throws Exception {
         // Just run it to see if it throws an exception
         maintenanceManager.activateShadowFile();

@@ -144,6 +144,11 @@ public abstract class FBBackupManagerBase extends FBServiceManager implements Ba
         backupDatabase(0);
     }
 
+    public void backupDatabase(int options, int parallelWorkers) throws SQLException {
+        setParallelWorkers(parallelWorkers);
+        backupDatabase(options);
+    }
+
     public void backupMetadata() throws SQLException {
         backupDatabase(BACKUP_METADATA_ONLY);
     }
@@ -167,7 +172,7 @@ public abstract class FBBackupManagerBase extends FBServiceManager implements Ba
             backupSPB.addArgument(isc_spb_verbose);
         }
 
-        if (getNonStandardProperty("isc_spb_bkp_parallel_workers") != null) {
+        if (getNonStandardProperty("isc_spb_bkp_parallel_workers") != null && parallelWorkers <= 1) {
             parallelWorkers = Integer.parseInt(getNonStandardProperty("isc_spb_bkp_parallel_workers"));
         }
 
@@ -182,6 +187,11 @@ public abstract class FBBackupManagerBase extends FBServiceManager implements Ba
 
     public void restoreDatabase() throws SQLException {
         restoreDatabase(0);
+    }
+
+    public void restoreDatabase(int options, int parallelWorkers) throws SQLException {
+        setParallelWorkers(parallelWorkers);
+        restoreDatabase(options);
     }
 
     /**
