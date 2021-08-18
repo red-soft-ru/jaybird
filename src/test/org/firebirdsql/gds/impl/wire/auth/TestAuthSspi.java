@@ -34,7 +34,7 @@ public class TestAuthSspi extends FBJUnit4TestBase {
             Statement statement = connection.createStatement()) {
             GDSServerVersion serverVersion =
                     connection.unwrap(FirebirdConnection.class).getFbDatabase().getServerVersion();
-            if (serverVersion.getMajorVersion() == 4) {
+            if (serverVersion.getMajorVersion() >= 4) {
                 statement.execute("grant policy \"DEFAULT\" to \"TEST@RED-SOFT.RU\"");
             }
         } catch (Exception e) {
@@ -117,7 +117,7 @@ public class TestAuthSspi extends FBJUnit4TestBase {
              Statement statement = connection.createStatement()) {
             GDSServerVersion serverVersion =
                     connection.unwrap(FirebirdConnection.class).getFbDatabase().getServerVersion();
-            if (serverVersion.getMajorVersion() == 4) {
+            if (serverVersion.getMajorVersion() >= 4) {
                 statement.execute("grant policy TestPolicy to \"TEST@RED-SOFT.RU\"");
             }
         } catch (Exception e) {

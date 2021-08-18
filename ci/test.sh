@@ -202,6 +202,8 @@ elif [[ "$RDB_MAJOR_VERSION" == "3" ]]; then
 
   sed -i 's/#GSSLibrary = libgssapi_krb5.so/GSSLibrary = \/usr\/lib64\/libgssapi_krb5.so.2/g' "${INSTALLDIR}"/firebird.conf
 
+  sed -i 's/#MaxParallelWorkers = 1/MaxParallelWorkers = 8/g' "${INSTALLDIR}"/firebird.conf
+
   "${INSTALLDIR}"/bin/isql -user SYSDBA -password masterkey "${INSTALLDIR}"/security3.fdb -i "${SOURCES}"/ci/user3.sql
 else
   sed -i 's/#VerifyCertChain = 1/VerifyCertChain = 0/g' "${INSTALLDIR}/firebird.conf"

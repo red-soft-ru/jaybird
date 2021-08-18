@@ -116,6 +116,71 @@ public class TestBackupManager {
     }
 
     @Test
+    public void testMultithreadingBackupParameter() throws Exception {
+        FBBackupManager localBackupManager = new FBBackupManager(getGdsType(), 8);
+        if (getGdsType() == GDSType.getType("PURE_JAVA") || getGdsType() == GDSType.getType("NATIVE")) {
+            assumeTrue("Test needs to run on localhost for proper clean up", isLocalHost(DB_SERVER_URL));
+            localBackupManager.setServer(DB_SERVER_URL);
+            localBackupManager.setPort(DB_SERVER_PORT);
+        }
+        localBackupManager.setUserName(DB_USER);
+        localBackupManager.setPassword(DB_PASSWORD);
+        localBackupManager.setDatabase(getDatabasePath());
+        localBackupManager.setBackupPath(getBackupPath());
+        localBackupManager.setLogger(System.out);
+        localBackupManager.setVerbose(true);
+        usesDatabase.createDefaultDatabase();
+        localBackupManager.backupDatabase();
+
+        final Path restorePath = Paths.get(tempFolder.getAbsolutePath(), "testrestore.fdb");
+
+        localBackupManager.clearRestorePaths();
+        usesDatabase.addDatabase(restorePath.toString());
+        localBackupManager.setDatabase(restorePath.toString());
+        localBackupManager.restoreDatabase();
+
+        try (Connection c = DriverManager.getConnection(getUrl(restorePath.toString()), getDefaultPropertiesForConnection())) {
+            assertTrue(c.isValid(0));
+        }
+    }
+
+    @Test
+    public void testMultithreadingBackupMethod() throws Exception {
+        backupManager.setParallelWorkers(8);
+        usesDatabase.createDefaultDatabase();
+        backupManager.backupDatabase();
+
+        final Path restorePath = Paths.get(tempFolder.getAbsolutePath(), "testrestore.fdb");
+
+        backupManager.clearRestorePaths();
+        usesDatabase.addDatabase(restorePath.toString());
+        backupManager.setDatabase(restorePath.toString());
+        backupManager.restoreDatabase();
+
+        try (Connection c = DriverManager.getConnection(getUrl(restorePath.toString()), getDefaultPropertiesForConnection())) {
+            assertTrue(c.isValid(0));
+        }
+    }
+
+    @Test
+    public void testMultithreadingBackupProperty() throws Exception {
+        backupManager.setNonStandardProperty("isc_spb_bkp_parallel_workers", String.valueOf(8));
+        usesDatabase.createDefaultDatabase();
+        backupManager.backupDatabase();
+
+        final Path restorePath = Paths.get(tempFolder.getAbsolutePath(), "testrestore.fdb");
+
+        backupManager.clearRestorePaths();
+        usesDatabase.addDatabase(restorePath.toString());
+        backupManager.setDatabase(restorePath.toString());
+        backupManager.restoreDatabase();
+
+        try (Connection c = DriverManager.getConnection(getUrl(restorePath.toString()), getDefaultPropertiesForConnection())) {
+            assertTrue(c.isValid(0));
+        }
+    }
+
+    @Test
     public void testSetBadBufferCount() {
         expectedException.reportMissingExceptionWithMessage("Page buffer count must be a positive value")
                 .expect(IllegalArgumentException.class);

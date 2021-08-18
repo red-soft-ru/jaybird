@@ -86,6 +86,7 @@ public abstract class FBBackupManagerBase extends FBServiceManager implements Ba
     private int restorePageSize = -1;
     private boolean restoreReadOnly = false;
     private boolean restoreReplace = false;
+    private int parallelWorkers = 1;
 
     private static final int RESTORE_REPLACE = isc_spb_res_replace;
     private static final int RESTORE_CREATE = isc_spb_res_create;
@@ -166,6 +167,14 @@ public abstract class FBBackupManagerBase extends FBServiceManager implements Ba
             backupSPB.addArgument(isc_spb_verbose);
         }
 
+        if (getNonStandardProperty("isc_spb_bkp_parallel_workers") != null) {
+            parallelWorkers = Integer.parseInt(getNonStandardProperty("isc_spb_bkp_parallel_workers"));
+        }
+
+        if (parallelWorkers > 1) {
+            backupSPB.addArgument(PARALLEL_WORKERS, parallelWorkers);
+        }
+
         backupSPB.addArgument(isc_spb_options, options);
 
         return backupSPB;
@@ -236,6 +245,17 @@ public abstract class FBBackupManagerBase extends FBServiceManager implements Ba
     }
 
     /**
+     * Set the number of parallel workers for the backup/restore task.
+     *
+     * @param parallelWorkers
+     *         Valid values must be greater than 1 (no parallelism).
+     *         Values less than 1 is silently ignored and default value of 1 is used.
+     */
+    public void setParallelWorkers(int parallelWorkers) {
+        this.parallelWorkers = parallelWorkers;
+    }
+
+    /**
      * Creates and returns the "backup" service request buffer for the Service Manager.
      *
      * @param service
@@ -276,6 +296,14 @@ public abstract class FBBackupManagerBase extends FBServiceManager implements Ba
 
         if (verbose) {
             restoreSPB.addArgument(isc_spb_verbose);
+        }
+
+        if (getNonStandardProperty("isc_spb_bkp_parallel_workers") != null) {
+            parallelWorkers = Integer.parseInt(getNonStandardProperty("isc_spb_bkp_parallel_workers"));
+        }
+
+        if (parallelWorkers > 1) {
+            restoreSPB.addArgument(PARALLEL_WORKERS, parallelWorkers);
         }
 
         if ((options & RESTORE_CREATE) != RESTORE_CREATE

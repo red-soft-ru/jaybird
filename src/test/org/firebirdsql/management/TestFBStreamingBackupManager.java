@@ -98,6 +98,28 @@ public class TestFBStreamingBackupManager {
     }
 
     @Test
+    public void testMultithreadingStreamingBackupAndRestore() throws Exception {
+        usesDatabase.createDefaultDatabase();
+        backupManager.setParallelWorkers(8);
+        final Path backupPath = Paths.get(tempFolder.getAbsolutePath(), "testbackup.fbk");
+        try (OutputStream backupOutputStream = new FileOutputStream(backupPath.toFile())) {
+            backupManager.setBackupOutputStream(backupOutputStream);
+            backupManager.backupDatabase();
+        }
+        assertTrue(String.format("Expected backup file %s to exist", backupPath), Files.exists(backupPath));
+
+        final Path restorePath = Paths.get(tempFolder.getAbsolutePath(), "testrestore.fdb");
+        backupManager.clearRestorePaths();
+        usesDatabase.addDatabase(restorePath.toString());
+        backupManager.setDatabase(restorePath.toString());
+        try (InputStream restoreInputStream = new FileInputStream(backupPath.toFile())) {
+            backupManager.setRestoreInputStream(restoreInputStream);
+            backupManager.restoreDatabase();
+        }
+        assertTrue(String.format("Expected database file %s to exist", backupPath), Files.exists(backupPath));
+    }
+
+    @Test
     public void testSetBadBufferCount() {
         expectedException.reportMissingExceptionWithMessage("Page buffer count must be a positive value")
                 .expect(IllegalArgumentException.class);
