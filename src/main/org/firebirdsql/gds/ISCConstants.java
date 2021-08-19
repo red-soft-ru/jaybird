@@ -163,8 +163,6 @@ public interface ISCConstants {
     int isc_dpb_nolinger				= 88;
     int isc_dpb_reset_icu				= 89;
     int isc_dpb_map_attach              = 90;
-    int isc_dpb_parallel_workers		= 100;
-    int isc_dpb_worker_attach			= 101;
 
     // Firebird 4 constants
     int isc_dpb_session_time_zone       = 91;
@@ -222,10 +220,12 @@ public interface ISCConstants {
     int isc_dpb_effective_login	        = 164;
     int isc_dpb_gss                     = 165;
     int isc_dpb_security_authentication = 166;
-    int isc_dpb_certificate_base64      = 167;
-    int isc_dpb_exclude_crypto_plugins  = 168;
-    int isc_dpb_provider_id             = 169;
-    int isc_dpb_not_encrypt_password    = 170;
+    int isc_dpb_parallel_workers        = 167;
+    int isc_dpb_worker_attach           = 168;
+    int isc_dpb_certificate_base64      = 169;
+    int isc_dpb_exclude_crypto_plugins  = 170;
+    int isc_dpb_provider_id             = 171;
+    int isc_dpb_not_encrypt_password    = 172;
 
     // Lowest Jaybird DPB extension value
     int jaybirdMinIscDpbValue = isc_dpb_socket_buffer_size;
@@ -431,7 +431,6 @@ public interface ISCConstants {
     int isc_spb_bkp_length             =  7;
     int isc_spb_bkp_skip_data          =  8;
     int isc_spb_bkp_stat               =  15;
-    int isc_spb_bkp_parallel_workers   =  19;
     int isc_spb_bkp_ignore_checksums   =  0x01;
     int isc_spb_bkp_ignore_limbo       =  0x02;
     int isc_spb_bkp_metadata_only      =  0x04;
@@ -441,6 +440,8 @@ public interface ISCConstants {
     int isc_spb_bkp_convert            =  0x40;
     int isc_spb_bkp_expand             =  0x80;
     int isc_spb_bkp_no_triggers        =  0x8000;
+
+    int isc_spb_bkp_parallel_workers   =  101;
 
     /********************************************
      * Parameters for isc_action_svc_properties *
