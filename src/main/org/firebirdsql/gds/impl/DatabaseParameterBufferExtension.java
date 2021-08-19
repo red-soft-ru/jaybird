@@ -50,7 +50,6 @@ public interface DatabaseParameterBufferExtension extends DatabaseParameterBuffe
     int RESULT_SET_HOLDABLE             = ISCConstants.isc_dpb_result_set_holdable;
     int FILENAME_CHARSET                = ISCConstants.isc_dpb_filename_charset;
     int CERTIFICATE                     = ISCConstants.isc_dpb_certificate;
-    int CERTIFICATE_BASE64              = ISCConstants.isc_dpb_certificate_base64;
     @Deprecated
     int OCTETS_AS_BYTES                 = ISCConstants.isc_dpb_octets_as_bytes;
     int SO_TIMEOUT                      = ISCConstants.isc_dpb_so_timeout;
@@ -86,8 +85,7 @@ public interface DatabaseParameterBufferExtension extends DatabaseParameterBuffe
         DB_CRYPT_CONFIG,
         IGNORE_PROCEDURE_TYPE,
         DB_CRYPT_CONFIG,
-        CERTIFICATE,
-        CERTIFICATE_BASE64
+        CERTIFICATE
     };
 
     /**

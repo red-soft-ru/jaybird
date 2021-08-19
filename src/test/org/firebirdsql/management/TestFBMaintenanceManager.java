@@ -460,8 +460,10 @@ public class TestFBMaintenanceManager extends FBJUnit4TestBase {
 
         localMaintenanceManager.setUserName(DB_USER);
         localMaintenanceManager.setPassword(DB_PASSWORD);
-        localMaintenanceManager.setDatabase(getDatabasePath());
+        localMaintenanceManager.setDatabase("/home/vasiliy/tmp/ncore-fssp.fdb");
         localMaintenanceManager.setLogger(System.out);
+        localMaintenanceManager.setNonStandardProperty("isc_spb_process_name", "AAAAAAAAAAAA");
+        localMaintenanceManager.setNonStandardProperty("isc_spb_process_id", "42424");
         // Just run it to see if it throws an exception
         localMaintenanceManager.sweepDatabase();
     }

@@ -46,20 +46,15 @@ public class CertificateAuthenticationPlugin implements AuthenticationPlugin {
             ByteBuffer data = new ByteBuffer(0);
 
             String certificate = clientAuthBlock.getCertificate();
-            String certificateBase64 = clientAuthBlock.getCertificateBase64();
 
-            if (certificate == null && certificateBase64 == null)
+            if (certificate == null)
                 return  AuthStatus.AUTH_CONTINUE;
 
-            if ((certificate != null && !certificate.isEmpty()) ||
-                    (certificateBase64 != null && !certificateBase64.isEmpty())) {
+            if ((certificate != null && !certificate.isEmpty())) {
                 AuthFactorCertificate authFactorCertificate = new AuthFactorCertificate(authSspi);
                 authFactorCertificate.setSdRandomNumber(1);
                 try {
-                    if (certificate != null && !certificate.isEmpty())
-                        authFactorCertificate.loadFromFile(certificate);
-                    else
-                        authFactorCertificate.setCertBase64(certificateBase64);
+                    authFactorCertificate.loadFromFile(certificate);
                     authSspi.addFactor(authFactorCertificate);
                     authSspi.request(data);
                 } catch (GDSException e) {

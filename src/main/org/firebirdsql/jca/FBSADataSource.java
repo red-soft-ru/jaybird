@@ -152,16 +152,6 @@ public class FBSADataSource implements DataSource, Serializable, Referenceable, 
     }
 
     @Override
-    public String getCertificateBase64() {
-        return mcf.getCertificateBase64();
-    }
-
-    @Override
-    public void setCertificateBase64(String certificateBase64) {
-        mcf.setCertificateBase64(certificateBase64);
-    }
-
-    @Override
     public String getEffectiveLogin() {
         return mcf.getEffectiveLogin();
     }

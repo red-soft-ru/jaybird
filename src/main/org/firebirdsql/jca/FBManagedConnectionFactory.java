@@ -573,16 +573,6 @@ public class FBManagedConnectionFactory implements ManagedConnectionFactory, Fir
     }
 
     @Override
-    public String getCertificateBase64() {
-        return connectionProperties.getCertificateBase64();
-    }
-
-    @Override
-    public void setCertificateBase64(String certificateBase64) {
-        connectionProperties.setCertificateBase64(certificateBase64);
-    }
-
-    @Override
     public String getEffectiveLogin() {
         return connectionProperties.getEffectiveLogin();
     }

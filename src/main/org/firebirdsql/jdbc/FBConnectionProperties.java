@@ -407,11 +407,6 @@ public class FBConnectionProperties extends AbstractFBConnectionProperties imple
         dirtied();
     }
 
-    public void setCertificateBase64(String certificateBase64) {
-        setStringProperty(CERTIFICATE_BASE64, certificateBase64);
-        dirtied();
-    }
-
     public void setEffectiveLogin(String effectiveLogin) {
         setStringProperty(EFFECTIVE_LOGIN, effectiveLogin);
         dirtied();
@@ -543,9 +538,6 @@ public class FBConnectionProperties extends AbstractFBConnectionProperties imple
                     break;
                 case isc_dpb_certificate:
                     setCertificate(parameter.getValueAsString());
-                    break;
-                case isc_dpb_certificate_base64:
-                    setCertificateBase64(parameter.getValueAsString());
                     break;
                 case isc_dpb_not_encrypt_password:
                     setNotEncryptedPassword(true);

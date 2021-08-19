@@ -353,16 +353,6 @@ public abstract class AbstractFBConnectionProperties implements FirebirdConnecti
     }
 
     @Override
-    public String getCertificateBase64() {
-        return getStringProperty(CERTIFICATE_BASE64);
-    }
-
-    @Override
-    public void setCertificateBase64(String certificateBase64) {
-        immutable();
-    }
-
-    @Override
     public String getEffectiveLogin() {
         return getStringProperty(EFFECTIVE_LOGIN);
     }

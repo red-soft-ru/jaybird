@@ -715,10 +715,6 @@ public interface FirebirdConnectionProperties {
      */
     void setColumnLabelForName(boolean columnLabelForName);
 
-    String getCertificateBase64();
-
-    void setCertificateBase64(String certificateBase64);
-
     String getEffectiveLogin();
 
     void setEffectiveLogin(String effectiveLogin);

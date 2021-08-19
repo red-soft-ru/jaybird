@@ -71,15 +71,10 @@ public class MultifactorAuthenticationPlugin implements AuthenticationPlugin {
             }
 
             String certificate = clientAuthBlock.getCertificate();
-            String certificateBase64 = clientAuthBlock.getCertificateBase64();
-            if ((certificate != null && !certificate.isEmpty()) ||
-                    (certificateBase64 != null && !certificateBase64.isEmpty())) {
+            if ((certificate != null && !certificate.isEmpty())) {
                 AuthFactorCertificate authFactorCertificate = new AuthFactorCertificate(authSspi);
                 try {
-                    if (certificate != null && !certificate.isEmpty())
-                        authFactorCertificate.loadFromFile(certificate);
-                    else
-                        authFactorCertificate.setCertBase64(certificateBase64);
+                    authFactorCertificate.loadFromFile(certificate);
                 } catch (GDSException e) {
                     throw new SQLException(e.getMessage(), e);
                 }
@@ -93,7 +88,7 @@ public class MultifactorAuthenticationPlugin implements AuthenticationPlugin {
                 data.add((byte) AuthFactor.TYPE_SERVER_CERT);
             }
 
-            if (userName == null && certificate == null && certificateBase64 == null)
+            if (userName == null && certificate == null)
                 return  AuthStatus.AUTH_CONTINUE;
 
             clientData = Arrays.copyOf(data.getData(), data.getLength());
