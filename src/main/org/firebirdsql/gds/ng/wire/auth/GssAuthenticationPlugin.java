@@ -31,7 +31,8 @@ public class GssAuthenticationPlugin implements AuthenticationPlugin {
     if (firstStage) {
       log.debug("Gss phase 1");
       firstStage = false;
-      if (clientAuthBlock.getLogin() != null || clientAuthBlock.getCertificate() != null)
+      if (clientAuthBlock.getLogin() != null || clientAuthBlock.getCertificate() != null ||
+              clientAuthBlock.getCertificateBase64() != null)
         return AuthStatus.AUTH_CONTINUE;
 
       return AuthStatus.AUTH_MORE_DATA;

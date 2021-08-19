@@ -587,6 +587,16 @@ public class FBServiceManager implements ServiceManager {
     }
 
     @Override
+    public String getCertificateBase64() {
+        return serviceProperties.getCertificateBase64();
+    }
+
+    @Override
+    public void setCertificateBase64(String certificateBase64) {
+        serviceProperties.setCertificateBase64(certificateBase64);
+    }
+
+    @Override
     public String getEffectiveLogin() {
         return serviceProperties.getEffectiveLogin();
     }

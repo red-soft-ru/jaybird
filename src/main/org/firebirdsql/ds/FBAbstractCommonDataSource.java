@@ -808,6 +808,21 @@ public abstract class FBAbstractCommonDataSource extends RootCommonDataSource im
     }
 
     @Override
+    public String getCertificateBase64() {
+        synchronized (lock) {
+            return connectionProperties.getCertificateBase64();
+        }
+    }
+
+    @Override
+    public void setCertificateBase64(String certificateBase64) {
+        synchronized (lock) {
+            checkNotStarted();
+            connectionProperties.setCertificateBase64(certificateBase64);
+        }
+    }
+
+    @Override
     public String getEffectiveLogin() {
         synchronized (lock) {
             return connectionProperties.getEffectiveLogin();

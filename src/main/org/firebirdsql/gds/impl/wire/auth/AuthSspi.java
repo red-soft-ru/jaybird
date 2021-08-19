@@ -103,13 +103,17 @@ public class AuthSspi {
     }
 
     // Certificate factor
-    if (dpb.hasArgument(ISCConstants.isc_dpb_certificate)) {
+    if (dpb.hasArgument(ISCConstants.isc_dpb_certificate) || dpb.hasArgument(ISCConstants.isc_dpb_certificate_base64)) {
       final AuthFactorCertificate f = new AuthFactorCertificate(this);
       f.setClumpletReaderType(this.clumpletReaderType);
       if (dpb.hasArgument(ISCConstants.isc_dpb_certificate)) {
         final String filePath = dpb.getArgumentAsString(ISCConstants.isc_dpb_certificate);
         f.loadFromFile(filePath);
         dpb.removeArgument(ISCConstants.isc_dpb_certificate);
+      } else {
+        final String cert = dpb.getArgumentAsString(ISCConstants.isc_dpb_certificate_base64);
+        f.setCertBase64(cert);
+        dpb.removeArgument(ISCConstants.isc_dpb_certificate_base64);
       }
       addFactor(f);
     }
