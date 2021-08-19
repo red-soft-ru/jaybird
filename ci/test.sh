@@ -137,9 +137,9 @@ echo Will use build $RDB_VERSION for testing
 
 echo "Downloading RedDatabase $RDB_BUILD_ID"
 
-RDB_SHORT_V = "rdb30"
+RDB_SHORT_V="rdb30"
 
-if [[ "$RDB_MAJOR_VERSION" == "3" ]]; then
+if [[ "$RDB_MAJOR_VERSION" == "4" ]]; then
   RDB_SHORT_V="rdb40"
 elif [[ "$RDB_MAJOR_VERSION" == "5" ]]; then
   RDB_SHORT_V="rdb50"
