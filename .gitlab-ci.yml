@@ -15,9 +15,9 @@ variables:
   TAG_BRANCH: branch_4_0
   MAVEN_CLI_OPTS: "-s .m2/settings.xml --batch-mode -U"
   MAVEN_OPTS: "-Dmaven.repo.local=.m2/repository"
-  RDB2_VERSION: "2.6.0.13508"
   RDB3_VERSION: "3.0.8.0"
   RDB4_VERSION: "4.0.0-SNAPSHOT.101"
+  RDB5_VERSION: "5.0.0-SNAPSHOT.97"
   http_proxy: http://git.red-soft.biz:3128
   https_proxy: http://git.red-soft.biz:3128
   no_proxy: localhost,172.0.0.0/8,127.0.0.0/8,.red-soft.biz
@@ -86,7 +86,10 @@ build_and_test:
     name: registry.red-soft.biz:5000/docker-images/rdbbuildenv:rdb4-3
   before_script:
     - |
-      if [[ "${RDB_VERSION:0:1}" -eq "4" ]]; then
+      if [[ "${RDB_VERSION:0:1}" -eq "5" ]]; then
+        export RDB_MAJOR_VERSION="5"
+        export REPORT_PREFIX=${TYPE}_RDB5_${GDS_TYPE}_
+      elif [[ "${RDB_VERSION:0:1}" -eq "4" ]]; then
         export RDB_MAJOR_VERSION="4"
         export REPORT_PREFIX=${TYPE}_RDB4_${GDS_TYPE}_
       elif [[ "${RDB_VERSION:0:1}" -eq "3" ]]; then
@@ -98,11 +101,6 @@ build_and_test:
           export REPORT_PREFIX=${TYPE}_11_RDB3_${GDS_TYPE}_
         fi
         export EXTRA_DEPENDENCIES="$EXTRA_DEPENDENCIES icu" # Remove icu library dependency after 3.0.7 release
-      elif [[ "${RDB_VERSION:0:1}" -eq "2" ]]; then
-        export RDB_MAJOR_VERSION="2"
-        export REPORT_PREFIX=${TYPE}_RDB2_6_${GDS_TYPE}_
-        export EXTRA_DEPENDENCIES="$EXTRA_DEPENDENCIES icu xinetd"
-        export TEST_LIST="${TEST_LIST},!**/nativeoo/**"
       else
         die "Do not know how to test RDB ${RDB_VERSION}"
       fi
@@ -133,13 +131,13 @@ build_and_test:
         TEST_LIST: "**"
         GDS_TYPE: "PURE_JAVA"
         SKIP_JAVA7_TEST: "true"
-        RDB_VERSION: [ $RDB2_VERSION, $RDB4_VERSION ]
+        RDB_VERSION: [ $RDB4_VERSION, $RDB5_VERSION ]
       - TYPE: JDK8
         JAVA_HOME: /usr/lib/jvm/jre-1.8.0
         TEST_JAVA8_JVM: /usr/lib/jvm/jre-1.8.0/bin/java
         TEST_LIST: "**"
         SKIP_JAVA7_TEST: "true"
-        RDB_VERSION: $RDB4_VERSION
+        RDB_VERSION: [ $RDB4_VERSION, $RDB5_VERSION ]
         GDS_TYPE: [ "NATIVE", "FBOONATIVE", "EMBEDDED", "FBOOEMBEDDED" ]
       - TYPE: JDK8
         JAVA_HOME: /usr/lib/jvm/jre-1.8.0
