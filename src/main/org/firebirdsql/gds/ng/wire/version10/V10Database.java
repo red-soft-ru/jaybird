@@ -1,5 +1,5 @@
 /*
- * Firebird Open Source JavaEE Connector - JDBC Driver
+ * Firebird Open Source JDBC Driver
  *
  * Distributable under LGPL license.
  * You may obtain a copy of the License at http://www.gnu.org/copyleft/lgpl.html
@@ -20,7 +20,6 @@ package org.firebirdsql.gds.ng.wire.version10;
 
 import org.firebirdsql.encodings.Encoding;
 import org.firebirdsql.gds.*;
-import org.firebirdsql.gds.impl.DatabaseParameterBufferExtension;
 import org.firebirdsql.gds.impl.wire.XdrOutputStream;
 import org.firebirdsql.gds.impl.wire.auth.AuthSspi;
 import org.firebirdsql.gds.impl.wire.auth.AuthSspiFactory;
@@ -207,8 +206,6 @@ public class V10Database extends AbstractFbWireDatabase implements FbWireDatabas
         xdrOut.writeInt(0); // Database object ID
         xdrOut.writeString(connection.getAttachObjectName(), filenameEncoding);
 
-        newDpb = ((DatabaseParameterBufferExtension) newDpb).removeExtensionParams();
-
         xdrOut.writeTyped(newDpb);
     }
 
@@ -220,7 +217,7 @@ public class V10Database extends AbstractFbWireDatabase implements FbWireDatabas
      * @return Encoding
      */
     protected Encoding getFilenameEncoding(DatabaseParameterBuffer dpb) {
-        final String filenameCharset = dpb.getArgumentAsString(DatabaseParameterBufferExtension.FILENAME_CHARSET);
+        final String filenameCharset = getConnectionProperties().getProperty("filename_charset");
         if (filenameCharset != null) {
             return getEncodingFactory().getOrCreateEncodingForCharset(Charset.forName(filenameCharset));
         }

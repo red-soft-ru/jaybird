@@ -123,7 +123,7 @@ public class IServiceImpl extends AbstractFbService<IServiceConnectionImpl> impl
                     // TODO Replace with specific error (eg native client error)
                     throw new FbExceptionBuilder()
                             .exception(ISCConstants.isc_network_error)
-                            .messageParameter(connection.getServerName())
+                            .messageParameter(connection.getAttachUrl())
                             .cause(ex)
                             .toSQLException();
                 }
@@ -173,7 +173,7 @@ public class IServiceImpl extends AbstractFbService<IServiceConnectionImpl> impl
                 // TODO Replace with specific error (eg native client error)
                 throw new FbExceptionBuilder()
                         .exception(ISCConstants.isc_network_error)
-                        .messageParameter(connection.getServerName())
+                        .messageParameter(connection.getAttachUrl())
                         .cause(ex)
                         .toSQLException();
             } finally {

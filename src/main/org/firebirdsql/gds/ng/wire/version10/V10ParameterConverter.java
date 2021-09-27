@@ -1,5 +1,5 @@
 /*
- * Firebird Open Source JavaEE Connector - JDBC Driver
+ * Firebird Open Source JDBC Driver
  *
  * Distributable under LGPL license.
  * You may obtain a copy of the License at http://www.gnu.org/copyleft/lgpl.html
@@ -24,7 +24,6 @@ import org.firebirdsql.gds.ParameterTagMapping;
 import org.firebirdsql.gds.ng.AbstractConnection;
 import org.firebirdsql.gds.ng.AbstractParameterConverter;
 import org.firebirdsql.gds.ng.IAttachProperties;
-import org.firebirdsql.gds.ng.IConnectionProperties;
 import org.firebirdsql.gds.ng.wire.WireDatabaseConnection;
 import org.firebirdsql.gds.ng.wire.WireServiceConnection;
 import org.firebirdsql.gds.ng.wire.auth.legacy.UnixCrypt;
@@ -42,9 +41,9 @@ public class V10ParameterConverter extends AbstractParameterConverter<WireDataba
     private static final String LEGACY_PASSWORD_SALT = "9z";
 
     @Override
-    protected void populateAuthenticationProperties(final AbstractConnection connection,
+    protected void populateAuthenticationProperties(final AbstractConnection<?, ?> connection,
             final ConnectionParameterBuffer pb) throws SQLException {
-        IAttachProperties props = connection.getAttachProperties();
+        IAttachProperties<?> props = connection.getAttachProperties();
         ParameterTagMapping tagMapping = pb.getTagMapping();
         if (props.getUser() != null) {
             pb.addArgument(tagMapping.getUserNameTag(), props.getUser());
@@ -59,8 +58,8 @@ public class V10ParameterConverter extends AbstractParameterConverter<WireDataba
         if (props.getEffectiveLogin() != null) {
             pb.addArgument(tagMapping.getEffectiveLoginTag(), props.getEffectiveLogin());
         }
-        if (props.isUseGSSAuth()) {
-            pb.addArgument(tagMapping.getGSSAuthTag(), 1);
+        if (props.isGSSAuthentication()) {
+            pb.addArgument(tagMapping.getGSSAuthenticationTag(), 1);
         }
         if (props.getCertificate() != null) {
             pb.addArgument(ISCConstants.isc_dpb_certificate, props.getCertificate());

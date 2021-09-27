@@ -1,7 +1,6 @@
 package org.firebirdsql.nativeoo.gds.ng;
 
 import org.firebirdsql.gds.*;
-import org.firebirdsql.gds.impl.DatabaseParameterBufferExtension;
 import org.firebirdsql.gds.ng.*;
 import org.firebirdsql.gds.ng.listeners.TransactionListener;
 import org.firebirdsql.jdbc.FBDriverNotCapableException;
@@ -59,9 +58,7 @@ public class IDatabaseImpl extends AbstractFbDatabase<NativeDatabaseConnection>
     @Override
     public void attach() throws SQLException {
         try {
-            final DatabaseParameterBuffer dpb = ((DatabaseParameterBufferExtension) PARAMETER_CONVERTER
-                    .toDatabaseParameterBuffer(connection))
-                    .removeExtensionParams();
+            final DatabaseParameterBuffer dpb = PARAMETER_CONVERTER.toDatabaseParameterBuffer(connection);
             attachOrCreate(dpb, false);
         } catch (SQLException e) {
             exceptionListenerDispatcher.errorOccurred(e);
@@ -86,9 +83,7 @@ public class IDatabaseImpl extends AbstractFbDatabase<NativeDatabaseConnection>
     @Override
     public void createDatabase() throws SQLException {
         try {
-            final DatabaseParameterBuffer dpb = ((DatabaseParameterBufferExtension) PARAMETER_CONVERTER
-                    .toDatabaseParameterBuffer(connection))
-                    .removeExtensionParams();
+            final DatabaseParameterBuffer dpb = PARAMETER_CONVERTER.toDatabaseParameterBuffer(connection);
             attachOrCreate(dpb, true);
         } catch (SQLException e) {
             exceptionListenerDispatcher.errorOccurred(e);

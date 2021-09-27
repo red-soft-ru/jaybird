@@ -1,5 +1,5 @@
 /*
- * Firebird Open Source JavaEE Connector - JDBC Driver
+ * Firebird Open Source JDBC Driver
  *
  * Distributable under LGPL license.
  * You may obtain a copy of the License at http://www.gnu.org/copyleft/lgpl.html
@@ -36,6 +36,7 @@ import java.util.*;
 import java.util.regex.Pattern;
 
 import static org.firebirdsql.gds.impl.wire.WireProtocolConstants.*;
+import static org.firebirdsql.jaybird.props.PropertyConstants.DEFAULT_AUTH_PLUGINS;
 
 /**
  * Manages client authentication with multiple pluginProviders.
@@ -52,7 +53,6 @@ public final class ClientAuthBlock {
     private static final Logger log = LoggerFactory.getLogger(ClientAuthBlock.class);
 
     private static final Pattern AUTH_PLUGIN_LIST_SPLIT = Pattern.compile("[ \t,;]+");
-    private static final String DEFAULT_AUTH_PLUGINS = "Srp256,Srp,Certificate,GostPassword,Gss,Multifactor";
     private static final Map<String, AuthenticationPluginSpi> PLUGIN_MAPPING = getAvailableAuthenticationPlugins();
 
     private final IAttachProperties<?> attachProperties;
@@ -81,7 +81,7 @@ public final class ClientAuthBlock {
     }
 
     public String getPasswordEnc() {
-        return attachProperties.getPasswordEnc();
+        return attachProperties.getProperty("isc_dpb_password_enc");
     }
 
     public boolean isAuthComplete() {
@@ -120,7 +120,6 @@ public final class ClientAuthBlock {
         while (providerIterator.hasNext()) {
             AuthenticationPluginSpi provider = providerIterator.next();
             AuthenticationPlugin plugin = provider.createPlugin();
-
             log.debug("Trying authentication plugin " + plugin);
             try {
                 switch (plugin.authenticate(this)) {
@@ -399,7 +398,7 @@ public final class ClientAuthBlock {
         pb.removeArgument(tagMapping.getPasswordTag());
         pb.removeArgument(tagMapping.getEncryptedPasswordTag());
         pb.removeArgument(tagMapping.getTrustedAuthTag());
-        pb.removeArgument(tagMapping.getGSSAuthTag());
+        pb.removeArgument(tagMapping.getGSSAuthenticationTag());
     }
 
     private List<AuthenticationPluginSpi> getSupportedPluginProviders() throws SQLException {
@@ -539,7 +538,7 @@ public final class ClientAuthBlock {
     }
 
     public boolean getVerifyServerCertificate() {
-        return attachProperties.getVerifyServerCertificate();
+        return attachProperties.isVerifyServerCertificate();
     }
 
     /**

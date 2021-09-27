@@ -5,6 +5,7 @@ import java.io.Serializable;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import javax.naming.NamingException;
@@ -18,6 +19,7 @@ import org.firebirdsql.gds.DatabaseParameterBuffer;
 import org.firebirdsql.gds.TransactionParameterBuffer;
 import org.firebirdsql.gds.impl.GDSFactory;
 import org.firebirdsql.gds.impl.GDSType;
+import org.firebirdsql.jaybird.props.def.ConnectionProperty;
 import org.firebirdsql.jdbc.FBDriverNotCapableException;
 import org.firebirdsql.jdbc.FirebirdConnectionProperties;
 
@@ -215,10 +217,6 @@ public class FBSADataSource implements DataSource, Serializable, Referenceable, 
         return mcf.getCharSet();
     }
 
-    public DatabaseParameterBuffer getDatabaseParameterBuffer() throws SQLException {
-        return mcf.getDatabaseParameterBuffer();
-    }
-
     public String getDefaultIsolation() {
         return mcf.getDefaultIsolation();
     }
@@ -239,7 +237,7 @@ public class FBSADataSource implements DataSource, Serializable, Referenceable, 
         return mcf.getSocketBufferSize();
     }
 
-    public String getSqlDialect() {
+    public int getSqlDialect() {
         return mcf.getSqlDialect();
     }
 
@@ -295,7 +293,7 @@ public class FBSADataSource implements DataSource, Serializable, Referenceable, 
         mcf.setSocketBufferSize(socketBufferSize);
     }
 
-    public void setSqlDialect(String sqlDialect) {
+    public void setSqlDialect(int sqlDialect) {
         mcf.setSqlDialect(sqlDialect);
     }
 
@@ -590,13 +588,13 @@ public class FBSADataSource implements DataSource, Serializable, Referenceable, 
     }
 
     @Override
-    public boolean isUseGSSAuth() {
-        return mcf.isUseGSSAuth();
+    public boolean isGSSAuthentication() {
+        return mcf.isGSSAuthentication();
     }
 
     @Override
-    public void setUseGSSAuth(boolean useGSSAuth) {
-        mcf.setUseGSSAuth(useGSSAuth);
+    public void setGSSAuthentication(boolean useGSSAuth) {
+        mcf.setGSSAuthentication(useGSSAuth);
     }
 
     @Override
@@ -700,8 +698,8 @@ public class FBSADataSource implements DataSource, Serializable, Referenceable, 
     }
 
     @Override
-    public boolean getVerifyServerCertificate() {
-        return mcf.getVerifyServerCertificate();
+    public boolean isVerifyServerCertificate() {
+        return mcf.isVerifyServerCertificate();
     }
 
     @Override
@@ -711,5 +709,40 @@ public class FBSADataSource implements DataSource, Serializable, Referenceable, 
 
     public int getSoTimeout() {
         return mcf.getSoTimeout();
+    }
+
+    @Override
+    public String getProperty(String name) {
+        return mcf.getProperty(name);
+    }
+
+    @Override
+    public void setProperty(String name, String value) {
+        mcf.setProperty(name, value);
+    }
+
+    @Override
+    public Integer getIntProperty(String name) {
+        return mcf.getIntProperty(name);
+    }
+
+    @Override
+    public void setIntProperty(String name, Integer value) {
+        mcf.setIntProperty(name, value);
+    }
+
+    @Override
+    public Boolean getBooleanProperty(String name) {
+        return mcf.getBooleanProperty(name);
+    }
+
+    @Override
+    public void setBooleanProperty(String name, Boolean value) {
+        mcf.setBooleanProperty(name, value);
+    }
+
+    @Override
+    public Map<ConnectionProperty, Object> connectionPropertyValues() {
+        return mcf.connectionPropertyValues();
     }
 }

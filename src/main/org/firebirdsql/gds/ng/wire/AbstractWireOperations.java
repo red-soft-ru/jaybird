@@ -34,7 +34,7 @@ import org.firebirdsql.gds.ng.IAttachProperties;
 import org.firebirdsql.gds.ng.WarningMessageCallback;
 import org.firebirdsql.gds.ng.dbcrypt.DbCryptCallback;
 import org.firebirdsql.gds.ng.wire.auth.ClientAuthBlock;
-import org.firebirdsql.gds.ng.wire.crypt.EncryptionIdentifier;
+import org.firebirdsql.gds.ng.wire.crypt.KnownServerKey;
 import org.firebirdsql.jdbc.FBDriverNotCapableException;
 import org.firebirdsql.logging.Logger;
 import org.firebirdsql.logging.LoggerFactory;
@@ -317,7 +317,7 @@ public abstract class AbstractWireOperations implements FbWireOperations {
             GenericResponse genericResponse = (GenericResponse) response;
             @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
             SQLException exception = genericResponse.getException();
-            if (exception != null && exception instanceof SQLWarning) {
+            if (exception instanceof SQLWarning) {
                 warningCallback.processWarning((SQLWarning) exception);
             }
         }
@@ -393,8 +393,8 @@ public abstract class AbstractWireOperations implements FbWireOperations {
         return connection.getAttachProperties().asImmutable();
     }
 
-    protected final List<EncryptionIdentifier> getEncryptionIdentifiers() {
-        return connection.getEncryptionIdentifiers();
+    protected final List<KnownServerKey.PluginSpecificData> getPluginSpecificData() {
+        return connection.getPluginSpecificData();
     }
 
     protected final WireConnection<?, ?> getConnection() {

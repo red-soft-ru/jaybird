@@ -2,6 +2,7 @@ package org.firebirdsql.gds.ng.wire.crypt.wincrypt;
 
 import org.firebirdsql.gds.ng.FbExceptionBuilder;
 import org.firebirdsql.gds.ng.wire.auth.ClientAuthBlock;
+import org.firebirdsql.gds.ng.wire.crypt.CryptSessionConfig;
 import org.firebirdsql.gds.ng.wire.crypt.EncryptionIdentifier;
 import org.firebirdsql.gds.ng.wire.crypt.EncryptionInitInfo;
 import org.firebirdsql.gds.ng.wire.crypt.EncryptionPlugin;
@@ -25,10 +26,10 @@ import static org.firebirdsql.gds.JaybirdErrorCodes.*;
  */
 public class WireWinCryptEncryptionPlugin implements EncryptionPlugin {
 
-    private final ClientAuthBlock clientAuthBlock;
+    private final CryptSessionConfig cryptSessionConfig;
 
-    public WireWinCryptEncryptionPlugin(ClientAuthBlock clientAuthBlock) {
-        this.clientAuthBlock = clientAuthBlock;
+    public WireWinCryptEncryptionPlugin(CryptSessionConfig cryptSessionConfig) {
+        this.cryptSessionConfig = cryptSessionConfig;
     }
 
     @Override
@@ -39,33 +40,13 @@ public class WireWinCryptEncryptionPlugin implements EncryptionPlugin {
     @Override
     public EncryptionInitInfo initializeEncryption() {
         SQLExceptionChainBuilder<SQLException> chainBuilder = new SQLExceptionChainBuilder<>();
-        byte[] key = getKey(chainBuilder);
-        Cipher encryptionCipher = createEncryptionCipher(key, chainBuilder);
-        Cipher decryptionCipher = createDecryptionCipher(key, chainBuilder);
+        Cipher encryptionCipher = createEncryptionCipher(cryptSessionConfig.getEncryptKey(), chainBuilder);
+        Cipher decryptionCipher = createDecryptionCipher(cryptSessionConfig.getDecryptKey(), chainBuilder);
 
         if (chainBuilder.hasException()) {
             return EncryptionInitInfo.failure(getEncryptionIdentifier(), chainBuilder.getException());
         }
         return EncryptionInitInfo.success(getEncryptionIdentifier(), encryptionCipher, decryptionCipher);
-    }
-
-    private byte[] getKey(SQLExceptionChainBuilder<SQLException> chainBuilder) {
-        byte[] key = null;
-        try {
-            key = getKey(clientAuthBlock);
-        } catch (SQLException e) {
-            chainBuilder.append(e);
-        }
-        return key;
-    }
-
-    private byte[] getKey(ClientAuthBlock clientAuthBlock) throws SQLException {
-        if (!clientAuthBlock.supportsEncryption()) {
-            throw new FbExceptionBuilder().nonTransientException(jb_cryptNoCryptKeyAvailable)
-                    .messageParameter(getEncryptionIdentifier().toString())
-                    .toFlatSQLException();
-        }
-        return clientAuthBlock.getSessionKey();
     }
 
     private Cipher createEncryptionCipher(byte[] key, SQLExceptionChainBuilder<SQLException> chainBuilder) {

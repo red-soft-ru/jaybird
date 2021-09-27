@@ -66,6 +66,16 @@
 			<groupId>org.assertj</groupId>
 			<artifactId>assertj-core</artifactId>
 		</dependency>
+		<dependency>
+				<groupId>org.mockito</groupId>
+				<artifactId>mockito-core</artifactId>
+				<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-junit-jupiter</artifactId>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 	<properties>
 		<project.doc.name>Jaybird</project.doc.name>
@@ -78,6 +88,7 @@
 		<test.db.lc_ctype>NONE</test.db.lc_ctype>
 		<test.report.dir>${basedir}/../../reports</test.report.dir>
 		<test.java.jvm>/usr/lib/jvm/java-11-openjdk-11.0.6.10-1.el7_7.x86_64/bin/java</test.java.jvm>
+		<test.use.firebird.autocommit>false</test.use.firebird.autocommit>
 		<report_name>jdk11</report_name>
 	</properties>
 	<build>
@@ -122,6 +133,7 @@
 						</goals>
 						<configuration>
 							<sources>
+								<source>../../src/chacha_j11</source>
 								<source>../../src/extern</source>
 								<source>../../src/main</source>
 								<source>../../src/jdbc_42</source>
@@ -191,6 +203,7 @@
 					<extdirs>${module.thirdparty}</extdirs>
 					<bottom>Copyright &amp;copy; 2001-${maven.build.timestamp} Jaybird (Firebird JDBC/JCA) team. All rights reserved.</bottom>
 					<sourcepath>
+						../../src/chacha_j11:
 						../../src/main:
 						../../src/extern:
 						../../src/jna-client:

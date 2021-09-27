@@ -148,8 +148,7 @@ public class IDatabaseImplTest {
      */
     @Test
     public void testBasicCreateAndDrop() throws Exception {
-        connectionInfo.getExtraDatabaseParameters()
-                .addArgument(ISCConstants.isc_dpb_sql_dialect, 3);
+        connectionInfo.setSqlDialect(3);
         IDatabaseImpl db = (IDatabaseImpl) factory.connect(connectionInfo);
         File dbFile = new File(connectionInfo.getDatabaseName());
         try {

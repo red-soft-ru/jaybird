@@ -1,5 +1,5 @@
 /*
- * Firebird Open Source JavaEE Connector - JDBC Driver
+ * Firebird Open Source JDBC Driver
  *
  * Distributable under LGPL license.
  * You may obtain a copy of the License at http://www.gnu.org/copyleft/lgpl.html
@@ -18,6 +18,9 @@
  */
 package org.firebirdsql.gds;
 
+import org.firebirdsql.jaybird.fb.constants.DpbItems;
+import org.firebirdsql.jaybird.fb.constants.SpbItems;
+
 /**
  * Mapping of connection parameter buffer item tags.
  * <p>
@@ -35,47 +38,47 @@ public enum ParameterTagMapping {
     DPB {
         @Override
         public int getUserNameTag() {
-            return ISCConstants.isc_dpb_user_name;
+            return DpbItems.isc_dpb_user_name;
         }
 
         @Override
         public int getPasswordTag() {
-            return ISCConstants.isc_dpb_password;
+            return DpbItems.isc_dpb_password;
         }
 
         @Override
         public int getEncryptedPasswordTag() {
-            return ISCConstants.isc_dpb_password_enc;
+            return DpbItems.isc_dpb_password_enc;
         }
 
         @Override
         public int getTrustedAuthTag() {
-            return ISCConstants.isc_dpb_trusted_auth;
+            return DpbItems.isc_dpb_trusted_auth;
         }
 
         @Override
         public int getAuthPluginNameTag() {
-            return ISCConstants.isc_dpb_auth_plugin_name;
+            return DpbItems.isc_dpb_auth_plugin_name;
         }
 
         @Override
         public int getAuthPluginListTag() {
-            return ISCConstants.isc_dpb_auth_plugin_list;
+            return DpbItems.isc_dpb_auth_plugin_list;
         }
 
         @Override
         public int getSpecificAuthDataTag() {
-            return ISCConstants.isc_dpb_specific_auth_data;
+            return DpbItems.isc_dpb_specific_auth_data;
         }
 
         @Override
-        public int getGSSAuthTag() {
+        public int getGSSAuthenticationTag() {
             return ISCConstants.isc_dpb_gss;
         }
 
         @Override
         public int getConfigTag() {
-            return ISCConstants.isc_dpb_config;
+            return DpbItems.isc_dpb_config;
         }
 
         @Override
@@ -89,50 +92,49 @@ public enum ParameterTagMapping {
         }
     },
     SPB {
-
         @Override
         public int getUserNameTag() {
-            return ISCConstants.isc_spb_user_name;
+            return SpbItems.isc_spb_user_name;
         }
 
         @Override
         public int getPasswordTag() {
-            return ISCConstants.isc_spb_password;
+            return SpbItems.isc_spb_password;
         }
 
         @Override
         public int getEncryptedPasswordTag() {
-            return ISCConstants.isc_spb_password_enc;
+            return SpbItems.isc_spb_password_enc;
         }
 
         @Override
         public int getTrustedAuthTag() {
-            return ISCConstants.isc_spb_trusted_auth;
+            return SpbItems.isc_spb_trusted_auth;
         }
 
         @Override
         public int getAuthPluginNameTag() {
-            return ISCConstants.isc_spb_auth_plugin_name;
+            return SpbItems.isc_spb_auth_plugin_name;
         }
 
         @Override
         public int getAuthPluginListTag() {
-            return ISCConstants.isc_spb_auth_plugin_list;
+            return SpbItems.isc_spb_auth_plugin_list;
         }
 
         @Override
         public int getSpecificAuthDataTag() {
-            return ISCConstants.isc_spb_specific_auth_data;
+            return SpbItems.isc_spb_specific_auth_data;
         }
 
         @Override
-        public int getGSSAuthTag() {
+        public int getGSSAuthenticationTag() {
             return ISCConstants.isc_dpb_gss;
         }
 
         @Override
         public int getConfigTag() {
-            return ISCConstants.isc_spb_config;
+            return SpbItems.isc_spb_config;
         }
 
         @Override
@@ -153,7 +155,7 @@ public enum ParameterTagMapping {
     public abstract int getAuthPluginNameTag();
     public abstract int getAuthPluginListTag();
     public abstract int getSpecificAuthDataTag();
-    public abstract int getGSSAuthTag();
+    public abstract int getGSSAuthenticationTag();
     public abstract int getConfigTag();
     public abstract int getEffectiveLoginTag();
     public abstract int getExcludeCryptoPluginsTag();

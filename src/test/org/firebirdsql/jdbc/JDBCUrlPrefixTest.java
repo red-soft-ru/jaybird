@@ -20,9 +20,9 @@ package org.firebirdsql.jdbc;
 
 import org.firebirdsql.common.FBTestProperties;
 import org.firebirdsql.common.rules.UsesDatabase;
-import org.firebirdsql.gds.impl.jni.*;
+import org.firebirdsql.gds.impl.jni.EmbeddedGDSFactoryPlugin;
+import org.firebirdsql.gds.impl.jni.NativeGDSFactoryPlugin;
 import org.firebirdsql.gds.impl.nativeoo.FbOOEmbeddedGDSFactoryPlugin;
-import org.firebirdsql.gds.impl.nativeoo.FbOOLocalGDSFactoryPlugin;
 import org.firebirdsql.gds.impl.nativeoo.FbOONativeGDSFactoryPlugin;
 import org.firebirdsql.gds.impl.oo.OOGDSFactoryPlugin;
 import org.firebirdsql.gds.impl.wire.WireGDSFactoryPlugin;
@@ -83,10 +83,9 @@ public class JDBCUrlPrefixTest {
                 testCase("jdbc:firebird:native:", NativeGDSFactoryPlugin.NATIVE_TYPE_NAME),
                 testCase("jdbc:firebirdsql:fboo:native:", FbOONativeGDSFactoryPlugin.NATIVE_TYPE_NAME),
                 testCase("jdbc:firebird:fboo:native:", FbOONativeGDSFactoryPlugin.NATIVE_TYPE_NAME),
-                testCase("jdbc:firebirdsql:local:", LocalGDSFactoryPlugin.LOCAL_TYPE_NAME),
-                testCase("jdbc:firebird:local:", LocalGDSFactoryPlugin.LOCAL_TYPE_NAME),
-                testCase("jdbc:firebirdsql:fboo:local:", FbOOLocalGDSFactoryPlugin.LOCAL_TYPE_NAME),
-                testCase("jdbc:firebird:fboo:local:", FbOOLocalGDSFactoryPlugin.LOCAL_TYPE_NAME)
+                // For backwards compatibility
+                testCase("jdbc:firebird:local:", NativeGDSFactoryPlugin.NATIVE_TYPE_NAME),
+                testCase("jdbc:firebird:local:", NativeGDSFactoryPlugin.NATIVE_TYPE_NAME)
         );
     }
 

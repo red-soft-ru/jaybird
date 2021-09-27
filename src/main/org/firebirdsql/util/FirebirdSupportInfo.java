@@ -437,6 +437,14 @@ public final class FirebirdSupportInfo {
         return isVersionEqualOrAbove(3, 0);
     }
 
+    public boolean supportsWireCryptArc4() {
+        return isVersionEqualOrAbove(3, 0);
+    }
+
+    public boolean supportsWireCryptChaCha() {
+        return isVersionEqualOrAbove(4, 0);
+    }
+
     /**
      * @return {@code true} when zlib wire compression is supported
      */
@@ -594,6 +602,10 @@ public final class FirebirdSupportInfo {
      */
     public boolean supportsNBackupPreserveSequence() {
         return isVersionEqualOrAbove(4, 0);
+    }
+
+    public boolean isWindows() {
+        return serverVersion.getPlatform().equals("WI");
     }
 
     /**

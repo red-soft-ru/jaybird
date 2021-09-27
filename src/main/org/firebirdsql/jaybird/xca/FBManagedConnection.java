@@ -18,22 +18,16 @@
  */
 package org.firebirdsql.jaybird.xca;
 
-import org.firebirdsql.gds.DatabaseParameterBuffer;
 import org.firebirdsql.gds.ISCConstants;
 import org.firebirdsql.gds.JaybirdSystemProperties;
 import org.firebirdsql.gds.TransactionParameterBuffer;
-import org.firebirdsql.gds.impl.DatabaseParameterBufferExtension;
-import org.firebirdsql.gds.impl.DbAttachInfo;
 import org.firebirdsql.gds.impl.GDSHelper;
-import org.firebirdsql.gds.impl.jni.EmbeddedGDSFactoryPlugin;
-import org.firebirdsql.gds.impl.nativeoo.FbOOEmbeddedGDSFactoryPlugin;
-import org.firebirdsql.gds.impl.nativeoo.FbOOLocalGDSFactoryPlugin;
-import org.firebirdsql.gds.impl.jni.LocalGDSFactoryPlugin;
 import org.firebirdsql.gds.ng.*;
 import org.firebirdsql.gds.ng.fields.RowValue;
 import org.firebirdsql.gds.ng.listeners.DefaultDatabaseListener;
 import org.firebirdsql.gds.ng.listeners.DefaultStatementListener;
 import org.firebirdsql.gds.ng.listeners.ExceptionListener;
+import org.firebirdsql.jaybird.props.PropertyConstants;
 import org.firebirdsql.jdbc.*;
 import org.firebirdsql.jdbc.field.FBField;
 import org.firebirdsql.jdbc.field.FieldDataProvider;
@@ -54,6 +48,8 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
+
+import static java.util.Collections.unmodifiableSet;
 
 /**
  * A physical connection handle to a Firebird database, providing a {@code XAResource}.
@@ -107,51 +103,24 @@ public class FBManagedConnection implements ExceptionListener, Synchronizable {
 
         //TODO: XIDs in limbo should be loaded so that XAER_DUPID can be thrown appropriately
 
-        DatabaseParameterBuffer dpb = this.cri.getDpb();
+        IConnectionProperties connectionProperties = this.cri.asIConnectionProperties();
 
-        if (dpb.getArgumentAsString(DatabaseParameterBuffer.LC_CTYPE) == null
-                && dpb.getArgumentAsString(DatabaseParameterBufferExtension.LOCAL_ENCODING) == null) {
+        if (connectionProperties.getEncoding() == null && connectionProperties.getCharSet() == null) {
             String defaultEncoding = getDefaultConnectionEncoding();
             if (defaultEncoding == null) {
                 throw new SQLNonTransientConnectionException(ERROR_NO_CHARSET,
                         SQLStateConstants.SQL_STATE_CONNECTION_ERROR);
             }
-            dpb.addArgument(DatabaseParameterBuffer.LC_CTYPE, defaultEncoding);
+            connectionProperties.setEncoding(defaultEncoding);
 
             String warningMessage = WARNING_NO_CHARSET + defaultEncoding;
             log.warn(warningMessage);
             notifyWarning(new SQLWarning(warningMessage));
         }
 
-        if (!dpb.hasArgument(DatabaseParameterBuffer.CONNECT_TIMEOUT) && DriverManager.getLoginTimeout() > 0) {
-            dpb.addArgument(DatabaseParameterBuffer.CONNECT_TIMEOUT, DriverManager.getLoginTimeout());
-        }
-
-
-        final FbConnectionProperties connectionProperties = new FbConnectionProperties();
-        connectionProperties.fromDpb(dpb);
-        // TODO Move this logic to the GDSType or database factory?
-        final String gdsTypeName = mcf.getGDSType().toString();
-        if (!(EmbeddedGDSFactoryPlugin.EMBEDDED_TYPE_NAME.equals(gdsTypeName)
-                || LocalGDSFactoryPlugin.LOCAL_TYPE_NAME.equals(gdsTypeName))) {
-            final DbAttachInfo dbAttachInfo = DbAttachInfo.parseConnectString(mcf.getDatabase());
-            connectionProperties.setServerName(dbAttachInfo.getServer());
-            connectionProperties.setPortNumber(dbAttachInfo.getPort());
-            connectionProperties.setDatabaseName(dbAttachInfo.getFileName());
-        } else {
-            connectionProperties.setDatabaseName(mcf.getDatabase());
-        }
-
-        if (dpb.hasArgument(DatabaseParameterBuffer.GSS_AUTH)) {
-            String gssAuth = dpb.getArgumentAsString(DatabaseParameterBuffer.GSS_AUTH);
-            if(gssAuth.equalsIgnoreCase("true"))
-                connectionProperties.setUseGSSAuth(true);
-        }
-
-        if (dpb.hasArgument(DatabaseParameterBuffer.VERIFY_SERVER_CERTIFICATE)) {
-            int verify = dpb.getArgumentAsInt(DatabaseParameterBuffer.VERIFY_SERVER_CERTIFICATE);
-            if(verify == 1)
-                connectionProperties.setVerifyServerCertificate(true);
+        if (connectionProperties.getConnectTimeout() == PropertyConstants.TIMEOUT_NOT_SET
+                && DriverManager.getLoginTimeout() > 0) {
+            connectionProperties.setConnectTimeout(DriverManager.getLoginTimeout());
         }
 
         database = mcf.getDatabaseFactory().connect(connectionProperties);
@@ -215,8 +184,15 @@ public class FBManagedConnection implements ExceptionListener, Synchronizable {
         return gdsHelper;
     }
 
+    /**
+     * Returns the {@code databaseName} property as configured on the {@code ManagedConnectionFactory}.
+     * 
+     * @return database name
+     * @deprecated Will be removed in Jaybird 6; there is no direction replacement
+     */
+    @Deprecated
     public String getDatabase() {
-        return mcf.getDatabase();
+        return mcf.getDatabaseName();
     }
 
     public boolean isManagedEnvironment() {
@@ -481,7 +457,8 @@ public class FBManagedConnection implements ExceptionListener, Synchronizable {
     // --------------------------------------------------------------
 
     // TODO validate correctness of state set
-    private static final Set<TransactionState> XID_ACTIVE_STATE = Collections.unmodifiableSet(EnumSet.of(TransactionState.ACTIVE, TransactionState.PREPARED, TransactionState.PREPARING));
+    private static final Set<TransactionState> XID_ACTIVE_STATE =
+            unmodifiableSet(EnumSet.of(TransactionState.ACTIVE, TransactionState.PREPARED, TransactionState.PREPARING));
 
     boolean isXidActive(Xid xid) {
         FbTransaction transaction = xidMap.get(xid);
