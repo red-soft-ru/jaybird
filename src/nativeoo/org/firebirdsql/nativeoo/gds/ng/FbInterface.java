@@ -183,7 +183,8 @@ public interface FbInterface extends FbClientLibrary
 		public static int TYPE_REPLICATOR = 11;
 		public static int TYPE_CRYPTO_API = 12;
 		public static int TYPE_LDAP = 13;
-		public static int TYPE_COUNT = 14;
+		public static int TYPE_JSON = 14;
+		public static int TYPE_COUNT = 15;
 
 		public void registerPluginFactory(int pluginType, String defaultName, IPluginFactory factory);
 		public void registerModule(IPluginModule cleanup);
@@ -246,30 +247,35 @@ public interface FbInterface extends FbClientLibrary
 
 	public static interface IBlobIntf extends IReferenceCountedIntf
 	{
-		public int VERSION = 3;
+		public int VERSION = 4;
 
 		public void getInfo(IStatus status, int itemsLength, byte[] items, int bufferLength, byte[] buffer);
 		public int getSegment(IStatus status, int bufferLength, com.sun.jna.Pointer buffer, com.sun.jna.Pointer segmentLength);
 		public void putSegment(IStatus status, int length, com.sun.jna.Pointer buffer);
+		public void deprecatedCancel(IStatus status);
+		public void deprecatedClose(IStatus status);
+		public int seek(IStatus status, int mode, int offset);
 		public void cancel(IStatus status);
 		public void close(IStatus status);
-		public int seek(IStatus status, int mode, int offset);
 	}
 
 	public static interface ITransactionIntf extends IReferenceCountedIntf
 	{
-		public int VERSION = 3;
+		public int VERSION = 4;
 
 		public void getInfo(IStatus status, int itemsLength, byte[] items, int bufferLength, byte[] buffer);
 		public void prepare(IStatus status, int msgLength, byte[] message);
-		public void commit(IStatus status);
+		public void deprecatedCommit(IStatus status);
 		public void commitRetaining(IStatus status);
-		public void rollback(IStatus status);
+		public void deprecatedRollback(IStatus status);
 		public void rollbackRetaining(IStatus status);
-		public void disconnect(IStatus status);
+		public void deprecatedDisconnect(IStatus status);
 		public ITransaction join(IStatus status, ITransaction transaction);
 		public ITransaction validate(IStatus status, IAttachment attachment);
 		public ITransaction enterDtc(IStatus status);
+		public void commit(IStatus status);
+		public void rollback(IStatus status);
+		public void disconnect(IStatus status);
 	}
 
 	public static interface IMessageMetadataIntf extends IReferenceCountedIntf
@@ -317,7 +323,7 @@ public interface FbInterface extends FbClientLibrary
 
 	public static interface IResultSetIntf extends IReferenceCountedIntf
 	{
-		public int VERSION = 3;
+		public int VERSION = 4;
 
 		public int fetchNext(IStatus status, com.sun.jna.Pointer message);
 		public int fetchPrior(IStatus status, com.sun.jna.Pointer message);
@@ -328,13 +334,14 @@ public interface FbInterface extends FbClientLibrary
 		public boolean isEof(IStatus status);
 		public boolean isBof(IStatus status);
 		public IMessageMetadata getMetadata(IStatus status);
-		public void close(IStatus status);
+		public void deprecatedClose(IStatus status);
 		public void setDelayedOutputFormat(IStatus status, IMessageMetadata format);
+		public void close(IStatus status);
 	}
 
 	public static interface IStatementIntf extends IReferenceCountedIntf
 	{
-		public int VERSION = 4;
+		public int VERSION = 5;
 
 		public static int PREPARE_PREFETCH_NONE = 0x0;
 		public static int PREPARE_PREFETCH_TYPE = 0x1;
@@ -359,16 +366,17 @@ public interface FbInterface extends FbClientLibrary
 		public ITransaction execute(IStatus status, ITransaction transaction, IMessageMetadata inMetadata, com.sun.jna.Pointer inBuffer, IMessageMetadata outMetadata, com.sun.jna.Pointer outBuffer);
 		public IResultSet openCursor(IStatus status, ITransaction transaction, IMessageMetadata inMetadata, com.sun.jna.Pointer inBuffer, IMessageMetadata outMetadata, int flags);
 		public void setCursorName(IStatus status, String name);
-		public void free(IStatus status);
+		public void deprecatedFree(IStatus status);
 		public int getFlags(IStatus status);
 		public int getTimeout(IStatus status);
 		public void setTimeout(IStatus status, int timeOut);
 		public IBatch createBatch(IStatus status, IMessageMetadata inMetadata, int parLength, byte[] par);
+		public void free(IStatus status);
 	}
 
 	public static interface IBatchIntf extends IReferenceCountedIntf
 	{
-		public int VERSION = 3;
+		public int VERSION = 4;
 
 		public static byte VERSION1 = 1;
 		public static byte TAG_MULTIERROR = 1;
@@ -376,6 +384,11 @@ public interface FbInterface extends FbClientLibrary
 		public static byte TAG_BUFFER_BYTES_SIZE = 3;
 		public static byte TAG_BLOB_POLICY = 4;
 		public static byte TAG_DETAILED_ERRORS = 5;
+		public static byte INF_BUFFER_BYTES_SIZE = 10;
+		public static byte INF_DATA_BYTES_SIZE = 11;
+		public static byte INF_BLOBS_BYTES_SIZE = 12;
+		public static byte INF_BLOB_ALIGNMENT = 13;
+		public static byte INF_BLOB_HEADER = 14;
 		public static byte BLOB_NONE = 0;
 		public static byte BLOB_ID_ENGINE = 1;
 		public static byte BLOB_ID_USER = 2;
@@ -392,6 +405,9 @@ public interface FbInterface extends FbClientLibrary
 		public int getBlobAlignment(IStatus status);
 		public IMessageMetadata getMetadata(IStatus status);
 		public void setDefaultBpb(IStatus status, int parLength, byte[] par);
+		public void deprecatedClose(IStatus status);
+		public void close(IStatus status);
+		public void getInfo(IStatus status, int itemsLength, byte[] items, int bufferLength, byte[] buffer);
 	}
 
 	public static interface IBatchCompletionStateIntf extends IDisposableIntf
@@ -400,7 +416,7 @@ public interface FbInterface extends FbClientLibrary
 
 		public static int EXECUTE_FAILED = -1;
 		public static int SUCCESS_NO_INFO = -2;
-		public static int NO_MORE_ERRORS = 0x7fffffff;
+		public static int NO_MORE_ERRORS = 0xffffffff;
 
 		public int getSize(IStatus status);
 		public int getState(IStatus status, int pos);
@@ -410,15 +426,16 @@ public interface FbInterface extends FbClientLibrary
 
 	public static interface IReplicatorIntf extends IReferenceCountedIntf
 	{
-		public int VERSION = 3;
+		public int VERSION = 4;
 
 		public void process(IStatus status, int length, byte[] data);
+		public void deprecatedClose(IStatus status);
 		public void close(IStatus status);
 	}
 
 	public static interface IRequestIntf extends IReferenceCountedIntf
 	{
-		public int VERSION = 3;
+		public int VERSION = 4;
 
 		public void receive(IStatus status, int level, int msgType, int length, com.sun.jna.Pointer message);
 		public void send(IStatus status, int level, int msgType, int length, com.sun.jna.Pointer message);
@@ -426,19 +443,21 @@ public interface FbInterface extends FbClientLibrary
 		public void start(IStatus status, ITransaction tra, int level);
 		public void startAndSend(IStatus status, ITransaction tra, int level, int msgType, int length, com.sun.jna.Pointer message);
 		public void unwind(IStatus status, int level);
+		public void deprecatedFree(IStatus status);
 		public void free(IStatus status);
 	}
 
 	public static interface IEventsIntf extends IReferenceCountedIntf
 	{
-		public int VERSION = 3;
+		public int VERSION = 4;
 
+		public void deprecatedCancel(IStatus status);
 		public void cancel(IStatus status);
 	}
 
 	public static interface IAttachmentIntf extends IReferenceCountedIntf
 	{
-		public int VERSION = 4;
+		public int VERSION = 5;
 
 		public void getInfo(IStatus status, int itemsLength, byte[] items, int bufferLength, byte[] buffer);
 		public ITransaction startTransaction(IStatus status, int tpbLength, byte[] tpb);
@@ -456,23 +475,26 @@ public interface FbInterface extends FbClientLibrary
 		public IEvents queEvents(IStatus status, IEventCallback callback, int length, byte[] events);
 		public void cancelOperation(IStatus status, int option);
 		public void ping(IStatus status);
-		public void detach(IStatus status);
-		public void dropDatabase(IStatus status);
+		public void deprecatedDetach(IStatus status);
+		public void deprecatedDropDatabase(IStatus status);
 		public int getIdleTimeout(IStatus status);
 		public void setIdleTimeout(IStatus status, int timeOut);
 		public int getStatementTimeout(IStatus status);
 		public void setStatementTimeout(IStatus status, int timeOut);
 		public IBatch createBatch(IStatus status, ITransaction transaction, int stmtLength, String sqlStmt, int dialect, IMessageMetadata inMetadata, int parLength, byte[] par);
 		public IReplicator createReplicator(IStatus status);
+		public void detach(IStatus status);
+		public void dropDatabase(IStatus status);
 	}
 
 	public static interface IServiceIntf extends IReferenceCountedIntf
 	{
-		public int VERSION = 3;
+		public int VERSION = 4;
 
-		public void detach(IStatus status);
+		public void deprecatedDetach(IStatus status);
 		public void query(IStatus status, int sendLength, byte[] sendItems, int receiveLength, byte[] receiveItems, int bufferLength, byte[] buffer);
 		public void start(IStatus status, int spbLength, byte[] spb);
+		public void detach(IStatus status);
 	}
 
 	public static interface IProviderIntf extends IPluginBaseIntf
@@ -537,7 +559,7 @@ public interface FbInterface extends FbClientLibrary
 
 	public static interface IClientBlockIntf extends IReferenceCountedIntf
 	{
-		public int VERSION = 5;
+		public int VERSION = 6;
 
 		public String getLogin();
 		public String getPassword();
@@ -548,6 +570,7 @@ public interface FbInterface extends FbClientLibrary
 		public String getEffectiveLogin();
 		public String getCertificate();
 		public String getRepositoryPin();
+		public boolean getVerifyServer();
 	}
 
 	public static interface IServerIntf extends IAuthIntf
@@ -861,6 +884,8 @@ public interface FbInterface extends FbClientLibrary
 		public static int SPB_SEND = 7;
 		public static int SPB_RECEIVE = 8;
 		public static int SPB_RESPONSE = 9;
+		public static int INFO_SEND = 10;
+		public static int INFO_RESPONSE = 11;
 
 		public void clear(IStatus status);
 		public void removeCurrent(IStatus status);
@@ -1253,7 +1278,7 @@ public interface FbInterface extends FbClientLibrary
 	{
 		public int VERSION = 4;
 
-		public void setAttachment(IAttachment attachment);
+		public boolean init(IStatus status, IAttachment attachment);
 		public IReplicatedTransaction startTransaction(IStatus status, ITransaction transaction, long number);
 		public void cleanupTransaction(IStatus status, long number);
 		public void setSequence(IStatus status, String name, long value);
@@ -1322,8 +1347,8 @@ public interface FbInterface extends FbClientLibrary
 		public com.sun.jna.Pointer getObjectInfo();
 		public int encrypt(byte[] data, int dataLength, byte[] cryptData, int cryptDataLength, com.sun.jna.Pointer realCryptDataLength, ICryptoKey key);
 		public int decrypt(byte[] cryptData, int cryptDataLength, byte[] data, int dataLength, com.sun.jna.Pointer realDataLength, ICryptoKey key);
-		public int encryptFinal(byte[] data, int dataLength, byte[] cryptData, int cryptDataLength, com.sun.jna.Pointer realCryptDataLength, ICryptoKey key, boolean Final);
-		public int decryptFinal(byte[] cryptData, int cryptDataLength, byte[] data, int dataLength, com.sun.jna.Pointer realDataLength, ICryptoKey key, boolean Final);
+		public int encryptFinal(byte[] data, int dataLength, byte[] cryptData, int cryptDataLength, com.sun.jna.Pointer realCryptDataLength, ICryptoKey key, boolean finalValue);
+		public int decryptFinal(byte[] cryptData, int cryptDataLength, byte[] data, int dataLength, com.sun.jna.Pointer realDataLength, ICryptoKey key, boolean finalValue);
 		public int createKey(ICryptoRepository repository, ICryptoKey[] key);
 		public int deleteKey(ICryptoKey key);
 	}
@@ -1434,7 +1459,7 @@ public interface FbInterface extends FbClientLibrary
 
 	public static interface ILdapPluginIntf extends IReferenceCountedIntf
 	{
-		public int VERSION = 3;
+		public int VERSION = 4;
 
 		public static int SYNC_RESULT_SUCCESS = 0;
 		public static int SYNC_RESULT_NO_USER = 1;
@@ -1449,17 +1474,20 @@ public interface FbInterface extends FbClientLibrary
 		public boolean bind_as(String user, String password);
 		public boolean find_user(String name, com.sun.jna.Pointer password, com.sun.jna.Pointer gost_password, com.sun.jna.Pointer hash_alg);
 		public boolean find_srp_user(String name, com.sun.jna.Pointer verifier, com.sun.jna.Pointer salt);
-		public int get_certificate(String name, com.sun.jna.Pointer buffer, com.sun.jna.Pointer buffer_length, String attr_name);
-		public boolean get_user_attr(String name, String attr, com.sun.jna.Pointer value);
+		public int get_certificate(IStatus status, String name, com.sun.jna.Pointer buffer, com.sun.jna.Pointer buffer_length, String attr_name);
+		public boolean get_user_attr(IStatus status, String name, String attr, com.sun.jna.Pointer value);
 		public boolean get_policy(String name, com.sun.jna.Pointer policy, com.sun.jna.Pointer failed_count, ISC_TIMESTAMP[] access_time);
 		public boolean set_policy(String name, String policy, com.sun.jna.Pointer failed_count, ISC_TIMESTAMP[] access_time);
 		public boolean get_password_history(String name, String plugin, com.sun.jna.Pointer buffer, com.sun.jna.Pointer buffer_length);
-		public void get_user_info(com.sun.jna.Pointer userId);
+		public void get_user_info(com.sun.jna.Pointer userId, boolean[] active);
+		public void get_groups_list(com.sun.jna.Pointer strlist, String userName, String groupFilter);
+		public void get_users_list(com.sun.jna.Pointer strlist, String groupName);
 		public void find_user_groups(com.sun.jna.Pointer userId);
 		public int change_legacy_password(String name, String password, boolean[] active);
 		public int change_gost_password(String name, String password, com.sun.jna.Pointer hash, boolean[] active);
 		public int change_srp_password(String name, String password, com.sun.jna.Pointer verifier, com.sun.jna.Pointer salt, boolean[] active);
 		public boolean is_password_expired(String name, String plugin, int valid_days);
+		public int change_active_attr(String name, boolean[] active);
 	}
 
 	public static interface ILdapFactoryIntf extends IPluginBaseIntf
@@ -1475,6 +1503,27 @@ public interface FbInterface extends FbClientLibrary
 
 		public int authenticate(IStatus status, IServerBlock sBlock, IWriter writerInterface);
 		public boolean verifyPassword(String secDbName, String user, String password, boolean isNew, String plugin, com.sun.jna.Pointer isEqual);
+	}
+
+	public static interface IJsonPluginIntf extends IReferenceCountedIntf
+	{
+		public int VERSION = 3;
+
+		public com.sun.jna.Pointer jsonQuery(IStatus status, com.sun.jna.Pointer path, int wrapper, int quotes);
+		public com.sun.jna.Pointer jsonValue(IStatus status, com.sun.jna.Pointer path);
+		public com.sun.jna.Pointer jsonModify(IStatus status, com.sun.jna.Pointer path, com.sun.jna.Pointer field);
+		public com.sun.jna.Pointer jsonTable(IStatus status, com.sun.jna.Pointer paths_to_fields, int count_fields);
+		public com.sun.jna.Pointer jsonArray(com.sun.jna.Pointer array_elements, int count_fields, int absent);
+		public com.sun.jna.Pointer jsonObject(com.sun.jna.Pointer array_key_value_pair, int count_field, int unique, int absent);
+		public boolean isJson();
+		public com.sun.jna.Pointer jsonExists(IStatus status, com.sun.jna.Pointer path);
+	}
+
+	public static interface IJsonFactoryIntf extends IPluginBaseIntf
+	{
+		public int VERSION = 4;
+
+		public IJsonPlugin jsonCreate(com.sun.jna.Pointer json_text);
 	}
 
 	public static class IVersioned extends com.sun.jna.Structure implements IVersionedIntf
@@ -4225,6 +4274,21 @@ public interface FbInterface extends FbClientLibrary
 				public void invoke(IBlob self, IStatus status, int length, com.sun.jna.Pointer buffer);
 			}
 
+			public static interface Callback_deprecatedCancel extends com.sun.jna.Callback
+			{
+				public void invoke(IBlob self, IStatus status);
+			}
+
+			public static interface Callback_deprecatedClose extends com.sun.jna.Callback
+			{
+				public void invoke(IBlob self, IStatus status);
+			}
+
+			public static interface Callback_seek extends com.sun.jna.Callback
+			{
+				public int invoke(IBlob self, IStatus status, int mode, int offset);
+			}
+
 			public static interface Callback_cancel extends com.sun.jna.Callback
 			{
 				public void invoke(IBlob self, IStatus status);
@@ -4233,11 +4297,6 @@ public interface FbInterface extends FbClientLibrary
 			public static interface Callback_close extends com.sun.jna.Callback
 			{
 				public void invoke(IBlob self, IStatus status);
-			}
-
-			public static interface Callback_seek extends com.sun.jna.Callback
-			{
-				public int invoke(IBlob self, IStatus status, int mode, int offset);
 			}
 
 			public VTable(com.sun.jna.Pointer pointer)
@@ -4295,6 +4354,52 @@ public interface FbInterface extends FbClientLibrary
 					}
 				};
 
+				deprecatedCancel = new Callback_deprecatedCancel() {
+					@Override
+					public void invoke(IBlob self, IStatus status)
+					{
+						try
+						{
+							obj.deprecatedCancel(status);
+						}
+						catch (Throwable t)
+						{
+							FbInterfaceException.catchException(status, t);
+						}
+					}
+				};
+
+				deprecatedClose = new Callback_deprecatedClose() {
+					@Override
+					public void invoke(IBlob self, IStatus status)
+					{
+						try
+						{
+							obj.deprecatedClose(status);
+						}
+						catch (Throwable t)
+						{
+							FbInterfaceException.catchException(status, t);
+						}
+					}
+				};
+
+				seek = new Callback_seek() {
+					@Override
+					public int invoke(IBlob self, IStatus status, int mode, int offset)
+					{
+						try
+						{
+							return obj.seek(status, mode, offset);
+						}
+						catch (Throwable t)
+						{
+							FbInterfaceException.catchException(status, t);
+							return 0;
+						}
+					}
+				};
+
 				cancel = new Callback_cancel() {
 					@Override
 					public void invoke(IBlob self, IStatus status)
@@ -4324,22 +4429,6 @@ public interface FbInterface extends FbClientLibrary
 						}
 					}
 				};
-
-				seek = new Callback_seek() {
-					@Override
-					public int invoke(IBlob self, IStatus status, int mode, int offset)
-					{
-						try
-						{
-							return obj.seek(status, mode, offset);
-						}
-						catch (Throwable t)
-						{
-							FbInterfaceException.catchException(status, t);
-							return 0;
-						}
-					}
-				};
 			}
 
 			public VTable()
@@ -4349,15 +4438,17 @@ public interface FbInterface extends FbClientLibrary
 			public Callback_getInfo getInfo;
 			public Callback_getSegment getSegment;
 			public Callback_putSegment putSegment;
+			public Callback_deprecatedCancel deprecatedCancel;
+			public Callback_deprecatedClose deprecatedClose;
+			public Callback_seek seek;
 			public Callback_cancel cancel;
 			public Callback_close close;
-			public Callback_seek seek;
 
 			@Override
 			protected java.util.List<String> getFieldOrder()
 			{
 				java.util.List<String> fields = super.getFieldOrder();
-				fields.addAll(java.util.Arrays.asList("getInfo", "getSegment", "putSegment", "cancel", "close", "seek"));
+				fields.addAll(java.util.Arrays.asList("getInfo", "getSegment", "putSegment", "deprecatedCancel", "deprecatedClose", "seek", "cancel", "close"));
 				return fields;
 			}
 		}
@@ -4411,6 +4502,37 @@ public interface FbInterface extends FbClientLibrary
 			vTable.putSegment.invoke(this, status, length, buffer);
 		}
 
+		public void deprecatedCancel(IStatus status)
+		{
+			VTable vTable = getVTable();
+			if (vTable.deprecatedCancel == null) {
+				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IBlobIntf.VERSION);
+				return;
+			}
+			vTable.deprecatedCancel.invoke(this, status);
+		}
+
+		public void deprecatedClose(IStatus status)
+		{
+			VTable vTable = getVTable();
+			if (vTable.deprecatedClose == null) {
+				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IBlobIntf.VERSION);
+				return;
+			}
+			vTable.deprecatedClose.invoke(this, status);
+		}
+
+		public int seek(IStatus status, int mode, int offset)
+		{
+			VTable vTable = getVTable();
+			if (vTable.seek == null) {
+				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IBlobIntf.VERSION);
+				return 0;
+			}
+			int result = vTable.seek.invoke(this, status, mode, offset);
+			return result;
+		}
+
 		public void cancel(IStatus status)
 		{
 			VTable vTable = getVTable();
@@ -4430,17 +4552,6 @@ public interface FbInterface extends FbClientLibrary
 			}
 			vTable.close.invoke(this, status);
 		}
-
-		public int seek(IStatus status, int mode, int offset)
-		{
-			VTable vTable = getVTable();
-			if (vTable.seek == null) {
-				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IBlobIntf.VERSION);
-				return 0;
-			}
-			int result = vTable.seek.invoke(this, status, mode, offset);
-			return result;
-		}
 	}
 
 	public static class ITransaction extends IReferenceCounted implements ITransactionIntf
@@ -4457,7 +4568,7 @@ public interface FbInterface extends FbClientLibrary
 				public void invoke(ITransaction self, IStatus status, int msgLength, byte[] message);
 			}
 
-			public static interface Callback_commit extends com.sun.jna.Callback
+			public static interface Callback_deprecatedCommit extends com.sun.jna.Callback
 			{
 				public void invoke(ITransaction self, IStatus status);
 			}
@@ -4467,7 +4578,7 @@ public interface FbInterface extends FbClientLibrary
 				public void invoke(ITransaction self, IStatus status);
 			}
 
-			public static interface Callback_rollback extends com.sun.jna.Callback
+			public static interface Callback_deprecatedRollback extends com.sun.jna.Callback
 			{
 				public void invoke(ITransaction self, IStatus status);
 			}
@@ -4477,7 +4588,7 @@ public interface FbInterface extends FbClientLibrary
 				public void invoke(ITransaction self, IStatus status);
 			}
 
-			public static interface Callback_disconnect extends com.sun.jna.Callback
+			public static interface Callback_deprecatedDisconnect extends com.sun.jna.Callback
 			{
 				public void invoke(ITransaction self, IStatus status);
 			}
@@ -4495,6 +4606,21 @@ public interface FbInterface extends FbClientLibrary
 			public static interface Callback_enterDtc extends com.sun.jna.Callback
 			{
 				public ITransaction invoke(ITransaction self, IStatus status);
+			}
+
+			public static interface Callback_commit extends com.sun.jna.Callback
+			{
+				public void invoke(ITransaction self, IStatus status);
+			}
+
+			public static interface Callback_rollback extends com.sun.jna.Callback
+			{
+				public void invoke(ITransaction self, IStatus status);
+			}
+
+			public static interface Callback_disconnect extends com.sun.jna.Callback
+			{
+				public void invoke(ITransaction self, IStatus status);
 			}
 
 			public VTable(com.sun.jna.Pointer pointer)
@@ -4536,13 +4662,13 @@ public interface FbInterface extends FbClientLibrary
 					}
 				};
 
-				commit = new Callback_commit() {
+				deprecatedCommit = new Callback_deprecatedCommit() {
 					@Override
 					public void invoke(ITransaction self, IStatus status)
 					{
 						try
 						{
-							obj.commit(status);
+							obj.deprecatedCommit(status);
 						}
 						catch (Throwable t)
 						{
@@ -4566,13 +4692,13 @@ public interface FbInterface extends FbClientLibrary
 					}
 				};
 
-				rollback = new Callback_rollback() {
+				deprecatedRollback = new Callback_deprecatedRollback() {
 					@Override
 					public void invoke(ITransaction self, IStatus status)
 					{
 						try
 						{
-							obj.rollback(status);
+							obj.deprecatedRollback(status);
 						}
 						catch (Throwable t)
 						{
@@ -4596,13 +4722,13 @@ public interface FbInterface extends FbClientLibrary
 					}
 				};
 
-				disconnect = new Callback_disconnect() {
+				deprecatedDisconnect = new Callback_deprecatedDisconnect() {
 					@Override
 					public void invoke(ITransaction self, IStatus status)
 					{
 						try
 						{
-							obj.disconnect(status);
+							obj.deprecatedDisconnect(status);
 						}
 						catch (Throwable t)
 						{
@@ -4658,6 +4784,51 @@ public interface FbInterface extends FbClientLibrary
 						}
 					}
 				};
+
+				commit = new Callback_commit() {
+					@Override
+					public void invoke(ITransaction self, IStatus status)
+					{
+						try
+						{
+							obj.commit(status);
+						}
+						catch (Throwable t)
+						{
+							FbInterfaceException.catchException(status, t);
+						}
+					}
+				};
+
+				rollback = new Callback_rollback() {
+					@Override
+					public void invoke(ITransaction self, IStatus status)
+					{
+						try
+						{
+							obj.rollback(status);
+						}
+						catch (Throwable t)
+						{
+							FbInterfaceException.catchException(status, t);
+						}
+					}
+				};
+
+				disconnect = new Callback_disconnect() {
+					@Override
+					public void invoke(ITransaction self, IStatus status)
+					{
+						try
+						{
+							obj.disconnect(status);
+						}
+						catch (Throwable t)
+						{
+							FbInterfaceException.catchException(status, t);
+						}
+					}
+				};
 			}
 
 			public VTable()
@@ -4666,20 +4837,23 @@ public interface FbInterface extends FbClientLibrary
 
 			public Callback_getInfo getInfo;
 			public Callback_prepare prepare;
-			public Callback_commit commit;
+			public Callback_deprecatedCommit deprecatedCommit;
 			public Callback_commitRetaining commitRetaining;
-			public Callback_rollback rollback;
+			public Callback_deprecatedRollback deprecatedRollback;
 			public Callback_rollbackRetaining rollbackRetaining;
-			public Callback_disconnect disconnect;
+			public Callback_deprecatedDisconnect deprecatedDisconnect;
 			public Callback_join join;
 			public Callback_validate validate;
 			public Callback_enterDtc enterDtc;
+			public Callback_commit commit;
+			public Callback_rollback rollback;
+			public Callback_disconnect disconnect;
 
 			@Override
 			protected java.util.List<String> getFieldOrder()
 			{
 				java.util.List<String> fields = super.getFieldOrder();
-				fields.addAll(java.util.Arrays.asList("getInfo", "prepare", "commit", "commitRetaining", "rollback", "rollbackRetaining", "disconnect", "join", "validate", "enterDtc"));
+				fields.addAll(java.util.Arrays.asList("getInfo", "prepare", "deprecatedCommit", "commitRetaining", "deprecatedRollback", "rollbackRetaining", "deprecatedDisconnect", "join", "validate", "enterDtc", "commit", "rollback", "disconnect"));
 				return fields;
 			}
 		}
@@ -4722,14 +4896,14 @@ public interface FbInterface extends FbClientLibrary
 			vTable.prepare.invoke(this, status, msgLength, message);
 		}
 
-		public void commit(IStatus status)
+		public void deprecatedCommit(IStatus status)
 		{
 			VTable vTable = getVTable();
-			if (vTable.commit == null) {
+			if (vTable.deprecatedCommit == null) {
 				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, ITransactionIntf.VERSION);
 				return;
 			}
-			vTable.commit.invoke(this, status);
+			vTable.deprecatedCommit.invoke(this, status);
 		}
 
 		public void commitRetaining(IStatus status)
@@ -4742,14 +4916,14 @@ public interface FbInterface extends FbClientLibrary
 			vTable.commitRetaining.invoke(this, status);
 		}
 
-		public void rollback(IStatus status)
+		public void deprecatedRollback(IStatus status)
 		{
 			VTable vTable = getVTable();
-			if (vTable.rollback == null) {
+			if (vTable.deprecatedRollback == null) {
 				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, ITransactionIntf.VERSION);
 				return;
 			}
-			vTable.rollback.invoke(this, status);
+			vTable.deprecatedRollback.invoke(this, status);
 		}
 
 		public void rollbackRetaining(IStatus status)
@@ -4762,14 +4936,14 @@ public interface FbInterface extends FbClientLibrary
 			vTable.rollbackRetaining.invoke(this, status);
 		}
 
-		public void disconnect(IStatus status)
+		public void deprecatedDisconnect(IStatus status)
 		{
 			VTable vTable = getVTable();
-			if (vTable.disconnect == null) {
+			if (vTable.deprecatedDisconnect == null) {
 				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, ITransactionIntf.VERSION);
 				return;
 			}
-			vTable.disconnect.invoke(this, status);
+			vTable.deprecatedDisconnect.invoke(this, status);
 		}
 
 		public ITransaction join(IStatus status, ITransaction transaction)
@@ -4803,6 +4977,36 @@ public interface FbInterface extends FbClientLibrary
 			}
 			ITransaction result = vTable.enterDtc.invoke(this, status);
 			return result;
+		}
+
+		public void commit(IStatus status)
+		{
+			VTable vTable = getVTable();
+			if (vTable.commit == null) {
+				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, ITransactionIntf.VERSION);
+				return;
+			}
+			vTable.commit.invoke(this, status);
+		}
+
+		public void rollback(IStatus status)
+		{
+			VTable vTable = getVTable();
+			if (vTable.rollback == null) {
+				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, ITransactionIntf.VERSION);
+				return;
+			}
+			vTable.rollback.invoke(this, status);
+		}
+
+		public void disconnect(IStatus status)
+		{
+			VTable vTable = getVTable();
+			if (vTable.disconnect == null) {
+				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, ITransactionIntf.VERSION);
+				return;
+			}
+			vTable.disconnect.invoke(this, status);
 		}
 	}
 
@@ -5948,7 +6152,7 @@ public interface FbInterface extends FbClientLibrary
 				public IMessageMetadata invoke(IResultSet self, IStatus status);
 			}
 
-			public static interface Callback_close extends com.sun.jna.Callback
+			public static interface Callback_deprecatedClose extends com.sun.jna.Callback
 			{
 				public void invoke(IResultSet self, IStatus status);
 			}
@@ -5956,6 +6160,11 @@ public interface FbInterface extends FbClientLibrary
 			public static interface Callback_setDelayedOutputFormat extends com.sun.jna.Callback
 			{
 				public void invoke(IResultSet self, IStatus status, IMessageMetadata format);
+			}
+
+			public static interface Callback_close extends com.sun.jna.Callback
+			{
+				public void invoke(IResultSet self, IStatus status);
 			}
 
 			public VTable(com.sun.jna.Pointer pointer)
@@ -6111,13 +6320,13 @@ public interface FbInterface extends FbClientLibrary
 					}
 				};
 
-				close = new Callback_close() {
+				deprecatedClose = new Callback_deprecatedClose() {
 					@Override
 					public void invoke(IResultSet self, IStatus status)
 					{
 						try
 						{
-							obj.close(status);
+							obj.deprecatedClose(status);
 						}
 						catch (Throwable t)
 						{
@@ -6140,6 +6349,21 @@ public interface FbInterface extends FbClientLibrary
 						}
 					}
 				};
+
+				close = new Callback_close() {
+					@Override
+					public void invoke(IResultSet self, IStatus status)
+					{
+						try
+						{
+							obj.close(status);
+						}
+						catch (Throwable t)
+						{
+							FbInterfaceException.catchException(status, t);
+						}
+					}
+				};
 			}
 
 			public VTable()
@@ -6155,14 +6379,15 @@ public interface FbInterface extends FbClientLibrary
 			public Callback_isEof isEof;
 			public Callback_isBof isBof;
 			public Callback_getMetadata getMetadata;
-			public Callback_close close;
+			public Callback_deprecatedClose deprecatedClose;
 			public Callback_setDelayedOutputFormat setDelayedOutputFormat;
+			public Callback_close close;
 
 			@Override
 			protected java.util.List<String> getFieldOrder()
 			{
 				java.util.List<String> fields = super.getFieldOrder();
-				fields.addAll(java.util.Arrays.asList("fetchNext", "fetchPrior", "fetchFirst", "fetchLast", "fetchAbsolute", "fetchRelative", "isEof", "isBof", "getMetadata", "close", "setDelayedOutputFormat"));
+				fields.addAll(java.util.Arrays.asList("fetchNext", "fetchPrior", "fetchFirst", "fetchLast", "fetchAbsolute", "fetchRelative", "isEof", "isBof", "getMetadata", "deprecatedClose", "setDelayedOutputFormat", "close"));
 				return fields;
 			}
 		}
@@ -6284,14 +6509,14 @@ public interface FbInterface extends FbClientLibrary
 			return result;
 		}
 
-		public void close(IStatus status)
+		public void deprecatedClose(IStatus status)
 		{
 			VTable vTable = getVTable();
-			if (vTable.close == null) {
+			if (vTable.deprecatedClose == null) {
 				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IResultSetIntf.VERSION);
 				return;
 			}
-			vTable.close.invoke(this, status);
+			vTable.deprecatedClose.invoke(this, status);
 		}
 
 		public void setDelayedOutputFormat(IStatus status, IMessageMetadata format)
@@ -6302,6 +6527,16 @@ public interface FbInterface extends FbClientLibrary
 				return;
 			}
 			vTable.setDelayedOutputFormat.invoke(this, status, format);
+		}
+
+		public void close(IStatus status)
+		{
+			VTable vTable = getVTable();
+			if (vTable.close == null) {
+				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IResultSetIntf.VERSION);
+				return;
+			}
+			vTable.close.invoke(this, status);
 		}
 	}
 
@@ -6354,7 +6589,7 @@ public interface FbInterface extends FbClientLibrary
 				public void invoke(IStatement self, IStatus status, String name);
 			}
 
-			public static interface Callback_free extends com.sun.jna.Callback
+			public static interface Callback_deprecatedFree extends com.sun.jna.Callback
 			{
 				public void invoke(IStatement self, IStatus status);
 			}
@@ -6377,6 +6612,11 @@ public interface FbInterface extends FbClientLibrary
 			public static interface Callback_createBatch extends com.sun.jna.Callback
 			{
 				public IBatch invoke(IStatement self, IStatus status, IMessageMetadata inMetadata, int parLength, byte[] par);
+			}
+
+			public static interface Callback_free extends com.sun.jna.Callback
+			{
+				public void invoke(IStatement self, IStatus status);
 			}
 
 			public VTable(com.sun.jna.Pointer pointer)
@@ -6530,13 +6770,13 @@ public interface FbInterface extends FbClientLibrary
 					}
 				};
 
-				free = new Callback_free() {
+				deprecatedFree = new Callback_deprecatedFree() {
 					@Override
 					public void invoke(IStatement self, IStatus status)
 					{
 						try
 						{
-							obj.free(status);
+							obj.deprecatedFree(status);
 						}
 						catch (Throwable t)
 						{
@@ -6607,6 +6847,21 @@ public interface FbInterface extends FbClientLibrary
 						}
 					}
 				};
+
+				free = new Callback_free() {
+					@Override
+					public void invoke(IStatement self, IStatus status)
+					{
+						try
+						{
+							obj.free(status);
+						}
+						catch (Throwable t)
+						{
+							FbInterfaceException.catchException(status, t);
+						}
+					}
+				};
 			}
 
 			public VTable()
@@ -6622,17 +6877,18 @@ public interface FbInterface extends FbClientLibrary
 			public Callback_execute execute;
 			public Callback_openCursor openCursor;
 			public Callback_setCursorName setCursorName;
-			public Callback_free free;
+			public Callback_deprecatedFree deprecatedFree;
 			public Callback_getFlags getFlags;
 			public Callback_getTimeout getTimeout;
 			public Callback_setTimeout setTimeout;
 			public Callback_createBatch createBatch;
+			public Callback_free free;
 
 			@Override
 			protected java.util.List<String> getFieldOrder()
 			{
 				java.util.List<String> fields = super.getFieldOrder();
-				fields.addAll(java.util.Arrays.asList("getInfo", "getType", "getPlan", "getAffectedRecords", "getInputMetadata", "getOutputMetadata", "execute", "openCursor", "setCursorName", "free", "getFlags", "getTimeout", "setTimeout", "createBatch"));
+				fields.addAll(java.util.Arrays.asList("getInfo", "getType", "getPlan", "getAffectedRecords", "getInputMetadata", "getOutputMetadata", "execute", "openCursor", "setCursorName", "deprecatedFree", "getFlags", "getTimeout", "setTimeout", "createBatch", "free"));
 				return fields;
 			}
 		}
@@ -6752,14 +7008,14 @@ public interface FbInterface extends FbClientLibrary
 			vTable.setCursorName.invoke(this, status, name);
 		}
 
-		public void free(IStatus status)
+		public void deprecatedFree(IStatus status)
 		{
 			VTable vTable = getVTable();
-			if (vTable.free == null) {
+			if (vTable.deprecatedFree == null) {
 				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IStatementIntf.VERSION);
 				return;
 			}
-			vTable.free.invoke(this, status);
+			vTable.deprecatedFree.invoke(this, status);
 		}
 
 		public int getFlags(IStatus status)
@@ -6803,6 +7059,16 @@ public interface FbInterface extends FbClientLibrary
 			}
 			IBatch result = vTable.createBatch.invoke(this, status, inMetadata, parLength, par);
 			return result;
+		}
+
+		public void free(IStatus status)
+		{
+			VTable vTable = getVTable();
+			if (vTable.free == null) {
+				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IStatementIntf.VERSION);
+				return;
+			}
+			vTable.free.invoke(this, status);
 		}
 	}
 
@@ -6858,6 +7124,21 @@ public interface FbInterface extends FbClientLibrary
 			public static interface Callback_setDefaultBpb extends com.sun.jna.Callback
 			{
 				public void invoke(IBatch self, IStatus status, int parLength, byte[] par);
+			}
+
+			public static interface Callback_deprecatedClose extends com.sun.jna.Callback
+			{
+				public void invoke(IBatch self, IStatus status);
+			}
+
+			public static interface Callback_close extends com.sun.jna.Callback
+			{
+				public void invoke(IBatch self, IStatus status);
+			}
+
+			public static interface Callback_getInfo extends com.sun.jna.Callback
+			{
+				public void invoke(IBatch self, IStatus status, int itemsLength, byte[] items, int bufferLength, byte[] buffer);
 			}
 
 			public VTable(com.sun.jna.Pointer pointer)
@@ -7021,6 +7302,51 @@ public interface FbInterface extends FbClientLibrary
 						}
 					}
 				};
+
+				deprecatedClose = new Callback_deprecatedClose() {
+					@Override
+					public void invoke(IBatch self, IStatus status)
+					{
+						try
+						{
+							obj.deprecatedClose(status);
+						}
+						catch (Throwable t)
+						{
+							FbInterfaceException.catchException(status, t);
+						}
+					}
+				};
+
+				close = new Callback_close() {
+					@Override
+					public void invoke(IBatch self, IStatus status)
+					{
+						try
+						{
+							obj.close(status);
+						}
+						catch (Throwable t)
+						{
+							FbInterfaceException.catchException(status, t);
+						}
+					}
+				};
+
+				getInfo = new Callback_getInfo() {
+					@Override
+					public void invoke(IBatch self, IStatus status, int itemsLength, byte[] items, int bufferLength, byte[] buffer)
+					{
+						try
+						{
+							obj.getInfo(status, itemsLength, items, bufferLength, buffer);
+						}
+						catch (Throwable t)
+						{
+							FbInterfaceException.catchException(status, t);
+						}
+					}
+				};
 			}
 
 			public VTable()
@@ -7037,12 +7363,15 @@ public interface FbInterface extends FbClientLibrary
 			public Callback_getBlobAlignment getBlobAlignment;
 			public Callback_getMetadata getMetadata;
 			public Callback_setDefaultBpb setDefaultBpb;
+			public Callback_deprecatedClose deprecatedClose;
+			public Callback_close close;
+			public Callback_getInfo getInfo;
 
 			@Override
 			protected java.util.List<String> getFieldOrder()
 			{
 				java.util.List<String> fields = super.getFieldOrder();
-				fields.addAll(java.util.Arrays.asList("add", "addBlob", "appendBlobData", "addBlobStream", "registerBlob", "execute", "cancel", "getBlobAlignment", "getMetadata", "setDefaultBpb"));
+				fields.addAll(java.util.Arrays.asList("add", "addBlob", "appendBlobData", "addBlobStream", "registerBlob", "execute", "cancel", "getBlobAlignment", "getMetadata", "setDefaultBpb", "deprecatedClose", "close", "getInfo"));
 				return fields;
 			}
 		}
@@ -7166,6 +7495,36 @@ public interface FbInterface extends FbClientLibrary
 				return;
 			}
 			vTable.setDefaultBpb.invoke(this, status, parLength, par);
+		}
+
+		public void deprecatedClose(IStatus status)
+		{
+			VTable vTable = getVTable();
+			if (vTable.deprecatedClose == null) {
+				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IBatchIntf.VERSION);
+				return;
+			}
+			vTable.deprecatedClose.invoke(this, status);
+		}
+
+		public void close(IStatus status)
+		{
+			VTable vTable = getVTable();
+			if (vTable.close == null) {
+				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IBatchIntf.VERSION);
+				return;
+			}
+			vTable.close.invoke(this, status);
+		}
+
+		public void getInfo(IStatus status, int itemsLength, byte[] items, int bufferLength, byte[] buffer)
+		{
+			VTable vTable = getVTable();
+			if (vTable.getInfo == null) {
+				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IBatchIntf.VERSION);
+				return;
+			}
+			vTable.getInfo.invoke(this, status, itemsLength, items, bufferLength, buffer);
 		}
 	}
 
@@ -7355,6 +7714,11 @@ public interface FbInterface extends FbClientLibrary
 				public void invoke(IReplicator self, IStatus status, int length, byte[] data);
 			}
 
+			public static interface Callback_deprecatedClose extends com.sun.jna.Callback
+			{
+				public void invoke(IReplicator self, IStatus status);
+			}
+
 			public static interface Callback_close extends com.sun.jna.Callback
 			{
 				public void invoke(IReplicator self, IStatus status);
@@ -7384,6 +7748,21 @@ public interface FbInterface extends FbClientLibrary
 					}
 				};
 
+				deprecatedClose = new Callback_deprecatedClose() {
+					@Override
+					public void invoke(IReplicator self, IStatus status)
+					{
+						try
+						{
+							obj.deprecatedClose(status);
+						}
+						catch (Throwable t)
+						{
+							FbInterfaceException.catchException(status, t);
+						}
+					}
+				};
+
 				close = new Callback_close() {
 					@Override
 					public void invoke(IReplicator self, IStatus status)
@@ -7405,13 +7784,14 @@ public interface FbInterface extends FbClientLibrary
 			}
 
 			public Callback_process process;
+			public Callback_deprecatedClose deprecatedClose;
 			public Callback_close close;
 
 			@Override
 			protected java.util.List<String> getFieldOrder()
 			{
 				java.util.List<String> fields = super.getFieldOrder();
-				fields.addAll(java.util.Arrays.asList("process", "close"));
+				fields.addAll(java.util.Arrays.asList("process", "deprecatedClose", "close"));
 				return fields;
 			}
 		}
@@ -7442,6 +7822,16 @@ public interface FbInterface extends FbClientLibrary
 				return;
 			}
 			vTable.process.invoke(this, status, length, data);
+		}
+
+		public void deprecatedClose(IStatus status)
+		{
+			VTable vTable = getVTable();
+			if (vTable.deprecatedClose == null) {
+				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IReplicatorIntf.VERSION);
+				return;
+			}
+			vTable.deprecatedClose.invoke(this, status);
 		}
 
 		public void close(IStatus status)
@@ -7487,6 +7877,11 @@ public interface FbInterface extends FbClientLibrary
 			public static interface Callback_unwind extends com.sun.jna.Callback
 			{
 				public void invoke(IRequest self, IStatus status, int level);
+			}
+
+			public static interface Callback_deprecatedFree extends com.sun.jna.Callback
+			{
+				public void invoke(IRequest self, IStatus status);
 			}
 
 			public static interface Callback_free extends com.sun.jna.Callback
@@ -7593,6 +7988,21 @@ public interface FbInterface extends FbClientLibrary
 					}
 				};
 
+				deprecatedFree = new Callback_deprecatedFree() {
+					@Override
+					public void invoke(IRequest self, IStatus status)
+					{
+						try
+						{
+							obj.deprecatedFree(status);
+						}
+						catch (Throwable t)
+						{
+							FbInterfaceException.catchException(status, t);
+						}
+					}
+				};
+
 				free = new Callback_free() {
 					@Override
 					public void invoke(IRequest self, IStatus status)
@@ -7619,13 +8029,14 @@ public interface FbInterface extends FbClientLibrary
 			public Callback_start start;
 			public Callback_startAndSend startAndSend;
 			public Callback_unwind unwind;
+			public Callback_deprecatedFree deprecatedFree;
 			public Callback_free free;
 
 			@Override
 			protected java.util.List<String> getFieldOrder()
 			{
 				java.util.List<String> fields = super.getFieldOrder();
-				fields.addAll(java.util.Arrays.asList("receive", "send", "getInfo", "start", "startAndSend", "unwind", "free"));
+				fields.addAll(java.util.Arrays.asList("receive", "send", "getInfo", "start", "startAndSend", "unwind", "deprecatedFree", "free"));
 				return fields;
 			}
 		}
@@ -7708,6 +8119,16 @@ public interface FbInterface extends FbClientLibrary
 			vTable.unwind.invoke(this, status, level);
 		}
 
+		public void deprecatedFree(IStatus status)
+		{
+			VTable vTable = getVTable();
+			if (vTable.deprecatedFree == null) {
+				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IRequestIntf.VERSION);
+				return;
+			}
+			vTable.deprecatedFree.invoke(this, status);
+		}
+
 		public void free(IStatus status)
 		{
 			VTable vTable = getVTable();
@@ -7723,6 +8144,11 @@ public interface FbInterface extends FbClientLibrary
 	{
 		public static class VTable extends IReferenceCounted.VTable
 		{
+			public static interface Callback_deprecatedCancel extends com.sun.jna.Callback
+			{
+				public void invoke(IEvents self, IStatus status);
+			}
+
 			public static interface Callback_cancel extends com.sun.jna.Callback
 			{
 				public void invoke(IEvents self, IStatus status);
@@ -7736,6 +8162,21 @@ public interface FbInterface extends FbClientLibrary
 			public VTable(final IEventsIntf obj)
 			{
 				super(obj);
+
+				deprecatedCancel = new Callback_deprecatedCancel() {
+					@Override
+					public void invoke(IEvents self, IStatus status)
+					{
+						try
+						{
+							obj.deprecatedCancel(status);
+						}
+						catch (Throwable t)
+						{
+							FbInterfaceException.catchException(status, t);
+						}
+					}
+				};
 
 				cancel = new Callback_cancel() {
 					@Override
@@ -7757,13 +8198,14 @@ public interface FbInterface extends FbClientLibrary
 			{
 			}
 
+			public Callback_deprecatedCancel deprecatedCancel;
 			public Callback_cancel cancel;
 
 			@Override
 			protected java.util.List<String> getFieldOrder()
 			{
 				java.util.List<String> fields = super.getFieldOrder();
-				fields.addAll(java.util.Arrays.asList("cancel"));
+				fields.addAll(java.util.Arrays.asList("deprecatedCancel", "cancel"));
 				return fields;
 			}
 		}
@@ -7784,6 +8226,16 @@ public interface FbInterface extends FbClientLibrary
 		protected VTable createVTable()
 		{
 			return new VTable(cloopVTable);
+		}
+
+		public void deprecatedCancel(IStatus status)
+		{
+			VTable vTable = getVTable();
+			if (vTable.deprecatedCancel == null) {
+				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IEventsIntf.VERSION);
+				return;
+			}
+			vTable.deprecatedCancel.invoke(this, status);
 		}
 
 		public void cancel(IStatus status)
@@ -7881,12 +8333,12 @@ public interface FbInterface extends FbClientLibrary
 				public void invoke(IAttachment self, IStatus status);
 			}
 
-			public static interface Callback_detach extends com.sun.jna.Callback
+			public static interface Callback_deprecatedDetach extends com.sun.jna.Callback
 			{
 				public void invoke(IAttachment self, IStatus status);
 			}
 
-			public static interface Callback_dropDatabase extends com.sun.jna.Callback
+			public static interface Callback_deprecatedDropDatabase extends com.sun.jna.Callback
 			{
 				public void invoke(IAttachment self, IStatus status);
 			}
@@ -7919,6 +8371,16 @@ public interface FbInterface extends FbClientLibrary
 			public static interface Callback_createReplicator extends com.sun.jna.Callback
 			{
 				public IReplicator invoke(IAttachment self, IStatus status);
+			}
+
+			public static interface Callback_detach extends com.sun.jna.Callback
+			{
+				public void invoke(IAttachment self, IStatus status);
+			}
+
+			public static interface Callback_dropDatabase extends com.sun.jna.Callback
+			{
+				public void invoke(IAttachment self, IStatus status);
 			}
 
 			public VTable(com.sun.jna.Pointer pointer)
@@ -8180,13 +8642,13 @@ public interface FbInterface extends FbClientLibrary
 					}
 				};
 
-				detach = new Callback_detach() {
+				deprecatedDetach = new Callback_deprecatedDetach() {
 					@Override
 					public void invoke(IAttachment self, IStatus status)
 					{
 						try
 						{
-							obj.detach(status);
+							obj.deprecatedDetach(status);
 						}
 						catch (Throwable t)
 						{
@@ -8195,13 +8657,13 @@ public interface FbInterface extends FbClientLibrary
 					}
 				};
 
-				dropDatabase = new Callback_dropDatabase() {
+				deprecatedDropDatabase = new Callback_deprecatedDropDatabase() {
 					@Override
 					public void invoke(IAttachment self, IStatus status)
 					{
 						try
 						{
-							obj.dropDatabase(status);
+							obj.deprecatedDropDatabase(status);
 						}
 						catch (Throwable t)
 						{
@@ -8303,6 +8765,36 @@ public interface FbInterface extends FbClientLibrary
 						}
 					}
 				};
+
+				detach = new Callback_detach() {
+					@Override
+					public void invoke(IAttachment self, IStatus status)
+					{
+						try
+						{
+							obj.detach(status);
+						}
+						catch (Throwable t)
+						{
+							FbInterfaceException.catchException(status, t);
+						}
+					}
+				};
+
+				dropDatabase = new Callback_dropDatabase() {
+					@Override
+					public void invoke(IAttachment self, IStatus status)
+					{
+						try
+						{
+							obj.dropDatabase(status);
+						}
+						catch (Throwable t)
+						{
+							FbInterfaceException.catchException(status, t);
+						}
+					}
+				};
 			}
 
 			public VTable()
@@ -8325,20 +8817,22 @@ public interface FbInterface extends FbClientLibrary
 			public Callback_queEvents queEvents;
 			public Callback_cancelOperation cancelOperation;
 			public Callback_ping ping;
-			public Callback_detach detach;
-			public Callback_dropDatabase dropDatabase;
+			public Callback_deprecatedDetach deprecatedDetach;
+			public Callback_deprecatedDropDatabase deprecatedDropDatabase;
 			public Callback_getIdleTimeout getIdleTimeout;
 			public Callback_setIdleTimeout setIdleTimeout;
 			public Callback_getStatementTimeout getStatementTimeout;
 			public Callback_setStatementTimeout setStatementTimeout;
 			public Callback_createBatch createBatch;
 			public Callback_createReplicator createReplicator;
+			public Callback_detach detach;
+			public Callback_dropDatabase dropDatabase;
 
 			@Override
 			protected java.util.List<String> getFieldOrder()
 			{
 				java.util.List<String> fields = super.getFieldOrder();
-				fields.addAll(java.util.Arrays.asList("getInfo", "startTransaction", "reconnectTransaction", "compileRequest", "transactRequest", "createBlob", "openBlob", "getSlice", "putSlice", "executeDyn", "prepare", "execute", "openCursor", "queEvents", "cancelOperation", "ping", "detach", "dropDatabase", "getIdleTimeout", "setIdleTimeout", "getStatementTimeout", "setStatementTimeout", "createBatch", "createReplicator"));
+				fields.addAll(java.util.Arrays.asList("getInfo", "startTransaction", "reconnectTransaction", "compileRequest", "transactRequest", "createBlob", "openBlob", "getSlice", "putSlice", "executeDyn", "prepare", "execute", "openCursor", "queEvents", "cancelOperation", "ping", "deprecatedDetach", "deprecatedDropDatabase", "getIdleTimeout", "setIdleTimeout", "getStatementTimeout", "setStatementTimeout", "createBatch", "createReplicator", "detach", "dropDatabase"));
 				return fields;
 			}
 		}
@@ -8531,24 +9025,24 @@ public interface FbInterface extends FbClientLibrary
 			vTable.ping.invoke(this, status);
 		}
 
-		public void detach(IStatus status)
+		public void deprecatedDetach(IStatus status)
 		{
 			VTable vTable = getVTable();
-			if (vTable.detach == null) {
+			if (vTable.deprecatedDetach == null) {
 				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IAttachmentIntf.VERSION);
 				return;
 			}
-			vTable.detach.invoke(this, status);
+			vTable.deprecatedDetach.invoke(this, status);
 		}
 
-		public void dropDatabase(IStatus status)
+		public void deprecatedDropDatabase(IStatus status)
 		{
 			VTable vTable = getVTable();
-			if (vTable.dropDatabase == null) {
+			if (vTable.deprecatedDropDatabase == null) {
 				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IAttachmentIntf.VERSION);
 				return;
 			}
-			vTable.dropDatabase.invoke(this, status);
+			vTable.deprecatedDropDatabase.invoke(this, status);
 		}
 
 		public int getIdleTimeout(IStatus status)
@@ -8614,13 +9108,33 @@ public interface FbInterface extends FbClientLibrary
 			IReplicator result = vTable.createReplicator.invoke(this, status);
 			return result;
 		}
+
+		public void detach(IStatus status)
+		{
+			VTable vTable = getVTable();
+			if (vTable.detach == null) {
+				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IAttachmentIntf.VERSION);
+				return;
+			}
+			vTable.detach.invoke(this, status);
+		}
+
+		public void dropDatabase(IStatus status)
+		{
+			VTable vTable = getVTable();
+			if (vTable.dropDatabase == null) {
+				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IAttachmentIntf.VERSION);
+				return;
+			}
+			vTable.dropDatabase.invoke(this, status);
+		}
 	}
 
 	public static class IService extends IReferenceCounted implements IServiceIntf
 	{
 		public static class VTable extends IReferenceCounted.VTable
 		{
-			public static interface Callback_detach extends com.sun.jna.Callback
+			public static interface Callback_deprecatedDetach extends com.sun.jna.Callback
 			{
 				public void invoke(IService self, IStatus status);
 			}
@@ -8635,6 +9149,11 @@ public interface FbInterface extends FbClientLibrary
 				public void invoke(IService self, IStatus status, int spbLength, byte[] spb);
 			}
 
+			public static interface Callback_detach extends com.sun.jna.Callback
+			{
+				public void invoke(IService self, IStatus status);
+			}
+
 			public VTable(com.sun.jna.Pointer pointer)
 			{
 				super(pointer);
@@ -8644,13 +9163,13 @@ public interface FbInterface extends FbClientLibrary
 			{
 				super(obj);
 
-				detach = new Callback_detach() {
+				deprecatedDetach = new Callback_deprecatedDetach() {
 					@Override
 					public void invoke(IService self, IStatus status)
 					{
 						try
 						{
-							obj.detach(status);
+							obj.deprecatedDetach(status);
 						}
 						catch (Throwable t)
 						{
@@ -8688,21 +9207,37 @@ public interface FbInterface extends FbClientLibrary
 						}
 					}
 				};
+
+				detach = new Callback_detach() {
+					@Override
+					public void invoke(IService self, IStatus status)
+					{
+						try
+						{
+							obj.detach(status);
+						}
+						catch (Throwable t)
+						{
+							FbInterfaceException.catchException(status, t);
+						}
+					}
+				};
 			}
 
 			public VTable()
 			{
 			}
 
-			public Callback_detach detach;
+			public Callback_deprecatedDetach deprecatedDetach;
 			public Callback_query query;
 			public Callback_start start;
+			public Callback_detach detach;
 
 			@Override
 			protected java.util.List<String> getFieldOrder()
 			{
 				java.util.List<String> fields = super.getFieldOrder();
-				fields.addAll(java.util.Arrays.asList("detach", "query", "start"));
+				fields.addAll(java.util.Arrays.asList("deprecatedDetach", "query", "start", "detach"));
 				return fields;
 			}
 		}
@@ -8725,14 +9260,14 @@ public interface FbInterface extends FbClientLibrary
 			return new VTable(cloopVTable);
 		}
 
-		public void detach(IStatus status)
+		public void deprecatedDetach(IStatus status)
 		{
 			VTable vTable = getVTable();
-			if (vTable.detach == null) {
+			if (vTable.deprecatedDetach == null) {
 				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IServiceIntf.VERSION);
 				return;
 			}
-			vTable.detach.invoke(this, status);
+			vTable.deprecatedDetach.invoke(this, status);
 		}
 
 		public void query(IStatus status, int sendLength, byte[] sendItems, int receiveLength, byte[] receiveItems, int bufferLength, byte[] buffer)
@@ -8753,6 +9288,16 @@ public interface FbInterface extends FbClientLibrary
 				return;
 			}
 			vTable.start.invoke(this, status, spbLength, spb);
+		}
+
+		public void detach(IStatus status)
+		{
+			VTable vTable = getVTable();
+			if (vTable.detach == null) {
+				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IServiceIntf.VERSION);
+				return;
+			}
+			vTable.detach.invoke(this, status);
 		}
 	}
 
@@ -9667,6 +10212,11 @@ public interface FbInterface extends FbClientLibrary
 				public String invoke(IClientBlock self);
 			}
 
+			public static interface Callback_getVerifyServer extends com.sun.jna.Callback
+			{
+				public boolean invoke(IClientBlock self);
+			}
+
 			public VTable(com.sun.jna.Pointer pointer)
 			{
 				super(pointer);
@@ -9770,6 +10320,14 @@ public interface FbInterface extends FbClientLibrary
 						return obj.getRepositoryPin();
 					}
 				};
+
+				getVerifyServer = new Callback_getVerifyServer() {
+					@Override
+					public boolean invoke(IClientBlock self)
+					{
+						return obj.getVerifyServer();
+					}
+				};
 			}
 
 			public VTable()
@@ -9785,12 +10343,13 @@ public interface FbInterface extends FbClientLibrary
 			public Callback_getEffectiveLogin getEffectiveLogin;
 			public Callback_getCertificate getCertificate;
 			public Callback_getRepositoryPin getRepositoryPin;
+			public Callback_getVerifyServer getVerifyServer;
 
 			@Override
 			protected java.util.List<String> getFieldOrder()
 			{
 				java.util.List<String> fields = super.getFieldOrder();
-				fields.addAll(java.util.Arrays.asList("getLogin", "getPassword", "getData", "putData", "newKey", "getAuthBlock", "getEffectiveLogin", "getCertificate", "getRepositoryPin"));
+				fields.addAll(java.util.Arrays.asList("getLogin", "getPassword", "getData", "putData", "newKey", "getAuthBlock", "getEffectiveLogin", "getCertificate", "getRepositoryPin", "getVerifyServer"));
 				return fields;
 			}
 		}
@@ -9902,6 +10461,16 @@ public interface FbInterface extends FbClientLibrary
 				return null;
 			}
 			String result = vTable.getRepositoryPin.invoke(this);
+			return result;
+		}
+
+		public boolean getVerifyServer()
+		{
+			VTable vTable = getVTable();
+			if (vTable.getVerifyServer == null) {
+				return false;
+			}
+			boolean result = vTable.getVerifyServer.invoke(this);
 			return result;
 		}
 	}
@@ -20174,9 +20743,9 @@ public interface FbInterface extends FbClientLibrary
 	{
 		public static class VTable extends IPluginBase.VTable
 		{
-			public static interface Callback_setAttachment extends com.sun.jna.Callback
+			public static interface Callback_init extends com.sun.jna.Callback
 			{
-				public void invoke(IReplicatedSession self, IAttachment attachment);
+				public boolean invoke(IReplicatedSession self, IStatus status, IAttachment attachment);
 			}
 
 			public static interface Callback_startTransaction extends com.sun.jna.Callback
@@ -20203,11 +20772,19 @@ public interface FbInterface extends FbClientLibrary
 			{
 				super(obj);
 
-				setAttachment = new Callback_setAttachment() {
+				init = new Callback_init() {
 					@Override
-					public void invoke(IReplicatedSession self, IAttachment attachment)
+					public boolean invoke(IReplicatedSession self, IStatus status, IAttachment attachment)
 					{
-						obj.setAttachment(attachment);
+						try
+						{
+							return obj.init(status, attachment);
+						}
+						catch (Throwable t)
+						{
+							FbInterfaceException.catchException(status, t);
+							return false;
+						}
 					}
 				};
 
@@ -20262,7 +20839,7 @@ public interface FbInterface extends FbClientLibrary
 			{
 			}
 
-			public Callback_setAttachment setAttachment;
+			public Callback_init init;
 			public Callback_startTransaction startTransaction;
 			public Callback_cleanupTransaction cleanupTransaction;
 			public Callback_setSequence setSequence;
@@ -20271,7 +20848,7 @@ public interface FbInterface extends FbClientLibrary
 			protected java.util.List<String> getFieldOrder()
 			{
 				java.util.List<String> fields = super.getFieldOrder();
-				fields.addAll(java.util.Arrays.asList("setAttachment", "startTransaction", "cleanupTransaction", "setSequence"));
+				fields.addAll(java.util.Arrays.asList("init", "startTransaction", "cleanupTransaction", "setSequence"));
 				return fields;
 			}
 		}
@@ -20294,13 +20871,15 @@ public interface FbInterface extends FbClientLibrary
 			return new VTable(cloopVTable);
 		}
 
-		public void setAttachment(IAttachment attachment)
+		public boolean init(IStatus status, IAttachment attachment)
 		{
 			VTable vTable = getVTable();
-			if (vTable.setAttachment == null) {
-				return;
+			if (vTable.init == null) {
+				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IReplicatedSessionIntf.VERSION);
+				return false;
 			}
-			vTable.setAttachment.invoke(this, attachment);
+			boolean result = vTable.init.invoke(this, status, attachment);
+			return result;
 		}
 
 		public IReplicatedTransaction startTransaction(IStatus status, ITransaction transaction, long number)
@@ -21312,12 +21891,12 @@ public interface FbInterface extends FbClientLibrary
 
 			public static interface Callback_encryptFinal extends com.sun.jna.Callback
 			{
-				public int invoke(ICryptoSymmetricFactory self, byte[] data, int dataLength, byte[] cryptData, int cryptDataLength, com.sun.jna.Pointer realCryptDataLength, ICryptoKey key, boolean Final);
+				public int invoke(ICryptoSymmetricFactory self, byte[] data, int dataLength, byte[] cryptData, int cryptDataLength, com.sun.jna.Pointer realCryptDataLength, ICryptoKey key, boolean finalValue);
 			}
 
 			public static interface Callback_decryptFinal extends com.sun.jna.Callback
 			{
-				public int invoke(ICryptoSymmetricFactory self, byte[] cryptData, int cryptDataLength, byte[] data, int dataLength, com.sun.jna.Pointer realDataLength, ICryptoKey key, boolean Final);
+				public int invoke(ICryptoSymmetricFactory self, byte[] cryptData, int cryptDataLength, byte[] data, int dataLength, com.sun.jna.Pointer realDataLength, ICryptoKey key, boolean finalValue);
 			}
 
 			public static interface Callback_createKey extends com.sun.jna.Callback
@@ -21365,17 +21944,17 @@ public interface FbInterface extends FbClientLibrary
 
 				encryptFinal = new Callback_encryptFinal() {
 					@Override
-					public int invoke(ICryptoSymmetricFactory self, byte[] data, int dataLength, byte[] cryptData, int cryptDataLength, com.sun.jna.Pointer realCryptDataLength, ICryptoKey key, boolean Final)
+					public int invoke(ICryptoSymmetricFactory self, byte[] data, int dataLength, byte[] cryptData, int cryptDataLength, com.sun.jna.Pointer realCryptDataLength, ICryptoKey key, boolean finalValue)
 					{
-						return obj.encryptFinal(data, dataLength, cryptData, cryptDataLength, realCryptDataLength, key, Final);
+						return obj.encryptFinal(data, dataLength, cryptData, cryptDataLength, realCryptDataLength, key, finalValue);
 					}
 				};
 
 				decryptFinal = new Callback_decryptFinal() {
 					@Override
-					public int invoke(ICryptoSymmetricFactory self, byte[] cryptData, int cryptDataLength, byte[] data, int dataLength, com.sun.jna.Pointer realDataLength, ICryptoKey key, boolean Final)
+					public int invoke(ICryptoSymmetricFactory self, byte[] cryptData, int cryptDataLength, byte[] data, int dataLength, com.sun.jna.Pointer realDataLength, ICryptoKey key, boolean finalValue)
 					{
-						return obj.decryptFinal(cryptData, cryptDataLength, data, dataLength, realDataLength, key, Final);
+						return obj.decryptFinal(cryptData, cryptDataLength, data, dataLength, realDataLength, key, finalValue);
 					}
 				};
 
@@ -21465,23 +22044,23 @@ public interface FbInterface extends FbClientLibrary
 			return result;
 		}
 
-		public int encryptFinal(byte[] data, int dataLength, byte[] cryptData, int cryptDataLength, com.sun.jna.Pointer realCryptDataLength, ICryptoKey key, boolean Final)
+		public int encryptFinal(byte[] data, int dataLength, byte[] cryptData, int cryptDataLength, com.sun.jna.Pointer realCryptDataLength, ICryptoKey key, boolean finalValue)
 		{
 			VTable vTable = getVTable();
 			if (vTable.encryptFinal == null) {
 				return 0;
 			}
-			int result = vTable.encryptFinal.invoke(this, data, dataLength, cryptData, cryptDataLength, realCryptDataLength, key, Final);
+			int result = vTable.encryptFinal.invoke(this, data, dataLength, cryptData, cryptDataLength, realCryptDataLength, key, finalValue);
 			return result;
 		}
 
-		public int decryptFinal(byte[] cryptData, int cryptDataLength, byte[] data, int dataLength, com.sun.jna.Pointer realDataLength, ICryptoKey key, boolean Final)
+		public int decryptFinal(byte[] cryptData, int cryptDataLength, byte[] data, int dataLength, com.sun.jna.Pointer realDataLength, ICryptoKey key, boolean finalValue)
 		{
 			VTable vTable = getVTable();
 			if (vTable.decryptFinal == null) {
 				return 0;
 			}
-			int result = vTable.decryptFinal.invoke(this, cryptData, cryptDataLength, data, dataLength, realDataLength, key, Final);
+			int result = vTable.decryptFinal.invoke(this, cryptData, cryptDataLength, data, dataLength, realDataLength, key, finalValue);
 			return result;
 		}
 
@@ -23260,12 +23839,12 @@ public interface FbInterface extends FbClientLibrary
 
 			public static interface Callback_get_certificate extends com.sun.jna.Callback
 			{
-				public int invoke(ILdapPlugin self, String name, com.sun.jna.Pointer buffer, com.sun.jna.Pointer buffer_length, String attr_name);
+				public int invoke(ILdapPlugin self, IStatus status, String name, com.sun.jna.Pointer buffer, com.sun.jna.Pointer buffer_length, String attr_name);
 			}
 
 			public static interface Callback_get_user_attr extends com.sun.jna.Callback
 			{
-				public boolean invoke(ILdapPlugin self, String name, String attr, com.sun.jna.Pointer value);
+				public boolean invoke(ILdapPlugin self, IStatus status, String name, String attr, com.sun.jna.Pointer value);
 			}
 
 			public static interface Callback_get_policy extends com.sun.jna.Callback
@@ -23285,7 +23864,17 @@ public interface FbInterface extends FbClientLibrary
 
 			public static interface Callback_get_user_info extends com.sun.jna.Callback
 			{
-				public void invoke(ILdapPlugin self, com.sun.jna.Pointer userId);
+				public void invoke(ILdapPlugin self, com.sun.jna.Pointer userId, boolean[] active);
+			}
+
+			public static interface Callback_get_groups_list extends com.sun.jna.Callback
+			{
+				public void invoke(ILdapPlugin self, com.sun.jna.Pointer strlist, String userName, String groupFilter);
+			}
+
+			public static interface Callback_get_users_list extends com.sun.jna.Callback
+			{
+				public void invoke(ILdapPlugin self, com.sun.jna.Pointer strlist, String groupName);
 			}
 
 			public static interface Callback_find_user_groups extends com.sun.jna.Callback
@@ -23311,6 +23900,11 @@ public interface FbInterface extends FbClientLibrary
 			public static interface Callback_is_password_expired extends com.sun.jna.Callback
 			{
 				public boolean invoke(ILdapPlugin self, String name, String plugin, int valid_days);
+			}
+
+			public static interface Callback_change_active_attr extends com.sun.jna.Callback
+			{
+				public int invoke(ILdapPlugin self, String name, boolean[] active);
 			}
 
 			public VTable(com.sun.jna.Pointer pointer)
@@ -23372,17 +23966,33 @@ public interface FbInterface extends FbClientLibrary
 
 				get_certificate = new Callback_get_certificate() {
 					@Override
-					public int invoke(ILdapPlugin self, String name, com.sun.jna.Pointer buffer, com.sun.jna.Pointer buffer_length, String attr_name)
+					public int invoke(ILdapPlugin self, IStatus status, String name, com.sun.jna.Pointer buffer, com.sun.jna.Pointer buffer_length, String attr_name)
 					{
-						return obj.get_certificate(name, buffer, buffer_length, attr_name);
+						try
+						{
+							return obj.get_certificate(status, name, buffer, buffer_length, attr_name);
+						}
+						catch (Throwable t)
+						{
+							FbInterfaceException.catchException(status, t);
+							return 0;
+						}
 					}
 				};
 
 				get_user_attr = new Callback_get_user_attr() {
 					@Override
-					public boolean invoke(ILdapPlugin self, String name, String attr, com.sun.jna.Pointer value)
+					public boolean invoke(ILdapPlugin self, IStatus status, String name, String attr, com.sun.jna.Pointer value)
 					{
-						return obj.get_user_attr(name, attr, value);
+						try
+						{
+							return obj.get_user_attr(status, name, attr, value);
+						}
+						catch (Throwable t)
+						{
+							FbInterfaceException.catchException(status, t);
+							return false;
+						}
 					}
 				};
 
@@ -23412,9 +24022,25 @@ public interface FbInterface extends FbClientLibrary
 
 				get_user_info = new Callback_get_user_info() {
 					@Override
-					public void invoke(ILdapPlugin self, com.sun.jna.Pointer userId)
+					public void invoke(ILdapPlugin self, com.sun.jna.Pointer userId, boolean[] active)
 					{
-						obj.get_user_info(userId);
+						obj.get_user_info(userId, active);
+					}
+				};
+
+				get_groups_list = new Callback_get_groups_list() {
+					@Override
+					public void invoke(ILdapPlugin self, com.sun.jna.Pointer strlist, String userName, String groupFilter)
+					{
+						obj.get_groups_list(strlist, userName, groupFilter);
+					}
+				};
+
+				get_users_list = new Callback_get_users_list() {
+					@Override
+					public void invoke(ILdapPlugin self, com.sun.jna.Pointer strlist, String groupName)
+					{
+						obj.get_users_list(strlist, groupName);
 					}
 				};
 
@@ -23457,6 +24083,14 @@ public interface FbInterface extends FbClientLibrary
 						return obj.is_password_expired(name, plugin, valid_days);
 					}
 				};
+
+				change_active_attr = new Callback_change_active_attr() {
+					@Override
+					public int invoke(ILdapPlugin self, String name, boolean[] active)
+					{
+						return obj.change_active_attr(name, active);
+					}
+				};
 			}
 
 			public VTable()
@@ -23475,17 +24109,20 @@ public interface FbInterface extends FbClientLibrary
 			public Callback_set_policy set_policy;
 			public Callback_get_password_history get_password_history;
 			public Callback_get_user_info get_user_info;
+			public Callback_get_groups_list get_groups_list;
+			public Callback_get_users_list get_users_list;
 			public Callback_find_user_groups find_user_groups;
 			public Callback_change_legacy_password change_legacy_password;
 			public Callback_change_gost_password change_gost_password;
 			public Callback_change_srp_password change_srp_password;
 			public Callback_is_password_expired is_password_expired;
+			public Callback_change_active_attr change_active_attr;
 
 			@Override
 			protected java.util.List<String> getFieldOrder()
 			{
 				java.util.List<String> fields = super.getFieldOrder();
-				fields.addAll(java.util.Arrays.asList("connect", "is_connected", "bind", "bind_as", "find_user", "find_srp_user", "get_certificate", "get_user_attr", "get_policy", "set_policy", "get_password_history", "get_user_info", "find_user_groups", "change_legacy_password", "change_gost_password", "change_srp_password", "is_password_expired"));
+				fields.addAll(java.util.Arrays.asList("connect", "is_connected", "bind", "bind_as", "find_user", "find_srp_user", "get_certificate", "get_user_attr", "get_policy", "set_policy", "get_password_history", "get_user_info", "get_groups_list", "get_users_list", "find_user_groups", "change_legacy_password", "change_gost_password", "change_srp_password", "is_password_expired", "change_active_attr"));
 				return fields;
 			}
 		}
@@ -23567,23 +24204,25 @@ public interface FbInterface extends FbClientLibrary
 			return result;
 		}
 
-		public int get_certificate(String name, com.sun.jna.Pointer buffer, com.sun.jna.Pointer buffer_length, String attr_name)
+		public int get_certificate(IStatus status, String name, com.sun.jna.Pointer buffer, com.sun.jna.Pointer buffer_length, String attr_name)
 		{
 			VTable vTable = getVTable();
 			if (vTable.get_certificate == null) {
+				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, ILdapPluginIntf.VERSION);
 				return 0;
 			}
-			int result = vTable.get_certificate.invoke(this, name, buffer, buffer_length, attr_name);
+			int result = vTable.get_certificate.invoke(this, status, name, buffer, buffer_length, attr_name);
 			return result;
 		}
 
-		public boolean get_user_attr(String name, String attr, com.sun.jna.Pointer value)
+		public boolean get_user_attr(IStatus status, String name, String attr, com.sun.jna.Pointer value)
 		{
 			VTable vTable = getVTable();
 			if (vTable.get_user_attr == null) {
+				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, ILdapPluginIntf.VERSION);
 				return false;
 			}
-			boolean result = vTable.get_user_attr.invoke(this, name, attr, value);
+			boolean result = vTable.get_user_attr.invoke(this, status, name, attr, value);
 			return result;
 		}
 
@@ -23617,13 +24256,31 @@ public interface FbInterface extends FbClientLibrary
 			return result;
 		}
 
-		public void get_user_info(com.sun.jna.Pointer userId)
+		public void get_user_info(com.sun.jna.Pointer userId, boolean[] active)
 		{
 			VTable vTable = getVTable();
 			if (vTable.get_user_info == null) {
 				return;
 			}
-			vTable.get_user_info.invoke(this, userId);
+			vTable.get_user_info.invoke(this, userId, active);
+		}
+
+		public void get_groups_list(com.sun.jna.Pointer strlist, String userName, String groupFilter)
+		{
+			VTable vTable = getVTable();
+			if (vTable.get_groups_list == null) {
+				return;
+			}
+			vTable.get_groups_list.invoke(this, strlist, userName, groupFilter);
+		}
+
+		public void get_users_list(com.sun.jna.Pointer strlist, String groupName)
+		{
+			VTable vTable = getVTable();
+			if (vTable.get_users_list == null) {
+				return;
+			}
+			vTable.get_users_list.invoke(this, strlist, groupName);
 		}
 
 		public void find_user_groups(com.sun.jna.Pointer userId)
@@ -23672,6 +24329,16 @@ public interface FbInterface extends FbClientLibrary
 				return false;
 			}
 			boolean result = vTable.is_password_expired.invoke(this, name, plugin, valid_days);
+			return result;
+		}
+
+		public int change_active_attr(String name, boolean[] active)
+		{
+			VTable vTable = getVTable();
+			if (vTable.change_active_attr == null) {
+				return 0;
+			}
+			int result = vTable.change_active_attr.invoke(this, name, active);
 			return result;
 		}
 	}
@@ -23856,6 +24523,361 @@ public interface FbInterface extends FbClientLibrary
 				return false;
 			}
 			boolean result = vTable.verifyPassword.invoke(this, secDbName, user, password, isNew, plugin, isEqual);
+			return result;
+		}
+	}
+
+	public static class IJsonPlugin extends IReferenceCounted implements IJsonPluginIntf
+	{
+		public static class VTable extends IReferenceCounted.VTable
+		{
+			public static interface Callback_jsonQuery extends com.sun.jna.Callback
+			{
+				public com.sun.jna.Pointer invoke(IJsonPlugin self, IStatus status, com.sun.jna.Pointer path, int wrapper, int quotes);
+			}
+
+			public static interface Callback_jsonValue extends com.sun.jna.Callback
+			{
+				public com.sun.jna.Pointer invoke(IJsonPlugin self, IStatus status, com.sun.jna.Pointer path);
+			}
+
+			public static interface Callback_jsonModify extends com.sun.jna.Callback
+			{
+				public com.sun.jna.Pointer invoke(IJsonPlugin self, IStatus status, com.sun.jna.Pointer path, com.sun.jna.Pointer field);
+			}
+
+			public static interface Callback_jsonTable extends com.sun.jna.Callback
+			{
+				public com.sun.jna.Pointer invoke(IJsonPlugin self, IStatus status, com.sun.jna.Pointer paths_to_fields, int count_fields);
+			}
+
+			public static interface Callback_jsonArray extends com.sun.jna.Callback
+			{
+				public com.sun.jna.Pointer invoke(IJsonPlugin self, com.sun.jna.Pointer array_elements, int count_fields, int absent);
+			}
+
+			public static interface Callback_jsonObject extends com.sun.jna.Callback
+			{
+				public com.sun.jna.Pointer invoke(IJsonPlugin self, com.sun.jna.Pointer array_key_value_pair, int count_field, int unique, int absent);
+			}
+
+			public static interface Callback_isJson extends com.sun.jna.Callback
+			{
+				public boolean invoke(IJsonPlugin self);
+			}
+
+			public static interface Callback_jsonExists extends com.sun.jna.Callback
+			{
+				public com.sun.jna.Pointer invoke(IJsonPlugin self, IStatus status, com.sun.jna.Pointer path);
+			}
+
+			public VTable(com.sun.jna.Pointer pointer)
+			{
+				super(pointer);
+			}
+
+			public VTable(final IJsonPluginIntf obj)
+			{
+				super(obj);
+
+				jsonQuery = new Callback_jsonQuery() {
+					@Override
+					public com.sun.jna.Pointer invoke(IJsonPlugin self, IStatus status, com.sun.jna.Pointer path, int wrapper, int quotes)
+					{
+						try
+						{
+							return obj.jsonQuery(status, path, wrapper, quotes);
+						}
+						catch (Throwable t)
+						{
+							FbInterfaceException.catchException(status, t);
+							return null;
+						}
+					}
+				};
+
+				jsonValue = new Callback_jsonValue() {
+					@Override
+					public com.sun.jna.Pointer invoke(IJsonPlugin self, IStatus status, com.sun.jna.Pointer path)
+					{
+						try
+						{
+							return obj.jsonValue(status, path);
+						}
+						catch (Throwable t)
+						{
+							FbInterfaceException.catchException(status, t);
+							return null;
+						}
+					}
+				};
+
+				jsonModify = new Callback_jsonModify() {
+					@Override
+					public com.sun.jna.Pointer invoke(IJsonPlugin self, IStatus status, com.sun.jna.Pointer path, com.sun.jna.Pointer field)
+					{
+						try
+						{
+							return obj.jsonModify(status, path, field);
+						}
+						catch (Throwable t)
+						{
+							FbInterfaceException.catchException(status, t);
+							return null;
+						}
+					}
+				};
+
+				jsonTable = new Callback_jsonTable() {
+					@Override
+					public com.sun.jna.Pointer invoke(IJsonPlugin self, IStatus status, com.sun.jna.Pointer paths_to_fields, int count_fields)
+					{
+						try
+						{
+							return obj.jsonTable(status, paths_to_fields, count_fields);
+						}
+						catch (Throwable t)
+						{
+							FbInterfaceException.catchException(status, t);
+							return null;
+						}
+					}
+				};
+
+				jsonArray = new Callback_jsonArray() {
+					@Override
+					public com.sun.jna.Pointer invoke(IJsonPlugin self, com.sun.jna.Pointer array_elements, int count_fields, int absent)
+					{
+						return obj.jsonArray(array_elements, count_fields, absent);
+					}
+				};
+
+				jsonObject = new Callback_jsonObject() {
+					@Override
+					public com.sun.jna.Pointer invoke(IJsonPlugin self, com.sun.jna.Pointer array_key_value_pair, int count_field, int unique, int absent)
+					{
+						return obj.jsonObject(array_key_value_pair, count_field, unique, absent);
+					}
+				};
+
+				isJson = new Callback_isJson() {
+					@Override
+					public boolean invoke(IJsonPlugin self)
+					{
+						return obj.isJson();
+					}
+				};
+
+				jsonExists = new Callback_jsonExists() {
+					@Override
+					public com.sun.jna.Pointer invoke(IJsonPlugin self, IStatus status, com.sun.jna.Pointer path)
+					{
+						try
+						{
+							return obj.jsonExists(status, path);
+						}
+						catch (Throwable t)
+						{
+							FbInterfaceException.catchException(status, t);
+							return null;
+						}
+					}
+				};
+			}
+
+			public VTable()
+			{
+			}
+
+			public Callback_jsonQuery jsonQuery;
+			public Callback_jsonValue jsonValue;
+			public Callback_jsonModify jsonModify;
+			public Callback_jsonTable jsonTable;
+			public Callback_jsonArray jsonArray;
+			public Callback_jsonObject jsonObject;
+			public Callback_isJson isJson;
+			public Callback_jsonExists jsonExists;
+
+			@Override
+			protected java.util.List<String> getFieldOrder()
+			{
+				java.util.List<String> fields = super.getFieldOrder();
+				fields.addAll(java.util.Arrays.asList("jsonQuery", "jsonValue", "jsonModify", "jsonTable", "jsonArray", "jsonObject", "isJson", "jsonExists"));
+				return fields;
+			}
+		}
+
+		public IJsonPlugin()
+		{
+		}
+
+		public IJsonPlugin(final IJsonPluginIntf obj)
+		{
+			vTable = new VTable(obj);
+			vTable.write();
+			cloopVTable = vTable.getPointer();
+			write();
+		}
+
+		@Override
+		protected VTable createVTable()
+		{
+			return new VTable(cloopVTable);
+		}
+
+		public com.sun.jna.Pointer jsonQuery(IStatus status, com.sun.jna.Pointer path, int wrapper, int quotes)
+		{
+			VTable vTable = getVTable();
+			if (vTable.jsonQuery == null) {
+				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IJsonPluginIntf.VERSION);
+				return null;
+			}
+			com.sun.jna.Pointer result = vTable.jsonQuery.invoke(this, status, path, wrapper, quotes);
+			return result;
+		}
+
+		public com.sun.jna.Pointer jsonValue(IStatus status, com.sun.jna.Pointer path)
+		{
+			VTable vTable = getVTable();
+			if (vTable.jsonValue == null) {
+				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IJsonPluginIntf.VERSION);
+				return null;
+			}
+			com.sun.jna.Pointer result = vTable.jsonValue.invoke(this, status, path);
+			return result;
+		}
+
+		public com.sun.jna.Pointer jsonModify(IStatus status, com.sun.jna.Pointer path, com.sun.jna.Pointer field)
+		{
+			VTable vTable = getVTable();
+			if (vTable.jsonModify == null) {
+				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IJsonPluginIntf.VERSION);
+				return null;
+			}
+			com.sun.jna.Pointer result = vTable.jsonModify.invoke(this, status, path, field);
+			return result;
+		}
+
+		public com.sun.jna.Pointer jsonTable(IStatus status, com.sun.jna.Pointer paths_to_fields, int count_fields)
+		{
+			VTable vTable = getVTable();
+			if (vTable.jsonTable == null) {
+				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IJsonPluginIntf.VERSION);
+				return null;
+			}
+			com.sun.jna.Pointer result = vTable.jsonTable.invoke(this, status, paths_to_fields, count_fields);
+			return result;
+		}
+
+		public com.sun.jna.Pointer jsonArray(com.sun.jna.Pointer array_elements, int count_fields, int absent)
+		{
+			VTable vTable = getVTable();
+			if (vTable.jsonArray == null) {
+				return null;
+			}
+			com.sun.jna.Pointer result = vTable.jsonArray.invoke(this, array_elements, count_fields, absent);
+			return result;
+		}
+
+		public com.sun.jna.Pointer jsonObject(com.sun.jna.Pointer array_key_value_pair, int count_field, int unique, int absent)
+		{
+			VTable vTable = getVTable();
+			if (vTable.jsonObject == null) {
+				return null;
+			}
+			com.sun.jna.Pointer result = vTable.jsonObject.invoke(this, array_key_value_pair, count_field, unique, absent);
+			return result;
+		}
+
+		public boolean isJson()
+		{
+			VTable vTable = getVTable();
+			if (vTable.isJson == null) {
+				return false;
+			}
+			boolean result = vTable.isJson.invoke(this);
+			return result;
+		}
+
+		public com.sun.jna.Pointer jsonExists(IStatus status, com.sun.jna.Pointer path)
+		{
+			VTable vTable = getVTable();
+			if (vTable.jsonExists == null) {
+				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IJsonPluginIntf.VERSION);
+				return null;
+			}
+			com.sun.jna.Pointer result = vTable.jsonExists.invoke(this, status, path);
+			return result;
+		}
+	}
+
+	public static class IJsonFactory extends IPluginBase implements IJsonFactoryIntf
+	{
+		public static class VTable extends IPluginBase.VTable
+		{
+			public static interface Callback_jsonCreate extends com.sun.jna.Callback
+			{
+				public IJsonPlugin invoke(IJsonFactory self, com.sun.jna.Pointer json_text);
+			}
+
+			public VTable(com.sun.jna.Pointer pointer)
+			{
+				super(pointer);
+			}
+
+			public VTable(final IJsonFactoryIntf obj)
+			{
+				super(obj);
+
+				jsonCreate = new Callback_jsonCreate() {
+					@Override
+					public IJsonPlugin invoke(IJsonFactory self, com.sun.jna.Pointer json_text)
+					{
+						return obj.jsonCreate(json_text);
+					}
+				};
+			}
+
+			public VTable()
+			{
+			}
+
+			public Callback_jsonCreate jsonCreate;
+
+			@Override
+			protected java.util.List<String> getFieldOrder()
+			{
+				java.util.List<String> fields = super.getFieldOrder();
+				fields.addAll(java.util.Arrays.asList("jsonCreate"));
+				return fields;
+			}
+		}
+
+		public IJsonFactory()
+		{
+		}
+
+		public IJsonFactory(final IJsonFactoryIntf obj)
+		{
+			vTable = new VTable(obj);
+			vTable.write();
+			cloopVTable = vTable.getPointer();
+			write();
+		}
+
+		@Override
+		protected VTable createVTable()
+		{
+			return new VTable(cloopVTable);
+		}
+
+		public IJsonPlugin jsonCreate(com.sun.jna.Pointer json_text)
+		{
+			VTable vTable = getVTable();
+			if (vTable.jsonCreate == null) {
+				return null;
+			}
+			IJsonPlugin result = vTable.jsonCreate.invoke(this, json_text);
 			return result;
 		}
 	}
