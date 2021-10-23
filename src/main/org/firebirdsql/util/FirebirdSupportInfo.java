@@ -234,6 +234,13 @@ public final class FirebirdSupportInfo {
     }
 
     /**
+     * @return {@code true} when {@code RETURNING} supports multiple rows, {@code false} only singleton results
+     */
+    public boolean supportsMultiRowReturning() {
+        return isVersionEqualOrAbove(5, 0);
+    }
+
+    /**
      * @return <code>true</code> when the server knows the UTF8 character set (NOTE: For firebird 1.5 it is an alias for
      * UNICODE_FSS)
      */
@@ -522,6 +529,8 @@ public final class FirebirdSupportInfo {
             return 50;
         } else if (databaseMajorVersion == 4 && databaseMinorVersion == 0) {
             return 54;
+        } else if (databaseMajorVersion == 5 && databaseMinorVersion == 0) {
+            return 55;
         } else {
             return -1;
         }
