@@ -1626,6 +1626,8 @@ public interface FbInterface extends FbClientLibrary
 			{
 				super(obj);
 
+				version = IReferenceCountedIntf.VERSION;
+
 				addRef = new Callback_addRef() {
 					@Override
 					public void invoke(IReferenceCounted self)
@@ -1714,6 +1716,8 @@ public interface FbInterface extends FbClientLibrary
 			public VTable(final IDisposableIntf obj)
 			{
 				super(obj);
+
+				version = IDisposableIntf.VERSION;
 
 				dispose = new Callback_dispose() {
 					@Override
@@ -1824,6 +1828,8 @@ public interface FbInterface extends FbClientLibrary
 			public VTable(final IStatusIntf obj)
 			{
 				super(obj);
+
+				version = IStatusIntf.VERSION;
 
 				init = new Callback_init() {
 					@Override
@@ -2097,6 +2103,8 @@ public interface FbInterface extends FbClientLibrary
 			public VTable(final IMasterIntf obj)
 			{
 				super(obj);
+
+				version = IMasterIntf.VERSION;
 
 				getStatus = new Callback_getStatus() {
 					@Override
@@ -2392,6 +2400,8 @@ public interface FbInterface extends FbClientLibrary
 			{
 				super(obj);
 
+				version = IPluginBaseIntf.VERSION;
+
 				setOwner = new Callback_setOwner() {
 					@Override
 					public void invoke(IPluginBase self, IReferenceCounted r)
@@ -2500,6 +2510,8 @@ public interface FbInterface extends FbClientLibrary
 			public VTable(final IPluginSetIntf obj)
 			{
 				super(obj);
+
+				version = IPluginSetIntf.VERSION;
 
 				getName = new Callback_getName() {
 					@Override
@@ -2671,6 +2683,8 @@ public interface FbInterface extends FbClientLibrary
 			{
 				super(obj);
 
+				version = IListElementCallbackIntf.VERSION;
+
 				callback = new Callback_callback() {
 					@Override
 					public void invoke(IListElementCallback self, String text)
@@ -2765,6 +2779,8 @@ public interface FbInterface extends FbClientLibrary
 			public VTable(final IConfigEntryIntf obj)
 			{
 				super(obj);
+
+				version = IConfigEntryIntf.VERSION;
 
 				getName = new Callback_getName() {
 					@Override
@@ -2950,6 +2966,8 @@ public interface FbInterface extends FbClientLibrary
 			{
 				super(obj);
 
+				version = IConfigIntf.VERSION;
+
 				find = new Callback_find() {
 					@Override
 					public IConfigEntry invoke(IConfig self, IStatus status, String name)
@@ -3110,6 +3128,8 @@ public interface FbInterface extends FbClientLibrary
 			public VTable(final IFirebirdConfIntf obj)
 			{
 				super(obj);
+
+				version = IFirebirdConfIntf.VERSION;
 
 				getKey = new Callback_getKey() {
 					@Override
@@ -3300,6 +3320,8 @@ public interface FbInterface extends FbClientLibrary
 			{
 				super(obj);
 
+				version = IPluginConfigIntf.VERSION;
+
 				getConfigFileName = new Callback_getConfigFileName() {
 					@Override
 					public String invoke(IPluginConfig self)
@@ -3453,6 +3475,8 @@ public interface FbInterface extends FbClientLibrary
 			{
 				super(obj);
 
+				version = IPluginFactoryIntf.VERSION;
+
 				createPlugin = new Callback_createPlugin() {
 					@Override
 					public IPluginBase invoke(IPluginFactory self, IStatus status, IPluginConfig factoryParameter)
@@ -3537,6 +3561,8 @@ public interface FbInterface extends FbClientLibrary
 			public VTable(final IPluginModuleIntf obj)
 			{
 				super(obj);
+
+				version = IPluginModuleIntf.VERSION;
 
 				doClean = new Callback_doClean() {
 					@Override
@@ -3650,6 +3676,8 @@ public interface FbInterface extends FbClientLibrary
 			public VTable(final IPluginManagerIntf obj)
 			{
 				super(obj);
+
+				version = IPluginManagerIntf.VERSION;
 
 				registerPluginFactory = new Callback_registerPluginFactory() {
 					@Override
@@ -3846,6 +3874,8 @@ public interface FbInterface extends FbClientLibrary
 			{
 				super(obj);
 
+				version = ICryptKeyIntf.VERSION;
+
 				setSymmetric = new Callback_setSymmetric() {
 					@Override
 					public void invoke(ICryptKey self, IStatus status, String type, int keyLength, com.sun.jna.Pointer key)
@@ -4017,6 +4047,8 @@ public interface FbInterface extends FbClientLibrary
 			public VTable(final IConfigManagerIntf obj)
 			{
 				super(obj);
+
+				version = IConfigManagerIntf.VERSION;
 
 				getDirectory = new Callback_getDirectory() {
 					@Override
@@ -4203,6 +4235,8 @@ public interface FbInterface extends FbClientLibrary
 			{
 				super(obj);
 
+				version = IEventCallbackIntf.VERSION;
+
 				eventCallbackFunction = new Callback_eventCallbackFunction() {
 					@Override
 					public void invoke(IEventCallback self, int length, com.sun.jna.Pointer events)
@@ -4307,6 +4341,8 @@ public interface FbInterface extends FbClientLibrary
 			public VTable(final IBlobIntf obj)
 			{
 				super(obj);
+
+				version = IBlobIntf.VERSION;
 
 				getInfo = new Callback_getInfo() {
 					@Override
@@ -4631,6 +4667,8 @@ public interface FbInterface extends FbClientLibrary
 			public VTable(final ITransactionIntf obj)
 			{
 				super(obj);
+
+				version = ITransactionIntf.VERSION;
 
 				getInfo = new Callback_getInfo() {
 					@Override
@@ -5107,6 +5145,8 @@ public interface FbInterface extends FbClientLibrary
 			public VTable(final IMessageMetadataIntf obj)
 			{
 				super(obj);
+
+				version = IMessageMetadataIntf.VERSION;
 
 				getCount = new Callback_getCount() {
 					@Override
@@ -5701,6 +5741,8 @@ public interface FbInterface extends FbClientLibrary
 			{
 				super(obj);
 
+				version = IMetadataBuilderIntf.VERSION;
+
 				setType = new Callback_setType() {
 					@Override
 					public void invoke(IMetadataBuilder self, IStatus status, int index, int type)
@@ -6176,6 +6218,8 @@ public interface FbInterface extends FbClientLibrary
 			{
 				super(obj);
 
+				version = IResultSetIntf.VERSION;
+
 				fetchNext = new Callback_fetchNext() {
 					@Override
 					public int invoke(IResultSet self, IStatus status, com.sun.jna.Pointer message)
@@ -6627,6 +6671,8 @@ public interface FbInterface extends FbClientLibrary
 			public VTable(final IStatementIntf obj)
 			{
 				super(obj);
+
+				version = IStatementIntf.VERSION;
 
 				getInfo = new Callback_getInfo() {
 					@Override
@@ -7150,6 +7196,8 @@ public interface FbInterface extends FbClientLibrary
 			{
 				super(obj);
 
+				version = IBatchIntf.VERSION;
+
 				add = new Callback_add() {
 					@Override
 					public void invoke(IBatch self, IStatus status, int count, com.sun.jna.Pointer inBuffer)
@@ -7561,6 +7609,8 @@ public interface FbInterface extends FbClientLibrary
 			{
 				super(obj);
 
+				version = IBatchCompletionStateIntf.VERSION;
+
 				getSize = new Callback_getSize() {
 					@Override
 					public int invoke(IBatchCompletionState self, IStatus status)
@@ -7733,6 +7783,8 @@ public interface FbInterface extends FbClientLibrary
 			{
 				super(obj);
 
+				version = IReplicatorIntf.VERSION;
+
 				process = new Callback_process() {
 					@Override
 					public void invoke(IReplicator self, IStatus status, int length, byte[] data)
@@ -7897,6 +7949,8 @@ public interface FbInterface extends FbClientLibrary
 			public VTable(final IRequestIntf obj)
 			{
 				super(obj);
+
+				version = IRequestIntf.VERSION;
 
 				receive = new Callback_receive() {
 					@Override
@@ -8163,6 +8217,8 @@ public interface FbInterface extends FbClientLibrary
 			{
 				super(obj);
 
+				version = IEventsIntf.VERSION;
+
 				deprecatedCancel = new Callback_deprecatedCancel() {
 					@Override
 					public void invoke(IEvents self, IStatus status)
@@ -8391,6 +8447,8 @@ public interface FbInterface extends FbClientLibrary
 			public VTable(final IAttachmentIntf obj)
 			{
 				super(obj);
+
+				version = IAttachmentIntf.VERSION;
 
 				getInfo = new Callback_getInfo() {
 					@Override
@@ -9163,6 +9221,8 @@ public interface FbInterface extends FbClientLibrary
 			{
 				super(obj);
 
+				version = IServiceIntf.VERSION;
+
 				deprecatedDetach = new Callback_deprecatedDetach() {
 					@Override
 					public void invoke(IService self, IStatus status)
@@ -9338,6 +9398,8 @@ public interface FbInterface extends FbClientLibrary
 			public VTable(final IProviderIntf obj)
 			{
 				super(obj);
+
+				version = IProviderIntf.VERSION;
 
 				attachDatabase = new Callback_attachDatabase() {
 					@Override
@@ -9537,6 +9599,8 @@ public interface FbInterface extends FbClientLibrary
 			{
 				super(obj);
 
+				version = IDtcStartIntf.VERSION;
+
 				addAttachment = new Callback_addAttachment() {
 					@Override
 					public void invoke(IDtcStart self, IStatus status, IAttachment att)
@@ -9674,6 +9738,8 @@ public interface FbInterface extends FbClientLibrary
 			{
 				super(obj);
 
+				version = IDtcIntf.VERSION;
+
 				join = new Callback_join() {
 					@Override
 					public ITransaction invoke(IDtc self, IStatus status, ITransaction one, ITransaction two)
@@ -9777,6 +9843,8 @@ public interface FbInterface extends FbClientLibrary
 			{
 				super(obj);
 
+				version = IAuthIntf.VERSION;
+
 			}
 
 			public VTable()
@@ -9847,6 +9915,8 @@ public interface FbInterface extends FbClientLibrary
 			public VTable(final IWriterIntf obj)
 			{
 				super(obj);
+
+				version = IWriterIntf.VERSION;
 
 				reset = new Callback_reset() {
 					@Override
@@ -10037,6 +10107,8 @@ public interface FbInterface extends FbClientLibrary
 			{
 				super(obj);
 
+				version = IServerBlockIntf.VERSION;
+
 				getLogin = new Callback_getLogin() {
 					@Override
 					public String invoke(IServerBlock self)
@@ -10225,6 +10297,8 @@ public interface FbInterface extends FbClientLibrary
 			public VTable(final IClientBlockIntf obj)
 			{
 				super(obj);
+
+				version = IClientBlockIntf.VERSION;
 
 				getLogin = new Callback_getLogin() {
 					@Override
@@ -10498,6 +10572,8 @@ public interface FbInterface extends FbClientLibrary
 			{
 				super(obj);
 
+				version = IServerIntf.VERSION;
+
 				authenticate = new Callback_authenticate() {
 					@Override
 					public int invoke(IServer self, IStatus status, IServerBlock sBlock, IWriter writerInterface)
@@ -10604,6 +10680,8 @@ public interface FbInterface extends FbClientLibrary
 			{
 				super(obj);
 
+				version = IClientIntf.VERSION;
+
 				authenticate = new Callback_authenticate() {
 					@Override
 					public int invoke(IClient self, IStatus status, IClientBlock cBlock)
@@ -10693,6 +10771,8 @@ public interface FbInterface extends FbClientLibrary
 			public VTable(final IUserFieldIntf obj)
 			{
 				super(obj);
+
+				version = IUserFieldIntf.VERSION;
 
 				entered = new Callback_entered() {
 					@Override
@@ -10815,6 +10895,8 @@ public interface FbInterface extends FbClientLibrary
 			{
 				super(obj);
 
+				version = ICharUserFieldIntf.VERSION;
+
 				get = new Callback_get() {
 					@Override
 					public String invoke(ICharUserField self)
@@ -10916,6 +10998,8 @@ public interface FbInterface extends FbClientLibrary
 			public VTable(final IIntUserFieldIntf obj)
 			{
 				super(obj);
+
+				version = IIntUserFieldIntf.VERSION;
 
 				get = new Callback_get() {
 					@Override
@@ -11063,6 +11147,8 @@ public interface FbInterface extends FbClientLibrary
 			public VTable(final IUserIntf obj)
 			{
 				super(obj);
+
+				version = IUserIntf.VERSION;
 
 				operation = new Callback_operation() {
 					@Override
@@ -11332,6 +11418,8 @@ public interface FbInterface extends FbClientLibrary
 			{
 				super(obj);
 
+				version = IListUsersIntf.VERSION;
+
 				list = new Callback_list() {
 					@Override
 					public void invoke(IListUsers self, IStatus status, IUser user)
@@ -11439,6 +11527,8 @@ public interface FbInterface extends FbClientLibrary
 			public VTable(final ILogonInfoIntf obj)
 			{
 				super(obj);
+
+				version = ILogonInfoIntf.VERSION;
 
 				name = new Callback_name() {
 					@Override
@@ -11658,6 +11748,8 @@ public interface FbInterface extends FbClientLibrary
 			{
 				super(obj);
 
+				version = IManagementIntf.VERSION;
+
 				start = new Callback_start() {
 					@Override
 					public void invoke(IManagement self, IStatus status, ILogonInfo logonInfo)
@@ -11845,6 +11937,8 @@ public interface FbInterface extends FbClientLibrary
 			public VTable(final IAuthBlockIntf obj)
 			{
 				super(obj);
+
+				version = IAuthBlockIntf.VERSION;
 
 				getType = new Callback_getType() {
 					@Override
@@ -12074,6 +12168,8 @@ public interface FbInterface extends FbClientLibrary
 			{
 				super(obj);
 
+				version = IWireCryptPluginIntf.VERSION;
+
 				getKnownTypes = new Callback_getKnownTypes() {
 					@Override
 					public String invoke(IWireCryptPlugin self, IStatus status)
@@ -12286,6 +12382,8 @@ public interface FbInterface extends FbClientLibrary
 			{
 				super(obj);
 
+				version = ICryptKeyCallbackIntf.VERSION;
+
 				callback = new Callback_callback() {
 					@Override
 					public int invoke(ICryptKeyCallback self, int dataLength, com.sun.jna.Pointer data, int bufferLength, com.sun.jna.Pointer buffer)
@@ -12371,6 +12469,8 @@ public interface FbInterface extends FbClientLibrary
 			public VTable(final IKeyHolderPluginIntf obj)
 			{
 				super(obj);
+
+				version = IKeyHolderPluginIntf.VERSION;
 
 				keyCallback = new Callback_keyCallback() {
 					@Override
@@ -12536,6 +12636,8 @@ public interface FbInterface extends FbClientLibrary
 			{
 				super(obj);
 
+				version = IDbCryptInfoIntf.VERSION;
+
 				getDatabaseFullPath = new Callback_getDatabaseFullPath() {
 					@Override
 					public String invoke(IDbCryptInfo self, IStatus status)
@@ -12630,6 +12732,8 @@ public interface FbInterface extends FbClientLibrary
 			public VTable(final IDbCryptPluginIntf obj)
 			{
 				super(obj);
+
+				version = IDbCryptPluginIntf.VERSION;
 
 				setKey = new Callback_setKey() {
 					@Override
@@ -12831,6 +12935,8 @@ public interface FbInterface extends FbClientLibrary
 			public VTable(final IExternalContextIntf obj)
 			{
 				super(obj);
+
+				version = IExternalContextIntf.VERSION;
 
 				getMaster = new Callback_getMaster() {
 					@Override
@@ -13101,6 +13207,8 @@ public interface FbInterface extends FbClientLibrary
 			{
 				super(obj);
 
+				version = IExternalResultSetIntf.VERSION;
+
 				fetch = new Callback_fetch() {
 					@Override
 					public boolean invoke(IExternalResultSet self, IStatus status)
@@ -13185,6 +13293,8 @@ public interface FbInterface extends FbClientLibrary
 			public VTable(final IExternalFunctionIntf obj)
 			{
 				super(obj);
+
+				version = IExternalFunctionIntf.VERSION;
 
 				getCharSet = new Callback_getCharSet() {
 					@Override
@@ -13294,6 +13404,8 @@ public interface FbInterface extends FbClientLibrary
 			public VTable(final IExternalProcedureIntf obj)
 			{
 				super(obj);
+
+				version = IExternalProcedureIntf.VERSION;
 
 				getCharSet = new Callback_getCharSet() {
 					@Override
@@ -13410,6 +13522,8 @@ public interface FbInterface extends FbClientLibrary
 			public VTable(final IExternalTriggerIntf obj)
 			{
 				super(obj);
+
+				version = IExternalTriggerIntf.VERSION;
 
 				getCharSet = new Callback_getCharSet() {
 					@Override
@@ -13582,6 +13696,8 @@ public interface FbInterface extends FbClientLibrary
 			public VTable(final IRoutineMetadataIntf obj)
 			{
 				super(obj);
+
+				version = IRoutineMetadataIntf.VERSION;
 
 				getPackage = new Callback_getPackage() {
 					@Override
@@ -13912,6 +14028,8 @@ public interface FbInterface extends FbClientLibrary
 			{
 				super(obj);
 
+				version = IExternalEngineIntf.VERSION;
+
 				open = new Callback_open() {
 					@Override
 					public void invoke(IExternalEngine self, IStatus status, IExternalContext context, com.sun.jna.Pointer charSet, int charSetSize)
@@ -14126,6 +14244,8 @@ public interface FbInterface extends FbClientLibrary
 			{
 				super(obj);
 
+				version = ITimerIntf.VERSION;
+
 				handler = new Callback_handler() {
 					@Override
 					public void invoke(ITimer self)
@@ -14200,6 +14320,8 @@ public interface FbInterface extends FbClientLibrary
 			public VTable(final ITimerControlIntf obj)
 			{
 				super(obj);
+
+				version = ITimerControlIntf.VERSION;
 
 				start = new Callback_start() {
 					@Override
@@ -14304,6 +14426,8 @@ public interface FbInterface extends FbClientLibrary
 			public VTable(final IVersionCallbackIntf obj)
 			{
 				super(obj);
+
+				version = IVersionCallbackIntf.VERSION;
 
 				callback = new Callback_callback() {
 					@Override
@@ -14487,6 +14611,8 @@ public interface FbInterface extends FbClientLibrary
 			public VTable(final IUtilIntf obj)
 			{
 				super(obj);
+
+				version = IUtilIntf.VERSION;
 
 				getFbVersion = new Callback_getFbVersion() {
 					@Override
@@ -15080,6 +15206,8 @@ public interface FbInterface extends FbClientLibrary
 			{
 				super(obj);
 
+				version = IOffsetsCallbackIntf.VERSION;
+
 				setOffset = new Callback_setOffset() {
 					@Override
 					public void invoke(IOffsetsCallback self, IStatus status, int index, int offset, int nullOffset)
@@ -15252,6 +15380,8 @@ public interface FbInterface extends FbClientLibrary
 			public VTable(final IXpbBuilderIntf obj)
 			{
 				super(obj);
+
+				version = IXpbBuilderIntf.VERSION;
 
 				clear = new Callback_clear() {
 					@Override
@@ -15892,6 +16022,8 @@ public interface FbInterface extends FbClientLibrary
 			{
 				super(obj);
 
+				version = ITraceConnectionIntf.VERSION;
+
 				getKind = new Callback_getKind() {
 					@Override
 					public int invoke(ITraceConnection self)
@@ -16139,6 +16271,8 @@ public interface FbInterface extends FbClientLibrary
 			{
 				super(obj);
 
+				version = ITraceDatabaseConnectionIntf.VERSION;
+
 				getConnectionID = new Callback_getConnectionID() {
 					@Override
 					public long invoke(ITraceDatabaseConnection self)
@@ -16258,6 +16392,8 @@ public interface FbInterface extends FbClientLibrary
 			public VTable(final ITraceTransactionIntf obj)
 			{
 				super(obj);
+
+				version = ITraceTransactionIntf.VERSION;
 
 				getTransactionID = new Callback_getTransactionID() {
 					@Override
@@ -16454,6 +16590,8 @@ public interface FbInterface extends FbClientLibrary
 			{
 				super(obj);
 
+				version = ITraceParamsIntf.VERSION;
+
 				getCount = new Callback_getCount() {
 					@Override
 					public int invoke(ITraceParams self)
@@ -16577,6 +16715,8 @@ public interface FbInterface extends FbClientLibrary
 			{
 				super(obj);
 
+				version = ITraceStatementIntf.VERSION;
+
 				getStmtID = new Callback_getStmtID() {
 					@Override
 					public long invoke(ITraceStatement self)
@@ -16686,6 +16826,8 @@ public interface FbInterface extends FbClientLibrary
 			public VTable(final ITraceSQLStatementIntf obj)
 			{
 				super(obj);
+
+				version = ITraceSQLStatementIntf.VERSION;
 
 				getText = new Callback_getText() {
 					@Override
@@ -16844,6 +16986,8 @@ public interface FbInterface extends FbClientLibrary
 			{
 				super(obj);
 
+				version = ITraceBLRStatementIntf.VERSION;
+
 				getData = new Callback_getData() {
 					@Override
 					public com.sun.jna.Pointer invoke(ITraceBLRStatement self)
@@ -16962,6 +17106,8 @@ public interface FbInterface extends FbClientLibrary
 			public VTable(final ITraceDYNRequestIntf obj)
 			{
 				super(obj);
+
+				version = ITraceDYNRequestIntf.VERSION;
 
 				getData = new Callback_getData() {
 					@Override
@@ -17082,6 +17228,8 @@ public interface FbInterface extends FbClientLibrary
 			{
 				super(obj);
 
+				version = ITraceContextVariableIntf.VERSION;
+
 				getNameSpace = new Callback_getNameSpace() {
 					@Override
 					public String invoke(ITraceContextVariable self)
@@ -17200,6 +17348,8 @@ public interface FbInterface extends FbClientLibrary
 			public VTable(final ITraceProcedureIntf obj)
 			{
 				super(obj);
+
+				version = ITraceProcedureIntf.VERSION;
 
 				getProcName = new Callback_getProcName() {
 					@Override
@@ -17324,6 +17474,8 @@ public interface FbInterface extends FbClientLibrary
 			public VTable(final ITraceFunctionIntf obj)
 			{
 				super(obj);
+
+				version = ITraceFunctionIntf.VERSION;
 
 				getFuncName = new Callback_getFuncName() {
 					@Override
@@ -17472,6 +17624,8 @@ public interface FbInterface extends FbClientLibrary
 			public VTable(final ITraceTriggerIntf obj)
 			{
 				super(obj);
+
+				version = ITraceTriggerIntf.VERSION;
 
 				getTriggerName = new Callback_getTriggerName() {
 					@Override
@@ -17630,6 +17784,8 @@ public interface FbInterface extends FbClientLibrary
 			{
 				super(obj);
 
+				version = ITraceServiceConnectionIntf.VERSION;
+
 				getServiceID = new Callback_getServiceID() {
 					@Override
 					public com.sun.jna.Pointer invoke(ITraceServiceConnection self)
@@ -17753,6 +17909,8 @@ public interface FbInterface extends FbClientLibrary
 			public VTable(final ITraceStatusVectorIntf obj)
 			{
 				super(obj);
+
+				version = ITraceStatusVectorIntf.VERSION;
 
 				hasError = new Callback_hasError() {
 					@Override
@@ -17901,6 +18059,8 @@ public interface FbInterface extends FbClientLibrary
 			public VTable(final ITraceSweepInfoIntf obj)
 			{
 				super(obj);
+
+				version = ITraceSweepInfoIntf.VERSION;
 
 				getOIT = new Callback_getOIT() {
 					@Override
@@ -18054,6 +18214,8 @@ public interface FbInterface extends FbClientLibrary
 			{
 				super(obj);
 
+				version = ITraceLogWriterIntf.VERSION;
+
 				write = new Callback_write() {
 					@Override
 					public int invoke(ITraceLogWriter self, com.sun.jna.Pointer buf, int size)
@@ -18192,6 +18354,8 @@ public interface FbInterface extends FbClientLibrary
 			public VTable(final ITraceInitInfoIntf obj)
 			{
 				super(obj);
+
+				version = ITraceInitInfoIntf.VERSION;
 
 				getConfigText = new Callback_getConfigText() {
 					@Override
@@ -18520,6 +18684,8 @@ public interface FbInterface extends FbClientLibrary
 			public VTable(final ITracePluginIntf obj)
 			{
 				super(obj);
+
+				version = ITracePluginIntf.VERSION;
 
 				trace_get_error = new Callback_trace_get_error() {
 					@Override
@@ -18996,6 +19162,8 @@ public interface FbInterface extends FbClientLibrary
 			{
 				super(obj);
 
+				version = ITraceFactoryIntf.VERSION;
+
 				trace_needs = new Callback_trace_needs() {
 					@Override
 					public long invoke(ITraceFactory self)
@@ -19099,6 +19267,8 @@ public interface FbInterface extends FbClientLibrary
 			public VTable(final IUdrFunctionFactoryIntf obj)
 			{
 				super(obj);
+
+				version = IUdrFunctionFactoryIntf.VERSION;
 
 				setup = new Callback_setup() {
 					@Override
@@ -19211,6 +19381,8 @@ public interface FbInterface extends FbClientLibrary
 			{
 				super(obj);
 
+				version = IUdrProcedureFactoryIntf.VERSION;
+
 				setup = new Callback_setup() {
 					@Override
 					public void invoke(IUdrProcedureFactory self, IStatus status, IExternalContext context, IRoutineMetadata metadata, IMetadataBuilder inBuilder, IMetadataBuilder outBuilder)
@@ -19321,6 +19493,8 @@ public interface FbInterface extends FbClientLibrary
 			public VTable(final IUdrTriggerFactoryIntf obj)
 			{
 				super(obj);
+
+				version = IUdrTriggerFactoryIntf.VERSION;
 
 				setup = new Callback_setup() {
 					@Override
@@ -19442,6 +19616,8 @@ public interface FbInterface extends FbClientLibrary
 			public VTable(final IUdrPluginIntf obj)
 			{
 				super(obj);
+
+				version = IUdrPluginIntf.VERSION;
 
 				getMaster = new Callback_getMaster() {
 					@Override
@@ -19607,6 +19783,8 @@ public interface FbInterface extends FbClientLibrary
 			{
 				super(obj);
 
+				version = IDecFloat16Intf.VERSION;
+
 				toBcd = new Callback_toBcd() {
 					@Override
 					public void invoke(IDecFloat16 self, FB_DEC16[] from, com.sun.jna.Pointer sign, byte[] bcd, com.sun.jna.Pointer exp)
@@ -19762,6 +19940,8 @@ public interface FbInterface extends FbClientLibrary
 			{
 				super(obj);
 
+				version = IDecFloat34Intf.VERSION;
+
 				toBcd = new Callback_toBcd() {
 					@Override
 					public void invoke(IDecFloat34 self, FB_DEC34[] from, com.sun.jna.Pointer sign, byte[] bcd, com.sun.jna.Pointer exp)
@@ -19907,6 +20087,8 @@ public interface FbInterface extends FbClientLibrary
 			{
 				super(obj);
 
+				version = IInt128Intf.VERSION;
+
 				toString = new Callback_toString() {
 					@Override
 					public void invoke(IInt128 self, IStatus status, FB_I128[] from, int scale, int bufferLength, com.sun.jna.Pointer buffer)
@@ -20040,6 +20222,8 @@ public interface FbInterface extends FbClientLibrary
 			public VTable(final IReplicatedFieldIntf obj)
 			{
 				super(obj);
+
+				version = IReplicatedFieldIntf.VERSION;
 
 				getName = new Callback_getName() {
 					@Override
@@ -20241,6 +20425,8 @@ public interface FbInterface extends FbClientLibrary
 			{
 				super(obj);
 
+				version = IReplicatedRecordIntf.VERSION;
+
 				getCount = new Callback_getCount() {
 					@Override
 					public int invoke(IReplicatedRecord self)
@@ -20418,6 +20604,8 @@ public interface FbInterface extends FbClientLibrary
 			public VTable(final IReplicatedTransactionIntf obj)
 			{
 				super(obj);
+
+				version = IReplicatedTransactionIntf.VERSION;
 
 				prepare = new Callback_prepare() {
 					@Override
@@ -20772,6 +20960,8 @@ public interface FbInterface extends FbClientLibrary
 			{
 				super(obj);
 
+				version = IReplicatedSessionIntf.VERSION;
+
 				init = new Callback_init() {
 					@Override
 					public boolean invoke(IReplicatedSession self, IStatus status, IAttachment attachment)
@@ -20991,6 +21181,8 @@ public interface FbInterface extends FbClientLibrary
 			public VTable(final ICryptoKeyIntf obj)
 			{
 				super(obj);
+
+				version = ICryptoKeyIntf.VERSION;
 
 				getObjectInfo = new Callback_getObjectInfo() {
 					@Override
@@ -21356,6 +21548,8 @@ public interface FbInterface extends FbClientLibrary
 			{
 				super(obj);
 
+				version = ICryptoKeyPairIntf.VERSION;
+
 				getObjectInfo = new Callback_getObjectInfo() {
 					@Override
 					public com.sun.jna.Pointer invoke(ICryptoKeyPair self)
@@ -21679,6 +21873,8 @@ public interface FbInterface extends FbClientLibrary
 			{
 				super(obj);
 
+				version = ICryptoRandomFactoryIntf.VERSION;
+
 				getObjectInfo = new Callback_getObjectInfo() {
 					@Override
 					public com.sun.jna.Pointer invoke(ICryptoRandomFactory self)
@@ -21778,6 +21974,8 @@ public interface FbInterface extends FbClientLibrary
 			public VTable(final ICryptoHashFactoryIntf obj)
 			{
 				super(obj);
+
+				version = ICryptoHashFactoryIntf.VERSION;
 
 				getObjectInfo = new Callback_getObjectInfo() {
 					@Override
@@ -21917,6 +22115,8 @@ public interface FbInterface extends FbClientLibrary
 			public VTable(final ICryptoSymmetricFactoryIntf obj)
 			{
 				super(obj);
+
+				version = ICryptoSymmetricFactoryIntf.VERSION;
 
 				getObjectInfo = new Callback_getObjectInfo() {
 					@Override
@@ -22133,6 +22333,8 @@ public interface FbInterface extends FbClientLibrary
 			{
 				super(obj);
 
+				version = ICryptoSignatureFactoryIntf.VERSION;
+
 				getObjectInfo = new Callback_getObjectInfo() {
 					@Override
 					public com.sun.jna.Pointer invoke(ICryptoSignatureFactory self)
@@ -22338,6 +22540,8 @@ public interface FbInterface extends FbClientLibrary
 			{
 				super(obj);
 
+				version = ICryptoSignatureIntf.VERSION;
+
 				getObjectInfo = new Callback_getObjectInfo() {
 					@Override
 					public com.sun.jna.Pointer invoke(ICryptoSignature self)
@@ -22504,6 +22708,8 @@ public interface FbInterface extends FbClientLibrary
 			public VTable(final ICryptoCertificateFactoryIntf obj)
 			{
 				super(obj);
+
+				version = ICryptoCertificateFactoryIntf.VERSION;
 
 				getObjectInfo = new Callback_getObjectInfo() {
 					@Override
@@ -22736,6 +22942,8 @@ public interface FbInterface extends FbClientLibrary
 			public VTable(final ICryptoCertificateIntf obj)
 			{
 				super(obj);
+
+				version = ICryptoCertificateIntf.VERSION;
 
 				getObjectInfo = new Callback_getObjectInfo() {
 					@Override
@@ -23166,6 +23374,8 @@ public interface FbInterface extends FbClientLibrary
 			{
 				super(obj);
 
+				version = ICryptoRepositoryIntf.VERSION;
+
 				getObjectInfo = new Callback_getObjectInfo() {
 					@Override
 					public com.sun.jna.Pointer invoke(ICryptoRepository self)
@@ -23380,6 +23590,8 @@ public interface FbInterface extends FbClientLibrary
 			{
 				super(obj);
 
+				version = ICryptoProviderIntf.VERSION;
+
 				getObjectInfo = new Callback_getObjectInfo() {
 					@Override
 					public com.sun.jna.Pointer invoke(ICryptoProvider self)
@@ -23488,6 +23700,8 @@ public interface FbInterface extends FbClientLibrary
 			public VTable(final IListCryptoObjectsIntf obj)
 			{
 				super(obj);
+
+				version = IListCryptoObjectsIntf.VERSION;
 
 				list = new Callback_list() {
 					@Override
@@ -23598,6 +23812,8 @@ public interface FbInterface extends FbClientLibrary
 			public VTable(final ICryptoFactoryIntf obj)
 			{
 				super(obj);
+
+				version = ICryptoFactoryIntf.VERSION;
 
 				setTrace = new Callback_setTrace() {
 					@Override
@@ -23915,6 +24131,8 @@ public interface FbInterface extends FbClientLibrary
 			public VTable(final ILdapPluginIntf obj)
 			{
 				super(obj);
+
+				version = ILdapPluginIntf.VERSION;
 
 				connect = new Callback_connect() {
 					@Override
@@ -24361,6 +24579,8 @@ public interface FbInterface extends FbClientLibrary
 			{
 				super(obj);
 
+				version = ILdapFactoryIntf.VERSION;
+
 				getLdapPlugin = new Callback_getLdapPlugin() {
 					@Override
 					public ILdapPlugin invoke(ILdapFactory self, IStatus status)
@@ -24445,6 +24665,8 @@ public interface FbInterface extends FbClientLibrary
 			public VTable(final IPolicyPluginIntf obj)
 			{
 				super(obj);
+
+				version = IPolicyPluginIntf.VERSION;
 
 				authenticate = new Callback_authenticate() {
 					@Override
@@ -24579,6 +24801,8 @@ public interface FbInterface extends FbClientLibrary
 			public VTable(final IJsonPluginIntf obj)
 			{
 				super(obj);
+
+				version = IJsonPluginIntf.VERSION;
 
 				jsonQuery = new Callback_jsonQuery() {
 					@Override
@@ -24828,6 +25052,8 @@ public interface FbInterface extends FbClientLibrary
 			public VTable(final IJsonFactoryIntf obj)
 			{
 				super(obj);
+
+				version = IJsonFactoryIntf.VERSION;
 
 				jsonCreate = new Callback_jsonCreate() {
 					@Override
