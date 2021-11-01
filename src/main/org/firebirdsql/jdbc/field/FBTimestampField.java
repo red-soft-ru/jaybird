@@ -99,13 +99,7 @@ class FBTimestampField extends AbstractWithoutTimeZoneField {
         final int t = getDatatypeCoder().decodeInt(getFieldData());
         return (d << 32) + t;
     }
-
-    public void setString(String value) throws SQLException {
-        if (value == null) {
-            setNull();
-            return;
-        }
-        
+            
     @Override
     LocalDateTime getLocalDateTime() throws SQLException {
         if (isNull()) return null;
