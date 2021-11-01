@@ -32,6 +32,7 @@ import java.io.Reader;
 import java.sql.Blob;
 import java.sql.Clob;
 import java.sql.SQLException;
+import java.sql.Types;
 
 /**
  * Describe class <code>FBBlobField</code> here.
@@ -84,6 +85,14 @@ class FBBlobField extends FBField implements FBCloseableField, FBFlushableField 
     }
 
     @Override
+    public Object getObject() throws SQLException {
+        if (requiredType == Types.BLOB) {
+            return getBlob();
+        }
+        return getBytes();
+    }
+
+    @Override
     public Blob getBlob() throws SQLException {
         FirebirdBlob blob = getBlobInternal();
         // Need to use detached blob to ensure the blob is usable after resultSet.next()
@@ -127,8 +136,7 @@ class FBBlobField extends FBField implements FBCloseableField, FBFlushableField 
                     final byte[] segmentBuffer = blobHandle.getSegment(bufferLength);
 
                     if (segmentBuffer.length == 0) {
-                        // unexpected EOF
-                        throw new TypeConversionException(BYTES_CONVERSION_ERROR);
+                        throw invalidGetConversion("byte[]", "unexpected EOF");
                     }
 
                     System.arraycopy(segmentBuffer, 0, resultBuffer, offset, segmentBuffer.length);
@@ -170,8 +178,9 @@ class FBBlobField extends FBField implements FBCloseableField, FBFlushableField 
     @Override
     public String getString() throws SQLException {
         // getString() is not defined for BLOB fields, only for BINARY
-        if (fieldDescriptor.getSubType() < 0)
-            throw new TypeConversionException(STRING_CONVERSION_ERROR);
+        if (fieldDescriptor.getSubType() < 0) {
+            throw invalidGetConversion(String.class, String.format("BLOB SUB_TYPE %d", fieldDescriptor.getSubType()));
+        }
 
         Blob blob = getBlobInternal();
 

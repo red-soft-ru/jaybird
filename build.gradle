@@ -52,11 +52,11 @@ java {
 }
 
 ext {
-    junit_jupiter = '5.8.0'
+    junit_jupiter = '5.8.1'
     hamcrest = '2.2'
-    assertj = '3.20.2'
+    assertj = '3.21.0'
     jmock = '2.12.0'
-    mockito = '3.12.4'
+    mockito = '4.0.0'
 }
 
 dependencies {
@@ -83,7 +83,7 @@ dependencies {
         exclude group: 'org.jmock', module: 'jmock-legacy'
     }
     testImplementation("org.jmock:jmock-imposters:$jmock")
-    testImplementation 'net.bytebuddy:byte-buddy:1.11.16'
+    testImplementation 'net.bytebuddy:byte-buddy:1.11.21'
 
     testImplementation "org.mockito:mockito-core:$mockito"
     testImplementation "org.mockito:mockito-junit-jupiter:$mockito"
@@ -96,8 +96,8 @@ sourceSets {
     main {
         java {
             srcDirs = findProperty('buildProfile') == 'java8'
-                    ? ['src/main', 'src/extern', 'src/jdbc_42', 'src/jna-client', 'src/openoffice', 'src/nativeoo']
-                    : ['src/main', 'src/extern', 'src/jdbc_42', 'src/jna-client', 'src/openoffice', 'src/nativeoo', 'src/chacha_j11']
+                    ? ['src/main', 'src/extern', 'src/jna-client', 'src/openoffice', 'src/nativeoo']
+                    : ['src/main', 'src/extern', 'src/jna-client', 'src/openoffice', 'src/nativeoo', 'src/chacha_j11']
         }
         resources {
             srcDirs = ['src/resources']
@@ -119,7 +119,7 @@ sourceSets {
     }
     test {
         java {
-            srcDirs = ['src/test', 'src/test_42', 'src/jna-test', 'src/nativeoo-test']
+            srcDirs = ['src/test', 'src/jna-test', 'src/nativeoo-test']
         }
         resources {
             srcDirs = ['src/test_resources']
