@@ -34,9 +34,9 @@ public class IDatabaseImpl extends AbstractFbDatabase<NativeDatabaseConnection>
     private final IMaster master;
     private final IProvider provider;
     private final IUtil util;
-    private IAttachment attachment;
+    protected IAttachment attachment;
     private IEvents events;
-    private final IStatus status;
+    protected final IStatus status;
 
 
     public IDatabaseImpl(NativeDatabaseConnection connection) {
