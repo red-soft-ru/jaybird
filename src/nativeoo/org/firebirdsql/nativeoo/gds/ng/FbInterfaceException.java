@@ -13,7 +13,7 @@ public class FbInterfaceException {
         java.io.PrintWriter pw = new java.io.PrintWriter(sw);
         t.printStackTrace(pw);
         String msg = sw.toString();
-        try (CloseableMemory memory = new CloseableMemory(msg.length())) {
+        try (CloseableMemory memory = new CloseableMemory(msg.length() + 1)) {
             memory.setString(0, msg);
             com.sun.jna.Pointer[] vector = new com.sun.jna.Pointer[]{
                     new com.sun.jna.Pointer(org.firebirdsql.gds.ISCConstants.isc_arg_gds),
