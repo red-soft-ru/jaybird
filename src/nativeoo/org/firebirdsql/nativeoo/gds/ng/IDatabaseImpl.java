@@ -29,13 +29,13 @@ public class IDatabaseImpl extends AbstractFbDatabase<NativeDatabaseConnection>
 
     private static final ParameterConverter<NativeDatabaseConnection, ?> PARAMETER_CONVERTER = new IParameterConverterImpl();
 
-    private final FbClientLibrary clientLibrary;
-    private final IMaster master;
+    private FbClientLibrary clientLibrary;
+    private IMaster master;
     private final IProvider provider;
     private final IUtil util;
-    private IAttachment attachment;
+    protected IAttachment attachment;
     private IEvents events;
-    private final IStatus status;
+    protected IStatus status;
 
 
     public IDatabaseImpl(NativeDatabaseConnection connection) {
