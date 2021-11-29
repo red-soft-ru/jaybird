@@ -220,7 +220,7 @@ public class IStatementImpl extends AbstractFbStatement {
                 inMessage.position(offset);
                 // Although we pass a null value, length and type must still be specified
                 if (length == 0) {
-                    length = fieldDescriptor.getLength() != 0 ? fieldDescriptor.getLength() : Integer.MIN_VALUE;
+                    length = fieldDescriptor.getLength() != 0 ? fieldDescriptor.getLength() : -1;
                 }
                 metadataBuilder.setLength(status, idx, length);
                 metadataBuilder.setType(status, idx, inMeta.getType(status, idx) | 1);
@@ -235,7 +235,7 @@ public class IStatementImpl extends AbstractFbStatement {
                 if (fieldDescriptor.isVarying()) {
                     int length = Math.min(fieldDescriptor.getLength(), fieldData.length);
                     if (length == 0)
-                        length = fieldDescriptor.getLength() != 0 ? fieldDescriptor.getLength() : Integer.MIN_VALUE;
+                        length = fieldDescriptor.getLength() != 0 ? fieldDescriptor.getLength() : -1;
                     metadataBuilder.setLength(status, idx, length);
                     metadataBuilder.setType(status, idx, ISCConstants.SQL_VARYING + 1);
                     metadataBuilder.setCharSet(status, idx, inMeta.getCharSet(status, idx));
@@ -274,7 +274,7 @@ public class IStatementImpl extends AbstractFbStatement {
                         offset += offset % alignment;
                     inMessage.position(offset);
                     int length = inMeta.getLength(status, idx);
-                    metadataBuilder.setLength(status, idx, length != 0 ? length : Integer.MIN_VALUE);
+                    metadataBuilder.setLength(status, idx, length != 0 ? length : -1);
                     metadataBuilder.setType(status, idx, fieldDescriptor.getType());
                     metadataBuilder.setCharSet(status, idx, 0);
                 }
