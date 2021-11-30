@@ -131,6 +131,12 @@ public class IMessageMetadataImpl implements FbMessageMetadata {
         return result;
     }
 
+    public boolean isNullable(int index) throws SQLException {
+        boolean result = metadata.isNullable(getStatus(), index);
+        processStatus();
+        return result;
+    }
+
     public FbMetadataBuilder getBuilder() throws SQLException {
         if (metadataBuilderImpl == null)
             metadataBuilderImpl = new IMetadataBuilderImpl(this.database, metadata.getCount(getStatus()));
