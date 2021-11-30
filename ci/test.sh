@@ -225,21 +225,29 @@ elif [[ "$RDB_MAJOR_VERSION" == "3" ]]; then
   "${INSTALLDIR}"/bin/isql -user SYSDBA -password masterkey "${INSTALLDIR}"/security3.fdb -i "${SOURCES}"/ci/user3.sql
 fi
 
-echo "Start RDB..."
+if [[ "$GDS_TYPE" == "" ]]; then
+  GDS_TYPE="PURE_JAVA"
+fi
 
-"$INSTALLDIR"/bin/rdbguard -daemon -forever
+if [[ "$GDS_TYPE" != "EMBEDDED" && "$GDS_TYPE" != "FBOOEMBEDDED" ]]; then
 
-(nc -h 2>&1|grep -q 'Zero-I/O mode') && NC="nc -z" || NC="nc --send-only"
+  echo "Start RDB..."
 
-echo "Waiting until port 3050 opened..."
-try=10
-while ! $NC localhost 3050 </dev/null; do
-    sleep 5
-    try=$((try-1))
-    if [ $try = 0 ]; then
-        die "Unable to connect to RDB..."
-    fi
-done
+  "$INSTALLDIR"/bin/rdbguard -daemon -forever
+
+  (nc -h 2>&1|grep -q 'Zero-I/O mode') && NC="nc -z" || NC="nc --send-only"
+
+  echo "Waiting until port 3050 opened..."
+  try=10
+  while ! $NC localhost 3050 </dev/null; do
+      sleep 5
+      try=$((try-1))
+      if [ $try = 0 ]; then
+          die "Unable to connect to RDB..."
+      fi
+  done
+
+fi
 
 echo rdb_server | kinit rdb_server/localhost
 klist
