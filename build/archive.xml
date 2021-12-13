@@ -18,7 +18,6 @@
                 <include name="org/firebirdsql/**"/>
             </fileset>
             <fileset dir="${build.resources}">
-                <exclude name="log4j.properties"/>
                 <exclude name="META-INF/ra.xml"/>
                 <include name="**/*.properties"/>
                 <include name="**/*.xml"/>
@@ -36,7 +35,6 @@
                 <include name="org/firebirdsql/**"/>
             </fileset>
             <fileset dir="${build.resources}">
-                <exclude name="log4j.properties"/>
                 <exclude name="META-INF/ra.xml"/>
                 <include name="**/*.properties"/>
                 <include name="**/*.xml"/>
@@ -94,7 +92,6 @@
                 <include name="**/*.java"/>
             </fileset>
             <fileset dir="${source.resources}">
-                <exclude name="log4j.properties"/>
                 <include name="**/*.properties"/>
                 <include name="**/*.xml"/>
             </fileset>
@@ -128,7 +125,6 @@
                 <include name="**/*.java"/>
             </fileset>
             <fileset dir="${source.resources}">
-                <exclude name="log4j.properties"/>
                 <include name="**/*.properties"/>
                 <include name="**/*.xml"/>
             </fileset>

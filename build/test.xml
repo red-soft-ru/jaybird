@@ -38,9 +38,6 @@
                 <pathelement location="${build.lib}/${archive.name.test}"/>
                 <pathelement location="${build.lib}/connector-api-1.5.jar"/>
                 <pathelement location="${srcdir}/lib/jna-4.5.0.jar" />
-                <pathelement location="${srcdir}/lib/log4j-1.2-api-2.13.3.jar"/>
-                <pathelement location="${srcdir}/lib/log4j-api-2.13.3.jar"/>
-                <pathelement location="${srcdir}/lib/log4j-core-2.13.3.jar"/>
                 <pathelement location="${srcdir}/lib/platform-4.5.0.jar" />
 
                 <fileset dir="lib">
@@ -112,9 +109,6 @@
                 <pathelement location="${build.lib}/${archive.name.test}"/>
                 <pathelement location="${build.lib}/connector-api-1.5.jar"/>
                 <pathelement location="${srcdir}/lib/jna-4.5.0.jar" />
-                <pathelement location="${srcdir}/lib/log4j-1.2-api-2.13.3.jar"/>
-                <pathelement location="${srcdir}/lib/log4j-api-2.13.3.jar"/>
-                <pathelement location="${srcdir}/lib/log4j-core-2.13.3.jar"/>
                 <pathelement location="${srcdir}/lib/platform-4.5.0.jar" />
 
                 <fileset dir="lib">
@@ -189,9 +183,6 @@
                 <pathelement location="${build.lib}/${archive.name.test}"/>
                 <pathelement location="${build.lib}/connector-api-1.5.jar"/>
                 <pathelement location="${srcdir}/lib/jna-4.5.0.jar" />
-                <pathelement location="${srcdir}/lib/log4j-1.2-api-2.13.3.jar"/>
-                <pathelement location="${srcdir}/lib/log4j-api-2.13.3.jar"/>
-                <pathelement location="${srcdir}/lib/log4j-core-2.13.3.jar"/>
                 <pathelement location="${srcdir}/lib/platform-4.5.0.jar" />
 
                 <fileset dir="lib">
@@ -258,9 +249,6 @@
                 <pathelement location="${build.test}"/>
                 <pathelement location="${build.resources}"/>
                 <pathelement location="${srcdir}/lib/jna-4.5.0.jar" />
-                <pathelement location="${srcdir}/lib/log4j-1.2-api-2.13.3.jar"/>
-                <pathelement location="${srcdir}/lib/log4j-api-2.13.3.jar"/>
-                <pathelement location="${srcdir}/lib/log4j-core-2.13.3.jar"/>
                 <pathelement location="${srcdir}/lib/platform-4.5.0.jar" />
 
                 <fileset dir="lib">
@@ -317,9 +305,6 @@
                 <pathelement location="${build.test}"/>
                 <pathelement location="${build.resources}"/>
                 <pathelement location="${srcdir}/lib/jna-4.5.0.jar" />
-                <pathelement location="${srcdir}/lib/log4j-1.2-api-2.13.3.jar"/>
-                <pathelement location="${srcdir}/lib/log4j-api-2.13.3.jar"/>
-                <pathelement location="${srcdir}/lib/log4j-core-2.13.3.jar"/>
                 <pathelement location="${srcdir}/lib/platform-4.5.0.jar" />
 
                 <fileset dir="lib">
@@ -372,9 +357,6 @@
                 <pathelement location="${build.test}"/>
                 <pathelement location="${build.resources}"/>
                 <pathelement location="${srcdir}/lib/jna-4.5.0.jar" />
-                <pathelement location="${srcdir}/lib/log4j-1.2-api-2.13.3.jar"/>
-                <pathelement location="${srcdir}/lib/log4j-api-2.13.3.jar"/>
-                <pathelement location="${srcdir}/lib/log4j-core-2.13.3.jar"/>
                 <pathelement location="${srcdir}/lib/platform-4.5.0.jar" />
 
                 <fileset dir="lib">
