@@ -250,9 +250,6 @@
             <pathelement location="${module.thirdparty}/fscontext.jar"/>
             <pathelement location="${module.thirdparty}/providerutil.jar"/>
             <pathelement location="${module.thirdparty}/platform-5.3.0.jar"/>
-            <pathelement location="${module.thirdparty}/log4j-1.2-api-2.13.3.jar"/>
-            <pathelement location="${module.thirdparty}/log4j-api-2.13.3.jar"/>
-            <pathelement location="${module.thirdparty}/log4j-core-2.13.3.jar"/>
             <pathelement location="${module.thirdparty}/jna-5.3.0.jar"/>
             <fileset dir="${lib_test.dir}" includes="*.jar">
                 <!-- test dependencies for Java 7 -->
@@ -269,9 +266,6 @@
         <path id="javac.cryptoapi.classpath">
             <pathelement location="${build.classes}"/>
             <pathelement location="${build.cryptoapi}"/>
-            <pathelement location="${module.thirdparty}/log4j-1.2-api-2.13.3.jar"/>
-            <pathelement location="${module.thirdparty}/log4j-api-2.13.3.jar"/>
-            <pathelement location="${module.thirdparty}/log4j-core-2.13.3.jar"/>
             <pathelement location="${module.thirdparty}/platform-5.3.0.jar"/>
             <pathelement location="${module.thirdparty}/jna-5.3.0.jar"/>
         </path>
@@ -279,10 +273,6 @@
         <path id="javac.cryptoapi_security.classpath">
             <pathelement location="${build.classes}"/>
             <pathelement location="${build.cryptoapi}"/>
-            <pathelement location="${build.cryptoapi_security}"/>
-            <pathelement location="${module.thirdparty}/log4j-1.2-api-2.13.3.jar"/>
-            <pathelement location="${module.thirdparty}/log4j-api-2.13.3.jar"/>
-            <pathelement location="${module.thirdparty}/log4j-core-2.13.3.jar"/>
             <pathelement location="${module.thirdparty}/platform-5.3.0.jar"/>
             <pathelement location="${module.thirdparty}/jna-5.3.0.jar"/>
         </path>
