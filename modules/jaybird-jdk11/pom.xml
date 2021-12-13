@@ -97,7 +97,6 @@
 				<directory>../../src/resources</directory>
 				<filtering>false</filtering>
 				<excludes>
-					<exclude>log4j.properties</exclude>
 					<exclude>META-INF/ra.xml</exclude>
 					<exclude>**/reserved_words*.txt</exclude>
 				</excludes>
