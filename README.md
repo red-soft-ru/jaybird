@@ -3,7 +3,7 @@ Jaybird is a JDBC driver suite to connect to Firebird/Red Database servers.
 
 [![Build Status](https://github.com/FirebirdSQL/jaybird/actions/workflows/build-only.yml/badge.svg?branch=Branch_4_0)](https://github.com/FirebirdSQL/jaybird/actions?query=branch%3ABranch_4_0+workflow%3Abuild-only)
 [![MavenCentral](https://maven-badges.herokuapp.com/maven-central/org.firebirdsql.jdbc/jaybird/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.firebirdsql.jdbc/jaybird/)
-[![image](https://img.shields.io/badge/red--soft--bintray-jaybird--releases-brightgreen)](https://bintray.com/beta/#/red-soft-ru/releases)
+[![image](https://img.shields.io/badge/red--soft--nexus-releases-brightgreen)](http://nexus.red-soft.ru/repository/jaybird/ru/red-soft/jdbc/jaybird-parent/maven-metadata.xml)
 
 ## Reporting bugs or improvements
 
