@@ -4,7 +4,7 @@
 <hibernate-mapping>
     <class name="org.firebirdsql.hibernate.Person" table="Persons">
         <id name="id" column="PERSON_ID"/>
-        <property name="name" column="NAME" length="10"/>
+        <property name="name" column="NAME" length="15"/>
         <property name="surname" column="SURNAME" length="20"/>
     </class>
 </hibernate-mapping>
