@@ -11,8 +11,6 @@
         <emptyLine />
         <package name="org.gradle" withSubpackages="true" static="false" />
         <emptyLine />
-        <package name="org.hibernate" withSubpackages="true" static="false" />
-        <emptyLine />
         <package name="" withSubpackages="true" static="false" />
         <emptyLine />
         <package name="" withSubpackages="true" static="true" />
