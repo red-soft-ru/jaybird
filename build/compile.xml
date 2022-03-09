@@ -80,7 +80,7 @@
                 deprecation="on"
                 optimize="on"
                 includes="org/**"
-                excludes="**/temp* **/hibernate/*"
+                excludes="**/temp*"
                 >
             <compilerarg line="${java.module.arg}"/>
             <classpath refid="javac.test.classpath"/>
