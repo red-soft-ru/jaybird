@@ -5,7 +5,7 @@
 	<classpathentry kind="src" path="src/resources"/>
 	<classpathentry kind="src" path="src/main"/>
 	<classpathentry kind="src" path="src/openoffice"/>
-	<classpathentry excluding="org/firebirdsql/hibernate/" kind="src" path="src/test"/>
+	<classpathentry kind="src" path="src/test"/>
 	<classpathentry kind="src" path="src/jdbc_42"/>
 	<classpathentry kind="src" path="src/jna-client"/>
 	<classpathentry kind="src" path="src/nativeoo"/>
@@ -29,7 +29,6 @@
 	<classpathentry kind="lib" path="lib/test/jmock-imposters-2.10.0-RC3.jar"/>
 	<classpathentry kind="lib" path="lib/test/jmock-junit4-2.10.0-RC3.jar"/>
 	<classpathentry kind="lib" path="lib/test/objenesis-3.0.1.jar"/>
-	<classpathentry kind="lib" path="lib/test/hibernate-core-4.3.11.Final.jar"/>
 	<classpathentry kind="lib" path="lib/test/asm-7.3.1.jar"/>
 	<classpathentry kind="output" path="classes/production/client-java"/>
 </classpath>
