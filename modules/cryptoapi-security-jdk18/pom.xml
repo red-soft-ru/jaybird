@@ -74,10 +74,23 @@
 			<plugin>
 				<artifactId>maven-source-plugin</artifactId>
 			</plugin>
-<!-- 			<plugin>
-				<artifactId>maven-javadoc-plugin</artifactId>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>copy-dependencies</id>
+						<phase>install</phase>
+						<goals>
+							<goal>copy-dependencies</goal>
+						</goals>
+						<configuration>
+							<includeScope>runtime</includeScope>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
- -->			<plugin>
+			<plugin>
 				<artifactId>maven-deploy-plugin</artifactId>
 			</plugin>
 		</plugins>
