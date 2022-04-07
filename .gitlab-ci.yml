@@ -17,7 +17,7 @@ variables:
   MAVEN_OPTS: "-Dmaven.repo.local=.m2/repository"
   RDB2_VERSION: "2.6.0.13508"
   RDB3_VERSION: "3.0.9-rc.5"
-  RDB4_VERSION: "4.0.0-SNAPSHOT.394"
+  RDB4_VERSION: "4.0.0-rc.1"
   http_proxy: http://git.red-soft.biz:3128
   https_proxy: http://git.red-soft.biz:3128
   no_proxy: localhost,172.0.0.0/8,127.0.0.0/8,.red-soft.biz
