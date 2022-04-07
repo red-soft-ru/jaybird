@@ -196,8 +196,10 @@ public class AuthCryptoPluginImpl extends AuthCryptoPlugin {
     try {
       final int algID = CertUtils.getAlgorithmIDByProvider(provider);
       final Pointer hashHandle = Advapi.cryptCreateHash(provider, algID);
-      if (!Advapi.cryptHashData(hashHandle, data, 0))
-        throw new AuthCryptoException("Error hashing data.");
+      if (!Advapi.cryptHashData(hashHandle, data, 0)) {
+        final int error = Advapi.getLastError();
+        throw new CryptoException("Error hashing data.", error);
+      }
       return hashHandle;
     } catch (Exception e) {
       throw new AuthCryptoException("Error hashing data.", e);
