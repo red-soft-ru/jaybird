@@ -130,29 +130,23 @@ build_and_test:
         TEST_JAVA8_JVM: /usr/lib/jvm/jre-1.8.0/bin/java
         TEST_LIST: "**"
         GDS_TYPE: "PURE_JAVA"
-        SKIP_JAVA7_TEST: "true"
         RDB_VERSION: [ $RDB4_VERSION, $RDB5_VERSION ]
       - TYPE: JDK8
         JAVA_HOME: /usr/lib/jvm/jre-1.8.0
         TEST_JAVA8_JVM: /usr/lib/jvm/jre-1.8.0/bin/java
         TEST_LIST: "**"
-        SKIP_JAVA7_TEST: "true"
         RDB_VERSION: [ $RDB4_VERSION, $RDB5_VERSION ]
         GDS_TYPE: [ "NATIVE", "FBOONATIVE", "EMBEDDED", "FBOOEMBEDDED" ]
       - TYPE: JDK8
         JAVA_HOME: /usr/lib/jvm/jre-1.8.0
         TEST_LIST: "**"
         GDS_TYPE: "PURE_JAVA"
-        SKIP_JAVA7_TEST: "false"
         TEST_JAVA8_JVM: /usr/lib/jvm/jre-1.8.0/bin/java
-        TEST_JAVA7_JVM: /usr/lib/jvm/jre-1.7.0/bin/java
-        EXTRA_DEPENDENCIES: java-1.7.0-openjdk-headless
         RDB_VERSION: $RDB3_VERSION
       - TYPE: JDK11
         JAVA_HOME: /usr/lib/jvm/jre-1.8.0
         TEST_LIST: "**"
         GDS_TYPE: "PURE_JAVA"
-        SKIP_JAVA7_TEST: "true"
         TEST_JAVA8_JVM: /usr/java11/bin/java
         EXTRA_DEPENDENCIES: java-11-openjdk
         RDB_VERSION: $RDB3_VERSION
@@ -160,7 +154,6 @@ build_and_test:
         JAVA_HOME: /usr/lib/jvm/jre-1.8.0
         TEST_LIST: "**"
         GDS_TYPE: "PURE_JAVA"
-        SKIP_JAVA7_TEST: "true"
         TEST_JAVA8_JVM: [ "/usr/lib/jvm/bellsoft-java8-runtime.x86_64/bin/java", "/usr/lib/jvm/bellsoft-java11-runtime.x86_64/bin/java" ]
         EXTRA_DEPENDENCIES: bellsoft-java8-runtime bellsoft-java11-runtime
         RDB_VERSION: $RDB3_VERSION

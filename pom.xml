@@ -22,17 +22,14 @@
 	</properties>	
 	<profiles>
 		<profile>
-			<id>enable-java7-build</id>
+			<id>enable-java8-build</id>
 			<activation>
-				<jdk>(,1.8]</jdk>
+				<jdk>1.8</jdk>
 			</activation>
 			<modules>
 				<module>modules/jaybird-jdk18</module>
-				<module>modules/jaybird-jdk17</module>
 				<module>modules/cryptoapi-jdk18</module>
-				<module>modules/cryptoapi-jdk17</module>
 				<module>modules/cryptoapi-security-jdk18</module>
-				<module>modules/cryptoapi-security-jdk17</module>
 				<module>modules/jaybird-fbclient</module>
 			</modules>
 		</profile>
