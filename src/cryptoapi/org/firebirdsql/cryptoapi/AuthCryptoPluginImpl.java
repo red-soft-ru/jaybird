@@ -163,7 +163,7 @@ public class AuthCryptoPluginImpl extends AuthCryptoPlugin {
     try {
       return Advapi.cryptGetKeyParam((Pointer) keyHandle, Wincrypt.KP_IV);
     } catch (Exception e) {
-      throw new AuthCryptoException("Can't get initialization vector for key.");
+      throw new AuthCryptoException("Can't get initialization vector for key.", e);
     }
   }
 
@@ -200,7 +200,7 @@ public class AuthCryptoPluginImpl extends AuthCryptoPlugin {
         throw new AuthCryptoException("Error hashing data.");
       return hashHandle;
     } catch (Exception e) {
-      throw new AuthCryptoException("Error hashing data.");
+      throw new AuthCryptoException("Error hashing data.", e);
     }
   }
 
