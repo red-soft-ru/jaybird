@@ -171,7 +171,12 @@ public class V13WireOperations extends V11WireOperations {
             xdrOut.writeBuffer(clientAuthBlock.getClientData()); // p_data
             xdrOut.writeString(clientAuthBlock.getCurrentPluginName(), encoding); // p_name
             if (clientAuthBlock.isFirstTime()) {
-                xdrOut.writeString(clientAuthBlock.getPluginNames(), encoding); // p_list
+                final String pluginNames = clientAuthBlock.getPluginNames();
+                if (pluginNames != null) {
+                    xdrOut.writeString(clientAuthBlock.getPluginNames(), encoding); // p_list
+                } else {
+                    xdrOut.writeBuffer(null); // p_list
+                }
                 clientAuthBlock.setFirstTime(false);
             } else {
                 xdrOut.writeBuffer(null); // p_list
