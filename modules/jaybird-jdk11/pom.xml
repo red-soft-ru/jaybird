@@ -143,7 +143,6 @@
 								<source>../../src/chacha_j11</source>
 								<source>../../src/extern</source>
 								<source>../../src/main</source>
-								<source>../../src/jdbc_42</source>
 								<source>../../src/jna-client</source>
 								<source>../../src/openoffice</source>
 								<source>../../src/nativeoo</source>
@@ -160,7 +159,6 @@
 							<sources>
 								<source>../../src/cryptoapi/</source>
 								<source>../../src/test/</source>
-								<source>../../src/test_42/</source>
 								<source>../../src/jna-test/</source>
 								<source>../../src/nativeoo-test/</source>
 							</sources>
@@ -214,7 +212,6 @@
 						../../src/main:
 						../../src/extern:
 						../../src/jna-client:
-						../../src/jdbc_42:
 						../../src/openoffice
 						../../src/nativeoo:
 					</sourcepath>
