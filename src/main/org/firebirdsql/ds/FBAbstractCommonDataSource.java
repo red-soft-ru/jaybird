@@ -167,6 +167,21 @@ public abstract class FBAbstractCommonDataSource extends RootCommonDataSource im
     }
 
     @Override
+    public String getPasswordEnc() {
+        synchronized (lock) {
+            return connectionProperties.getPasswordEnc();
+        }
+    }
+
+    @Override
+    public void setPasswordEnc(String passwordEnc) {
+        synchronized (lock) {
+            checkNotStarted();
+            connectionProperties.setPasswordEnc(passwordEnc);
+        }
+    }
+
+    @Override
     public String getCertificate() {
         synchronized (lock) {
             return connectionProperties.getCertificate();

@@ -241,6 +241,10 @@ public class FBManagedConnectionFactory implements ManagedConnectionFactory, Fir
         return connectionProperties.getPassword();
     }
 
+    public String getPasswordEnc() {
+        return connectionProperties.getPasswordEnc();
+    }
+
     public String getRoleName() {
         return connectionProperties.getRoleName();
     }
@@ -340,6 +344,10 @@ public class FBManagedConnectionFactory implements ManagedConnectionFactory, Fir
 
     public void setPassword(String password) {
         connectionProperties.setPassword(password);
+    }
+
+    public void setPasswordEnc(String passwordEnc) {
+        connectionProperties.setPasswordEnc(passwordEnc);
     }
 
     public void setRoleName(String roleName) {

@@ -262,6 +262,11 @@ public class FBConnectionProperties extends AbstractFBConnectionProperties imple
         dirtied();
     }
 
+    public void setPasswordEnc(String passwordEnc) {
+        setStringProperty(PASSWORD_ENC_PROPERTY, passwordEnc);
+        dirtied();
+    }
+
     public void setBuffersNumber(int buffersNumber) {
         setIntProperty(BUFFERS_NUMBER_PROPERTY, buffersNumber);
         dirtied();
@@ -562,8 +567,12 @@ public class FBConnectionProperties extends AbstractFBConnectionProperties imple
                 case isc_dpb_set_bind:
                 case isc_dpb_decfloat_round:
                 case isc_dpb_decfloat_traps:
+                    parameter.copyTo(getExtraDatabaseParameters(), null);
+                    dirtied();
+                    break;
                 case isc_dpb_password_enc:
-                    parameter.copyTo(extraDatabaseParameters, null);
+                    setPasswordEnc(parameter.getValueAsString());
+                    parameter.copyTo(getExtraDatabaseParameters(), null);
                     dirtied();
                     break;
                 case isc_dpb_gss:

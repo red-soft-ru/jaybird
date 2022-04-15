@@ -305,6 +305,26 @@ public class FBSimpleDataSource extends RootCommonDataSource implements DataSour
     public void setPassword(String password) {
         mcf.setPassword(password);
     }
+
+    /**
+     * Get encrypted password used in {@link #getConnection()} method.
+     *
+     * @return encrypted password corresponding to the user name returned by
+     * {@link #getUserName()}.
+     */
+    public String getPasswordEnc() {
+        return mcf.getPasswordEnc();
+    }
+
+    /**
+     * Set encrypted password that will be used in the {@link #getConnection()} method.
+     *
+     * @param passwordEnc encrypted password corresponding to the user name set in
+     * {@link #setUserName(String)}.
+     */
+    public void setPasswordEnc(String passwordEnc) {
+        mcf.setPasswordEnc(passwordEnc);
+    }
     
     /**
      * Get encoding for connections produced by this data source.

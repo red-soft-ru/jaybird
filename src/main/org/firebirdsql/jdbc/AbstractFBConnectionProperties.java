@@ -237,6 +237,14 @@ public abstract class AbstractFBConnectionProperties implements FirebirdConnecti
         immutable();
     }
 
+    public String getPasswordEnc() {
+        return getStringProperty(PASSWORD_ENC_PROPERTY);
+    }
+
+    public void setPasswordEnc(String passwordEnc) {
+        immutable();
+    }
+
     public int getBuffersNumber() {
         return getIntProperty(BUFFERS_NUMBER_PROPERTY);
     }

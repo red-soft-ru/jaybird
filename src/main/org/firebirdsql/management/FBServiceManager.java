@@ -135,6 +135,21 @@ public class FBServiceManager implements ServiceManager {
         return serviceProperties.getPassword();
     }
 
+    /**
+     * @param passwordEnc
+     *         The encrypted password to set.
+     */
+    public void setPasswordEnc(String passwordEnc) {
+        serviceProperties.setPasswordEnc(passwordEnc);
+    }
+
+    /**
+     * @return Returns the encrypted password.
+     */
+    public String getPasswordEnc() {
+        return serviceProperties.getPasswordEnc();
+    }
+
     @Override
     public int getBuffersNumber() {
         return serviceProperties.getBuffersNumber();

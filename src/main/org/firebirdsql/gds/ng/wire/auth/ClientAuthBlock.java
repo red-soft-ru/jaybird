@@ -77,9 +77,7 @@ public final class ClientAuthBlock {
     }
 
     public String getPasswordEnc() {
-        if (attachProperties.getExtraDatabaseParameters().hasArgument(ISCConstants.isc_dpb_password_enc))
-            return attachProperties.getExtraDatabaseParameters().getArgumentAsString(ISCConstants.isc_dpb_password_enc);
-        return null;
+        return attachProperties.getPasswordEnc();
     }
 
     public boolean isAuthComplete() {
