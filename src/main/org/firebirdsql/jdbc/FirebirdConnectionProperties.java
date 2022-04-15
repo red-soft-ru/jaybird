@@ -41,7 +41,6 @@ public interface FirebirdConnectionProperties {
     String PAGE_CACHE_SIZE_PROPERTY = "pageCacheSize";
     String RESULTSET_HOLDABLE_PROPERTY = "resultsetHoldable";
     String COLUMN_LABEL_PROPERTY = "columnLabel";
-
     String BLOB_BUFFER_SIZE_PROPERTY = "blobBufferSize";
     String LOCAL_ENCODING_PROPERTY = "localEncoding";
     String ENCODING_PROPERTY = "encoding";
@@ -54,6 +53,7 @@ public interface FirebirdConnectionProperties {
     String TIMESTAMP_USES_LOCAL_TIMEZONE_PROPERTY = "timestampUsesLocalTimezone";
     String USER_NAME_PROPERTY = "userName";
     String PASSWORD_PROPERTY = "password";
+    String PASSWORD_ENC_PROPERTY = "password_enc";
     String BUFFERS_NUMBER_PROPERTY = "buffersNumber";
     String DEFAULT_HOLDABLE_RS_PROPERTY = "defaultHoldable";
     String SO_TIMEOUT = "soTimeout";
@@ -273,6 +273,17 @@ public interface FirebirdConnectionProperties {
      *         password corresponding to the specified user name.
      */
     void setPassword(String password);
+
+    /**
+     * @return encrypted password corresponding to the specified user name.
+     */
+    String getPasswordEnc();
+
+    /**
+     * @param passwordEnc
+     *         encrypted password corresponding to the specified user name.
+     */
+    void setPasswordEnc(String passwordEnc);
 
     /**
      * @return number of cache buffers that should be allocated for this
