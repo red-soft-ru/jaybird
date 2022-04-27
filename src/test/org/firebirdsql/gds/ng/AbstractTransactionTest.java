@@ -60,6 +60,7 @@ public abstract class AbstractTransactionTest extends FBJUnit4TestBase {
             ")";
     //@formatter:on
 
+    @SuppressWarnings("deprecation")
     @Rule
     public final ExpectedException expectedException = ExpectedException.none();
 
