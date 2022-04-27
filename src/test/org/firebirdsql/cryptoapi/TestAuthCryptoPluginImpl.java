@@ -1,8 +1,10 @@
 package org.firebirdsql.cryptoapi;
 
 import org.firebirdsql.common.FBJUnit4TestBase;
+import org.firebirdsql.gds.impl.wire.auth.AuthCryptoException;
 import org.firebirdsql.gds.impl.wire.auth.AuthCryptoPlugin;
 import org.firebirdsql.gds.impl.wire.auth.AuthPrivateKeyContext;
+import org.firebirdsql.gds.impl.wire.auth.GDSAuthException;
 import org.junit.Test;
 
 import java.io.FileInputStream;
@@ -13,6 +15,35 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertNotNull;
 
 public class TestAuthCryptoPluginImpl extends FBJUnit4TestBase {
+
+    private class HashThread extends Thread {
+
+        private Object hash;
+        private final String threadName;
+
+        public HashThread(final int n) {
+            this.threadName = "Thread " + n;
+        }
+
+        public void run(){
+            this.setName(threadName);
+            System.out.println(threadName + " is running");
+            AuthCryptoPlugin plugin = null;
+            try {
+                    plugin = AuthCryptoPlugin.getPlugin();
+                    hash = plugin.createHash(testbuf);
+                    System.out.println(threadName + ": hash created");
+                    assertNotNull(hash);
+                    boolean res = plugin.destroyHash(hash);
+                    System.out.println(threadName + ": hash destroyed");
+                    assertTrue(res);
+                    System.out.println(threadName + " is complete");
+            } catch (GDSAuthException | AuthCryptoException e) {
+                System.out.println("Exception in " + threadName + ": " + e.getMessage());
+                throw new RuntimeException(e);
+            }
+        }
+    }
 
     private byte[] testbuf = "xxThis is a test of the crypto plugin".getBytes();
     private Object hash = null;
@@ -36,6 +67,20 @@ public class TestAuthCryptoPluginImpl extends FBJUnit4TestBase {
             }
         } catch (IOException e) {
             throw new Exception("Error reading certificate from file " + filePath + ": " + e.getMessage());
+        }
+    }
+
+    @Test
+    public void testAuthCryptoPlugin_multipleThreads() throws Exception {
+        final int size = 200;
+        final Thread hashThreads[] = new Thread[size];
+        for (int i = 0; i < size; i++) {
+            hashThreads[i] = new Thread(new HashThread(i));
+            hashThreads[i].setName("Thread " + i);
+            hashThreads[i].start();
+        }
+        for (int j = 0; j < size; j++) {
+            hashThreads[j].join();
         }
     }
 

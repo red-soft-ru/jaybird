@@ -164,20 +164,19 @@ if [[ "$RDB_MAJOR_VERSION" == "5" ]]; then
   sed -i 's/#UserManager = Srp/UserManager = Srp, Legacy_UserManager, GostPassword_Manager /g' "${INSTALLDIR}"/firebird.conf
   sed -i 's/#WireCrypt = Enabled (for client) \/ Required (for server)/WireCrypt = Enabled/g' "${INSTALLDIR}"/firebird.conf
   sed -i 's/#WireCryptPlugin = ChaCha, Arc4/WireCryptPlugin = Wire_WinCrypt/g' "${INSTALLDIR}"/firebird.conf
-
   sed -i 's/#GssServerKeyfile/GssServerKeyfile/g' "${INSTALLDIR}"/firebird.conf
   sed -i 's/#GssServiceName/GssServiceName/g' "${INSTALLDIR}"/firebird.conf
   sed -i 's/#GssHostName =/GssHostName = localhost/g' "${INSTALLDIR}"/firebird.conf
   sed -i 's/#TraceAuthentication = 0/TraceAuthentication = 1/g' "${INSTALLDIR}"/firebird.conf
-
   sed -i 's/#ProviderName = 75/ProviderName = 80/g' "${INSTALLDIR}"/firebird.conf
-
   sed -i 's/#VerifyCertificateChain = 1/VerifyCertificateChain = 0/g' "${INSTALLDIR}"/firebird.conf
   sed -i 's/#CertUsernameDN = CN/CertUsernameDN = E/g' "${INSTALLDIR}"/firebird.conf
   sed -i 's/#ServerCertificate =/ServerCertificate = Test Test Test,CRYPTO-PRO Test Center 2,'"$CERT_SERIAL"'/g' "${INSTALLDIR}"/firebird.conf
   sed -i 's/#ServerPrivatePin =/ServerPrivatePin = 12345678/g' "${INSTALLDIR}"/firebird.conf
   sed -i 's/#TrustedCertificate =/TrustedCertificate = Test Test Test,CRYPTO-PRO Test Center 2,'"$CERT_SERIAL"'/g' "${INSTALLDIR}"/firebird.conf
   sed -i 's/#TrustedUser =/TrustedUser = trusted_user/g' "${INSTALLDIR}"/firebird.conf
+  sed -i 's/#TraceAuthentication = 0/TraceAuthentication = 1/g' "${INSTALLDIR}"/firebird.conf
+  sed -i 's/#MaxParallelWorkers = 1/MaxParallelWorkers = 8/g' "${INSTALLDIR}"/firebird.conf
 
   "${INSTALLDIR}"/bin/isql -user SYSDBA -password masterkey "${INSTALLDIR}"/security5.fdb -i "${SOURCES}"/ci/user4.sql
 elif [[ "$RDB_MAJOR_VERSION" == "4" ]]; then
@@ -186,20 +185,19 @@ elif [[ "$RDB_MAJOR_VERSION" == "4" ]]; then
   sed -i 's/#UserManager = Srp/UserManager = Srp, Legacy_UserManager, GostPassword_Manager /g' "${INSTALLDIR}"/firebird.conf
   sed -i 's/#WireCrypt = Enabled (for client) \/ Required (for server)/WireCrypt = Enabled/g' "${INSTALLDIR}"/firebird.conf
   sed -i 's/#WireCryptPlugin = ChaCha, Arc4/WireCryptPlugin = Wire_WinCrypt/g' "${INSTALLDIR}"/firebird.conf
-
   sed -i 's/#GssServerKeyfile/GssServerKeyfile/g' "${INSTALLDIR}"/firebird.conf
   sed -i 's/#GssServiceName/GssServiceName/g' "${INSTALLDIR}"/firebird.conf
   sed -i 's/#GssHostName =/GssHostName = localhost/g' "${INSTALLDIR}"/firebird.conf
   sed -i 's/#TraceAuthentication = 0/TraceAuthentication = 1/g' "${INSTALLDIR}"/firebird.conf
-
   sed -i 's/#ProviderName = 75/ProviderName = 80/g' "${INSTALLDIR}"/firebird.conf
-
   sed -i 's/#VerifyCertificateChain = 1/VerifyCertificateChain = 0/g' "${INSTALLDIR}"/firebird.conf
   sed -i 's/#CertUsernameDN = CN/CertUsernameDN = E/g' "${INSTALLDIR}"/firebird.conf
   sed -i 's/#ServerCertificate =/ServerCertificate = Test Test Test,CRYPTO-PRO Test Center 2,'"$CERT_SERIAL"'/g' "${INSTALLDIR}"/firebird.conf
   sed -i 's/#ServerPrivatePin =/ServerPrivatePin = 12345678/g' "${INSTALLDIR}"/firebird.conf
   sed -i 's/#TrustedCertificate =/TrustedCertificate = Test Test Test,CRYPTO-PRO Test Center 2,'"$CERT_SERIAL"'/g' "${INSTALLDIR}"/firebird.conf
   sed -i 's/#TrustedUser =/TrustedUser = trusted_user/g' "${INSTALLDIR}"/firebird.conf
+  sed -i 's/#TraceAuthentication = 0/TraceAuthentication = 1/g' "${INSTALLDIR}"/firebird.conf
+  sed -i 's/#MaxParallelWorkers = 1/MaxParallelWorkers = 8/g' "${INSTALLDIR}"/firebird.conf
 
   "${INSTALLDIR}"/bin/isql -user SYSDBA -password masterkey "${INSTALLDIR}"/security4.fdb -i "${SOURCES}"/ci/user4.sql
 elif [[ "$RDB_MAJOR_VERSION" == "3" ]]; then
@@ -208,24 +206,18 @@ elif [[ "$RDB_MAJOR_VERSION" == "3" ]]; then
   sed -i 's/#UserManager = Srp/UserManager = Srp, Legacy_UserManager, Multifactor_Manager /g' "${INSTALLDIR}"/firebird.conf
   sed -i 's/#WireCrypt = Enabled (for client) \/ Required (for server)/WireCrypt = Enabled/g' "${INSTALLDIR}"/firebird.conf
   sed -i 's/#WireCryptPlugin = Arc4/WireCryptPlugin = Wire_WinCrypt/g' "${INSTALLDIR}"/firebird.conf
-
   sed -i 's/#KrbServerKeyfile/KrbServerKeyfile/g' "${INSTALLDIR}"/firebird.conf
   sed -i 's/#GssServiceName/GssServiceName/g' "${INSTALLDIR}"/firebird.conf
   sed -i 's/#GssHostName =/GssHostName = localhost/g' "${INSTALLDIR}"/firebird.conf
-
   sed -i 's/#ProviderName = 75/ProviderName = 80/g' "${INSTALLDIR}"/firebird.conf
-
   sed -i 's/#CertVerifyChain = 1/CertVerifyChain = 0/g' "${INSTALLDIR}"/firebird.conf
   sed -i 's/#CertUsernameDN = CN/CertUsernameDN = E/g' "${INSTALLDIR}"/firebird.conf
   sed -i 's/#ServerCertificate =/ServerCertificate = Test Test Test,CRYPTO-PRO Test Center 2,'"$CERT_SERIAL"'/g' "${INSTALLDIR}"/firebird.conf
   sed -i 's/#ServerPrivatePin =/ServerPrivatePin = 12345678/g' "${INSTALLDIR}"/firebird.conf
   sed -i 's/#TrustedCertificate =/TrustedCertificate = Test Test Test,CRYPTO-PRO Test Center 2,'"$CERT_SERIAL"'/g' "${INSTALLDIR}"/firebird.conf
   sed -i 's/#TrustedUser =/TrustedUser = trusted_user/g' "${INSTALLDIR}"/firebird.conf
-
   sed -i 's/#TraceAuthentication = 0/TraceAuthentication = 1/g' "${INSTALLDIR}"/firebird.conf
-
   sed -i 's/#GSSLibrary = libgssapi_krb5.so/GSSLibrary = \/usr\/lib64\/libgssapi_krb5.so.2/g' "${INSTALLDIR}"/firebird.conf
-
   sed -i 's/#MaxParallelWorkers = 1/MaxParallelWorkers = 8/g' "${INSTALLDIR}"/firebird.conf
 
   "${INSTALLDIR}"/bin/isql -user SYSDBA -password masterkey "${INSTALLDIR}"/security3.fdb -i "${SOURCES}"/ci/user3.sql
