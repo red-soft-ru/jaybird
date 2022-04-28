@@ -33,6 +33,7 @@ public class AuthCryptoPluginImpl extends AuthCryptoPlugin implements AutoClosea
   private Pointer provider;
   private Pointer myStore;
   private String repositoryPin;
+  private int algID;
 
   public AuthCryptoPluginImpl() throws CryptoException {
     try {
@@ -51,6 +52,7 @@ public class AuthCryptoPluginImpl extends AuthCryptoPlugin implements AutoClosea
       if (provider != null)
         Advapi.cryptReleaseContext(provider);
       provider = Advapi.cryptAcquireContext(null, null, providerType, Wincrypt.CRYPT_VERIFYCONTEXT);
+      algID = CertUtils.getAlgorithmIDByProvider(provider);
     } catch (CryptoException e) {
       throw new AuthCryptoException(e);
     }
@@ -194,7 +196,6 @@ public class AuthCryptoPluginImpl extends AuthCryptoPlugin implements AutoClosea
   @Override
   public Object createHash(final byte[] data) throws AuthCryptoException {
     try {
-      final int algID = CertUtils.getAlgorithmIDByProvider(provider);
       final Pointer hashHandle = Advapi.cryptCreateHash(provider, algID);
       if (!Advapi.cryptHashData(hashHandle, data, 0)) {
         final int error = Advapi.getLastError();
