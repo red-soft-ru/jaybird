@@ -1,5 +1,5 @@
 /*
- * Firebird Open Source JavaEE Connector - JDBC Driver
+ * Firebird Open Source JDBC Driver
  *
  * Distributable under LGPL license.
  * You may obtain a copy of the License at http://www.gnu.org/copyleft/lgpl.html
@@ -24,6 +24,7 @@ import org.firebirdsql.gds.ng.FbExceptionBuilder;
 import org.firebirdsql.gds.ng.FbStatement;
 import org.firebirdsql.gds.ng.fields.RowDescriptor;
 import org.firebirdsql.gds.ng.fields.RowValue;
+import org.firebirdsql.jaybird.props.PropertyConstants;
 import org.firebirdsql.jdbc.field.FBCloseableField;
 import org.firebirdsql.jdbc.field.FBField;
 import org.firebirdsql.jdbc.field.FieldDataProvider;
@@ -104,7 +105,7 @@ public class FBResultSet implements ResultSet, FirebirdResultSet, Synchronizable
     }
 
     /**
-     * Creates a new <code>FBResultSet</code> instance.
+     * Creates a new {@code FBResultSet} instance.
      */
     public FBResultSet(FBConnection connection,
             FBStatement fbStatement,
@@ -133,25 +134,33 @@ public class FBResultSet implements ResultSet, FirebirdResultSet, Synchronizable
                         .toFlatSQLException(SQLWarning.class));
                 rsType = ResultSet.TYPE_SCROLL_INSENSITIVE;
             }
-            cached = cached
-                    || rsType != ResultSet.TYPE_FORWARD_ONLY
-                    || metaDataQuery;
+            boolean serverSideScrollable = rsHoldability != ResultSet.HOLD_CURSORS_OVER_COMMIT && !metaDataQuery
+                        && connection != null && connection.isScrollableCursor(PropertyConstants.SCROLLABLE_CURSOR_SERVER)
+                        && stmt.supportsFetchScroll();
+            cached = cached || metaDataQuery || !(rsType == TYPE_FORWARD_ONLY || serverSideScrollable);
+
             prepareVars(cached);
             if (cached) {
                 fbFetcher = new FBCachedFetcher(gdsHelper, fbStatement.fetchSize, fbStatement.maxRows, stmt, this,
                         rsType == ResultSet.TYPE_FORWARD_ONLY);
+            } else if (serverSideScrollable && rsType == ResultSet.TYPE_SCROLL_INSENSITIVE) {
+                fbFetcher =
+                        new FBServerScrollFetcher(fbStatement.fetchSize, fbStatement.maxRows, stmt, fbStatement, this);
             } else if (fbStatement.isUpdatableCursor()) {
-                fbFetcher = new FBUpdatableCursorFetcher(gdsHelper, fbStatement, stmt, this, fbStatement.getMaxRows(),
-                        fbStatement.getFetchSize());
+                fbFetcher = new FBUpdatableCursorFetcher(gdsHelper, fbStatement, stmt, this, fbStatement.maxRows,
+                        fbStatement.fetchSize);
             } else {
                 assert rsType == ResultSet.TYPE_FORWARD_ONLY : "Expected TYPE_FORWARD_ONLY";
-                fbFetcher = new FBStatementFetcher(gdsHelper, fbStatement, stmt, this, fbStatement.getMaxRows(),
-                        fbStatement.getFetchSize());
+                fbFetcher = new FBStatementFetcher(gdsHelper, fbStatement, stmt, this, fbStatement.maxRows,
+                        fbStatement.fetchSize);
             }
 
             if (rsConcurrency == ResultSet.CONCUR_UPDATABLE) {
                 try {
                     rowUpdater = new FBRowUpdater(connection, rowDescriptor, this, cached, listener);
+                    if (serverSideScrollable && fbFetcher instanceof FBServerScrollFetcher) {
+                        fbFetcher = new FBUpdatableFetcher(fbFetcher, this, rowDescriptor.createDeletedRowMarker());
+                    }
                 } catch (FBResultSetNotUpdatableException ex) {
                     fbStatement.addWarning(FbExceptionBuilder
                             .forWarning(JaybirdErrorCodes.jb_concurrencyResetReadOnlyReasonNotUpdatable)
@@ -175,7 +184,7 @@ public class FBResultSet implements ResultSet, FirebirdResultSet, Synchronizable
     }
 
     /**
-     * Creates a FBResultSet with the columns specified by <code>rowDescriptor</code> and the data in <code>rows</code>.
+     * Creates a FBResultSet with the columns specified by {@code rowDescriptor} and the data in {@code rows}.
      * <p>
      * This constructor is intended for metadata result sets, but can be used for other purposes as well.
      * </p>
@@ -187,7 +196,6 @@ public class FBResultSet implements ResultSet, FirebirdResultSet, Synchronizable
      *         Column definition
      * @param rows
      *         Row data
-     * @throws SQLException
      */
     public FBResultSet(RowDescriptor rowDescriptor, List<RowValue> rows,
             FBObjectListener.ResultSetListener listener) throws SQLException {
@@ -210,7 +218,7 @@ public class FBResultSet implements ResultSet, FirebirdResultSet, Synchronizable
     }
 
     /**
-     * Creates a FBResultSet with the columns specified by <code>rowDescriptor</code> and the data in <code>rows</code>.
+     * Creates a FBResultSet with the columns specified by {@code rowDescriptor} and the data in {@code rows}.
      * <p>
      * This constructor is intended for metadata result sets, but can be used for other purposes as well.
      * </p>
@@ -222,14 +230,13 @@ public class FBResultSet implements ResultSet, FirebirdResultSet, Synchronizable
      *         Column definition
      * @param rows
      *         Row data
-     * @throws SQLException
      */
     public FBResultSet(RowDescriptor rowDescriptor, List<RowValue> rows) throws SQLException {
         this(rowDescriptor, null, rows, false);
     }
 
     /**
-     * Creates a FBResultSet with the columns specified by <code>rowDescriptor</code> and the data in <code>rows</code>.
+     * Creates a FBResultSet with the columns specified by {@code rowDescriptor} and the data in {@code rows}.
      * <p>
      * This constructor is intended for metadata result sets, but can be used for other purposes as well.
      * </p>
@@ -245,7 +252,6 @@ public class FBResultSet implements ResultSet, FirebirdResultSet, Synchronizable
      *         Row data
      * @param retrieveBlobs
      *         {@code true} retrieves the blob data
-     * @throws SQLException
      */
     public FBResultSet(RowDescriptor rowDescriptor, FBConnection connection, List<RowValue> rows,
             boolean retrieveBlobs) throws SQLException {
@@ -586,7 +592,7 @@ public class FBResultSet implements ResultSet, FirebirdResultSet, Synchronizable
     }
 
     /**
-     * Get the <code>FBField</code> object at the given column index
+     * Get the {@code FBField} object at the given column index
      *
      * @param columnIndex
      *         The index of the parameter, 1 is the first index
@@ -624,7 +630,7 @@ public class FBResultSet implements ResultSet, FirebirdResultSet, Synchronizable
     }
 
     /**
-     * Get a <code>FBField</code> by name.
+     * Get a {@code FBField} by name.
      *
      * @param columnName
      *         The name of the field to be retrieved
@@ -1031,19 +1037,19 @@ public class FBResultSet implements ResultSet, FirebirdResultSet, Synchronizable
     @Override
     public boolean rowUpdated() throws SQLException {
         checkUpdatable();
-        return rowUpdater.rowUpdated();
+        return fbFetcher.rowUpdated();
     }
 
     @Override
     public boolean rowInserted() throws SQLException {
         checkUpdatable();
-        return rowUpdater.rowUpdated();
+        return fbFetcher.rowInserted();
     }
 
     @Override
     public boolean rowDeleted() throws SQLException {
         checkUpdatable();
-        return rowUpdater.rowUpdated();
+        return fbFetcher.rowDeleted();
     }
 
     /**
@@ -1052,7 +1058,8 @@ public class FBResultSet implements ResultSet, FirebirdResultSet, Synchronizable
      * @throws FBResultSetNotUpdatableException
      *         When this result set is not updatable
      */
-    private void checkUpdatable() throws FBResultSetNotUpdatableException {
+    private void checkUpdatable() throws SQLException {
+        checkOpen();
         if (rowUpdater == null) {
             throw new FBResultSetNotUpdatableException();
         }
@@ -1119,7 +1126,7 @@ public class FBResultSet implements ResultSet, FirebirdResultSet, Synchronizable
     }
 
     @Override
-    public void updateBytes(int columnIndex, byte x[]) throws SQLException {
+    public void updateBytes(int columnIndex, byte[] x) throws SQLException {
         checkUpdatable();
         getField(columnIndex).setBytes(x);
     }
@@ -1186,7 +1193,7 @@ public class FBResultSet implements ResultSet, FirebirdResultSet, Synchronizable
     /**
      * {@inheritDoc}
      * <p>
-     * Jaybird delegates to {@link #updateObject(int, Object, int)} and ignores the value of <code>targetSqlType</code>
+     * Jaybird delegates to {@link #updateObject(int, Object, int)} and ignores the value of {@code targetSqlType}
      * </p>
      */
     @Override
@@ -1203,7 +1210,7 @@ public class FBResultSet implements ResultSet, FirebirdResultSet, Synchronizable
     /**
      * {@inheritDoc}
      * <p>
-     * Jaybird delegates to {@link #updateObject(int, Object)} and ignores the value of <code>targetSqlType</code>
+     * Jaybird delegates to {@link #updateObject(int, Object)} and ignores the value of {@code targetSqlType}
      * </p>
      */
     @Override
@@ -1294,7 +1301,7 @@ public class FBResultSet implements ResultSet, FirebirdResultSet, Synchronizable
     }
 
     @Override
-    public void updateBytes(String columnName, byte x[]) throws SQLException {
+    public void updateBytes(String columnName, byte[] x) throws SQLException {
         checkUpdatable();
         getField(columnName).setBytes(x);
     }
@@ -1477,7 +1484,7 @@ public class FBResultSet implements ResultSet, FirebirdResultSet, Synchronizable
     /**
      * {@inheritDoc}
      * <p>
-     * Jaybird delegates to {@link #updateObject(String, Object, int)} and ignores the value of <code>targetSqlType</code>
+     * Jaybird delegates to {@link #updateObject(String, Object, int)} and ignores the value of {@code targetSqlType}
      * </p>
      */
     @Override
@@ -1494,7 +1501,7 @@ public class FBResultSet implements ResultSet, FirebirdResultSet, Synchronizable
     /**
      * {@inheritDoc}
      * <p>
-     * Jaybird delegates to {@link #updateObject(String, Object)} and ignores the value of <code>targetSqlType</code>
+     * Jaybird delegates to {@link #updateObject(String, Object)} and ignores the value of {@code targetSqlType}
      * </p>
      */
     @Override

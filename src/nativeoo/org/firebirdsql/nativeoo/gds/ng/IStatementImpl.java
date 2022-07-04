@@ -169,7 +169,7 @@ public class IStatementImpl extends AbstractFbStatement {
                          */
                         statementListenerDispatcher.statementExecuted(this, false, true);
                         queueRowData(toRowValue(getRowDescriptor(), outMeta, outPtr));
-                        setAllRowsFetched(true);
+                        setAfterLast();
                     } else {
                         // A normal execute is never a singleton result (even if it only produces a single result)
                         statementListenerDispatcher.statementExecuted(this, hasFields(), false);
@@ -300,7 +300,7 @@ public class IStatementImpl extends AbstractFbStatement {
                 if (!getState().isCursorOpen()) {
                     throw new FbExceptionBuilder().exception(ISCConstants.isc_cursor_not_open).toSQLException();
                 }
-                if (isAllRowsFetched()) return;
+                if (isAfterLast()) return;
 
                 try (OperationCloseHandle operationCloseHandle = signalFetch()) {
                     if (operationCloseHandle.isCancelled()) {
@@ -316,7 +316,7 @@ public class IStatementImpl extends AbstractFbStatement {
                     if (fetchStatus == IStatus.RESULT_OK) {
                         queueRowData(toRowValue(getRowDescriptor(), outMeta, ptr));
                     } else if (fetchStatus == IStatus.RESULT_NO_DATA) {
-                        setAllRowsFetched(true);
+                        setAfterLast();
                         // Note: we are not explicitly 'closing' the cursor here
                     } else {
                         final String errorMessage = "Unexpected fetch status (expected 0 or 100): " + fetchStatus;

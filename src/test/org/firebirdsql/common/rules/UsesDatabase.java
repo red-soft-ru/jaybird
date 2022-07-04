@@ -22,6 +22,7 @@ import org.firebirdsql.common.extension.UsesDatabaseExtension;
 import org.firebirdsql.cryptoapi.AuthCryptoPluginImpl;
 import org.firebirdsql.cryptoapi.cryptopro.exception.CryptoException;
 import org.firebirdsql.gds.impl.wire.auth.AuthCryptoPlugin;
+import org.firebirdsql.common.extension.UsesDatabaseExtension.UsesDatabaseForEach;
 import org.junit.rules.ExternalResource;
 
 import java.util.List;
@@ -37,15 +38,15 @@ import java.util.List;
  */
 public final class UsesDatabase extends ExternalResource {
 
-    private final UsesDatabaseExtension usesDatabaseExtension;
+    private final UsesDatabaseForEach usesDatabaseExtension;
 
-    private UsesDatabase(UsesDatabaseExtension usesDatabaseExtension) {
+    private UsesDatabase(UsesDatabaseForEach usesDatabaseExtension) {
         try {
             AuthCryptoPlugin.register(new AuthCryptoPluginImpl());
         } catch (CryptoException e) {
             throw new NullPointerException("Cannot register crypto plugin");
         }
-    
+
         this.usesDatabaseExtension = usesDatabaseExtension;
     }
 
