@@ -19,15 +19,16 @@
 package org.firebirdsql.ds;
 
 import org.firebirdsql.common.FBTestProperties;
-import org.firebirdsql.common.rules.UsesDatabase;
+import org.firebirdsql.common.extension.UsesDatabaseExtension;
 import org.firebirdsql.gds.impl.GDSServerVersion;
 import org.firebirdsql.gds.impl.GDSType;
-import org.firebirdsql.jaybird.xca.FBXAResourceTest;
-import org.firebirdsql.jaybird.xca.TestXABase.XidImpl;
+import org.firebirdsql.jaybird.xca.XidImpl;
 import org.firebirdsql.jdbc.FirebirdConnection;
 import org.firebirdsql.jdbc.SQLStateConstants;
-import org.junit.*;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import javax.sql.XAConnection;
 import javax.transaction.xa.XAResource;
@@ -39,34 +40,32 @@ import java.util.List;
 import static org.firebirdsql.common.FBTestProperties.*;
 import static org.firebirdsql.common.JdbcResourceHelper.closeQuietly;
 import static org.firebirdsql.common.matchers.GdsTypeMatchers.isPureJavaType;
+import static org.firebirdsql.common.matchers.MatcherAssume.assumeThat;
 import static org.firebirdsql.common.matchers.SQLExceptionMatchers.sqlStateEquals;
-import static org.firebirdsql.util.FirebirdSupportInfo.supportInfoFor;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assume.assumeThat;
-import static org.junit.Assume.assumeTrue;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 /**
- * Test for XADataSource. Note behavior of XAResource (FBManagedConnection) is tested in {@link FBXAResourceTest}.
+ * Test for XADataSource. Behavior of XAResource (FBManagedConnection) is tested in {@code org.firebirdsql.jaybird.xca.FBXAResourceTest}.
  * 
  * @author <a href="mailto:mrotteveel@users.sourceforge.net">Mark Rotteveel</a>
  * @since 2.2
  */
-public class FBXADataSourceTest {
+class FBXADataSourceTest {
 
-    @ClassRule
-    public static final UsesDatabase usesDatabase = UsesDatabase.usesDatabase();
+    @RegisterExtension
+    static final UsesDatabaseExtension.UsesDatabaseForAll usesDatabase = UsesDatabaseExtension.usesDatabaseForAll();
 
-    @Rule
-    public final ExpectedException expectedException = ExpectedException.none();
-    
-    private List<XAConnection> connections = new ArrayList<>();
+    private final List<XAConnection> connections = new ArrayList<>();
 
     private FBXADataSource ds;
 
-    @Before
-    public void setUp() throws Exception {
+    @BeforeEach
+    void setUp() {
         FBXADataSource newDs = new FBXADataSource();
         newDs.setType(getProperty("test.gds_type", null));
         if (getGdsType() == GDSType.getType("PURE_JAVA")
@@ -82,8 +81,8 @@ public class FBXADataSourceTest {
         ds = newDs;
     }
 
-    @After
-    public void tearDown() throws Exception {
+    @AfterEach
+    void tearDown() {
         for (XAConnection pc : connections) {
             closeQuietly(pc);
         }
@@ -100,7 +99,7 @@ public class FBXADataSourceTest {
      * Tests if the ConnectionPoolDataSource can create a PooledConnection
      */
     @Test
-    public void testDataSource_start() throws SQLException {
+    void testDataSource_start() throws SQLException {
         getXAConnection();
     }
 
@@ -109,31 +108,31 @@ public class FBXADataSourceTest {
      * and has expected defaults.
      */
     @Test
-    public void testConnection() throws SQLException {
+    void testConnection() throws SQLException {
         XAConnection pc = getXAConnection();
 
         Connection con = pc.getConnection();
 
-        assertTrue("Autocommit should be true", con.getAutoCommit());
-        assertFalse("Read-only should be false", con.isReadOnly());
-        assertEquals("Tx isolation level should be read committed.",
-                Connection.TRANSACTION_READ_COMMITTED, con.getTransactionIsolation());
+        assertTrue(con.getAutoCommit(), "Autocommit should be true");
+        assertFalse(con.isReadOnly(), "Read-only should be false");
+        assertEquals(Connection.TRANSACTION_READ_COMMITTED, con.getTransactionIsolation(),
+                "Tx isolation level should be read committed");
 
         try (Statement stmt = con.createStatement()) {
             ResultSet rs = stmt.executeQuery("SELECT cast(1 AS INTEGER) FROM rdb$database");
 
-            assertTrue("Should select one row", rs.next());
-            assertEquals("Selected value should be 1.", 1, rs.getInt(1));
+            assertTrue(rs.next(), "Should select one row");
+            assertEquals(1, rs.getInt(1), "Selected value should be 1");
         }
         con.close();
-        assertTrue("Connection should report as being closed.", con.isClosed());
+        assertTrue(con.isClosed(), "Connection should report as being closed");
     }
-    
+
     /**
      * Tests if setting autoCommit(true) when autoCommit is false throws an exception when participating in a distributed transaction (JDBC 4.0 section 12.4).
      */
     @Test
-    public void testInDistributed_setAutoCommit_true_notInAutoCommit() throws Exception {
+    void testInDistributed_setAutoCommit_true_notInAutoCommit() throws Exception {
         XAConnection pc = getXAConnection();
         XAResource xa = pc.getXAResource();
         Xid xid = new XidImpl();
@@ -141,10 +140,8 @@ public class FBXADataSourceTest {
             con.setAutoCommit(false);
             xa.start(xid, XAResource.TMNOFLAGS);
 
-            expectedException.expect(SQLException.class);
-            expectedException.expect(sqlStateEquals(SQLStateConstants.SQL_STATE_INVALID_TX_STATE));
-
-            con.setAutoCommit(true);
+            SQLException exception = assertThrows(SQLException.class, () -> con.setAutoCommit(true));
+            assertThat(exception, sqlStateEquals(SQLStateConstants.SQL_STATE_INVALID_TX_STATE));
         } finally {
             xa.end(xid, XAResource.TMSUCCESS);
             xa.rollback(xid);
@@ -155,7 +152,7 @@ public class FBXADataSourceTest {
      * Tests if setting autoCommit(true) when autoCommit is true throws an exception when participating in a distributed transaction (JDBC 4.0 section 12.4).
      */
     @Test
-    public void testInDistributed_setAutoCommit_true_inAutoCommit() throws Exception {
+    void testInDistributed_setAutoCommit_true_inAutoCommit() throws Exception {
         XAConnection pc = getXAConnection();
         XAResource xa = pc.getXAResource();
         Xid xid = new XidImpl();
@@ -163,21 +160,19 @@ public class FBXADataSourceTest {
             con.setAutoCommit(true);
             xa.start(xid, XAResource.TMNOFLAGS);
 
-            expectedException.expect(SQLException.class);
-            expectedException.expect(sqlStateEquals(SQLStateConstants.SQL_STATE_INVALID_TX_STATE));
-
-            con.setAutoCommit(true);
+            SQLException exception = assertThrows(SQLException.class, () -> con.setAutoCommit(true));
+            assertThat(exception, sqlStateEquals(SQLStateConstants.SQL_STATE_INVALID_TX_STATE));
         } finally {
             xa.end(xid, XAResource.TMSUCCESS);
             xa.rollback(xid);
         }
     }
-    
+
     /**
      * Test if calling commit throws an exception when participating in a distributed transaction (JDBC 4.0 section 12.4).
      */
     @Test
-    public void testInDistributed_commit() throws Exception {
+    void testInDistributed_commit() throws Exception {
         XAConnection pc = getXAConnection();
         XAResource xa = pc.getXAResource();
         Xid xid = new XidImpl();
@@ -185,21 +180,19 @@ public class FBXADataSourceTest {
             con.setAutoCommit(false);
             xa.start(xid, XAResource.TMNOFLAGS);
 
-            expectedException.expect(SQLException.class);
-            expectedException.expect(sqlStateEquals(SQLStateConstants.SQL_STATE_INVALID_TX_STATE));
-
-            con.commit();
+            SQLException exception = assertThrows(SQLException.class, con::commit);
+            assertThat(exception, sqlStateEquals(SQLStateConstants.SQL_STATE_INVALID_TX_STATE));
         } finally {
             xa.end(xid, XAResource.TMSUCCESS);
             xa.rollback(xid);
         }
     }
-    
+
     /**
      * Test if calling rollback throws an exception when participating in a distributed transaction (JDBC 4.0 section 12.4).
      */
     @Test
-    public void testInDistributed_rollback() throws Exception {
+    void testInDistributed_rollback() throws Exception {
         XAConnection pc = getXAConnection();
         XAResource xa = pc.getXAResource();
         Xid xid = new XidImpl();
@@ -207,25 +200,23 @@ public class FBXADataSourceTest {
             con.setAutoCommit(false);
             xa.start(xid, XAResource.TMNOFLAGS);
 
-            expectedException.expect(SQLException.class);
-            expectedException.expect(sqlStateEquals(SQLStateConstants.SQL_STATE_INVALID_TX_STATE));
-
-            con.rollback();
+            SQLException exception = assertThrows(SQLException.class, con::rollback);
+            assertThat(exception, sqlStateEquals(SQLStateConstants.SQL_STATE_INVALID_TX_STATE));
         } finally {
             xa.end(xid, XAResource.TMSUCCESS);
             xa.rollback(xid);
         }
     }
-    
+
     /**
      * Test if calling rollback for savepoint throws an exception when participating in a distributed transaction (JDBC 4.0 section 12.4).
      */
     @Test
-    public void testInDistributed_rollback_savepoint() throws Exception {
+    void testInDistributed_rollback_savepoint() throws Exception {
+        assumeTrue(getDefaultSupportInfo().supportsSavepoint(), "Test requires SAVEPOINT support");
         XAConnection pc = getXAConnection();
         XAResource xa = pc.getXAResource();
         try (Connection con = pc.getConnection()) {
-            assumeTrue("Test requires SAVEPOINT support", supportInfoFor(con).supportsSavepoint());
             Xid xid = new XidImpl();
             try {
                 con.setAutoCommit(false);
@@ -233,22 +224,20 @@ public class FBXADataSourceTest {
                 con.rollback(); // Required to make sure start() works.
                 xa.start(xid, XAResource.TMNOFLAGS);
 
-                expectedException.expect(SQLException.class);
-                expectedException.expect(sqlStateEquals(SQLStateConstants.SQL_STATE_INVALID_TX_STATE));
-
-                con.rollback(savepoint);
+                SQLException exception = assertThrows(SQLException.class, () -> con.rollback(savepoint));
+                assertThat(exception, sqlStateEquals(SQLStateConstants.SQL_STATE_INVALID_TX_STATE));
             } finally {
                 xa.end(xid, XAResource.TMSUCCESS);
                 xa.rollback(xid);
             }
         }
     }
-    
+
     /**
      * Test if calling setSavePoint (no param) throws an exception when participating in a distributed transaction (JDBC 4.0 section 12.4).
      */
     @Test
-    public void testInDistributed_setSavepoint() throws Exception {
+    void testInDistributed_setSavepoint() throws Exception {
         XAConnection pc = getXAConnection();
         XAResource xa = pc.getXAResource();
         Xid xid = new XidImpl();
@@ -256,21 +245,19 @@ public class FBXADataSourceTest {
             con.setAutoCommit(false);
             xa.start(xid, XAResource.TMNOFLAGS);
 
-            expectedException.expect(SQLException.class);
-            expectedException.expect(sqlStateEquals(SQLStateConstants.SQL_STATE_INVALID_TX_STATE));
-
-            con.setSavepoint();
+            SQLException exception = assertThrows(SQLException.class, con::setSavepoint);
+            assertThat(exception, sqlStateEquals(SQLStateConstants.SQL_STATE_INVALID_TX_STATE));
         } finally {
             xa.end(xid, XAResource.TMSUCCESS);
             xa.rollback(xid);
         }
     }
-    
+
     /**
      * Test if calling setSavePoint (named) throws an exception when participating in a distributed transaction (JDBC 4.0 section 12.4).
      */
     @Test
-    public void testInDistributed_setSavepoint_named() throws Exception {
+    void testInDistributed_setSavepoint_named() throws Exception {
         XAConnection pc = getXAConnection();
         XAResource xa = pc.getXAResource();
         Xid xid = new XidImpl();
@@ -278,41 +265,39 @@ public class FBXADataSourceTest {
             con.setAutoCommit(false);
             xa.start(xid, XAResource.TMNOFLAGS);
 
-            expectedException.expect(SQLException.class);
-            expectedException.expect(sqlStateEquals(SQLStateConstants.SQL_STATE_INVALID_TX_STATE));
-
-            con.setSavepoint("test_sp");
+            SQLException exception = assertThrows(SQLException.class, () -> con.setSavepoint("test_sp"));
+            assertThat(exception, sqlStateEquals(SQLStateConstants.SQL_STATE_INVALID_TX_STATE));
         } finally {
             xa.end(xid, XAResource.TMSUCCESS);
             xa.rollback(xid);
         }
     }
-    
+
     /**
      * Test if a property stored with {@link FBXADataSource#setNonStandardProperty(String)} is retrievable.
      */
     @Test
-    public void testSetNonStandardProperty_singleParam() {
+    void testSetNonStandardProperty_singleParam() {
         ds.setNonStandardProperty("someProperty=someValue");
-        
+
         assertEquals("someValue", ds.getProperty("someProperty"));
     }
-    
+
     /**
      * Test if a property stored with {@link FBXADataSource#setNonStandardProperty(String, String)} is retrievable.
      */
     @SuppressWarnings("deprecation")
     @Test
-    public void testSetNonStandardProperty_twoParam() {
+    void testSetNonStandardProperty_twoParam() {
         ds.setNonStandardProperty("someProperty", "someValue");
-        
+
         assertEquals("someValue", ds.getProperty("someProperty"));
     }
 
     @Test
-    public void enableWireCompression() throws Exception {
+    void enableWireCompression() throws Exception {
         assumeThat("Test only works with pure java connections", FBTestProperties.GDS_TYPE, isPureJavaType());
-        assumeTrue("Test requires wire compression", getDefaultSupportInfo().supportsWireCompression());
+        assumeTrue(getDefaultSupportInfo().supportsWireCompression(), "Test requires wire compression");
         ds.setWireCompression(true);
 
         XAConnection xaConnection = ds.getXAConnection();
@@ -320,7 +305,7 @@ public class FBXADataSourceTest {
             assertTrue(connection.isValid(0));
             GDSServerVersion serverVersion =
                     connection.unwrap(FirebirdConnection.class).getFbDatabase().getServerVersion();
-            assertTrue("expected wire compression in use", serverVersion.isWireCompressionUsed());
+            assertTrue(serverVersion.isWireCompressionUsed(), "expected wire compression in use");
         } finally {
             xaConnection.close();
         }

@@ -292,7 +292,7 @@ public class IDatabaseImpl extends AbstractFbDatabase<NativeDatabaseConnection>
     }
 
     @Override
-    public EventHandle createEventHandle(String eventName, EventHandler eventHandler) throws SQLException {
+    public IEventImpl createEventHandle(String eventName, EventHandler eventHandler) throws SQLException {
         final IEventImpl eventHandle = new IEventImpl(eventName, eventHandler, getEncoding());
         synchronized (getSynchronizationObject()) {
             synchronized (eventHandle) {

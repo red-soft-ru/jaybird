@@ -47,10 +47,13 @@ public class IStatementImpl extends AbstractFbStatement {
     @Override
     protected void free(int option) throws SQLException {
         synchronized (getSynchronizationObject()) {
-            if (option == ISCConstants.DSQL_close)
+            if (option == ISCConstants.DSQL_close) {
                 cursor.close(getStatus());
-            else if (statement != null)
+                cursor = null;
+            } else if (statement != null) {
                 statement.free(getStatus());
+                statement = null;
+            }
             processStatus();
             // Reset statement information
             reset(option == ISCConstants.DSQL_drop);

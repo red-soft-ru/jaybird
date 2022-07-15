@@ -1,5 +1,5 @@
 /*
- * Firebird Open Source JavaEE Connector - JDBC Driver
+ * Firebird Open Source JDBC Driver
  *
  * Distributable under LGPL license.
  * You may obtain a copy of the License at http://www.gnu.org/copyleft/lgpl.html
@@ -18,11 +18,12 @@
  */
 package org.firebirdsql.gds.ng.wire.version18;
 
-import org.firebirdsql.common.rules.RequireProtocol;
-import org.firebirdsql.gds.ng.wire.version16.TestV16OutputBlob;
-import org.junit.ClassRule;
+import org.firebirdsql.common.extension.RequireProtocolExtension;
+import org.firebirdsql.gds.ng.wire.version16.V16OutputBlobTest;
+import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
-import static org.firebirdsql.common.rules.RequireProtocol.requireProtocolVersion;
+import static org.firebirdsql.common.extension.RequireProtocolExtension.requireProtocolVersion;
 
 /**
  * Tests for {@link org.firebirdsql.gds.ng.wire.version10.V10OutputBlob} in the version 18 protocol
@@ -31,16 +32,15 @@ import static org.firebirdsql.common.rules.RequireProtocol.requireProtocolVersio
  * @author <a href="mailto:mrotteveel@users.sourceforge.net">Mark Rotteveel</a>
  * @since 5
  */
-public class V18OutputBlobTest extends TestV16OutputBlob {
+public class V18OutputBlobTest extends V16OutputBlobTest {
 
-    @ClassRule
-    public static final RequireProtocol requireProtocol = requireProtocolVersion(18);
+    @RegisterExtension
+    @Order(1)
+    public static final RequireProtocolExtension requireProtocol = requireProtocolVersion(18);
 
-    public V18OutputBlobTest() {
-        this(new V18CommonConnectionInfo());
+    @Override
+    protected V18CommonConnectionInfo commonConnectionInfo() {
+        return new V18CommonConnectionInfo();
     }
 
-    protected V18OutputBlobTest(V18CommonConnectionInfo commonConnectionInfo) {
-        super(commonConnectionInfo);
-    }
 }

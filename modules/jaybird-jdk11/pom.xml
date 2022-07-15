@@ -40,16 +40,6 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.jmock</groupId>
-			<artifactId>jmock-junit4</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
 			<groupId>org.hamcrest</groupId>
 			<artifactId>hamcrest-core</artifactId>
 			<scope>test</scope>
@@ -62,6 +52,16 @@
 		<dependency>
 			<groupId>org.objenesis</groupId>
 			<artifactId>objenesis</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-api</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-engine</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -87,7 +87,7 @@
 	</dependencies>
 	<properties>
 		<project.doc.name>Jaybird</project.doc.name>
-		<excludedPackages>org.firebirdsql.pool:org.firebirdsql.jdbc.oo</excludedPackages>
+		<excludedPackages>org.firebirdsql.jdbc.oo.*</excludedPackages>
 		<module.thirdparty>../../src/lib</module.thirdparty>
 		<maven.build.timestamp.format>yyyy</maven.build.timestamp.format>
 		<test.db.host>localhost</test.db.host>
@@ -212,13 +212,11 @@
 						../../src/main:
 						../../src/extern:
 						../../src/jna-client:
-						../../src/openoffice
+						../../src/openoffice:
 						../../src/nativeoo:
 					</sourcepath>
 					<excludePackageNames>${excludedPackages}</excludePackageNames>
-					<links>
-						<link>http://docs.oracle.com/javase/8/docs/api/</link>
-					</links>
+					<detectJavaApiLink>false</detectJavaApiLink>
 				</configuration>
 				<executions>
 					<execution>
@@ -239,17 +237,17 @@
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>2.22.2</version>
 				<configuration>
-					<includes>
-						<include>**/Test*.java</include>
-						<include>**/nativeoo/**</include>
-					</includes>
-					<excludes>
-						<exclude>**/jni/Test*.java</exclude>
-						<exclude>**/TestAll.java</exclude>
-						<exclude>**/TestXABase*.java</exclude>
-						<exclude>**/TestConst.java</exclude>
-						<exclude>**/*$$*.java</exclude>
-					</excludes>
+<!--					<includes>-->
+<!--						<include>**/Test*.java</include>-->
+<!--						<include>**/nativeoo/**</include>-->
+<!--					</includes>-->
+<!--					<excludes>-->
+<!--						<exclude>**/jni/Test*.java</exclude>-->
+<!--						<exclude>**/TestAll.java</exclude>-->
+<!--						<exclude>**/TestXABase*.java</exclude>-->
+<!--						<exclude>**/TestConst.java</exclude>-->
+<!--						<exclude>**/*$$*.java</exclude>-->
+<!--					</excludes>-->
 					<testFailureIgnore>true</testFailureIgnore>
 					<jvm>${test.java.jvm}</jvm>
 				</configuration>

@@ -16,8 +16,8 @@ variables:
   MAVEN_CLI_OPTS: "-s .m2/settings.xml --batch-mode -U"
   MAVEN_OPTS: "-Dmaven.repo.local=.m2/repository"
   RDB3_VERSION: "3.0.9"
-  RDB4_VERSION: "4.0.0-SNAPSHOT.528"
-  RDB5_VERSION: "5.0.0-SNAPSHOT.560"
+  RDB4_VERSION: "4.0.0-SNAPSHOT.543"
+  RDB5_VERSION: "5.0.0-SNAPSHOT.595"
   http_proxy: http://git.red-soft.biz:3128
   https_proxy: http://git.red-soft.biz:3128
   no_proxy: localhost,172.0.0.0/8,127.0.0.0/8,.red-soft.biz
@@ -126,16 +126,25 @@ build_and_test:
     matrix:
       - TYPE: JDK11
         TEST_JAVA_JVM: /usr/java11/bin/java
+        GDS_TYPE: "PURE_JAVA"
         TEST_LIST: "**"
         RDB_VERSION: [ $RDB3_VERSION, $RDB4_VERSION, $RDB5_VERSION ]
-      - TYPE: JDK11_native_only
+      - TYPE: JDK11_fboonative_only
         TEST_JAVA_JVM: /usr/java11/bin/java
-        TEST_LIST: "**/nativeoo/**,**/jni/**,**/jna/**,**/jna/**"
+        GDS_TYPE: "FBOONATIVE"
+        TEST_LIST: "**/nativeoo/**"
+        REPORT_PREFIX: jdk11_native_
+        RDB_VERSION: [ $RDB4_VERSION, $RDB5_VERSION ]
+      - TYPE: JDK11_fbooembedded_only
+        TEST_JAVA_JVM: /usr/java11/bin/java
+        GDS_TYPE: "FBOOEMBEDDED"
+        TEST_LIST: "**/nativeoo/**"
         REPORT_PREFIX: jdk11_native_
         RDB_VERSION: [ $RDB4_VERSION, $RDB5_VERSION ]
       - TYPE: JDK11_rdb3_liberica_11
         TEST_JAVA_JVM: /usr/lib/jvm/bellsoft-java11-runtime.x86_64/bin/java
         JDK_VER: 11-runtime
+        GDS_TYPE: "PURE_JAVA"
         TEST_LIST: "**"
         EXTRA_DEPENDENCIES: bellsoft-java11-runtime
         REPORT_PREFIX: liberica_jdk11_
