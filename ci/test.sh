@@ -223,25 +223,21 @@ if [[ "$GDS_TYPE" == "" ]]; then
   GDS_TYPE="PURE_JAVA"
 fi
 
-if [[ "$GDS_TYPE" != "EMBEDDED" && "$GDS_TYPE" != "FBOOEMBEDDED" ]]; then
+echo "Start RDB..."
 
-  echo "Start RDB..."
+"$INSTALLDIR"/bin/rdbguard -daemon -forever
 
-  "$INSTALLDIR"/bin/rdbguard -daemon -forever
+(nc -h 2>&1|grep -q 'Zero-I/O mode') && NC="nc -z" || NC="nc --send-only"
 
-  (nc -h 2>&1|grep -q 'Zero-I/O mode') && NC="nc -z" || NC="nc --send-only"
-
-  echo "Waiting until port 3050 opened..."
-  try=10
-  while ! $NC localhost 3050 </dev/null; do
-      sleep 5
-      try=$((try-1))
-      if [ $try = 0 ]; then
-          die "Unable to connect to RDB..."
-      fi
-  done
-
-fi
+echo "Waiting until port 3050 opened..."
+try=10
+while ! $NC localhost 3050 </dev/null; do
+  sleep 5
+  try=$((try-1))
+  if [ $try = 0 ]; then
+    die "Unable to connect to RDB..."
+  fi
+done
 
 echo rdb_server | kinit rdb_server/localhost
 klist
