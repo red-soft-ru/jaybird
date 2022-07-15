@@ -133,13 +133,13 @@ build_and_test:
         TEST_JAVA_JVM: /usr/java11/bin/java
         GDS_TYPE: "FBOONATIVE"
         TEST_LIST: "**/nativeoo/**"
-        REPORT_PREFIX: jdk11_native_
+        REPORT_PREFIX: jdk11_fboonative_
         RDB_VERSION: [ $RDB4_VERSION, $RDB5_VERSION ]
       - TYPE: JDK11_fbooembedded_only
         TEST_JAVA_JVM: /usr/java11/bin/java
         GDS_TYPE: "FBOOEMBEDDED"
         TEST_LIST: "**/nativeoo/**"
-        REPORT_PREFIX: jdk11_native_
+        REPORT_PREFIX: jdk11_fbooembedded_
         RDB_VERSION: [ $RDB4_VERSION, $RDB5_VERSION ]
       - TYPE: JDK11_rdb3_liberica_11
         TEST_JAVA_JVM: /usr/lib/jvm/bellsoft-java11-runtime.x86_64/bin/java
