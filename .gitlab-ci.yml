@@ -127,25 +127,31 @@ build_and_test:
       - TYPE: JDK11
         TEST_JAVA_JVM: /usr/java11/bin/java
         GDS_TYPE: "PURE_JAVA"
-        TEST_LIST: "**"
         RDB_VERSION: [ $RDB3_VERSION, $RDB4_VERSION, $RDB5_VERSION ]
       - TYPE: JDK11_fboonative_only
         TEST_JAVA_JVM: /usr/java11/bin/java
         GDS_TYPE: "FBOONATIVE"
-        TEST_LIST: "**/nativeoo/**"
         REPORT_PREFIX: jdk11_fboonative_
+        RDB_VERSION: [ $RDB4_VERSION, $RDB5_VERSION ]
+      - TYPE: JDK11_native_only
+        TEST_JAVA_JVM: /usr/java11/bin/java
+        GDS_TYPE: "NATIVE"
+        REPORT_PREFIX: jdk11_native_
         RDB_VERSION: [ $RDB4_VERSION, $RDB5_VERSION ]
       - TYPE: JDK11_fbooembedded_only
         TEST_JAVA_JVM: /usr/java11/bin/java
         GDS_TYPE: "FBOOEMBEDDED"
-        TEST_LIST: "**/nativeoo/**"
         REPORT_PREFIX: jdk11_fbooembedded_
+        RDB_VERSION: [ $RDB4_VERSION, $RDB5_VERSION ]
+      - TYPE: JDK11_embedded_only
+        TEST_JAVA_JVM: /usr/java11/bin/java
+        GDS_TYPE: "EMBEDDED"
+        REPORT_PREFIX: jdk11_embedded_
         RDB_VERSION: [ $RDB4_VERSION, $RDB5_VERSION ]
       - TYPE: JDK11_rdb3_liberica_11
         TEST_JAVA_JVM: /usr/lib/jvm/bellsoft-java11-runtime.x86_64/bin/java
         JDK_VER: 11-runtime
         GDS_TYPE: "PURE_JAVA"
-        TEST_LIST: "**"
         EXTRA_DEPENDENCIES: bellsoft-java11-runtime
         REPORT_PREFIX: liberica_jdk11_
         RDB_VERSION: $RDB3_VERSION
