@@ -273,7 +273,8 @@ class DatabaseEncryptionTest {
 
     @SuppressWarnings("SameParameterValue")
     private static String getUrlWithoutProtocol(String dbPath) {
-        if ("EMBEDDED".equalsIgnoreCase(FBTestProperties.GDS_TYPE)) {
+        if ("EMBEDDED".equalsIgnoreCase(FBTestProperties.GDS_TYPE) ||
+                "FBOOEMBEDDED".equalsIgnoreCase(FBTestProperties.GDS_TYPE)) {
             return dbPath;
         } else {
             return FBTestProperties.DB_SERVER_URL + "/" + FBTestProperties.DB_SERVER_PORT + ":" + dbPath;
