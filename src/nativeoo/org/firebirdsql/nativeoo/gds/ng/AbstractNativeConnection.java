@@ -78,13 +78,19 @@ public abstract class AbstractNativeConnection<T extends IAttachProperties<T>, C
         if (warningMessageCallback == null) {
             throw new NullPointerException("warningMessageCallback is null");
         }
-        final long[] errorVector = status.getErrors().getLongArray(0, 20);
-        final long[] warningVector = status.getWarnings().getLongArray(0, 20);
 
         boolean debug = log.isDebugEnabled();
         final FbExceptionBuilder builder = new FbExceptionBuilder();
-        processVector(errorVector, debug, builder);
-        processVector(warningVector, debug, builder);
+        
+        if (status.getState() == IStatus.STATE_WARNINGS) {
+            final long[] warningVector = status.getWarnings().getLongArray(0, 20);
+            processVector(warningVector, debug, builder);
+        }
+
+        if (status.getState() == IStatus.STATE_ERRORS) {
+            final long[] errorVector = status.getErrors().getLongArray(0, 20);
+            processVector(errorVector, debug, builder);
+        }
 
         if (!builder.isEmpty()) {
             SQLException exception = builder.toFlatSQLException();
