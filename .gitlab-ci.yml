@@ -92,14 +92,14 @@ build_and_test:
     - |
       if [[ "${RDB_VERSION:0:1}" -eq "5" ]]; then
         export RDB_MAJOR_VERSION="5"
-        export REPORT_PREFIX=${REPORT_PREFIX:=rdb5_}
+        export REPORT_PREFIX=rdb5_${REPORT_PREFIX}
       elif [[ "${RDB_VERSION:0:1}" -eq "4" ]]; then
         export RDB_MAJOR_VERSION="4"
-        export REPORT_PREFIX=${REPORT_PREFIX:=rdb4_}
+        export REPORT_PREFIX=rdb4_${REPORT_PREFIX}
       elif [[ "${RDB_VERSION:0:1}" -eq "3" ]]; then
         export RDB_MAJOR_VERSION="3"
-        export REPORT_PREFIX=${REPORT_PREFIX:=rdb3_}
-        export EXTRA_DEPENDENCIES="$EXTRA_DEPENDENCIES icu" # Remove icu library dependency after 3.0.7 release
+        export REPORT_PREFIX=rdb3_${REPORT_PREFIX}
+        export EXTRA_DEPENDENCIES="$EXTRA_DEPENDENCIES"
       else
         die "Do not know how to test RDB ${RDB_VERSION}"
       fi
