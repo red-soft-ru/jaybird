@@ -81,7 +81,7 @@ public abstract class AbstractNativeConnection<T extends IAttachProperties<T>, C
 
         boolean debug = log.isDebugEnabled();
         final FbExceptionBuilder builder = new FbExceptionBuilder();
-        
+
         if (status.getState() == IStatus.STATE_WARNINGS) {
             final long[] warningVector = status.getWarnings().getLongArray(0, 20);
             processVector(warningVector, debug, builder);
