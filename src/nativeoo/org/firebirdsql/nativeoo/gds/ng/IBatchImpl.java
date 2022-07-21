@@ -84,13 +84,13 @@ public class IBatchImpl extends AbstractFbBatch {
             }
 
             if (parameterBuffer == null) {
-                batch = attachment.createBatch(getStatus(), ((ITransactionImpl) transaction).getTransaction(), statementText.length(),
-                        statementText, getDatabase().getDatabaseDialect(),
+                batch = attachment.createBatch(getStatus(), ((ITransactionImpl) transaction).getTransaction(),
+                        statementText.length(), statementText, getDatabase().getDatabaseDialect(),
                         metadata.getMetadata(), 0, null);
             } else {
-                batch = attachment.createBatch(getStatus(), ((ITransactionImpl) transaction).getTransaction(), statementText.length(),
-                        statementText, getDatabase().getDatabaseDialect(),
-                        metadata.getMetadata(), parameterBuffer.toBytesWithType().length, parameterBuffer.toBytesWithType());
+                batch = attachment.createBatch(getStatus(), ((ITransactionImpl) transaction).getTransaction(),
+                        statementText.length(), statementText, getDatabase().getDatabaseDialect(), metadata.getMetadata(),
+                        parameterBuffer.toBytesWithType().length, parameterBuffer.toBytesWithType());
             }
             processStatus();
         }

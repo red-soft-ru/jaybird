@@ -103,6 +103,7 @@ public class GdsTypeExtension implements BeforeAllCallback {
      * @return Instance
      */
     public static GdsTypeExtension excludesNativeOnly() {
-        return excludes(NativeGDSFactoryPlugin.NATIVE_TYPE_NAME, EmbeddedGDSFactoryPlugin.EMBEDDED_TYPE_NAME);
+        return excludes(NativeGDSFactoryPlugin.NATIVE_TYPE_NAME, EmbeddedGDSFactoryPlugin.EMBEDDED_TYPE_NAME,
+                FbOONativeGDSFactoryPlugin.NATIVE_TYPE_NAME, FbOOEmbeddedGDSFactoryPlugin.EMBEDDED_TYPE_NAME);
     }
 }

@@ -845,7 +845,7 @@ class FBDatabaseMetaDataTest {
                 dmd.getDriverVersion(), not(equalTo("@VERSION@")));
         String expectedVersionPattern =
                 format("%d\\.%d\\.\\d+", dmd.getDriverMajorVersion(), dmd.getDriverMinorVersion());
-        assertThat(dmd.getDriverVersion(), matchesRegex(expectedVersionPattern));
+        assertThat(dmd.getDriverVersion().replaceAll("-SNAPSHOT", ""), matchesRegex(expectedVersionPattern));
     }
 
     @Test

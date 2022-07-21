@@ -519,6 +519,7 @@ public final class FirebirdSupportInfo {
     public int getSystemTableCount() {
         final int databaseMajorVersion = serverVersion.getMajorVersion();
         final int databaseMinorVersion = serverVersion.getMinorVersion();
+        final boolean isRDB = serverVersion.getServerName().contains("RedDatabase");
         if (databaseMajorVersion < 2) {
             return 32;
         } else if (databaseMajorVersion == 2 && databaseMinorVersion == 0) {
@@ -528,10 +529,16 @@ public final class FirebirdSupportInfo {
         } else if (databaseMajorVersion == 2 && databaseMinorVersion == 5) {
             return 42;
         } else if (databaseMajorVersion == 3 && databaseMinorVersion == 0) {
+            if (isRDB)
+                return 51;
             return 50;
         } else if (databaseMajorVersion == 4 && databaseMinorVersion == 0) {
+            if (isRDB)
+                return 58;
             return 54;
         } else if (databaseMajorVersion == 5 && databaseMinorVersion == 0) {
+            if (isRDB)
+                return 60;
             return 56;
         } else {
             return -1;

@@ -15,6 +15,8 @@ import org.firebirdsql.jna.fbclient.*;
  */
 public interface FbInterface extends FbClientLibrary
 {
+	boolean FB_UsedInYValve = false;
+
 	/**
 	 * Original signature : <code>extern "C" IMaster* ISC_EXPORT fb_get_master_interface();</code><br>
 	 * <i>native declaration : firebird/include/firebird/interface.h:364</i>
@@ -183,8 +185,7 @@ public interface FbInterface extends FbClientLibrary
 		public static int TYPE_REPLICATOR = 11;
 		public static int TYPE_CRYPTO_API = 12;
 		public static int TYPE_LDAP = 13;
-		public static int TYPE_JSON = 14;
-		public static int TYPE_COUNT = 15;
+		public static int TYPE_COUNT = 14;
 
 		public void registerPluginFactory(int pluginType, String defaultName, IPluginFactory factory);
 		public void registerModule(IPluginModule cleanup);
@@ -323,7 +324,9 @@ public interface FbInterface extends FbClientLibrary
 
 	public static interface IResultSetIntf extends IReferenceCountedIntf
 	{
-		public int VERSION = 4;
+		public int VERSION = 5;
+
+		public static byte INF_RECORD_COUNT = 10;
 
 		public int fetchNext(IStatus status, com.sun.jna.Pointer message);
 		public int fetchPrior(IStatus status, com.sun.jna.Pointer message);
@@ -337,6 +340,7 @@ public interface FbInterface extends FbClientLibrary
 		public void deprecatedClose(IStatus status);
 		public void setDelayedOutputFormat(IStatus status, IMessageMetadata format);
 		public void close(IStatus status);
+		public void getInfo(IStatus status, int itemsLength, byte[] items, int bufferLength, byte[] buffer);
 	}
 
 	public static interface IStatementIntf extends IReferenceCountedIntf
@@ -379,6 +383,7 @@ public interface FbInterface extends FbClientLibrary
 		public int VERSION = 4;
 
 		public static byte VERSION1 = 1;
+		public static byte CURRENT_VERSION = IBatchIntf.VERSION1;
 		public static byte TAG_MULTIERROR = 1;
 		public static byte TAG_RECORD_COUNTS = 2;
 		public static byte TAG_BUFFER_BYTES_SIZE = 3;
@@ -469,9 +474,9 @@ public interface FbInterface extends FbClientLibrary
 		public int getSlice(IStatus status, ITransaction transaction, com.sun.jna.ptr.LongByReference id, int sdlLength, byte[] sdl, int paramLength, byte[] param, int sliceLength, byte[] slice);
 		public void putSlice(IStatus status, ITransaction transaction, com.sun.jna.ptr.LongByReference id, int sdlLength, byte[] sdl, int paramLength, byte[] param, int sliceLength, byte[] slice);
 		public void executeDyn(IStatus status, ITransaction transaction, int length, byte[] dyn);
-		public IStatement prepare(IStatus status, ITransaction tra, int stmtLength, String sqlStmt, int dialect, int flags);
-		public ITransaction execute(IStatus status, ITransaction transaction, int stmtLength, String sqlStmt, int dialect, IMessageMetadata inMetadata, com.sun.jna.Pointer inBuffer, IMessageMetadata outMetadata, com.sun.jna.Pointer outBuffer);
-		public IResultSet openCursor(IStatus status, ITransaction transaction, int stmtLength, String sqlStmt, int dialect, IMessageMetadata inMetadata, com.sun.jna.Pointer inBuffer, IMessageMetadata outMetadata, String cursorName, int cursorFlags);
+		public IStatement prepare(IStatus status, ITransaction tra, int stmtLength, byte[] sqlStmt, int dialect, int flags);
+		public ITransaction execute(IStatus status, ITransaction transaction, int stmtLength, byte[] sqlStmt, int dialect, IMessageMetadata inMetadata, com.sun.jna.Pointer inBuffer, IMessageMetadata outMetadata, com.sun.jna.Pointer outBuffer);
+		public IResultSet openCursor(IStatus status, ITransaction transaction, int stmtLength, byte[] sqlStmt, int dialect, IMessageMetadata inMetadata, com.sun.jna.Pointer inBuffer, IMessageMetadata outMetadata, String cursorName, int cursorFlags);
 		public IEvents queEvents(IStatus status, IEventCallback callback, int length, byte[] events);
 		public void cancelOperation(IStatus status, int option);
 		public void ping(IStatus status);
@@ -489,12 +494,13 @@ public interface FbInterface extends FbClientLibrary
 
 	public static interface IServiceIntf extends IReferenceCountedIntf
 	{
-		public int VERSION = 4;
+		public int VERSION = 5;
 
 		public void deprecatedDetach(IStatus status);
 		public void query(IStatus status, int sendLength, byte[] sendItems, int receiveLength, byte[] receiveItems, int bufferLength, byte[] buffer);
 		public void start(IStatus status, int spbLength, byte[] spb);
 		public void detach(IStatus status);
+		public void cancel(IStatus status);
 	}
 
 	public static interface IProviderIntf extends IPluginBaseIntf
@@ -544,6 +550,8 @@ public interface FbInterface extends FbClientLibrary
 		public void add(IStatus status, String name);
 		public void setType(IStatus status, String value);
 		public void setDb(IStatus status, String value);
+		public void setFromLdap(IStatus status, boolean value);
+		public void setPassword(IStatus status, String password);
 		public void changeLogin(IStatus status, String login);
 	}
 
@@ -844,7 +852,7 @@ public interface FbInterface extends FbClientLibrary
 		public void loadBlob(IStatus status, com.sun.jna.ptr.LongByReference blobId, IAttachment att, ITransaction tra, String file, boolean txt);
 		public void dumpBlob(IStatus status, com.sun.jna.ptr.LongByReference blobId, IAttachment att, ITransaction tra, String file, boolean txt);
 		public void getPerfCounters(IStatus status, IAttachment att, String countersSet, long[] counters);
-		public IAttachment executeCreateDatabase(IStatus status, int stmtLength, String creatDBstatement, int dialect, boolean[] stmtIsCreateDb);
+		public IAttachment executeCreateDatabase(IStatus status, int stmtLength, byte[] creatDBstatement, int dialect, boolean[] stmtIsCreateDb);
 		public void decodeDate(ISC_DATE date, com.sun.jna.Pointer year, com.sun.jna.Pointer month, com.sun.jna.Pointer day);
 		public void decodeTime(ISC_TIME time, com.sun.jna.Pointer hours, com.sun.jna.Pointer minutes, com.sun.jna.Pointer seconds, com.sun.jna.Pointer fractions);
 		public ISC_DATE encodeDate(int year, int month, int day);
@@ -1099,7 +1107,7 @@ public interface FbInterface extends FbClientLibrary
 
 	public static interface ITracePluginIntf extends IReferenceCountedIntf
 	{
-		public int VERSION = 3;
+		public int VERSION = 4;
 
 		public static int RESULT_SUCCESS = 0;
 		public static int RESULT_FAILED = 1;
@@ -1131,6 +1139,7 @@ public interface FbInterface extends FbClientLibrary
 		public boolean trace_event_sweep(ITraceDatabaseConnection connection, ITraceSweepInfo sweep, int sweep_state);
 		public boolean trace_func_execute(ITraceDatabaseConnection connection, ITraceTransaction transaction, ITraceFunction function, boolean started, int func_result);
 		public boolean trace_privilege_change(ITraceDatabaseConnection connection, ITraceTransaction transaction, String executor, String grantor, boolean is_grant, String object_name, String field_name, String user_name, String privileges, int options, int change_result);
+		public boolean trace_dsql_restart(ITraceDatabaseConnection connection, ITraceTransaction transaction, ITraceSQLStatement statement, int number);
 	}
 
 	public static interface ITraceFactoryIntf extends IPluginBaseIntf
@@ -1488,6 +1497,7 @@ public interface FbInterface extends FbClientLibrary
 		public int change_srp_password(String name, String password, com.sun.jna.Pointer verifier, com.sun.jna.Pointer salt, boolean[] active);
 		public boolean is_password_expired(String name, String plugin, int valid_days);
 		public int change_active_attr(String name, boolean[] active);
+		public boolean check_idle();
 	}
 
 	public static interface ILdapFactoryIntf extends IPluginBaseIntf
@@ -1503,27 +1513,6 @@ public interface FbInterface extends FbClientLibrary
 
 		public int authenticate(IStatus status, IServerBlock sBlock, IWriter writerInterface);
 		public boolean verifyPassword(String secDbName, String user, String password, boolean isNew, String plugin, com.sun.jna.Pointer isEqual);
-	}
-
-	public static interface IJsonPluginIntf extends IReferenceCountedIntf
-	{
-		public int VERSION = 3;
-
-		public com.sun.jna.Pointer jsonQuery(IStatus status, com.sun.jna.Pointer path, int wrapper, int quotes);
-		public com.sun.jna.Pointer jsonValue(IStatus status, com.sun.jna.Pointer path);
-		public com.sun.jna.Pointer jsonModify(IStatus status, com.sun.jna.Pointer path, com.sun.jna.Pointer field);
-		public com.sun.jna.Pointer jsonTable(IStatus status, com.sun.jna.Pointer paths_to_fields, int count_fields);
-		public com.sun.jna.Pointer jsonArray(com.sun.jna.Pointer array_elements, int count_fields, int absent);
-		public com.sun.jna.Pointer jsonObject(com.sun.jna.Pointer array_key_value_pair, int count_field, int unique, int absent);
-		public boolean isJson();
-		public com.sun.jna.Pointer jsonExists(IStatus status, com.sun.jna.Pointer path);
-	}
-
-	public static interface IJsonFactoryIntf extends IPluginBaseIntf
-	{
-		public int VERSION = 4;
-
-		public IJsonPlugin jsonCreate(com.sun.jna.Pointer json_text);
 	}
 
 	public static class IVersioned extends com.sun.jna.Structure implements IVersionedIntf
@@ -3269,6 +3258,11 @@ public interface FbInterface extends FbClientLibrary
 		public int getVersion(IStatus status)
 		{
 			VTable vTable = getVTable();
+			if (vTable.version < 4)
+			{
+				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IFirebirdConfIntf.VERSION);
+				return 0;
+			}
 			if (vTable.getVersion == null) {
 				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IFirebirdConfIntf.VERSION);
 				return 0;
@@ -4572,6 +4566,15 @@ public interface FbInterface extends FbClientLibrary
 		public void cancel(IStatus status)
 		{
 			VTable vTable = getVTable();
+			if (vTable.version < 4)
+			{
+				if (FB_UsedInYValve) {
+					FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IBlobIntf.VERSION);
+				} else {
+					deprecatedCancel(status);
+				}
+				return;
+			}
 			if (vTable.cancel == null) {
 				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IBlobIntf.VERSION);
 				return;
@@ -4582,6 +4585,15 @@ public interface FbInterface extends FbClientLibrary
 		public void close(IStatus status)
 		{
 			VTable vTable = getVTable();
+			if (vTable.version < 4)
+			{
+				if (FB_UsedInYValve) {
+					FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IBlobIntf.VERSION);
+				} else {
+					deprecatedClose(status);
+				}
+				return;
+			}
 			if (vTable.close == null) {
 				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IBlobIntf.VERSION);
 				return;
@@ -5020,6 +5032,15 @@ public interface FbInterface extends FbClientLibrary
 		public void commit(IStatus status)
 		{
 			VTable vTable = getVTable();
+			if (vTable.version < 4)
+			{
+				if (FB_UsedInYValve) {
+					FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, ITransactionIntf.VERSION);
+				} else {
+					deprecatedCommit(status);
+				}
+				return;
+			}
 			if (vTable.commit == null) {
 				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, ITransactionIntf.VERSION);
 				return;
@@ -5030,6 +5051,15 @@ public interface FbInterface extends FbClientLibrary
 		public void rollback(IStatus status)
 		{
 			VTable vTable = getVTable();
+			if (vTable.version < 4)
+			{
+				if (FB_UsedInYValve) {
+					FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, ITransactionIntf.VERSION);
+				} else {
+					deprecatedRollback(status);
+				}
+				return;
+			}
 			if (vTable.rollback == null) {
 				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, ITransactionIntf.VERSION);
 				return;
@@ -5040,6 +5070,15 @@ public interface FbInterface extends FbClientLibrary
 		public void disconnect(IStatus status)
 		{
 			VTable vTable = getVTable();
+			if (vTable.version < 4)
+			{
+				if (FB_UsedInYValve) {
+					FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, ITransactionIntf.VERSION);
+				} else {
+					deprecatedDisconnect(status);
+				}
+				return;
+			}
 			if (vTable.disconnect == null) {
 				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, ITransactionIntf.VERSION);
 				return;
@@ -5638,6 +5677,11 @@ public interface FbInterface extends FbClientLibrary
 		public int getAlignment(IStatus status)
 		{
 			VTable vTable = getVTable();
+			if (vTable.version < 4)
+			{
+				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IMessageMetadataIntf.VERSION);
+				return 0;
+			}
 			if (vTable.getAlignment == null) {
 				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IMessageMetadataIntf.VERSION);
 				return 0;
@@ -5649,6 +5693,11 @@ public interface FbInterface extends FbClientLibrary
 		public int getAlignedLength(IStatus status)
 		{
 			VTable vTable = getVTable();
+			if (vTable.version < 4)
+			{
+				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IMessageMetadataIntf.VERSION);
+				return 0;
+			}
 			if (vTable.getAlignedLength == null) {
 				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IMessageMetadataIntf.VERSION);
 				return 0;
@@ -6107,6 +6156,11 @@ public interface FbInterface extends FbClientLibrary
 		public void setField(IStatus status, int index, String field)
 		{
 			VTable vTable = getVTable();
+			if (vTable.version < 4)
+			{
+				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IMetadataBuilderIntf.VERSION);
+				return;
+			}
 			if (vTable.setField == null) {
 				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IMetadataBuilderIntf.VERSION);
 				return;
@@ -6117,6 +6171,11 @@ public interface FbInterface extends FbClientLibrary
 		public void setRelation(IStatus status, int index, String relation)
 		{
 			VTable vTable = getVTable();
+			if (vTable.version < 4)
+			{
+				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IMetadataBuilderIntf.VERSION);
+				return;
+			}
 			if (vTable.setRelation == null) {
 				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IMetadataBuilderIntf.VERSION);
 				return;
@@ -6127,6 +6186,11 @@ public interface FbInterface extends FbClientLibrary
 		public void setOwner(IStatus status, int index, String owner)
 		{
 			VTable vTable = getVTable();
+			if (vTable.version < 4)
+			{
+				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IMetadataBuilderIntf.VERSION);
+				return;
+			}
 			if (vTable.setOwner == null) {
 				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IMetadataBuilderIntf.VERSION);
 				return;
@@ -6137,6 +6201,11 @@ public interface FbInterface extends FbClientLibrary
 		public void setAlias(IStatus status, int index, String alias)
 		{
 			VTable vTable = getVTable();
+			if (vTable.version < 4)
+			{
+				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IMetadataBuilderIntf.VERSION);
+				return;
+			}
 			if (vTable.setAlias == null) {
 				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IMetadataBuilderIntf.VERSION);
 				return;
@@ -6207,6 +6276,11 @@ public interface FbInterface extends FbClientLibrary
 			public static interface Callback_close extends com.sun.jna.Callback
 			{
 				public void invoke(IResultSet self, IStatus status);
+			}
+
+			public static interface Callback_getInfo extends com.sun.jna.Callback
+			{
+				public void invoke(IResultSet self, IStatus status, int itemsLength, byte[] items, int bufferLength, byte[] buffer);
 			}
 
 			public VTable(com.sun.jna.Pointer pointer)
@@ -6408,6 +6482,21 @@ public interface FbInterface extends FbClientLibrary
 						}
 					}
 				};
+
+				getInfo = new Callback_getInfo() {
+					@Override
+					public void invoke(IResultSet self, IStatus status, int itemsLength, byte[] items, int bufferLength, byte[] buffer)
+					{
+						try
+						{
+							obj.getInfo(status, itemsLength, items, bufferLength, buffer);
+						}
+						catch (Throwable t)
+						{
+							FbInterfaceException.catchException(status, t);
+						}
+					}
+				};
 			}
 
 			public VTable()
@@ -6426,12 +6515,13 @@ public interface FbInterface extends FbClientLibrary
 			public Callback_deprecatedClose deprecatedClose;
 			public Callback_setDelayedOutputFormat setDelayedOutputFormat;
 			public Callback_close close;
+			public Callback_getInfo getInfo;
 
 			@Override
 			protected java.util.List<String> getFieldOrder()
 			{
 				java.util.List<String> fields = super.getFieldOrder();
-				fields.addAll(java.util.Arrays.asList("fetchNext", "fetchPrior", "fetchFirst", "fetchLast", "fetchAbsolute", "fetchRelative", "isEof", "isBof", "getMetadata", "deprecatedClose", "setDelayedOutputFormat", "close"));
+				fields.addAll(java.util.Arrays.asList("fetchNext", "fetchPrior", "fetchFirst", "fetchLast", "fetchAbsolute", "fetchRelative", "isEof", "isBof", "getMetadata", "deprecatedClose", "setDelayedOutputFormat", "close", "getInfo"));
 				return fields;
 			}
 		}
@@ -6576,11 +6666,35 @@ public interface FbInterface extends FbClientLibrary
 		public void close(IStatus status)
 		{
 			VTable vTable = getVTable();
+			if (vTable.version < 4)
+			{
+				if (FB_UsedInYValve) {
+					FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IResultSetIntf.VERSION);
+				} else {
+					deprecatedClose(status);
+				}
+				return;
+			}
 			if (vTable.close == null) {
 				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IResultSetIntf.VERSION);
 				return;
 			}
 			vTable.close.invoke(this, status);
+		}
+
+		public void getInfo(IStatus status, int itemsLength, byte[] items, int bufferLength, byte[] buffer)
+		{
+			VTable vTable = getVTable();
+			if (vTable.version < 5)
+			{
+				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IResultSetIntf.VERSION);
+				return;
+			}
+			if (vTable.getInfo == null) {
+				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IResultSetIntf.VERSION);
+				return;
+			}
+			vTable.getInfo.invoke(this, status, itemsLength, items, bufferLength, buffer);
 		}
 	}
 
@@ -7078,6 +7192,11 @@ public interface FbInterface extends FbClientLibrary
 		public int getTimeout(IStatus status)
 		{
 			VTable vTable = getVTable();
+			if (vTable.version < 4)
+			{
+				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IStatementIntf.VERSION);
+				return 0;
+			}
 			if (vTable.getTimeout == null) {
 				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IStatementIntf.VERSION);
 				return 0;
@@ -7089,6 +7208,11 @@ public interface FbInterface extends FbClientLibrary
 		public void setTimeout(IStatus status, int timeOut)
 		{
 			VTable vTable = getVTable();
+			if (vTable.version < 4)
+			{
+				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IStatementIntf.VERSION);
+				return;
+			}
 			if (vTable.setTimeout == null) {
 				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IStatementIntf.VERSION);
 				return;
@@ -7099,6 +7223,11 @@ public interface FbInterface extends FbClientLibrary
 		public IBatch createBatch(IStatus status, IMessageMetadata inMetadata, int parLength, byte[] par)
 		{
 			VTable vTable = getVTable();
+			if (vTable.version < 4)
+			{
+				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IStatementIntf.VERSION);
+				return null;
+			}
 			if (vTable.createBatch == null) {
 				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IStatementIntf.VERSION);
 				return null;
@@ -7110,6 +7239,15 @@ public interface FbInterface extends FbClientLibrary
 		public void free(IStatus status)
 		{
 			VTable vTable = getVTable();
+			if (vTable.version < 5)
+			{
+				if (FB_UsedInYValve) {
+					FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IStatementIntf.VERSION);
+				} else {
+					deprecatedFree(status);
+				}
+				return;
+			}
 			if (vTable.free == null) {
 				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IStatementIntf.VERSION);
 				return;
@@ -7558,6 +7696,15 @@ public interface FbInterface extends FbClientLibrary
 		public void close(IStatus status)
 		{
 			VTable vTable = getVTable();
+			if (vTable.version < 4)
+			{
+				if (FB_UsedInYValve) {
+					FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IBatchIntf.VERSION);
+				} else {
+					deprecatedClose(status);
+				}
+				return;
+			}
 			if (vTable.close == null) {
 				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IBatchIntf.VERSION);
 				return;
@@ -7568,6 +7715,11 @@ public interface FbInterface extends FbClientLibrary
 		public void getInfo(IStatus status, int itemsLength, byte[] items, int bufferLength, byte[] buffer)
 		{
 			VTable vTable = getVTable();
+			if (vTable.version < 4)
+			{
+				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IBatchIntf.VERSION);
+				return;
+			}
 			if (vTable.getInfo == null) {
 				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IBatchIntf.VERSION);
 				return;
@@ -7889,6 +8041,15 @@ public interface FbInterface extends FbClientLibrary
 		public void close(IStatus status)
 		{
 			VTable vTable = getVTable();
+			if (vTable.version < 4)
+			{
+				if (FB_UsedInYValve) {
+					FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IReplicatorIntf.VERSION);
+				} else {
+					deprecatedClose(status);
+				}
+				return;
+			}
 			if (vTable.close == null) {
 				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IReplicatorIntf.VERSION);
 				return;
@@ -8186,6 +8347,15 @@ public interface FbInterface extends FbClientLibrary
 		public void free(IStatus status)
 		{
 			VTable vTable = getVTable();
+			if (vTable.version < 4)
+			{
+				if (FB_UsedInYValve) {
+					FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IRequestIntf.VERSION);
+				} else {
+					deprecatedFree(status);
+				}
+				return;
+			}
 			if (vTable.free == null) {
 				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IRequestIntf.VERSION);
 				return;
@@ -8297,6 +8467,15 @@ public interface FbInterface extends FbClientLibrary
 		public void cancel(IStatus status)
 		{
 			VTable vTable = getVTable();
+			if (vTable.version < 4)
+			{
+				if (FB_UsedInYValve) {
+					FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IEventsIntf.VERSION);
+				} else {
+					deprecatedCancel(status);
+				}
+				return;
+			}
 			if (vTable.cancel == null) {
 				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IEventsIntf.VERSION);
 				return;
@@ -8361,17 +8540,17 @@ public interface FbInterface extends FbClientLibrary
 
 			public static interface Callback_prepare extends com.sun.jna.Callback
 			{
-				public IStatement invoke(IAttachment self, IStatus status, ITransaction tra, int stmtLength, String sqlStmt, int dialect, int flags);
+				public IStatement invoke(IAttachment self, IStatus status, ITransaction tra, int stmtLength, byte[] sqlStmt, int dialect, int flags);
 			}
 
 			public static interface Callback_execute extends com.sun.jna.Callback
 			{
-				public ITransaction invoke(IAttachment self, IStatus status, ITransaction transaction, int stmtLength, String sqlStmt, int dialect, IMessageMetadata inMetadata, com.sun.jna.Pointer inBuffer, IMessageMetadata outMetadata, com.sun.jna.Pointer outBuffer);
+				public ITransaction invoke(IAttachment self, IStatus status, ITransaction transaction, int stmtLength, byte[] sqlStmt, int dialect, IMessageMetadata inMetadata, com.sun.jna.Pointer inBuffer, IMessageMetadata outMetadata, com.sun.jna.Pointer outBuffer);
 			}
 
 			public static interface Callback_openCursor extends com.sun.jna.Callback
 			{
-				public IResultSet invoke(IAttachment self, IStatus status, ITransaction transaction, int stmtLength, String sqlStmt, int dialect, IMessageMetadata inMetadata, com.sun.jna.Pointer inBuffer, IMessageMetadata outMetadata, String cursorName, int cursorFlags);
+				public IResultSet invoke(IAttachment self, IStatus status, ITransaction transaction, int stmtLength, byte[] sqlStmt, int dialect, IMessageMetadata inMetadata, com.sun.jna.Pointer inBuffer, IMessageMetadata outMetadata, String cursorName, int cursorFlags);
 			}
 
 			public static interface Callback_queEvents extends com.sun.jna.Callback
@@ -8608,7 +8787,7 @@ public interface FbInterface extends FbClientLibrary
 
 				prepare = new Callback_prepare() {
 					@Override
-					public IStatement invoke(IAttachment self, IStatus status, ITransaction tra, int stmtLength, String sqlStmt, int dialect, int flags)
+					public IStatement invoke(IAttachment self, IStatus status, ITransaction tra, int stmtLength, byte[] sqlStmt, int dialect, int flags)
 					{
 						try
 						{
@@ -8624,7 +8803,7 @@ public interface FbInterface extends FbClientLibrary
 
 				execute = new Callback_execute() {
 					@Override
-					public ITransaction invoke(IAttachment self, IStatus status, ITransaction transaction, int stmtLength, String sqlStmt, int dialect, IMessageMetadata inMetadata, com.sun.jna.Pointer inBuffer, IMessageMetadata outMetadata, com.sun.jna.Pointer outBuffer)
+					public ITransaction invoke(IAttachment self, IStatus status, ITransaction transaction, int stmtLength, byte[] sqlStmt, int dialect, IMessageMetadata inMetadata, com.sun.jna.Pointer inBuffer, IMessageMetadata outMetadata, com.sun.jna.Pointer outBuffer)
 					{
 						try
 						{
@@ -8640,7 +8819,7 @@ public interface FbInterface extends FbClientLibrary
 
 				openCursor = new Callback_openCursor() {
 					@Override
-					public IResultSet invoke(IAttachment self, IStatus status, ITransaction transaction, int stmtLength, String sqlStmt, int dialect, IMessageMetadata inMetadata, com.sun.jna.Pointer inBuffer, IMessageMetadata outMetadata, String cursorName, int cursorFlags)
+					public IResultSet invoke(IAttachment self, IStatus status, ITransaction transaction, int stmtLength, byte[] sqlStmt, int dialect, IMessageMetadata inMetadata, com.sun.jna.Pointer inBuffer, IMessageMetadata outMetadata, String cursorName, int cursorFlags)
 					{
 						try
 						{
@@ -9019,7 +9198,7 @@ public interface FbInterface extends FbClientLibrary
 			vTable.executeDyn.invoke(this, status, transaction, length, dyn);
 		}
 
-		public IStatement prepare(IStatus status, ITransaction tra, int stmtLength, String sqlStmt, int dialect, int flags)
+		public IStatement prepare(IStatus status, ITransaction tra, int stmtLength, byte[] sqlStmt, int dialect, int flags)
 		{
 			VTable vTable = getVTable();
 			if (vTable.prepare == null) {
@@ -9030,7 +9209,7 @@ public interface FbInterface extends FbClientLibrary
 			return result;
 		}
 
-		public ITransaction execute(IStatus status, ITransaction transaction, int stmtLength, String sqlStmt, int dialect, IMessageMetadata inMetadata, com.sun.jna.Pointer inBuffer, IMessageMetadata outMetadata, com.sun.jna.Pointer outBuffer)
+		public ITransaction execute(IStatus status, ITransaction transaction, int stmtLength, byte[] sqlStmt, int dialect, IMessageMetadata inMetadata, com.sun.jna.Pointer inBuffer, IMessageMetadata outMetadata, com.sun.jna.Pointer outBuffer)
 		{
 			VTable vTable = getVTable();
 			if (vTable.execute == null) {
@@ -9041,7 +9220,7 @@ public interface FbInterface extends FbClientLibrary
 			return result;
 		}
 
-		public IResultSet openCursor(IStatus status, ITransaction transaction, int stmtLength, String sqlStmt, int dialect, IMessageMetadata inMetadata, com.sun.jna.Pointer inBuffer, IMessageMetadata outMetadata, String cursorName, int cursorFlags)
+		public IResultSet openCursor(IStatus status, ITransaction transaction, int stmtLength, byte[] sqlStmt, int dialect, IMessageMetadata inMetadata, com.sun.jna.Pointer inBuffer, IMessageMetadata outMetadata, String cursorName, int cursorFlags)
 		{
 			VTable vTable = getVTable();
 			if (vTable.openCursor == null) {
@@ -9106,6 +9285,11 @@ public interface FbInterface extends FbClientLibrary
 		public int getIdleTimeout(IStatus status)
 		{
 			VTable vTable = getVTable();
+			if (vTable.version < 4)
+			{
+				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IAttachmentIntf.VERSION);
+				return 0;
+			}
 			if (vTable.getIdleTimeout == null) {
 				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IAttachmentIntf.VERSION);
 				return 0;
@@ -9117,6 +9301,11 @@ public interface FbInterface extends FbClientLibrary
 		public void setIdleTimeout(IStatus status, int timeOut)
 		{
 			VTable vTable = getVTable();
+			if (vTable.version < 4)
+			{
+				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IAttachmentIntf.VERSION);
+				return;
+			}
 			if (vTable.setIdleTimeout == null) {
 				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IAttachmentIntf.VERSION);
 				return;
@@ -9127,6 +9316,11 @@ public interface FbInterface extends FbClientLibrary
 		public int getStatementTimeout(IStatus status)
 		{
 			VTable vTable = getVTable();
+			if (vTable.version < 4)
+			{
+				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IAttachmentIntf.VERSION);
+				return 0;
+			}
 			if (vTable.getStatementTimeout == null) {
 				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IAttachmentIntf.VERSION);
 				return 0;
@@ -9138,6 +9332,11 @@ public interface FbInterface extends FbClientLibrary
 		public void setStatementTimeout(IStatus status, int timeOut)
 		{
 			VTable vTable = getVTable();
+			if (vTable.version < 4)
+			{
+				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IAttachmentIntf.VERSION);
+				return;
+			}
 			if (vTable.setStatementTimeout == null) {
 				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IAttachmentIntf.VERSION);
 				return;
@@ -9148,6 +9347,11 @@ public interface FbInterface extends FbClientLibrary
 		public IBatch createBatch(IStatus status, ITransaction transaction, int stmtLength, String sqlStmt, int dialect, IMessageMetadata inMetadata, int parLength, byte[] par)
 		{
 			VTable vTable = getVTable();
+			if (vTable.version < 4)
+			{
+				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IAttachmentIntf.VERSION);
+				return null;
+			}
 			if (vTable.createBatch == null) {
 				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IAttachmentIntf.VERSION);
 				return null;
@@ -9159,6 +9363,11 @@ public interface FbInterface extends FbClientLibrary
 		public IReplicator createReplicator(IStatus status)
 		{
 			VTable vTable = getVTable();
+			if (vTable.version < 4)
+			{
+				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IAttachmentIntf.VERSION);
+				return null;
+			}
 			if (vTable.createReplicator == null) {
 				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IAttachmentIntf.VERSION);
 				return null;
@@ -9170,6 +9379,15 @@ public interface FbInterface extends FbClientLibrary
 		public void detach(IStatus status)
 		{
 			VTable vTable = getVTable();
+			if (vTable.version < 5)
+			{
+				if (FB_UsedInYValve) {
+					FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IAttachmentIntf.VERSION);
+				} else {
+					deprecatedDetach(status);
+				}
+				return;
+			}
 			if (vTable.detach == null) {
 				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IAttachmentIntf.VERSION);
 				return;
@@ -9180,6 +9398,15 @@ public interface FbInterface extends FbClientLibrary
 		public void dropDatabase(IStatus status)
 		{
 			VTable vTable = getVTable();
+			if (vTable.version < 5)
+			{
+				if (FB_UsedInYValve) {
+					FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IAttachmentIntf.VERSION);
+				} else {
+					deprecatedDropDatabase(status);
+				}
+				return;
+			}
 			if (vTable.dropDatabase == null) {
 				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IAttachmentIntf.VERSION);
 				return;
@@ -9208,6 +9435,11 @@ public interface FbInterface extends FbClientLibrary
 			}
 
 			public static interface Callback_detach extends com.sun.jna.Callback
+			{
+				public void invoke(IService self, IStatus status);
+			}
+
+			public static interface Callback_cancel extends com.sun.jna.Callback
 			{
 				public void invoke(IService self, IStatus status);
 			}
@@ -9282,6 +9514,21 @@ public interface FbInterface extends FbClientLibrary
 						}
 					}
 				};
+
+				cancel = new Callback_cancel() {
+					@Override
+					public void invoke(IService self, IStatus status)
+					{
+						try
+						{
+							obj.cancel(status);
+						}
+						catch (Throwable t)
+						{
+							FbInterfaceException.catchException(status, t);
+						}
+					}
+				};
 			}
 
 			public VTable()
@@ -9292,12 +9539,13 @@ public interface FbInterface extends FbClientLibrary
 			public Callback_query query;
 			public Callback_start start;
 			public Callback_detach detach;
+			public Callback_cancel cancel;
 
 			@Override
 			protected java.util.List<String> getFieldOrder()
 			{
 				java.util.List<String> fields = super.getFieldOrder();
-				fields.addAll(java.util.Arrays.asList("deprecatedDetach", "query", "start", "detach"));
+				fields.addAll(java.util.Arrays.asList("deprecatedDetach", "query", "start", "detach", "cancel"));
 				return fields;
 			}
 		}
@@ -9353,11 +9601,35 @@ public interface FbInterface extends FbClientLibrary
 		public void detach(IStatus status)
 		{
 			VTable vTable = getVTable();
+			if (vTable.version < 4)
+			{
+				if (FB_UsedInYValve) {
+					FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IServiceIntf.VERSION);
+				} else {
+					deprecatedDetach(status);
+				}
+				return;
+			}
 			if (vTable.detach == null) {
 				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IServiceIntf.VERSION);
 				return;
 			}
 			vTable.detach.invoke(this, status);
+		}
+
+		public void cancel(IStatus status)
+		{
+			VTable vTable = getVTable();
+			if (vTable.version < 5)
+			{
+				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IServiceIntf.VERSION);
+				return;
+			}
+			if (vTable.cancel == null) {
+				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IServiceIntf.VERSION);
+				return;
+			}
+			vTable.cancel.invoke(this, status);
 		}
 	}
 
@@ -9902,6 +10174,16 @@ public interface FbInterface extends FbClientLibrary
 				public void invoke(IWriter self, IStatus status, String value);
 			}
 
+			public static interface Callback_setFromLdap extends com.sun.jna.Callback
+			{
+				public void invoke(IWriter self, IStatus status, boolean value);
+			}
+
+			public static interface Callback_setPassword extends com.sun.jna.Callback
+			{
+				public void invoke(IWriter self, IStatus status, String password);
+			}
+
 			public static interface Callback_changeLogin extends com.sun.jna.Callback
 			{
 				public void invoke(IWriter self, IStatus status, String login);
@@ -9971,6 +10253,36 @@ public interface FbInterface extends FbClientLibrary
 					}
 				};
 
+				setFromLdap = new Callback_setFromLdap() {
+					@Override
+					public void invoke(IWriter self, IStatus status, boolean value)
+					{
+						try
+						{
+							obj.setFromLdap(status, value);
+						}
+						catch (Throwable t)
+						{
+							FbInterfaceException.catchException(status, t);
+						}
+					}
+				};
+
+				setPassword = new Callback_setPassword() {
+					@Override
+					public void invoke(IWriter self, IStatus status, String password)
+					{
+						try
+						{
+							obj.setPassword(status, password);
+						}
+						catch (Throwable t)
+						{
+							FbInterfaceException.catchException(status, t);
+						}
+					}
+				};
+
 				changeLogin = new Callback_changeLogin() {
 					@Override
 					public void invoke(IWriter self, IStatus status, String login)
@@ -9995,13 +10307,15 @@ public interface FbInterface extends FbClientLibrary
 			public Callback_add add;
 			public Callback_setType setType;
 			public Callback_setDb setDb;
+			public Callback_setFromLdap setFromLdap;
+			public Callback_setPassword setPassword;
 			public Callback_changeLogin changeLogin;
 
 			@Override
 			protected java.util.List<String> getFieldOrder()
 			{
 				java.util.List<String> fields = super.getFieldOrder();
-				fields.addAll(java.util.Arrays.asList("reset", "add", "setType", "setDb", "changeLogin"));
+				fields.addAll(java.util.Arrays.asList("reset", "add", "setType", "setDb", "setFromLdap", "setPassword", "changeLogin"));
 				return fields;
 			}
 		}
@@ -10061,6 +10375,26 @@ public interface FbInterface extends FbClientLibrary
 				return;
 			}
 			vTable.setDb.invoke(this, status, value);
+		}
+
+		public void setFromLdap(IStatus status, boolean value)
+		{
+			VTable vTable = getVTable();
+			if (vTable.setFromLdap == null) {
+				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IWriterIntf.VERSION);
+				return;
+			}
+			vTable.setFromLdap.invoke(this, status, value);
+		}
+
+		public void setPassword(IStatus status, String password)
+		{
+			VTable vTable = getVTable();
+			if (vTable.setPassword == null) {
+				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IWriterIntf.VERSION);
+				return;
+			}
+			vTable.setPassword.invoke(this, status, password);
 		}
 
 		public void changeLogin(IStatus status, String login)
@@ -10500,6 +10834,11 @@ public interface FbInterface extends FbClientLibrary
 		public IAuthBlock getAuthBlock(IStatus status)
 		{
 			VTable vTable = getVTable();
+			if (vTable.version < 4)
+			{
+				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IClientBlockIntf.VERSION);
+				return null;
+			}
 			if (vTable.getAuthBlock == null) {
 				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IClientBlockIntf.VERSION);
 				return null;
@@ -10654,6 +10993,11 @@ public interface FbInterface extends FbClientLibrary
 		public void setDbCryptCallback(IStatus status, ICryptKeyCallback cryptCallback)
 		{
 			VTable vTable = getVTable();
+			if (vTable.version < 6)
+			{
+				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IServerIntf.VERSION);
+				return;
+			}
 			if (vTable.setDbCryptCallback == null) {
 				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IServerIntf.VERSION);
 				return;
@@ -11695,6 +12039,11 @@ public interface FbInterface extends FbClientLibrary
 		public IAttachment attachment(IStatus status)
 		{
 			VTable vTable = getVTable();
+			if (vTable.version < 3)
+			{
+				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, ILogonInfoIntf.VERSION);
+				return null;
+			}
 			if (vTable.attachment == null) {
 				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, ILogonInfoIntf.VERSION);
 				return null;
@@ -11706,6 +12055,11 @@ public interface FbInterface extends FbClientLibrary
 		public ITransaction transaction(IStatus status)
 		{
 			VTable vTable = getVTable();
+			if (vTable.version < 3)
+			{
+				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, ILogonInfoIntf.VERSION);
+				return null;
+			}
 			if (vTable.transaction == null) {
 				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, ILogonInfoIntf.VERSION);
 				return null;
@@ -12345,6 +12699,11 @@ public interface FbInterface extends FbClientLibrary
 		public com.sun.jna.Pointer getSpecificData(IStatus status, String keyType, com.sun.jna.Pointer length)
 		{
 			VTable vTable = getVTable();
+			if (vTable.version < 5)
+			{
+				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IWireCryptPluginIntf.VERSION);
+				return null;
+			}
 			if (vTable.getSpecificData == null) {
 				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IWireCryptPluginIntf.VERSION);
 				return null;
@@ -12356,6 +12715,11 @@ public interface FbInterface extends FbClientLibrary
 		public void setSpecificData(IStatus status, String keyType, int length, byte[] data)
 		{
 			VTable vTable = getVTable();
+			if (vTable.version < 5)
+			{
+				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IWireCryptPluginIntf.VERSION);
+				return;
+			}
 			if (vTable.setSpecificData == null) {
 				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IWireCryptPluginIntf.VERSION);
 				return;
@@ -12598,6 +12962,11 @@ public interface FbInterface extends FbClientLibrary
 		public boolean useOnlyOwnKeys(IStatus status)
 		{
 			VTable vTable = getVTable();
+			if (vTable.version < 5)
+			{
+				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IKeyHolderPluginIntf.VERSION);
+				return false;
+			}
 			if (vTable.useOnlyOwnKeys == null) {
 				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IKeyHolderPluginIntf.VERSION);
 				return false;
@@ -12609,6 +12978,11 @@ public interface FbInterface extends FbClientLibrary
 		public ICryptKeyCallback chainHandle(IStatus status)
 		{
 			VTable vTable = getVTable();
+			if (vTable.version < 5)
+			{
+				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IKeyHolderPluginIntf.VERSION);
+				return null;
+			}
 			if (vTable.chainHandle == null) {
 				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IKeyHolderPluginIntf.VERSION);
 				return null;
@@ -12865,6 +13239,11 @@ public interface FbInterface extends FbClientLibrary
 		public void setInfo(IStatus status, IDbCryptInfo info)
 		{
 			VTable vTable = getVTable();
+			if (vTable.version < 5)
+			{
+				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IDbCryptPluginIntf.VERSION);
+				return;
+			}
 			if (vTable.setInfo == null) {
 				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IDbCryptPluginIntf.VERSION);
 				return;
@@ -13630,6 +14009,11 @@ public interface FbInterface extends FbClientLibrary
 		public boolean getDoNotEvaluateField(IStatus status, int index)
 		{
 			VTable vTable = getVTable();
+			if (vTable.version < 4)
+			{
+				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IExternalTriggerIntf.VERSION);
+				return false;
+			}
 			if (vTable.getDoNotEvaluateField == null) {
 				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IExternalTriggerIntf.VERSION);
 				return false;
@@ -14515,7 +14899,7 @@ public interface FbInterface extends FbClientLibrary
 
 			public static interface Callback_executeCreateDatabase extends com.sun.jna.Callback
 			{
-				public IAttachment invoke(IUtil self, IStatus status, int stmtLength, String creatDBstatement, int dialect, boolean[] stmtIsCreateDb);
+				public IAttachment invoke(IUtil self, IStatus status, int stmtLength, byte[] creatDBstatement, int dialect, boolean[] stmtIsCreateDb);
 			}
 
 			public static interface Callback_decodeDate extends com.sun.jna.Callback
@@ -14676,7 +15060,7 @@ public interface FbInterface extends FbClientLibrary
 
 				executeCreateDatabase = new Callback_executeCreateDatabase() {
 					@Override
-					public IAttachment invoke(IUtil self, IStatus status, int stmtLength, String creatDBstatement, int dialect, boolean[] stmtIsCreateDb)
+					public IAttachment invoke(IUtil self, IStatus status, int stmtLength, byte[] creatDBstatement, int dialect, boolean[] stmtIsCreateDb)
 					{
 						try
 						{
@@ -15003,7 +15387,7 @@ public interface FbInterface extends FbClientLibrary
 			vTable.getPerfCounters.invoke(this, status, att, countersSet, counters);
 		}
 
-		public IAttachment executeCreateDatabase(IStatus status, int stmtLength, String creatDBstatement, int dialect, boolean[] stmtIsCreateDb)
+		public IAttachment executeCreateDatabase(IStatus status, int stmtLength, byte[] creatDBstatement, int dialect, boolean[] stmtIsCreateDb)
 		{
 			VTable vTable = getVTable();
 			if (vTable.executeCreateDatabase == null) {
@@ -15097,6 +15481,11 @@ public interface FbInterface extends FbClientLibrary
 		public IDecFloat16 getDecFloat16(IStatus status)
 		{
 			VTable vTable = getVTable();
+			if (vTable.version < 3)
+			{
+				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IUtilIntf.VERSION);
+				return null;
+			}
 			if (vTable.getDecFloat16 == null) {
 				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IUtilIntf.VERSION);
 				return null;
@@ -15108,6 +15497,11 @@ public interface FbInterface extends FbClientLibrary
 		public IDecFloat34 getDecFloat34(IStatus status)
 		{
 			VTable vTable = getVTable();
+			if (vTable.version < 3)
+			{
+				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IUtilIntf.VERSION);
+				return null;
+			}
 			if (vTable.getDecFloat34 == null) {
 				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IUtilIntf.VERSION);
 				return null;
@@ -15119,6 +15513,11 @@ public interface FbInterface extends FbClientLibrary
 		public void decodeTimeTz(IStatus status, ISC_TIME_TZ[] timeTz, com.sun.jna.Pointer hours, com.sun.jna.Pointer minutes, com.sun.jna.Pointer seconds, com.sun.jna.Pointer fractions, int timeZoneBufferLength, com.sun.jna.Pointer timeZoneBuffer)
 		{
 			VTable vTable = getVTable();
+			if (vTable.version < 3)
+			{
+				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IUtilIntf.VERSION);
+				return;
+			}
 			if (vTable.decodeTimeTz == null) {
 				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IUtilIntf.VERSION);
 				return;
@@ -15129,6 +15528,11 @@ public interface FbInterface extends FbClientLibrary
 		public void decodeTimeStampTz(IStatus status, ISC_TIMESTAMP_TZ[] timeStampTz, com.sun.jna.Pointer year, com.sun.jna.Pointer month, com.sun.jna.Pointer day, com.sun.jna.Pointer hours, com.sun.jna.Pointer minutes, com.sun.jna.Pointer seconds, com.sun.jna.Pointer fractions, int timeZoneBufferLength, com.sun.jna.Pointer timeZoneBuffer)
 		{
 			VTable vTable = getVTable();
+			if (vTable.version < 3)
+			{
+				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IUtilIntf.VERSION);
+				return;
+			}
 			if (vTable.decodeTimeStampTz == null) {
 				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IUtilIntf.VERSION);
 				return;
@@ -15139,6 +15543,11 @@ public interface FbInterface extends FbClientLibrary
 		public void encodeTimeTz(IStatus status, ISC_TIME_TZ[] timeTz, int hours, int minutes, int seconds, int fractions, String timeZone)
 		{
 			VTable vTable = getVTable();
+			if (vTable.version < 3)
+			{
+				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IUtilIntf.VERSION);
+				return;
+			}
 			if (vTable.encodeTimeTz == null) {
 				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IUtilIntf.VERSION);
 				return;
@@ -15149,6 +15558,11 @@ public interface FbInterface extends FbClientLibrary
 		public void encodeTimeStampTz(IStatus status, ISC_TIMESTAMP_TZ[] timeStampTz, int year, int month, int day, int hours, int minutes, int seconds, int fractions, String timeZone)
 		{
 			VTable vTable = getVTable();
+			if (vTable.version < 3)
+			{
+				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IUtilIntf.VERSION);
+				return;
+			}
 			if (vTable.encodeTimeStampTz == null) {
 				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IUtilIntf.VERSION);
 				return;
@@ -15159,6 +15573,11 @@ public interface FbInterface extends FbClientLibrary
 		public IInt128 getInt128(IStatus status)
 		{
 			VTable vTable = getVTable();
+			if (vTable.version < 4)
+			{
+				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IUtilIntf.VERSION);
+				return null;
+			}
 			if (vTable.getInt128 == null) {
 				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IUtilIntf.VERSION);
 				return null;
@@ -15170,6 +15589,11 @@ public interface FbInterface extends FbClientLibrary
 		public void decodeTimeTzEx(IStatus status, ISC_TIME_TZ_EX[] timeTz, com.sun.jna.Pointer hours, com.sun.jna.Pointer minutes, com.sun.jna.Pointer seconds, com.sun.jna.Pointer fractions, int timeZoneBufferLength, com.sun.jna.Pointer timeZoneBuffer)
 		{
 			VTable vTable = getVTable();
+			if (vTable.version < 4)
+			{
+				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IUtilIntf.VERSION);
+				return;
+			}
 			if (vTable.decodeTimeTzEx == null) {
 				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IUtilIntf.VERSION);
 				return;
@@ -15180,6 +15604,11 @@ public interface FbInterface extends FbClientLibrary
 		public void decodeTimeStampTzEx(IStatus status, ISC_TIMESTAMP_TZ_EX[] timeStampTz, com.sun.jna.Pointer year, com.sun.jna.Pointer month, com.sun.jna.Pointer day, com.sun.jna.Pointer hours, com.sun.jna.Pointer minutes, com.sun.jna.Pointer seconds, com.sun.jna.Pointer fractions, int timeZoneBufferLength, com.sun.jna.Pointer timeZoneBuffer)
 		{
 			VTable vTable = getVTable();
+			if (vTable.version < 4)
+			{
+				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IUtilIntf.VERSION);
+				return;
+			}
 			if (vTable.decodeTimeStampTzEx == null) {
 				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IUtilIntf.VERSION);
 				return;
@@ -16683,6 +17112,11 @@ public interface FbInterface extends FbClientLibrary
 		public String getTextUTF8(IStatus status, int idx)
 		{
 			VTable vTable = getVTable();
+			if (vTable.version < 3)
+			{
+				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, ITraceParamsIntf.VERSION);
+				return null;
+			}
 			if (vTable.getTextUTF8 == null) {
 				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, ITraceParamsIntf.VERSION);
 				return null;
@@ -18288,6 +18722,11 @@ public interface FbInterface extends FbClientLibrary
 		public int write_s(IStatus status, com.sun.jna.Pointer buf, int size)
 		{
 			VTable vTable = getVTable();
+			if (vTable.version < 4)
+			{
+				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, ITraceLogWriterIntf.VERSION);
+				return 0;
+			}
 			if (vTable.write_s == null) {
 				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, ITraceLogWriterIntf.VERSION);
 				return 0;
@@ -18676,6 +19115,11 @@ public interface FbInterface extends FbClientLibrary
 				public boolean invoke(ITracePlugin self, ITraceDatabaseConnection connection, ITraceTransaction transaction, String executor, String grantor, boolean is_grant, String object_name, String field_name, String user_name, String privileges, int options, int change_result);
 			}
 
+			public static interface Callback_trace_dsql_restart extends com.sun.jna.Callback
+			{
+				public boolean invoke(ITracePlugin self, ITraceDatabaseConnection connection, ITraceTransaction transaction, ITraceSQLStatement statement, int number);
+			}
+
 			public VTable(com.sun.jna.Pointer pointer)
 			{
 				super(pointer);
@@ -18862,6 +19306,14 @@ public interface FbInterface extends FbClientLibrary
 						return obj.trace_privilege_change(connection, transaction, executor, grantor, is_grant, object_name, field_name, user_name, privileges, options, change_result);
 					}
 				};
+
+				trace_dsql_restart = new Callback_trace_dsql_restart() {
+					@Override
+					public boolean invoke(ITracePlugin self, ITraceDatabaseConnection connection, ITraceTransaction transaction, ITraceSQLStatement statement, int number)
+					{
+						return obj.trace_dsql_restart(connection, transaction, statement, number);
+					}
+				};
 			}
 
 			public VTable()
@@ -18890,12 +19342,13 @@ public interface FbInterface extends FbClientLibrary
 			public Callback_trace_event_sweep trace_event_sweep;
 			public Callback_trace_func_execute trace_func_execute;
 			public Callback_trace_privilege_change trace_privilege_change;
+			public Callback_trace_dsql_restart trace_dsql_restart;
 
 			@Override
 			protected java.util.List<String> getFieldOrder()
 			{
 				java.util.List<String> fields = super.getFieldOrder();
-				fields.addAll(java.util.Arrays.asList("trace_get_error", "trace_attach", "trace_detach", "trace_transaction_start", "trace_transaction_end", "trace_proc_execute", "trace_trigger_execute", "trace_set_context", "trace_dsql_prepare", "trace_dsql_free", "trace_dsql_execute", "trace_blr_compile", "trace_blr_execute", "trace_dyn_execute", "trace_service_attach", "trace_service_start", "trace_service_query", "trace_service_detach", "trace_event_error", "trace_event_sweep", "trace_func_execute", "trace_privilege_change"));
+				fields.addAll(java.util.Arrays.asList("trace_get_error", "trace_attach", "trace_detach", "trace_transaction_start", "trace_transaction_end", "trace_proc_execute", "trace_trigger_execute", "trace_set_context", "trace_dsql_prepare", "trace_dsql_free", "trace_dsql_execute", "trace_blr_compile", "trace_blr_execute", "trace_dyn_execute", "trace_service_attach", "trace_service_start", "trace_service_query", "trace_service_detach", "trace_event_error", "trace_event_sweep", "trace_func_execute", "trace_privilege_change", "trace_dsql_restart"));
 				return fields;
 			}
 		}
@@ -19135,6 +19588,16 @@ public interface FbInterface extends FbClientLibrary
 				return false;
 			}
 			boolean result = vTable.trace_privilege_change.invoke(this, connection, transaction, executor, grantor, is_grant, object_name, field_name, user_name, privileges, options, change_result);
+			return result;
+		}
+
+		public boolean trace_dsql_restart(ITraceDatabaseConnection connection, ITraceTransaction transaction, ITraceSQLStatement statement, int number)
+		{
+			VTable vTable = getVTable();
+			if (vTable.trace_dsql_restart == null) {
+				return false;
+			}
+			boolean result = vTable.trace_dsql_restart.invoke(this, connection, transaction, statement, number);
 			return result;
 		}
 	}
@@ -24123,6 +24586,11 @@ public interface FbInterface extends FbClientLibrary
 				public int invoke(ILdapPlugin self, String name, boolean[] active);
 			}
 
+			public static interface Callback_check_idle extends com.sun.jna.Callback
+			{
+				public boolean invoke(ILdapPlugin self);
+			}
+
 			public VTable(com.sun.jna.Pointer pointer)
 			{
 				super(pointer);
@@ -24309,6 +24777,14 @@ public interface FbInterface extends FbClientLibrary
 						return obj.change_active_attr(name, active);
 					}
 				};
+
+				check_idle = new Callback_check_idle() {
+					@Override
+					public boolean invoke(ILdapPlugin self)
+					{
+						return obj.check_idle();
+					}
+				};
 			}
 
 			public VTable()
@@ -24335,12 +24811,13 @@ public interface FbInterface extends FbClientLibrary
 			public Callback_change_srp_password change_srp_password;
 			public Callback_is_password_expired is_password_expired;
 			public Callback_change_active_attr change_active_attr;
+			public Callback_check_idle check_idle;
 
 			@Override
 			protected java.util.List<String> getFieldOrder()
 			{
 				java.util.List<String> fields = super.getFieldOrder();
-				fields.addAll(java.util.Arrays.asList("connect", "is_connected", "bind", "bind_as", "find_user", "find_srp_user", "get_certificate", "get_user_attr", "get_policy", "set_policy", "get_password_history", "get_user_info", "get_groups_list", "get_users_list", "find_user_groups", "change_legacy_password", "change_gost_password", "change_srp_password", "is_password_expired", "change_active_attr"));
+				fields.addAll(java.util.Arrays.asList("connect", "is_connected", "bind", "bind_as", "find_user", "find_srp_user", "get_certificate", "get_user_attr", "get_policy", "set_policy", "get_password_history", "get_user_info", "get_groups_list", "get_users_list", "find_user_groups", "change_legacy_password", "change_gost_password", "change_srp_password", "is_password_expired", "change_active_attr", "check_idle"));
 				return fields;
 			}
 		}
@@ -24559,6 +25036,16 @@ public interface FbInterface extends FbClientLibrary
 			int result = vTable.change_active_attr.invoke(this, name, active);
 			return result;
 		}
+
+		public boolean check_idle()
+		{
+			VTable vTable = getVTable();
+			if (vTable.check_idle == null) {
+				return false;
+			}
+			boolean result = vTable.check_idle.invoke(this);
+			return result;
+		}
 	}
 
 	public static class ILdapFactory extends IPluginBase implements ILdapFactoryIntf
@@ -24745,365 +25232,6 @@ public interface FbInterface extends FbClientLibrary
 				return false;
 			}
 			boolean result = vTable.verifyPassword.invoke(this, secDbName, user, password, isNew, plugin, isEqual);
-			return result;
-		}
-	}
-
-	public static class IJsonPlugin extends IReferenceCounted implements IJsonPluginIntf
-	{
-		public static class VTable extends IReferenceCounted.VTable
-		{
-			public static interface Callback_jsonQuery extends com.sun.jna.Callback
-			{
-				public com.sun.jna.Pointer invoke(IJsonPlugin self, IStatus status, com.sun.jna.Pointer path, int wrapper, int quotes);
-			}
-
-			public static interface Callback_jsonValue extends com.sun.jna.Callback
-			{
-				public com.sun.jna.Pointer invoke(IJsonPlugin self, IStatus status, com.sun.jna.Pointer path);
-			}
-
-			public static interface Callback_jsonModify extends com.sun.jna.Callback
-			{
-				public com.sun.jna.Pointer invoke(IJsonPlugin self, IStatus status, com.sun.jna.Pointer path, com.sun.jna.Pointer field);
-			}
-
-			public static interface Callback_jsonTable extends com.sun.jna.Callback
-			{
-				public com.sun.jna.Pointer invoke(IJsonPlugin self, IStatus status, com.sun.jna.Pointer paths_to_fields, int count_fields);
-			}
-
-			public static interface Callback_jsonArray extends com.sun.jna.Callback
-			{
-				public com.sun.jna.Pointer invoke(IJsonPlugin self, com.sun.jna.Pointer array_elements, int count_fields, int absent);
-			}
-
-			public static interface Callback_jsonObject extends com.sun.jna.Callback
-			{
-				public com.sun.jna.Pointer invoke(IJsonPlugin self, com.sun.jna.Pointer array_key_value_pair, int count_field, int unique, int absent);
-			}
-
-			public static interface Callback_isJson extends com.sun.jna.Callback
-			{
-				public boolean invoke(IJsonPlugin self);
-			}
-
-			public static interface Callback_jsonExists extends com.sun.jna.Callback
-			{
-				public com.sun.jna.Pointer invoke(IJsonPlugin self, IStatus status, com.sun.jna.Pointer path);
-			}
-
-			public VTable(com.sun.jna.Pointer pointer)
-			{
-				super(pointer);
-			}
-
-			public VTable(final IJsonPluginIntf obj)
-			{
-				super(obj);
-
-				version = IJsonPluginIntf.VERSION;
-
-				jsonQuery = new Callback_jsonQuery() {
-					@Override
-					public com.sun.jna.Pointer invoke(IJsonPlugin self, IStatus status, com.sun.jna.Pointer path, int wrapper, int quotes)
-					{
-						try
-						{
-							return obj.jsonQuery(status, path, wrapper, quotes);
-						}
-						catch (Throwable t)
-						{
-							FbInterfaceException.catchException(status, t);
-							return null;
-						}
-					}
-				};
-
-				jsonValue = new Callback_jsonValue() {
-					@Override
-					public com.sun.jna.Pointer invoke(IJsonPlugin self, IStatus status, com.sun.jna.Pointer path)
-					{
-						try
-						{
-							return obj.jsonValue(status, path);
-						}
-						catch (Throwable t)
-						{
-							FbInterfaceException.catchException(status, t);
-							return null;
-						}
-					}
-				};
-
-				jsonModify = new Callback_jsonModify() {
-					@Override
-					public com.sun.jna.Pointer invoke(IJsonPlugin self, IStatus status, com.sun.jna.Pointer path, com.sun.jna.Pointer field)
-					{
-						try
-						{
-							return obj.jsonModify(status, path, field);
-						}
-						catch (Throwable t)
-						{
-							FbInterfaceException.catchException(status, t);
-							return null;
-						}
-					}
-				};
-
-				jsonTable = new Callback_jsonTable() {
-					@Override
-					public com.sun.jna.Pointer invoke(IJsonPlugin self, IStatus status, com.sun.jna.Pointer paths_to_fields, int count_fields)
-					{
-						try
-						{
-							return obj.jsonTable(status, paths_to_fields, count_fields);
-						}
-						catch (Throwable t)
-						{
-							FbInterfaceException.catchException(status, t);
-							return null;
-						}
-					}
-				};
-
-				jsonArray = new Callback_jsonArray() {
-					@Override
-					public com.sun.jna.Pointer invoke(IJsonPlugin self, com.sun.jna.Pointer array_elements, int count_fields, int absent)
-					{
-						return obj.jsonArray(array_elements, count_fields, absent);
-					}
-				};
-
-				jsonObject = new Callback_jsonObject() {
-					@Override
-					public com.sun.jna.Pointer invoke(IJsonPlugin self, com.sun.jna.Pointer array_key_value_pair, int count_field, int unique, int absent)
-					{
-						return obj.jsonObject(array_key_value_pair, count_field, unique, absent);
-					}
-				};
-
-				isJson = new Callback_isJson() {
-					@Override
-					public boolean invoke(IJsonPlugin self)
-					{
-						return obj.isJson();
-					}
-				};
-
-				jsonExists = new Callback_jsonExists() {
-					@Override
-					public com.sun.jna.Pointer invoke(IJsonPlugin self, IStatus status, com.sun.jna.Pointer path)
-					{
-						try
-						{
-							return obj.jsonExists(status, path);
-						}
-						catch (Throwable t)
-						{
-							FbInterfaceException.catchException(status, t);
-							return null;
-						}
-					}
-				};
-			}
-
-			public VTable()
-			{
-			}
-
-			public Callback_jsonQuery jsonQuery;
-			public Callback_jsonValue jsonValue;
-			public Callback_jsonModify jsonModify;
-			public Callback_jsonTable jsonTable;
-			public Callback_jsonArray jsonArray;
-			public Callback_jsonObject jsonObject;
-			public Callback_isJson isJson;
-			public Callback_jsonExists jsonExists;
-
-			@Override
-			protected java.util.List<String> getFieldOrder()
-			{
-				java.util.List<String> fields = super.getFieldOrder();
-				fields.addAll(java.util.Arrays.asList("jsonQuery", "jsonValue", "jsonModify", "jsonTable", "jsonArray", "jsonObject", "isJson", "jsonExists"));
-				return fields;
-			}
-		}
-
-		public IJsonPlugin()
-		{
-		}
-
-		public IJsonPlugin(final IJsonPluginIntf obj)
-		{
-			vTable = new VTable(obj);
-			vTable.write();
-			cloopVTable = vTable.getPointer();
-			write();
-		}
-
-		@Override
-		protected VTable createVTable()
-		{
-			return new VTable(cloopVTable);
-		}
-
-		public com.sun.jna.Pointer jsonQuery(IStatus status, com.sun.jna.Pointer path, int wrapper, int quotes)
-		{
-			VTable vTable = getVTable();
-			if (vTable.jsonQuery == null) {
-				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IJsonPluginIntf.VERSION);
-				return null;
-			}
-			com.sun.jna.Pointer result = vTable.jsonQuery.invoke(this, status, path, wrapper, quotes);
-			return result;
-		}
-
-		public com.sun.jna.Pointer jsonValue(IStatus status, com.sun.jna.Pointer path)
-		{
-			VTable vTable = getVTable();
-			if (vTable.jsonValue == null) {
-				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IJsonPluginIntf.VERSION);
-				return null;
-			}
-			com.sun.jna.Pointer result = vTable.jsonValue.invoke(this, status, path);
-			return result;
-		}
-
-		public com.sun.jna.Pointer jsonModify(IStatus status, com.sun.jna.Pointer path, com.sun.jna.Pointer field)
-		{
-			VTable vTable = getVTable();
-			if (vTable.jsonModify == null) {
-				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IJsonPluginIntf.VERSION);
-				return null;
-			}
-			com.sun.jna.Pointer result = vTable.jsonModify.invoke(this, status, path, field);
-			return result;
-		}
-
-		public com.sun.jna.Pointer jsonTable(IStatus status, com.sun.jna.Pointer paths_to_fields, int count_fields)
-		{
-			VTable vTable = getVTable();
-			if (vTable.jsonTable == null) {
-				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IJsonPluginIntf.VERSION);
-				return null;
-			}
-			com.sun.jna.Pointer result = vTable.jsonTable.invoke(this, status, paths_to_fields, count_fields);
-			return result;
-		}
-
-		public com.sun.jna.Pointer jsonArray(com.sun.jna.Pointer array_elements, int count_fields, int absent)
-		{
-			VTable vTable = getVTable();
-			if (vTable.jsonArray == null) {
-				return null;
-			}
-			com.sun.jna.Pointer result = vTable.jsonArray.invoke(this, array_elements, count_fields, absent);
-			return result;
-		}
-
-		public com.sun.jna.Pointer jsonObject(com.sun.jna.Pointer array_key_value_pair, int count_field, int unique, int absent)
-		{
-			VTable vTable = getVTable();
-			if (vTable.jsonObject == null) {
-				return null;
-			}
-			com.sun.jna.Pointer result = vTable.jsonObject.invoke(this, array_key_value_pair, count_field, unique, absent);
-			return result;
-		}
-
-		public boolean isJson()
-		{
-			VTable vTable = getVTable();
-			if (vTable.isJson == null) {
-				return false;
-			}
-			boolean result = vTable.isJson.invoke(this);
-			return result;
-		}
-
-		public com.sun.jna.Pointer jsonExists(IStatus status, com.sun.jna.Pointer path)
-		{
-			VTable vTable = getVTable();
-			if (vTable.jsonExists == null) {
-				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IJsonPluginIntf.VERSION);
-				return null;
-			}
-			com.sun.jna.Pointer result = vTable.jsonExists.invoke(this, status, path);
-			return result;
-		}
-	}
-
-	public static class IJsonFactory extends IPluginBase implements IJsonFactoryIntf
-	{
-		public static class VTable extends IPluginBase.VTable
-		{
-			public static interface Callback_jsonCreate extends com.sun.jna.Callback
-			{
-				public IJsonPlugin invoke(IJsonFactory self, com.sun.jna.Pointer json_text);
-			}
-
-			public VTable(com.sun.jna.Pointer pointer)
-			{
-				super(pointer);
-			}
-
-			public VTable(final IJsonFactoryIntf obj)
-			{
-				super(obj);
-
-				version = IJsonFactoryIntf.VERSION;
-
-				jsonCreate = new Callback_jsonCreate() {
-					@Override
-					public IJsonPlugin invoke(IJsonFactory self, com.sun.jna.Pointer json_text)
-					{
-						return obj.jsonCreate(json_text);
-					}
-				};
-			}
-
-			public VTable()
-			{
-			}
-
-			public Callback_jsonCreate jsonCreate;
-
-			@Override
-			protected java.util.List<String> getFieldOrder()
-			{
-				java.util.List<String> fields = super.getFieldOrder();
-				fields.addAll(java.util.Arrays.asList("jsonCreate"));
-				return fields;
-			}
-		}
-
-		public IJsonFactory()
-		{
-		}
-
-		public IJsonFactory(final IJsonFactoryIntf obj)
-		{
-			vTable = new VTable(obj);
-			vTable.write();
-			cloopVTable = vTable.getPointer();
-			write();
-		}
-
-		@Override
-		protected VTable createVTable()
-		{
-			return new VTable(cloopVTable);
-		}
-
-		public IJsonPlugin jsonCreate(com.sun.jna.Pointer json_text)
-		{
-			VTable vTable = getVTable();
-			if (vTable.jsonCreate == null) {
-				return null;
-			}
-			IJsonPlugin result = vTable.jsonCreate.invoke(this, json_text);
 			return result;
 		}
 	}
