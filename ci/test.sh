@@ -35,6 +35,7 @@ TEST_DIR=/tmp/jaybird_test
 TMPFS=/tmpfs
 export FIREBIRD="$INSTALLDIR"
 export LD_LIBRARY_PATH="$INSTALLDIR/lib"
+export LD_PRELOAD="$INSTALLDIR/lib/libjsig.so"
 export JAVA_HOME
 ARCH=`arch`
 if [ "$ARCH" == "i686" ]; then
