@@ -172,7 +172,8 @@ class DatabaseEncryptionTest {
     void testFBConnectionPoolDataSource() throws Exception {
         final FBConnectionPoolDataSource ds = new FBConnectionPoolDataSource();
         ds.setDatabaseName(CRYPTTEST_DB);
-        if (getGdsType() == GDSType.getType("PURE_JAVA") || getGdsType() == GDSType.getType("NATIVE")) {
+        if (getGdsType() == GDSType.getType("PURE_JAVA") || getGdsType() == GDSType.getType("NATIVE")
+                || getGdsType() == GDSType.getType("FBOONATIVE")) {
             ds.setServerName(FBTestProperties.DB_SERVER_URL);
             ds.setPortNumber(FBTestProperties.DB_SERVER_PORT);
         }

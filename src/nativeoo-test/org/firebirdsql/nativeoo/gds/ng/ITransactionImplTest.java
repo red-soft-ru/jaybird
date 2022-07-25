@@ -10,7 +10,7 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 import java.sql.SQLException;
 
 /**
- * Tests for {@link org.firebirdsql.nativeoo.gds.ng.ITransactionImpl}.
+ * Tests for OO API transaction. See {@link org.firebirdsql.nativeoo.gds.ng.ITransactionImpl}.
  *
  * @since 4.0
  */

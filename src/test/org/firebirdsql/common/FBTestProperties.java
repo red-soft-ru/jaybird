@@ -56,7 +56,7 @@ public final class FBTestProperties {
         } catch (ClassNotFoundException ex) {
             throw new ExceptionInInitializerError("No suitable driver.");
         }
-		try {
+	try {
             AuthCryptoPlugin.register(new AuthCryptoPluginImpl());
         } catch (CryptoException e) {
             throw new ExceptionInInitializerError("Cannot register crypto plugin");

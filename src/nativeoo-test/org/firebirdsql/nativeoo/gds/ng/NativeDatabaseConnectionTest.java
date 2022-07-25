@@ -15,6 +15,11 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+/**
+ *  Tests for OO API database connection. See {@link org.firebirdsql.nativeoo.gds.ng.NativeDatabaseConnection}.
+ *
+ * @since 4.0
+ */
 class NativeDatabaseConnectionTest {
 
     @RegisterExtension

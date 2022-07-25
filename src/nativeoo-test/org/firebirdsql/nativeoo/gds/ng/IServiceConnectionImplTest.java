@@ -13,6 +13,12 @@ import static org.firebirdsql.common.FBTestProperties.getDefaultServicePropertie
 import static org.firebirdsql.common.JdbcResourceHelper.closeQuietly;
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Tests for OO API service connection implementation.
+ * See {@link org.firebirdsql.nativeoo.gds.ng.IServiceConnectionImpl}.
+ *
+ * @since 4.0
+ */
 class IServiceConnectionImplTest {
 
     @RegisterExtension

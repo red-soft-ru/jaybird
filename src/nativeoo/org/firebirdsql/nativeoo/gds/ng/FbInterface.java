@@ -486,7 +486,7 @@ public interface FbInterface extends FbClientLibrary
 		public void setIdleTimeout(IStatus status, int timeOut);
 		public int getStatementTimeout(IStatus status);
 		public void setStatementTimeout(IStatus status, int timeOut);
-		public IBatch createBatch(IStatus status, ITransaction transaction, int stmtLength, String sqlStmt, int dialect, IMessageMetadata inMetadata, int parLength, byte[] par);
+		public IBatch createBatch(IStatus status, ITransaction transaction, int stmtLength, byte[] sqlStmt, int dialect, IMessageMetadata inMetadata, int parLength, byte[] par);
 		public IReplicator createReplicator(IStatus status);
 		public void detach(IStatus status);
 		public void dropDatabase(IStatus status);
@@ -8600,7 +8600,7 @@ public interface FbInterface extends FbClientLibrary
 
 			public static interface Callback_createBatch extends com.sun.jna.Callback
 			{
-				public IBatch invoke(IAttachment self, IStatus status, ITransaction transaction, int stmtLength, String sqlStmt, int dialect, IMessageMetadata inMetadata, int parLength, byte[] par);
+				public IBatch invoke(IAttachment self, IStatus status, ITransaction transaction, int stmtLength, byte[] sqlStmt, int dialect, IMessageMetadata inMetadata, int parLength, byte[] par);
 			}
 
 			public static interface Callback_createReplicator extends com.sun.jna.Callback
@@ -8973,7 +8973,7 @@ public interface FbInterface extends FbClientLibrary
 
 				createBatch = new Callback_createBatch() {
 					@Override
-					public IBatch invoke(IAttachment self, IStatus status, ITransaction transaction, int stmtLength, String sqlStmt, int dialect, IMessageMetadata inMetadata, int parLength, byte[] par)
+					public IBatch invoke(IAttachment self, IStatus status, ITransaction transaction, int stmtLength, byte[] sqlStmt, int dialect, IMessageMetadata inMetadata, int parLength, byte[] par)
 					{
 						try
 						{
@@ -9344,7 +9344,7 @@ public interface FbInterface extends FbClientLibrary
 			vTable.setStatementTimeout.invoke(this, status, timeOut);
 		}
 
-		public IBatch createBatch(IStatus status, ITransaction transaction, int stmtLength, String sqlStmt, int dialect, IMessageMetadata inMetadata, int parLength, byte[] par)
+		public IBatch createBatch(IStatus status, ITransaction transaction, int stmtLength, byte[] sqlStmt, int dialect, IMessageMetadata inMetadata, int parLength, byte[] par)
 		{
 			VTable vTable = getVTable();
 			if (vTable.version < 4)

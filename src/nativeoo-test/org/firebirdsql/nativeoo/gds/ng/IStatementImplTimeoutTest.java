@@ -9,6 +9,11 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.sql.SQLException;
 
+/**
+ * Tests for OO API statement timeouts. See  {@link org.firebirdsql.nativeoo.gds.ng.IStatementImpl}.
+ *
+ * @since 4.0
+ */
 class IStatementImplTimeoutTest extends AbstractStatementTimeoutTest {
 
     @RegisterExtension

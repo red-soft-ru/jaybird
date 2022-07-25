@@ -10,6 +10,7 @@ import org.firebirdsql.gds.ng.FbStatement;
 import org.firebirdsql.gds.ng.FbTransaction;
 import org.firebirdsql.gds.ng.SimpleEventHandler;
 import org.firebirdsql.gds.ng.fields.RowValue;
+import org.firebirdsql.gds.ng.jna.JnaDatabase;
 import org.firebirdsql.logging.Logger;
 import org.firebirdsql.logging.LoggerFactory;
 import org.junit.jupiter.api.AfterEach;
@@ -23,6 +24,11 @@ import static org.firebirdsql.common.FBTestProperties.getDefaultTpb;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+/**
+ * Tests for OO API events implementation. See {@link org.firebirdsql.nativeoo.gds.ng.IDatabaseImpl}.
+ *
+ * @since 4.0
+ */
 class IEventBlockImplTest {
 
     private final Logger log = LoggerFactory.getLogger(IEventBlockImplTest.class);

@@ -3,7 +3,12 @@ package org.firebirdsql.nativeoo.gds.ng;
 import com.sun.jna.Pointer;
 import org.firebirdsql.encodings.IEncodingFactory;
 import org.firebirdsql.gds.impl.DbAttachInfo;
-import org.firebirdsql.gds.ng.*;
+import org.firebirdsql.gds.ng.AbstractConnection;
+import org.firebirdsql.gds.ng.DatatypeCoder;
+import org.firebirdsql.gds.ng.FbAttachment;
+import org.firebirdsql.gds.ng.FbExceptionBuilder;
+import org.firebirdsql.gds.ng.IAttachProperties;
+import org.firebirdsql.gds.ng.WarningMessageCallback;
 import org.firebirdsql.gds.ng.jna.BigEndianDatatypeCoder;
 import org.firebirdsql.gds.ng.jna.LittleEndianDatatypeCoder;
 import org.firebirdsql.jna.fbclient.FbClientLibrary;
@@ -16,8 +21,14 @@ import java.sql.SQLException;
 import java.sql.SQLWarning;
 
 import static java.util.Objects.requireNonNull;
-import static org.firebirdsql.gds.ISCConstants.*;
+import static org.firebirdsql.gds.ISCConstants.isc_arg_cstring;
 import static org.firebirdsql.gds.ISCConstants.isc_arg_end;
+import static org.firebirdsql.gds.ISCConstants.isc_arg_gds;
+import static org.firebirdsql.gds.ISCConstants.isc_arg_interpreted;
+import static org.firebirdsql.gds.ISCConstants.isc_arg_number;
+import static org.firebirdsql.gds.ISCConstants.isc_arg_sql_state;
+import static org.firebirdsql.gds.ISCConstants.isc_arg_string;
+import static org.firebirdsql.gds.ISCConstants.isc_arg_warning;
 
 /**
  * Class handling the initial setup of the native connection.
@@ -163,6 +174,7 @@ public abstract class AbstractNativeConnection<T extends IAttachProperties<T>, C
                     break;
             }
         }
+
     }
 
     public final DatatypeCoder createDatatypeCoder() {

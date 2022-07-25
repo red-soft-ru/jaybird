@@ -29,6 +29,11 @@ import static org.hamcrest.Matchers.oneOf;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
+/**
+ * Tests for OO API database. See {@link org.firebirdsql.nativeoo.gds.ng.IDatabaseImpl}.
+ *
+ * @since 4.0
+ */
 class IDatabaseImplTest {
 
     // TODO Assert in tests need to be checked (and more need to be added)

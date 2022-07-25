@@ -3,13 +3,31 @@ package org.firebirdsql.nativeoo.gds.ng;
 import org.firebirdsql.gds.ng.FbDatabase;
 import org.firebirdsql.gds.ng.FbMessageMetadata;
 import org.firebirdsql.gds.ng.FbMetadataBuilder;
-import org.firebirdsql.nativeoo.gds.ng.FbInterface.*;
+import org.firebirdsql.nativeoo.gds.ng.FbInterface.IMaster;
+import org.firebirdsql.nativeoo.gds.ng.FbInterface.IMessageMetadata;
+import org.firebirdsql.nativeoo.gds.ng.FbInterface.IMetadataBuilder;
+import org.firebirdsql.nativeoo.gds.ng.FbInterface.IStatus;
 
 import java.sql.SQLException;
 
-import static org.firebirdsql.gds.ISCConstants.*;
+import static org.firebirdsql.gds.ISCConstants.SQL_BLOB;
+import static org.firebirdsql.gds.ISCConstants.SQL_BOOLEAN;
+import static org.firebirdsql.gds.ISCConstants.SQL_DATE;
+import static org.firebirdsql.gds.ISCConstants.SQL_DEC16;
+import static org.firebirdsql.gds.ISCConstants.SQL_DEC34;
+import static org.firebirdsql.gds.ISCConstants.SQL_DOUBLE;
+import static org.firebirdsql.gds.ISCConstants.SQL_FLOAT;
+import static org.firebirdsql.gds.ISCConstants.SQL_INT64;
+import static org.firebirdsql.gds.ISCConstants.SQL_INT128;
+import static org.firebirdsql.gds.ISCConstants.SQL_LONG;
+import static org.firebirdsql.gds.ISCConstants.SQL_SHORT;
+import static org.firebirdsql.gds.ISCConstants.SQL_TEXT;
+import static org.firebirdsql.gds.ISCConstants.SQL_TIMESTAMP;
+import static org.firebirdsql.gds.ISCConstants.SQL_TYPE_TIME;
+import static org.firebirdsql.gds.ISCConstants.SQL_VARYING;
 
 /**
+ * Implementation of {@link org.firebirdsql.gds.ng.FbMetadataBuilder} for native OO API.
  *
  * @author <a href="mailto:vasiliy.yashkov@red-soft.ru">Vasiliy Yashkov</a>
  * @since 4.0

@@ -27,6 +27,12 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
+/**
+ * Tests for OO API service implementation.
+ * See {@link org.firebirdsql.nativeoo.gds.ng.IServiceImpl}.
+ *
+ * @since 4.0
+ */
 class IServiceImplTest {
 
     @RegisterExtension

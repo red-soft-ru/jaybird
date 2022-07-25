@@ -29,7 +29,6 @@ import org.firebirdsql.gds.ng.fields.RowDescriptor;
 import org.firebirdsql.gds.ng.fields.RowValue;
 import org.firebirdsql.gds.ng.jna.JnaStatement;
 import org.firebirdsql.gds.ng.wire.SimpleStatementListener;
-import org.firebirdsql.nativeoo.gds.ng.IStatementImpl;
 import org.firebirdsql.util.FirebirdSupportInfo;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
