@@ -137,7 +137,7 @@ build_and_test:
         JAVA_HOME: /usr/lib/jvm/jre-1.8.0
         TEST_JAVA8_JVM: /usr/lib/jvm/jre-1.8.0/bin/java
         TEST_LIST: "**"
-        RDB_VERSION: [ $RDB2_VERSION, $RDB4_VERSION, "FB3.0.7" ]
+        RDB_VERSION: [ $RDB4_VERSION ]
       - TYPE: JDK8
         JAVA_HOME: /usr/lib/jvm/jre-1.8.0
         TEST_LIST: "**"
