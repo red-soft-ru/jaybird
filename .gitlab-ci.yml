@@ -16,7 +16,7 @@ variables:
   MAVEN_CLI_OPTS: "-s .m2/settings.xml --batch-mode -U"
   MAVEN_OPTS: "-Dmaven.repo.local=.m2/repository"
   RDB2_VERSION: "2.6.0.13508"
-  RDB3_VERSION: "3.0.9-rc.5"
+  RDB3_VERSION: "3.0.9"
   RDB4_VERSION: "4.0.0-rc.1"
   http_proxy: http://git.red-soft.biz:3128
   https_proxy: http://git.red-soft.biz:3128

@@ -24,6 +24,9 @@ import org.firebirdsql.common.FBTestProperties;
 import org.firebirdsql.gds.impl.jni.EmbeddedGDSFactoryPlugin;
 import org.firebirdsql.gds.impl.jni.LocalGDSFactoryPlugin;
 import org.firebirdsql.gds.impl.jni.NativeGDSFactoryPlugin;
+import org.firebirdsql.gds.impl.nativeoo.FbOOEmbeddedGDSFactoryPlugin;
+import org.firebirdsql.gds.impl.nativeoo.FbOOLocalGDSFactoryPlugin;
+import org.firebirdsql.gds.impl.nativeoo.FbOONativeGDSFactoryPlugin;
 import org.hamcrest.Matcher;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
@@ -108,12 +111,23 @@ public final class GdsTypeRule implements TestRule {
     }
 
     /**
+     * Creates an instance that supports only all (known) OO API native test types.
+     *
+     * @return Instance
+     */
+    public static GdsTypeRule supportsFBOONativeOnly() {
+        return supports(FbOONativeGDSFactoryPlugin.NATIVE_TYPE_NAME,
+                FbOOEmbeddedGDSFactoryPlugin.EMBEDDED_TYPE_NAME, FbOOLocalGDSFactoryPlugin.LOCAL_TYPE_NAME);
+    }
+
+    /**
      * Creates an instance that excludes all (known) native test types.
      *
      * @return Instance
      */
     public static GdsTypeRule excludesNativeOnly() {
         return excludes(NativeGDSFactoryPlugin.NATIVE_TYPE_NAME, EmbeddedGDSFactoryPlugin.EMBEDDED_TYPE_NAME,
-                LocalGDSFactoryPlugin.LOCAL_TYPE_NAME);
+                LocalGDSFactoryPlugin.LOCAL_TYPE_NAME, FbOONativeGDSFactoryPlugin.NATIVE_TYPE_NAME,
+                FbOOEmbeddedGDSFactoryPlugin.EMBEDDED_TYPE_NAME, FbOOLocalGDSFactoryPlugin.LOCAL_TYPE_NAME);
     }
 }

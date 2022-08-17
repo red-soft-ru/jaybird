@@ -146,7 +146,8 @@ public final class FBTestProperties {
                 final FBServiceManager fbServiceManager = new FBServiceManager(gdsType);
                 if (gdsType == GDSType.getType("PURE_JAVA")
                         || gdsType == GDSType.getType("NATIVE")
-                        || gdsType == GDSType.getType("OOREMOTE") ) {
+                        || gdsType == GDSType.getType("OOREMOTE")
+                        || gdsType == GDSType.getType("FBOONATIVE") ) {
                     fbServiceManager.setServer(DB_SERVER_URL);
                     fbServiceManager.setPort(DB_SERVER_PORT);
                 }
@@ -166,6 +167,9 @@ public final class FBTestProperties {
         gdsTypeToUrlPrefixMap.put(GDSType.getType("EMBEDDED"), "jdbc:firebirdsql:embedded:");
         gdsTypeToUrlPrefixMap.put(GDSType.getType("NATIVE"), "jdbc:firebirdsql:native:");
         gdsTypeToUrlPrefixMap.put(GDSType.getType("LOCAL"), "jdbc:firebirdsql:local:");
+        gdsTypeToUrlPrefixMap.put(GDSType.getType("FBOOEMBEDDED"), "jdbc:firebirdsql:fboo:embedded:");
+        gdsTypeToUrlPrefixMap.put(GDSType.getType("FBOONATIVE"), "jdbc:firebirdsql:fboo:native:");
+        gdsTypeToUrlPrefixMap.put(GDSType.getType("FBOOLOCAL"), "jdbc:firebirdsql:fboo:local:");
         gdsTypeToUrlPrefixMap.put(GDSType.getType("OOREMOTE"), "jdbc:firebirdsql:oo:");
 
         // TODO Replace with an external definition/way to add additional types for third party plugins?
@@ -234,7 +238,8 @@ public final class FBTestProperties {
         final GDSType gdsType = getGdsType();
         if (gdsType == GDSType.getType("PURE_JAVA")
                 || gdsType == GDSType.getType("NATIVE")
-                || gdsType == GDSType.getType("OOREMOTE")) {
+                || gdsType == GDSType.getType("OOREMOTE")
+                || gdsType == GDSType.getType("FBOONATIVE")) {
             fbManager.setServer(DB_SERVER_URL);
             fbManager.setPort(DB_SERVER_PORT);
         }
