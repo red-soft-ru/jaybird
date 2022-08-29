@@ -98,35 +98,47 @@ public class IStatementImpl extends AbstractFbStatement {
             final byte[] statementArray = getDatabase().getEncoding().encodeToCharset(statementText);
             synchronized (getSynchronizationObject()) {
                 checkTransactionActive(getTransaction());
-                final StatementState currentState = getState();
-                if (!isPrepareAllowed(currentState)) {
-                    throw new SQLNonTransientException(String.format("Current statement state (%s) does not allow call to prepare", currentState));
+                final StatementState initialState = getState();
+                if (!isPrepareAllowed(initialState)) {
+                    throw new SQLNonTransientException(String.format(
+                            "Current statement state (%s) does not allow call to prepare", initialState));
                 }
                 resetAll();
 
-                if (currentState == StatementState.NEW) {
-                    // allocated when prepare call
-                    switchState(StatementState.ALLOCATED);
-                    setType(StatementType.NONE);
+                if (initialState == StatementState.NEW) {
+                    try {
+                        // allocated when prepare call
+                        switchState(StatementState.ALLOCATED);
+                        setType(StatementType.NONE);
+                    } catch (SQLException e) {
+                        forceState(StatementState.NEW);
+                        throw e;
+                    }
                 } else {
                     checkStatementValid();
                 }
 
-                ITransactionImpl transaction = (ITransactionImpl) getTransaction();
-                statement = getDatabase().getAttachment().prepare(getStatus(), transaction.getTransaction(),
-                        statementArray.length, statementArray, getDatabase().getConnectionDialect(),
-                        IStatement.PREPARE_PREFETCH_METADATA);
-                processStatus();
-                outMeta = statement.getOutputMetadata(getStatus());
-                processStatus();
-                inMeta = statement.getInputMetadata(getStatus());
-                processStatus();
+                switchState(StatementState.PREPARING);
+                try {
+                    ITransactionImpl transaction = (ITransactionImpl) getTransaction();
+                    statement = getDatabase().getAttachment().prepare(getStatus(), transaction.getTransaction(),
+                            statementArray.length, statementArray, getDatabase().getConnectionDialect(),
+                            IStatement.PREPARE_PREFETCH_METADATA);
+                    processStatus();
+                    outMeta = statement.getOutputMetadata(getStatus());
+                    processStatus();
+                    inMeta = statement.getInputMetadata(getStatus());
+                    processStatus();
 
-                final byte[] statementInfoRequestItems = getStatementInfoRequestItems();
-                final int responseLength = getDefaultSqlInfoSize();
-                byte[] statementInfo = getSqlInfo(statementInfoRequestItems, responseLength);
-                parseStatementInfo(statementInfo);
-                switchState(StatementState.PREPARED);
+                    final byte[] statementInfoRequestItems = getStatementInfoRequestItems();
+                    final int responseLength = getDefaultSqlInfoSize();
+                    byte[] statementInfo = getSqlInfo(statementInfoRequestItems, responseLength);
+                    parseStatementInfo(statementInfo);
+                    switchState(StatementState.PREPARED);
+                } catch (SQLException e) {
+                    switchState(StatementState.ALLOCATED);
+                    throw e;
+                }
             }
         } catch (SQLException e) {
             exceptionListenerDispatcher.errorOccurred(e);
