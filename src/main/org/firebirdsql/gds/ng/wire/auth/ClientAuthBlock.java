@@ -132,7 +132,7 @@ public final class ClientAuthBlock {
                     break;
                 }
             } catch (SQLException ex) {
-                throw new FbExceptionBuilder().exception(ISCConstants.isc_login).cause(ex).toFlatSQLException();
+                throw new FbExceptionBuilder().exception(ISCConstants.isc_login).cause(ex).toSQLException();
             }
         }
     }
@@ -168,7 +168,7 @@ public final class ClientAuthBlock {
             if (mergedProviderList.isEmpty()) {
                 throw new FbExceptionBuilder().exception(ISCConstants.isc_login)
                         .exception(ISCConstants.isc_random).messageParameter("No matching plugins on server")
-                        .toFlatSQLException();
+                        .toSQLException();
             }
             pluginProviders = mergedProviderList;
         }
@@ -298,7 +298,7 @@ public final class ClientAuthBlock {
                     break;
                 }
             } catch (SQLException ex) {
-                throw new FbExceptionBuilder().exception(ISCConstants.isc_login).cause(ex).toFlatSQLException();
+                throw new FbExceptionBuilder().exception(ISCConstants.isc_login).cause(ex).toSQLException();
             }
 
             log.debug(String.format("try next plugin, %s skipped", plugin));
@@ -421,7 +421,7 @@ public final class ClientAuthBlock {
         if (pluginProviders.isEmpty()) {
             throw new FbExceptionBuilder().exception(JaybirdErrorCodes.jb_noKnownAuthPlugins)
                     .messageParameter(requestedPluginNames.toString())
-                    .toFlatSQLException();
+                    .toSQLException();
         }
         return pluginProviders;
     }

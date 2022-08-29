@@ -30,13 +30,11 @@
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>javax.servlet-api</artifactId>
-			<version>4.0.1</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>jakarta.servlet</groupId>
 			<artifactId>jakarta.servlet-api</artifactId>
-			<version>5.0.0</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
@@ -130,7 +128,7 @@
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>build-helper-maven-plugin</artifactId>
-				<version>3.0.0</version>
+				<version>${build-helper-maven-plugin.version}</version>
 				<executions>
 					<execution>
 						<id>add-source</id>
@@ -235,19 +233,8 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
-				<version>2.22.2</version>
+				<version>${maven-surefire-plugin.version}</version>
 				<configuration>
-<!--					<includes>-->
-<!--						<include>**/Test*.java</include>-->
-<!--						<include>**/nativeoo/**</include>-->
-<!--					</includes>-->
-<!--					<excludes>-->
-<!--						<exclude>**/jni/Test*.java</exclude>-->
-<!--						<exclude>**/TestAll.java</exclude>-->
-<!--						<exclude>**/TestXABase*.java</exclude>-->
-<!--						<exclude>**/TestConst.java</exclude>-->
-<!--						<exclude>**/*$$*.java</exclude>-->
-<!--					</excludes>-->
 					<testFailureIgnore>true</testFailureIgnore>
 					<jvm>${test.java.jvm}</jvm>
 				</configuration>

@@ -135,14 +135,14 @@ For example:
 </dependency>
 ----
 
-If you want to use Type 2 support (native, local or embedded), you need to  explicitly include JNA 5.5.0 as a dependency:
+If you want to use Type 2 support (native, local or embedded), you need to  explicitly include JNA 5.12.1 as a dependency:
 
 [source,{.xml}]
 ----
 <dependency>
     <groupId>net.java.dev.jna</groupId>
     <artifactId>jna</artifactId>
-    <version>5.5.0</version>
+    <version>5.12.1</version>
 </dependency>
 ----
 
@@ -158,7 +158,7 @@ You can download the latest versions from https://www.firebirdsql.org/en/jdbc-dr
 
 At minimum Jaybird 5 requires `jaybird-{version_simple}.javaXX{version_tag}.jar`  (where `XX` is `8` or `11`).
 
-For native, local or embedded support, you will need to include `jna-5.5.0.jar`  on your classpath.
+For native, local or embedded support, you will need to include `jna-5.12.1.jar`  on your classpath.
 See also <<type-2-native-and-embedded-driver,Type 2 (native) and embedded driver>>.
 
 [#upgrading-from-jaybird-4-to-jaybird-5]
@@ -194,6 +194,9 @@ If you manage your dependencies manually, you need to do the following:
 . Replace the Jaybird 4 library with the Jaybird 5 version
  ** `jaybird-4.0.x.jar` with `jaybird-{version_simple}.javaXX{version_tag}.jar` (where `XX` is `8` or `11`)
  ** `jaybird-full-4.0.x.jar` with `jaybird-{version_simple}.javaXX{version_tag}.jar`, the `jaybird-full` library no longer exists
+. Replace the `jna-5.5.0.jar` library with `jna-5.12.1.jar`
++
+Only needed if you actually use native or embedded connections, otherwise remove JNA (assuming your application itself or other dependencies don't use it).
 . Remove the `connector-api-1.5.jar` library, it is no longer used by Jaybird
 . Remove the `antlr4-runtime-4.7.2.jar` library, it is no longer used by Jaybird
 
@@ -467,7 +470,7 @@ This support comes with a number of limitations:
 ** The `Statement` batch behaviour is not supported by server-side batch updates.
 ** The `CallableStatement` implementation is more complex than prepared statement, so the decision was made not to reimplement this using server-side batch updates.
 The implementation might be rewritten in a future Jaybird version, if there is sufficient interest.
-As a workaround, use `execute procedure` or `{call procedure_name(...)}` from a `PreparedStatement`.
+As a workaround, use `execute procedure` or `++{call procedure_name(...)}++` from a `PreparedStatement`.
 * Requesting generated-keys will fall back to emulated behaviour as server-side batches do not support returning values produced by the `RETURNING` clause.
 * Firebird 4.0 has additional facilities to send `BLOB` values as part of the batch update, but this is not yet used by Jaybird.
 
@@ -534,6 +537,10 @@ Backported to Jaybird 3.0.9 and 4.0.1.
 +
 This change was contributed by https://github.com/vasiliy-yashkov[Vasiliy Yashkov].
 * Improvement: add `setForceWrite`/`getForceWrite` to `FBManager` to allow disabling force write on database creation (https://github.com/FirebirdSQL/jaybird/issues/671[jaybird#671])
+* Improvement: Attempts to connect without user name and password with pure-java protocol will now result in error `isc_login` ("`Your user name and password are not defined. Ask your database administrator to set up a Firebird login.`") instead of `isc_connect_reject` ("`connection rejected by remote interface`") (https://github.com/FirebirdSQL/jaybird/issues/583[jaybird#583])
+* Improvement: Don't send cursor close to server when closing `ResultSet` in response to `Statement` close (https://github.com/FirebirdSQL/jaybird/issues/669[jaybird#669])
++
+This provides a small performance increase in cases where a result set was not already closed (e.g. no explicit `ResultSet.close()` or result set not fully read) before the statement close.
 * New feature: Support for NBackup GUID-based backup and in-place restore (https://github.com/FirebirdSQL/jaybird/issues/672[jaybird#672])
 +
 The `org.firebirdsql.management.NBackupManager` interface has two new methods: `setBackupGuid(String)` expecting the brace-enclosed GUID of a previous backup to use as the starting point for this backup, and `setInPlaceRestore(boolean)` to enable (or disable) in-place restore.
@@ -546,8 +553,17 @@ The `org.firebirdsql.management.NBackupManager` interface has two new methods: `
 These options require Firebird 4.0 or higher.
 * Improvement: The `charSet` connection property now also has an alias `charset` (URL property, not as get/set pair).
 * Improvement: The `dbCryptConfig` connection property now supports _base64url_ (the "`URL and Filename safe`" Base 64 Alphabet) with the `base64url:` prefix (https://github.com/FirebirdSQL/jaybird/issues/677[jaybird#677])
+* Fix: `FBStatement` allowed retrieval of update count after error, while `FBPreparedStatement` -- correctly -- did not (https://github.com/FirebirdSQL/jaybird/issues/681[jaybird#681])
++
+Now, after an exception, attempting to retrieve the update count with `getUpdateCount()` will return `-1`.
 * Improvement: Renamed `NativeResourceUnloadWebListener` to `NativeResourceUnloadWebListenerJavaX` and added its twin `NativeResourceUnloadWebListenerJakarta` using the `jakarta.servlet` namespace to support native resource unloading on Jakarta EE 9 and higher (https://github.com/FirebirdSQL/jaybird/issues/684[jaybird#684])
 * Improvement: `Connection.isValid(int)` now asynchronously checks validity of connections, allowing the timeout to also be honoured for native connections (https://github.com/FirebirdSQL/jaybird/issues/685[jaybird#685])
+* Change: Removed finalization from `FBConnection` and `FBStatement` (https://github.com/FirebirdSQL/jaybird/issues/699[jaybird#699])
+* Fix: XAResource checks at most 10 records for forget or recovery operations (https://github.com/FirebirdSQL/jaybird/issues/701[jaybird#701])
++
+As part of this change, queries were changed to convert the `RDB$TRANSACTION_DESCRIPTION` to an octets varchar field (to avoid additional roundtrips for blob fields), and -- when applicable -- only query transactions that have a transaction description written by Jaybird
++
+As a result of this change, Xid forget and recovery no longer work on Firebird 2.1 or earlier (these versions were already not supported by Jaybird).
 
 [#removal-of-deprecated-classes-and-packages]
 === Removal of deprecated classes and packages
@@ -883,7 +899,7 @@ removed without replacement.
 === Type 2 (native) and embedded driver
 
 Jaybird uses JNA to access the client library.
-If you want to use the Type 2  driver, or Firebird embedded, then you need to include `jna-5.5.0.jar` on the  classpath.
+If you want to use the Type 2  driver, or Firebird embedded, then you need to include `jna-5.12.1.jar` on the  classpath.
 
 When using Maven, you need to specify the dependency on JNA yourself, as we  don't depend on it by default (it is specified as an optional dependency):
 
@@ -892,7 +908,7 @@ When using Maven, you need to specify the dependency on JNA yourself, as we  don
 <dependency>
     <groupId>net.java.dev.jna</groupId>
     <artifactId>jna</artifactId>
-    <version>5.5.0</artifactId>
+    <version>5.12.1</artifactId>
 </dependency>
 ----
 

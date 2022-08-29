@@ -193,16 +193,6 @@ public class FBStatement implements FirebirdStatement, Synchronizable {
         return syncObject;
     }
 
-    @Override
-    protected void finalize() throws Throwable {
-        try {
-            if (!closed)
-                close();
-        } finally {
-            super.finalize();
-        }
-    }
-
     public void completeStatement() throws SQLException {
         completeStatement(CompletionReason.OTHER);
     }
@@ -360,7 +350,7 @@ public class FBStatement implements FirebirdStatement, Synchronizable {
             if (fbStatement != null) {
                 try {
                     try {
-                        closeResultSet(false);
+                        closeResultSet(false, CompletionReason.STATEMENT_CLOSE);
                     } finally {
                         //may need ensureTransaction?
                         fbStatement.close();
@@ -651,7 +641,7 @@ public class FBStatement implements FirebirdStatement, Synchronizable {
         default:
             throw FbExceptionBuilder.forException(JaybirdErrorCodes.jb_invalidFetchDirection)
                     .messageParameter(direction)
-                    .toFlatSQLException();
+                    .toSQLException();
         }
     }
 
@@ -864,13 +854,18 @@ public class FBStatement implements FirebirdStatement, Synchronizable {
     }
 
     protected boolean internalExecute(RowValue rowValue) throws SQLException {
-        fbStatement.execute(rowValue);
-        boolean hasResultSet = currentStatementResult == StatementResult.RESULT_SET;
-        if (hasResultSet && isGeneratedKeyQuery()) {
-            fetchMultiRowGeneratedKeys();
-            return false;
+        try {
+            fbStatement.execute(rowValue);
+            boolean hasResultSet = currentStatementResult == StatementResult.RESULT_SET;
+            if (hasResultSet && isGeneratedKeyQuery()) {
+                fetchMultiRowGeneratedKeys();
+                return false;
+            }
+            return hasResultSet;
+        } catch (SQLException e) {
+            currentStatementResult = StatementResult.NO_MORE_RESULTS;
+            throw e;
         }
-        return hasResultSet;
     }
 
     private void fetchMultiRowGeneratedKeys() throws SQLException {

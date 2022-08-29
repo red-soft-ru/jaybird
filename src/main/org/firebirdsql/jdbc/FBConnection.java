@@ -420,8 +420,8 @@ public class FBConnection implements FirebirdConnection, Synchronizable {
                 log.trace("Connection closed requested at", new RuntimeException("Connection close logging"));
             }
             try {
-                freeStatements();
                 if (metaData != null) metaData.close();
+                freeStatements();
             } catch (SQLException e) {
                 chainBuilder.append(e);
             } finally {
@@ -634,14 +634,14 @@ public class FBConnection implements FirebirdConnection, Synchronizable {
 
                 addWarning(FbExceptionBuilder
                         .forWarning(JaybirdErrorCodes.jb_resultSetTypeUpgradeReasonHoldability)
-                        .toFlatSQLException(SQLWarning.class));
+                        .toSQLException(SQLWarning.class));
                 resultSetType = ResultSet.TYPE_SCROLL_INSENSITIVE;
             }
 
             if (resultSetType == ResultSet.TYPE_SCROLL_SENSITIVE) {
                 addWarning(FbExceptionBuilder
                         .forWarning(JaybirdErrorCodes.jb_resultSetTypeDowngradeReasonScrollSensitive)
-                        .toFlatSQLException(SQLWarning.class));
+                        .toSQLException(SQLWarning.class));
                 resultSetType = ResultSet.TYPE_SCROLL_INSENSITIVE;
             }
 
@@ -754,12 +754,12 @@ public class FBConnection implements FirebirdConnection, Synchronizable {
                     && resultSetType == ResultSet.TYPE_FORWARD_ONLY) {
                 addWarning(FbExceptionBuilder
                         .forWarning(JaybirdErrorCodes.jb_resultSetTypeUpgradeReasonHoldability)
-                        .toFlatSQLException(SQLWarning.class));
+                        .toSQLException(SQLWarning.class));
                 resultSetType = ResultSet.TYPE_SCROLL_INSENSITIVE;
             } else if (resultSetType == ResultSet.TYPE_SCROLL_SENSITIVE) {
                 addWarning(FbExceptionBuilder
                         .forWarning(JaybirdErrorCodes.jb_resultSetTypeDowngradeReasonScrollSensitive)
-                        .toFlatSQLException(SQLWarning.class));
+                        .toSQLException(SQLWarning.class));
                 resultSetType = ResultSet.TYPE_SCROLL_INSENSITIVE;
             }
 
@@ -794,12 +794,12 @@ public class FBConnection implements FirebirdConnection, Synchronizable {
                     && resultSetType == ResultSet.TYPE_FORWARD_ONLY) {
                 addWarning(FbExceptionBuilder
                         .forWarning(JaybirdErrorCodes.jb_resultSetTypeUpgradeReasonHoldability)
-                        .toFlatSQLException(SQLWarning.class));
+                        .toSQLException(SQLWarning.class));
                 resultSetType = ResultSet.TYPE_SCROLL_INSENSITIVE;
             } else if (resultSetType == ResultSet.TYPE_SCROLL_SENSITIVE) {
                 addWarning(FbExceptionBuilder
                         .forWarning(JaybirdErrorCodes.jb_resultSetTypeDowngradeReasonScrollSensitive)
-                        .toFlatSQLException(SQLWarning.class));
+                        .toSQLException(SQLWarning.class));
                 resultSetType = ResultSet.TYPE_SCROLL_INSENSITIVE;
             }
 
@@ -1085,7 +1085,7 @@ public class FBConnection implements FirebirdConnection, Synchronizable {
     public GDSHelper getGDSHelper() throws SQLException {
         if (mc == null)
             // TODO Right error code?
-            throw new FbExceptionBuilder().exception(ISCConstants.isc_req_no_trans).toFlatSQLException();
+            throw new FbExceptionBuilder().exception(ISCConstants.isc_req_no_trans).toSQLException();
 
         return mc.getGDSHelper();
     }
@@ -1094,15 +1094,6 @@ public class FBConnection implements FirebirdConnection, Synchronizable {
     public boolean isUseFirebirdAutoCommit() {
         DatabaseConnectionProperties props = connectionProperties();
         return props != null && props.isUseFirebirdAutocommit();
-    }
-
-    @Override
-    protected void finalize() throws Throwable {
-        try {
-            close();
-        } finally {
-            super.finalize();
-        }
     }
 
     /**
@@ -1242,14 +1233,10 @@ public class FBConnection implements FirebirdConnection, Synchronizable {
             securityManager.checkPermission(sqlPermission);
         }
         if (executor == null) {
-            throw FbExceptionBuilder
-                    .forException(JaybirdErrorCodes.jb_invalidExecutor)
-                    .toFlatSQLException();
+            throw FbExceptionBuilder.forException(JaybirdErrorCodes.jb_invalidExecutor).toSQLException();
         }
         if (milliseconds < 0) {
-            throw FbExceptionBuilder
-                    .forException(JaybirdErrorCodes.jb_invalidTimeout)
-                    .toFlatSQLException();
+            throw FbExceptionBuilder.forException(JaybirdErrorCodes.jb_invalidTimeout).toSQLException();
         }
         synchronized (getSynchronizationObject()) {
             checkValidity();

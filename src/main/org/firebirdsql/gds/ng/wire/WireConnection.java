@@ -1,5 +1,5 @@
 /*
- * Firebird Open Source JavaEE Connector - JDBC Driver
+ * Firebird Open Source JDBC Driver
  *
  * Distributable under LGPL license.
  * You may obtain a copy of the License at http://www.gnu.org/copyleft/lgpl.html
@@ -75,8 +75,8 @@ public abstract class WireConnection<T extends IAttachProperties<T>, C extends F
 
     private static final Logger log = LoggerFactory.getLogger(WireConnection.class);
 
-    // Micro-optimization: we usually expect at most 1 (Firebird 3), and usually 0 (Firebird 2.5 and earlier)
-    private final List<KnownServerKey> knownServerKeys = new ArrayList<>(1);
+    // Micro-optimization: we usually expect at most 3 (Firebird 5)
+    private final List<KnownServerKey> knownServerKeys = new ArrayList<>(3);
     private final DbAttachInfo dbAttachInfo;
     private ClientAuthBlock clientAuthBlock;
     private Socket socket;
@@ -371,7 +371,11 @@ public abstract class WireConnection<T extends IAttachProperties<T>, C extends F
                         log.debug("Ignoring exception on disconnect in connect phase of protocol", ex);
                     }
                 }
-                throw new FbExceptionBuilder().exception(ISCConstants.isc_connect_reject).toFlatSQLException();
+                if (log.isDebugEnabled()) {
+                    log.debug("Reached end of identify without error or connection, last operation: " + operation);
+                }
+                // If we reach here, authentication failed (or never authenticated for lack of username and password)
+                throw new FbExceptionBuilder().exception(ISCConstants.isc_login).toSQLException();
             }
         } catch (SocketTimeoutException ste) {
             throw new FbExceptionBuilder().timeoutException(ISCConstants.isc_network_error)
@@ -556,15 +560,6 @@ public abstract class WireConnection<T extends IAttachProperties<T>, C extends F
             xdrIn = null;
             socket = null;
             protocols = null;
-        }
-    }
-
-    @Override
-    protected final void finalize() throws Throwable {
-        try {
-            close();
-        } finally {
-            super.finalize();
         }
     }
 

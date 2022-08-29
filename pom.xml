@@ -6,21 +6,33 @@
 	<version>5.0.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<properties>
+		<project.build.outputTimestamp>2020-01-03T15:00:00Z</project.build.outputTimestamp>
+		<project.maven.name>${project.name}</project.maven.name>
+		<project.name>Jaybird</project.name>
+		<project.version.maven>${project.version}</project.version.maven>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+		<build-helper-maven-plugin.version>3.0.0</build-helper-maven-plugin.version>
 		<maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
 		<maven-source-plugin.version>3.2.0</maven-source-plugin.version>
+		<maven-surefire-plugin.version>2.22.2</maven-surefire-plugin.version>
 		<maven-javadoc-plugin.version>3.4.0</maven-javadoc-plugin.version>
 		<maven-deploy-plugin.version>2.8.2</maven-deploy-plugin.version>
 		<maven-release-plugin.version>2.5.3</maven-release-plugin.version>
 		<maven-jar-plugin.version>3.2.0</maven-jar-plugin.version>
 		<maven-assembly-plugin.version>3.2.0</maven-assembly-plugin.version>
-		<junit.jupiter.version>5.8.2</junit.jupiter.version>
+
+		<antlr4.runtime.version>4.7.2</antlr4.runtime.version>
+		<asm.version>9.1</asm.version>
+		<assertj.core.version>3.23.1</assertj.core.version>
 		<hamcrest.version>2.2</hamcrest.version>
-		<releasehub-plugin.version>1.1</releasehub-plugin.version>
-		<project.build.outputTimestamp>2020-01-03T15:00:00Z</project.build.outputTimestamp>
-		<project.name>Jaybird</project.name>
-		<project.maven.name>${project.name}</project.maven.name>
-		<project.version.maven>${project.version}</project.version.maven>
+		<jakarta.servlet.api.version>5.0.0</jakarta.servlet.api.version>
+		<javax.servlet.api.version>4.0.1</javax.servlet.api.version>
+		<jna.version>5.12.1</jna.version>
+		<mockito.core.version>4.7.0</mockito.core.version>
+		<objenesis.version>3.2</objenesis.version>
+		<releasehub.plugin.version>1.1</releasehub.plugin.version>
+		<junit.jupiter.version>5.9.0</junit.jupiter.version>
 	</properties>
 	<modules>
 		<module>modules/jaybird-jdk11</module>
@@ -75,7 +87,7 @@
 						<plugin>
 							<groupId>ru.red-soft.maven.plugin</groupId>
 							<artifactId>releasehub-build-plugin</artifactId>
-							<version>${releasehub-plugin.version}</version>
+							<version>${releasehub.plugin.version}</version>
 							<executions>
 								<execution>
 									<id>deploy</id>
@@ -92,7 +104,7 @@
 						<plugin>
 							<groupId>ru.red-soft.maven.plugin</groupId>
 							<artifactId>releasehub-reports-plugin</artifactId>
-							<version>${releasehub-plugin.version}</version>
+							<version>${releasehub.plugin.version}</version>
 							<executions>
 								<execution>
 									<id>upload-reports</id>
@@ -142,23 +154,35 @@
 			<dependency>
 				<groupId>org.antlr</groupId>
 				<artifactId>antlr4-runtime</artifactId>
-				<version>4.7.2</version>
+				<version>${antlr4.runtime.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>net.java.dev.jna</groupId>
 				<artifactId>jna</artifactId>
-				<version>5.5.0</version>
+				<version>${jna.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>net.java.dev.jna</groupId>
 				<artifactId>jna-platform</artifactId>
-				<version>5.5.0</version>
+				<version>${jna.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.ow2.asm</groupId>
 				<artifactId>asm</artifactId>
-				<version>9.1</version>
+				<version>${asm.version}</version>
 				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>javax.servlet</groupId>
+				<artifactId>javax.servlet-api</artifactId>
+				<version>${javax.servlet.api.version}</version>
+				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>jakarta.servlet</groupId>
+				<artifactId>jakarta.servlet-api</artifactId>
+				<version>${jakarta.servlet.api.version}</version>
+				<scope>provided</scope>
 			</dependency>
 			<dependency>
 				<groupId>org.hamcrest</groupId>
@@ -175,7 +199,7 @@
 			<dependency>
 				<groupId>org.objenesis</groupId>
 				<artifactId>objenesis</artifactId>
-				<version>3.2</version>
+				<version>${objenesis.version}</version>
 				<scope>test</scope>
 			</dependency>
 			<dependency>
@@ -193,25 +217,25 @@
 			<dependency>
 				<groupId>org.junit.jupiter</groupId>
 				<artifactId>junit-jupiter-params</artifactId>
-				<version>5.8.2</version>
+				<version>${junit.jupiter.version}</version>
 				<scope>test</scope>
 			</dependency>
 			<dependency>
 				<groupId>org.assertj</groupId>
 				<artifactId>assertj-core</artifactId>
-				<version>3.21.0</version>
+				<version>${assertj.core.version}</version>
 				<scope>test</scope>
 			</dependency>
 			<dependency>
 				<groupId>org.mockito</groupId>
 				<artifactId>mockito-core</artifactId>
-				<version>4.2.0</version>
+				<version>${mockito.core.version}</version>
 				<scope>test</scope>
 			</dependency>
 			<dependency>
 				<groupId>org.mockito</groupId>
 				<artifactId>mockito-junit-jupiter</artifactId>
-				<version>4.2.0</version>
+				<version>${mockito.core.version}</version>
 				<scope>test</scope>
 			</dependency>
 		</dependencies>
@@ -223,7 +247,7 @@
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
 					<artifactId>build-helper-maven-plugin</artifactId>
-					<version>3.0.0</version>
+					<version>${build-helper-maven-plugin.version}</version>
 					<executions>
 						<execution>
 							<phase>initialize</phase>

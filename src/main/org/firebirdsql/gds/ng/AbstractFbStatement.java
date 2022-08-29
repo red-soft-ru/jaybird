@@ -572,7 +572,7 @@ public abstract class AbstractFbStatement implements FbStatement {
             checkStatementValid();
             if (!getDatabase().getServerVersion().isEqualOrAbove(3, 0)) {
                 throw FbExceptionBuilder.forException(JaybirdErrorCodes.jb_explainedExecutionPlanNotSupported)
-                        .toFlatSQLException();
+                        .toSQLException();
             }
         } catch (SQLException e) {
             exceptionListenerDispatcher.errorOccurred(e);
@@ -768,7 +768,7 @@ public abstract class AbstractFbStatement implements FbStatement {
             if (statementTimeout < 0) {
                 throw new FbExceptionBuilder()
                         .nonTransientException(JaybirdErrorCodes.jb_invalidTimeout)
-                        .toFlatSQLException();
+                        .toSQLException();
             }
             synchronized (getSynchronizationObject()) {
                 checkStatementValid(StatementState.NEW);
