@@ -268,8 +268,6 @@ public abstract class WireConnection<T extends IAttachProperties<T>, C extends F
      * returns the FbWireDatabase implementation for the agreed protocol.
      *
      * @return FbWireDatabase
-     * @throws SQLTimeoutException
-     * @throws SQLException
      */
     @Override
     public final C identify() throws SQLException {
@@ -584,12 +582,9 @@ public abstract class WireConnection<T extends IAttachProperties<T>, C extends F
         }
     }
 
+    @SuppressWarnings("SameParameterValue")
     private static String getSystemPropertyPrivileged(final String propertyName) {
-        return AccessController.doPrivileged(new PrivilegedAction<String>() {
-            public String run() {
-                return System.getProperty(propertyName);
-            }
-        });
+        return AccessController.doPrivileged((PrivilegedAction<String>) () -> System.getProperty(propertyName));
     }
 
     /**
