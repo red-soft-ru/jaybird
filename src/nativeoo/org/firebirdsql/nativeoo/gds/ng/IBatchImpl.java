@@ -268,7 +268,8 @@ public class IBatchImpl extends AbstractFbBatch {
     @Override
     public FbBatchCompletionState execute() throws SQLException {
         synchronized (getSynchronizationObject()) {
-            IBatchCompletionState execute = batch.execute(getStatus(), ((ITransactionImpl) transaction).getTransaction());
+            IBatchCompletionState execute = batch.execute(getStatus(), ((ITransactionImpl)
+                    transaction).getTransaction());
             processStatus();
             return new IBatchCompletionStateImpl(getDatabase(), execute, getDatabase().getStatus());
         }

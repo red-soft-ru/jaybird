@@ -187,12 +187,14 @@ public class IStatementImpl extends AbstractFbStatement {
                         throw FbExceptionBuilder.forException(ISCConstants.isc_cancelled).toFlatSQLException();
                     }
                     if ((statement.getFlags(getStatus()) & IStatement.FLAG_HAS_CURSOR) == IStatement.FLAG_HAS_CURSOR) {
-                        cursor = statement.openCursor(getStatus(), transaction.getTransaction(), inMetadata, inPtr, outMetadata, 0);
+                        cursor = statement.openCursor(getStatus(), transaction.getTransaction(), inMetadata, inPtr,
+                                outMetadata, 0);
                     } else {
                         ByteBuffer outMessage = ByteBuffer.allocate(getMaxSqlInfoSize());
                         outPtr = new Memory(outMessage.array().length);
                         outPtr.write(0, outMessage.array(), 0, outMessage.array().length);
-                        statement.execute(getStatus(), transaction.getTransaction(), inMetadata, inPtr, outMetadata, outPtr);
+                        statement.execute(getStatus(), transaction.getTransaction(), inMetadata, inPtr, outMetadata,
+                                outPtr);
                     }
 
                     if (hasSingletonResult) {
