@@ -239,59 +239,15 @@ public class IStatementImpl extends AbstractFbStatement {
                 metadataBuilder.setLength(getStatus(), idx, inMetadata.getLength(getStatus(), idx));
                 metadataBuilder.setCharSet(getStatus(), idx, inMetadata.getCharSet(getStatus(), idx));
             } else {
-                if (fieldDescriptor.isVarying()) {
-                    metadataBuilder.setType(getStatus(), idx, ISCConstants.SQL_VARYING + 1);
+                if (fieldDescriptor.isVarying() || fieldDescriptor.isFbType(ISCConstants.SQL_TEXT)) {
+                    metadataBuilder.setType(getStatus(), idx, inMetadata.getType(getStatus(), idx) | 1);
                     metadataBuilder.setLength(getStatus(), idx, Math.min(fieldDescriptor.getLength(), fieldData.length));
                     metadataBuilder.setCharSet(getStatus(), idx, inMetadata.getCharSet(getStatus(), idx));
-                } else if (fieldDescriptor.isFbType(ISCConstants.SQL_TEXT)) {
-                    metadataBuilder.setType(getStatus(), idx, ISCConstants.SQL_TEXT + 1);
-                    metadataBuilder.setLength(getStatus(), idx, Math.min(fieldDescriptor.getLength(), fieldData.length));
-                    metadataBuilder.setCharSet(getStatus(), idx, inMetadata.getCharSet(getStatus(), idx));
-                } else if (fieldDescriptor.isFbType(ISCConstants.SQL_BLOB)) {
-                    metadataBuilder.setType(getStatus(), idx, ISCConstants.SQL_BLOB + 1);
-                    metadataBuilder.setLength(getStatus(), idx, inMetadata.getLength(getStatus(), idx));
-                    metadataBuilder.setCharSet(getStatus(), idx, inMetadata.getCharSet(getStatus(), idx));
-                } else if (fieldDescriptor.isFbType(ISCConstants.SQL_TYPE_DATE)) {
-                    metadataBuilder.setType(getStatus(), idx, ISCConstants.SQL_TYPE_DATE + 1);
-                    metadataBuilder.setLength(getStatus(), idx, inMetadata.getLength(getStatus(), idx));
-                    metadataBuilder.setCharSet(getStatus(), idx, inMetadata.getCharSet(getStatus(), idx));
-                } else if (fieldDescriptor.isFbType(ISCConstants.SQL_TYPE_TIME)) {
-                    metadataBuilder.setType(getStatus(), idx, ISCConstants.SQL_TYPE_TIME + 1);
-                    metadataBuilder.setLength(getStatus(), idx, inMetadata.getLength(getStatus(), idx));
-                    metadataBuilder.setCharSet(getStatus(), idx, inMetadata.getCharSet(getStatus(), idx));
-                } else if (fieldDescriptor.isFbType(ISCConstants.SQL_TIMESTAMP)) {
-                    metadataBuilder.setType(getStatus(), idx, ISCConstants.SQL_TIMESTAMP + 1);
-                    metadataBuilder.setLength(getStatus(), idx, inMetadata.getLength(getStatus(), idx));
-                    metadataBuilder.setCharSet(getStatus(), idx, inMetadata.getCharSet(getStatus(), idx));
-                } else if (fieldDescriptor.isFbType(ISCConstants.SQL_INT64)) {
-                    metadataBuilder.setType(getStatus(), idx, ISCConstants.SQL_INT64);
-                    metadataBuilder.setLength(getStatus(), idx, inMetadata.getLength(getStatus(), idx));
-                    metadataBuilder.setScale(getStatus(), idx, inMetadata.getScale(getStatus(), idx));
-                    metadataBuilder.setCharSet(getStatus(), idx, inMetadata.getCharSet(getStatus(), idx));
-                } else if (fieldDescriptor.isFbType(ISCConstants.SQL_INT128)) {
-                    metadataBuilder.setType(getStatus(), idx, ISCConstants.SQL_INT128);
-                    metadataBuilder.setLength(getStatus(), idx, inMetadata.getLength(getStatus(), idx));
-                    metadataBuilder.setScale(getStatus(), idx, inMetadata.getScale(getStatus(), idx));
-                    metadataBuilder.setCharSet(getStatus(), idx, inMetadata.getCharSet(getStatus(), idx));
-                } else if (fieldDescriptor.isFbType(ISCConstants.SQL_DEC16)) {
-                    metadataBuilder.setType(getStatus(), idx, ISCConstants.SQL_DEC16);
-                    metadataBuilder.setLength(getStatus(), idx, inMetadata.getLength(getStatus(), idx));
-                    metadataBuilder.setScale(getStatus(), idx, inMetadata.getScale(getStatus(), idx));
-                    metadataBuilder.setCharSet(getStatus(), idx, inMetadata.getCharSet(getStatus(), idx));
-                } else if (fieldDescriptor.isFbType(ISCConstants.SQL_DEC34)) {
-                    metadataBuilder.setType(getStatus(), idx, ISCConstants.SQL_DEC34);
-                    metadataBuilder.setLength(getStatus(), idx, inMetadata.getLength(getStatus(), idx));
-                    metadataBuilder.setScale(getStatus(), idx, inMetadata.getScale(getStatus(), idx));
-                    metadataBuilder.setCharSet(getStatus(), idx, inMetadata.getCharSet(getStatus(), idx));
-                } else if (fieldDescriptor.isFbType(ISCConstants.SQL_BOOLEAN)) {
-                    metadataBuilder.setType(getStatus(), idx, ISCConstants.SQL_BOOLEAN);
-                    metadataBuilder.setLength(getStatus(), idx, inMetadata.getLength(getStatus(), idx));
-                    metadataBuilder.setCharSet(getStatus(), idx, 0);
                 } else {
                     metadataBuilder.setType(getStatus(), idx, inMetadata.getType(getStatus(), idx) | 1);
                     metadataBuilder.setLength(getStatus(), idx, inMetadata.getLength(getStatus(), idx));
                     metadataBuilder.setScale(getStatus(), idx, inMetadata.getScale(getStatus(), idx));
-                    metadataBuilder.setCharSet(getStatus(), idx, 0);
+                    metadataBuilder.setCharSet(getStatus(), idx, inMetadata.getCharSet(getStatus(), idx));
                 }
             }
         }

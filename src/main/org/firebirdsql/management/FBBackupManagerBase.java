@@ -19,7 +19,6 @@
 package org.firebirdsql.management;
 
 import org.firebirdsql.gds.ServiceRequestBuffer;
-import org.firebirdsql.gds.impl.DbAttachInfo;
 import org.firebirdsql.gds.impl.GDSType;
 import org.firebirdsql.gds.ng.FbService;
 import org.firebirdsql.jaybird.fb.constants.SpbItems;
