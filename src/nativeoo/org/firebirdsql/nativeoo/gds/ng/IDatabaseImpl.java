@@ -372,12 +372,14 @@ public class IDatabaseImpl extends AbstractFbDatabase<NativeDatabaseConnection>
     }
 
     @Override
-    public FbBatch createBatch(FbTransaction transaction, String statement, FbMessageMetadata metadata, BatchParameterBuffer parameters) throws SQLException {
+    public FbBatch createBatch(FbTransaction transaction, String statement, FbMessageMetadata metadata,
+                               BatchParameterBuffer parameters) throws SQLException {
         return new IBatchImpl(this, transaction, statement, metadata, parameters);
     }
 
     @Override
-    public FbBatch createBatch(FbTransaction transaction, String statement, BatchParameterBuffer parameters) throws SQLException {
+    public FbBatch createBatch(FbTransaction transaction, String statement, BatchParameterBuffer parameters)
+            throws SQLException {
         return new IBatchImpl(this, transaction, statement, parameters);
     }
 
