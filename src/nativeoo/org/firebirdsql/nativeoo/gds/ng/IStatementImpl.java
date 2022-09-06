@@ -76,13 +76,12 @@ public class IStatementImpl extends AbstractFbStatement {
     @Override
     public void prepare(String statementText) throws SQLException {
         try {
-            final byte[] statementArray = getDatabase().getEncoding().encodeToCharset(statementText);
             synchronized (getSynchronizationObject()) {
                 checkTransactionActive(getTransaction());
-                final StatementState initialState = getState();
-                if (!isPrepareAllowed(initialState)) {
-                    throw new SQLNonTransientException(String.format(
-                            "Current statement state (%s) does not allow call to prepare", initialState));
+                final StatementState currentState = getState();
+                if (!isPrepareAllowed(currentState)) {
+                    throw new SQLNonTransientException(String.format("Current statement state (%s) " +
+                            "does not allow call to prepare", currentState));
                 }
                 resetAll();
 
@@ -102,7 +101,7 @@ public class IStatementImpl extends AbstractFbStatement {
                 processStatus();
                 outMetadata = statement.getOutputMetadata(getStatus());
                 processStatus();
-                outMetadata = statement.getInputMetadata(getStatus());
+                inMetadata = statement.getInputMetadata(getStatus());
                 processStatus();
 
                 final byte[] statementInfoRequestItems = getStatementInfoRequestItems();
@@ -206,60 +205,15 @@ public class IStatementImpl extends AbstractFbStatement {
                 metadataBuilder.setLength(getStatus(), idx, inMetadata.getLength(getStatus(), idx));
                 metadataBuilder.setCharSet(getStatus(), idx, inMetadata.getCharSet(getStatus(), idx));
             } else {
-
-                if (fieldDescriptor.isVarying()) {
-                    metadataBuilder.setType(getStatus(), idx, ISCConstants.SQL_VARYING + 1);
+                if (fieldDescriptor.isVarying() || fieldDescriptor.isFbType(ISCConstants.SQL_TEXT)) {
+                    metadataBuilder.setType(getStatus(), idx, inMetadata.getType(getStatus(), idx) | 1);
                     metadataBuilder.setLength(getStatus(), idx, Math.min(fieldDescriptor.getLength(), fieldData.length));
                     metadataBuilder.setCharSet(getStatus(), idx, inMetadata.getCharSet(getStatus(), idx));
-                } else if (fieldDescriptor.isFbType(ISCConstants.SQL_TEXT)) {
-                    metadataBuilder.setType(getStatus(), idx, ISCConstants.SQL_TEXT + 1);
-                    metadataBuilder.setLength(getStatus(), idx, Math.min(fieldDescriptor.getLength(), fieldData.length));
-                    metadataBuilder.setCharSet(getStatus(), idx, inMetadata.getCharSet(getStatus(), idx));
-                } else if (fieldDescriptor.isFbType(ISCConstants.SQL_BLOB)) {
-                    metadataBuilder.setType(getStatus(), idx, ISCConstants.SQL_BLOB + 1);
-                    metadataBuilder.setLength(getStatus(), idx, inMetadata.getLength(getStatus(), idx));
-                    metadataBuilder.setCharSet(getStatus(), idx, inMetadata.getCharSet(getStatus(), idx));
-                } else if (fieldDescriptor.isFbType(ISCConstants.SQL_TYPE_DATE)) {
-                    metadataBuilder.setType(getStatus(), idx, ISCConstants.SQL_TYPE_DATE + 1);
-                    metadataBuilder.setLength(getStatus(), idx, inMetadata.getLength(getStatus(), idx));
-                    metadataBuilder.setCharSet(getStatus(), idx, inMetadata.getCharSet(getStatus(), idx));
-                } else if (fieldDescriptor.isFbType(ISCConstants.SQL_TYPE_TIME)) {
-                    metadataBuilder.setType(getStatus(), idx, ISCConstants.SQL_TYPE_TIME + 1);
-                    metadataBuilder.setLength(getStatus(), idx, inMetadata.getLength(getStatus(), idx));
-                    metadataBuilder.setCharSet(getStatus(), idx, inMetadata.getCharSet(getStatus(), idx));
-                } else if (fieldDescriptor.isFbType(ISCConstants.SQL_TIMESTAMP)) {
-                    metadataBuilder.setType(getStatus(), idx, ISCConstants.SQL_TIMESTAMP + 1);
-                    metadataBuilder.setLength(getStatus(), idx, inMetadata.getLength(getStatus(), idx));
-                    metadataBuilder.setCharSet(getStatus(), idx, inMetadata.getCharSet(getStatus(), idx));
-                } else if (fieldDescriptor.isFbType(ISCConstants.SQL_INT64)) {
-                    metadataBuilder.setType(getStatus(), idx, ISCConstants.SQL_INT64);
-                    metadataBuilder.setLength(getStatus(), idx, inMetadata.getLength(getStatus(), idx));
-                    metadataBuilder.setScale(getStatus(), idx, inMetadata.getScale(getStatus(), idx));
-                    metadataBuilder.setCharSet(getStatus(), idx, inMetadata.getCharSet(getStatus(), idx));
-                } else if (fieldDescriptor.isFbType(ISCConstants.SQL_INT128)) {
-                    metadataBuilder.setType(getStatus(), idx, ISCConstants.SQL_INT128);
-                    metadataBuilder.setLength(getStatus(), idx, inMetadata.getLength(getStatus(), idx));
-                    metadataBuilder.setScale(getStatus(), idx, inMetadata.getScale(getStatus(), idx));
-                    metadataBuilder.setCharSet(getStatus(), idx, inMetadata.getCharSet(getStatus(), idx));
-                } else if (fieldDescriptor.isFbType(ISCConstants.SQL_DEC16)) {
-                    metadataBuilder.setType(getStatus(), idx, ISCConstants.SQL_DEC16);
-                    metadataBuilder.setLength(getStatus(), idx, inMetadata.getLength(getStatus(), idx));
-                    metadataBuilder.setScale(getStatus(), idx, inMetadata.getScale(getStatus(), idx));
-                    metadataBuilder.setCharSet(getStatus(), idx, inMetadata.getCharSet(getStatus(), idx));
-                } else if (fieldDescriptor.isFbType(ISCConstants.SQL_DEC34)) {
-                    metadataBuilder.setType(getStatus(), idx, ISCConstants.SQL_DEC34);
-                    metadataBuilder.setLength(getStatus(), idx, inMetadata.getLength(getStatus(), idx));
-                    metadataBuilder.setScale(getStatus(), idx, inMetadata.getScale(getStatus(), idx));
-                    metadataBuilder.setCharSet(getStatus(), idx, inMetadata.getCharSet(getStatus(), idx));
-                } else if (fieldDescriptor.isFbType(ISCConstants.SQL_BOOLEAN)) {
-                    metadataBuilder.setType(getStatus(), idx, ISCConstants.SQL_BOOLEAN);
-                    metadataBuilder.setLength(getStatus(), idx, inMetadata.getLength(getStatus(), idx));
-                    metadataBuilder.setCharSet(getStatus(), idx, 0);
                 } else {
                     metadataBuilder.setType(getStatus(), idx, inMetadata.getType(getStatus(), idx) | 1);
                     metadataBuilder.setLength(getStatus(), idx, inMetadata.getLength(getStatus(), idx));
                     metadataBuilder.setScale(getStatus(), idx, inMetadata.getScale(getStatus(), idx));
-                    metadataBuilder.setCharSet(getStatus(), idx, 0);
+                    metadataBuilder.setCharSet(getStatus(), idx, inMetadata.getCharSet(getStatus(), idx));
                 }
             }
         }
@@ -272,7 +226,7 @@ public class IStatementImpl extends AbstractFbStatement {
         final byte[] nulls = new byte[] {0, 0};
 
         for (int index = 0; index < parameters.getCount(); index++) {
-            byte[] data = parameters.getFieldData(index);
+            byte[] data = parameters.getFieldValue(index).getFieldData();
             final FieldDescriptor fieldDescriptor = rowDescriptor.getFieldDescriptor(index);
             int nullOffset = inMetadata.getNullOffset(getStatus(), index);
             int offset = inMetadata.getOffset(getStatus(), index);
@@ -316,13 +270,13 @@ public class IStatementImpl extends AbstractFbStatement {
                         throw FbExceptionBuilder.forException(ISCConstants.isc_cancelled).toFlatSQLException();
                     }
 
-                    ByteBuffer message = ByteBuffer.allocate(outMeta.getMessageLength(getStatus()) + 1);
+                    ByteBuffer message = ByteBuffer.allocate(outMetadata.getMessageLength(getStatus()) + 1);
                     processStatus();
                     Pointer ptr = new Memory(message.array().length);
                     int fetchStatus = cursor.fetchNext(getStatus(), ptr);
                     processStatus();
                     if (fetchStatus == IStatus.RESULT_OK) {
-                        queueRowData(toRowValue(getFieldDescriptor(), outMeta, ptr));
+                        queueRowData(toRowValue(getFieldDescriptor(), outMetadata, ptr));
                     } else if (fetchStatus == IStatus.RESULT_NO_DATA) {
                         setAllRowsFetched(true);
                         // Note: we are not explicitly 'closing' the cursor here

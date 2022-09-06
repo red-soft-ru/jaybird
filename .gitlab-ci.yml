@@ -15,9 +15,7 @@ variables:
   TAG_BRANCH: branch_3_0
   MAVEN_CLI_OPTS: "-s .m2/settings.xml --batch-mode -U"
   MAVEN_OPTS: "-Dmaven.repo.local=.m2/repository"
-  RDB2_VERSION: "2.6.0.13508"
   RDB3_VERSION: "3.0.9"
-  RDB4_VERSION: "4.0.0-rc.1"
   http_proxy: http://git.red-soft.biz:3128
   https_proxy: http://git.red-soft.biz:3128
   no_proxy: localhost,172.0.0.0/8,127.0.0.0/8,.red-soft.biz
@@ -133,11 +131,6 @@ build_and_test:
     - ./ci/test.sh
   parallel:
     matrix:
-      - TYPE: JDK8
-        JAVA_HOME: /usr/lib/jvm/jre-1.8.0
-        TEST_JAVA8_JVM: /usr/lib/jvm/jre-1.8.0/bin/java
-        TEST_LIST: "**"
-        RDB_VERSION: [ $RDB4_VERSION ]
       - TYPE: JDK8
         JAVA_HOME: /usr/lib/jvm/jre-1.8.0
         TEST_LIST: "**"

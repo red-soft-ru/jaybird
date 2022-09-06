@@ -77,7 +77,7 @@ public class IMetadataBuilderImpl implements FbMetadataBuilder {
 
     @Override
     public void addNumeric(int index, int size, int scale) throws SQLException {
-        int length;
+        int length = 0;
         if (size < 5) {
             metadataBuilder.setType(status, index, SQL_SHORT);
             length = 2;
