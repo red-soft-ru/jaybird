@@ -31,8 +31,6 @@ import java.util.List;
  */
 public abstract class AbstractFbBatch implements FbBatch {
 
-    private static final Logger log = LoggerFactory.getLogger(AbstractFbBatch.class);
-
     public static final String METHOD_NOT_SUPPORTED =
             "This method is only supported on Statement and not supported on PreparedStatement and CallableStatement";
     private static final String UNICODE_STREAM_NOT_SUPPORTED = "Unicode stream not supported.";

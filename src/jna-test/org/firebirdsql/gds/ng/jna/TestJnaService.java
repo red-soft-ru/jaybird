@@ -145,7 +145,7 @@ public class TestJnaService {
     public void testStartServiceAction() throws Exception {
         FBManager fbManager = createFBManager();
         defaultDatabaseSetUp(fbManager);
-        try (JnaService service = (JnaService)factory.serviceConnect(connectionInfo)) {
+        try (JnaService service = factory.serviceConnect(connectionInfo)) {
             service.attach();
 
             ServiceRequestBuffer actionSrb = service.createServiceRequestBuffer();
