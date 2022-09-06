@@ -34,7 +34,8 @@ public class NativeDatabaseConnection extends AbstractNativeConnection<FirebirdC
      * @param attachProperties Attach properties
      * @param encodingFactory
      */
-    protected NativeDatabaseConnection(FbClientLibrary clientLibrary, FirebirdConnectionProperties attachProperties, IEncodingFactory encodingFactory) throws SQLException {
+    protected NativeDatabaseConnection(FbClientLibrary clientLibrary, FirebirdConnectionProperties attachProperties,
+                                       IEncodingFactory encodingFactory) throws SQLException {
         super(clientLibrary, attachProperties, encodingFactory);
     }
 
