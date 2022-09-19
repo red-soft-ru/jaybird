@@ -20,6 +20,8 @@ package org.firebirdsql.gds;
 
 import org.junit.Test;
 
+import java.util.Collections;
+
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -53,6 +55,16 @@ public class GDSExceptionHelperTest {
 
         GDSExceptionHelper.GDSMessage message = GDSExceptionHelper.getMessage(
                 ISCConstants.isc_bad_limit_param);
+
+        assertEquals(expected, message.toString());
+    }
+
+    @Test
+    public void getMessage_badTriggerBLR() {
+        final String expected = "Error while parsing trigger TRIG_1's BLR";
+
+        GDSExceptionHelper.GDSMessage message = GDSExceptionHelper.getMessage(335546342);
+        message.setParameters(Collections.singletonList("TRIG_1"));
 
         assertEquals(expected, message.toString());
     }
