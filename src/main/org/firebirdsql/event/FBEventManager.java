@@ -362,6 +362,7 @@ public class FBEventManager implements EventManager {
         this.waitTimeout = waitTimeout;
     }
 
+    @Override
     public void addEventListener(String eventName, EventListener listener) throws SQLException {
         if (listener == null || eventName == null) {
             throw new NullPointerException();
@@ -380,6 +381,7 @@ public class FBEventManager implements EventManager {
         }
     }
 
+    @Override
     public void removeEventListener(String eventName, EventListener listener) throws SQLException {
         if (eventName == null || listener == null) {
             throw new NullPointerException();
@@ -481,7 +483,7 @@ public class FBEventManager implements EventManager {
     /**
      * Default behaviour where the event manager owns the connection.
      */
-    private class DefaultEventManagerBehaviour implements EventManagerBehaviour {
+    private final class DefaultEventManagerBehaviour implements EventManagerBehaviour {
 
         @Override
         public void connectDatabase() throws SQLException {
@@ -499,7 +501,7 @@ public class FBEventManager implements EventManager {
     /**
      * Behaviour where the lifetime of the connection used by the event manager is managed elsewhere.
      */
-    private class ManagedEventManagerBehaviour implements EventManagerBehaviour {
+    private final class ManagedEventManagerBehaviour implements EventManagerBehaviour {
 
         @Override
         public void connectDatabase() throws SQLException {
@@ -516,24 +518,24 @@ public class FBEventManager implements EventManager {
         }
     }
 
-    class GdsEventHandler implements org.firebirdsql.gds.EventHandler {
+    final class GdsEventHandler implements org.firebirdsql.gds.EventHandler {
 
         private final EventHandle eventHandle;
         private volatile boolean initialized = false;
         private volatile boolean cancelled = false;
 
-        public GdsEventHandler(String eventName) throws SQLException {
+        GdsEventHandler(String eventName) throws SQLException {
             eventHandle = fbDatabase.createEventHandle(eventName, this);
         }
 
-        public void register() throws SQLException {
+        void register() throws SQLException {
             if (cancelled) {
                 throw new IllegalStateException("Trying to register a cancelled event handler");
             }
             fbDatabase.queueEvent(eventHandle);
         }
 
-        public void unregister() throws SQLException {
+        void unregister() throws SQLException {
             if (cancelled) return;
             fbDatabase.cancelEvent(eventHandle);
             cancelled = true;
@@ -564,11 +566,11 @@ public class FBEventManager implements EventManager {
         }
     }
 
-    class EventDispatcher implements Runnable {
+    final class EventDispatcher implements Runnable {
 
         private volatile boolean running = true;
 
-        public void stop() {
+        void stop() {
             running = false;
         }
 
@@ -596,7 +598,7 @@ public class FBEventManager implements EventManager {
     }
 }
 
-class OneTimeEventListener implements EventListener {
+final class OneTimeEventListener implements EventListener {
 
     private int eventCount = -1;
 
@@ -605,20 +607,22 @@ class OneTimeEventListener implements EventListener {
 
     @Override
     public void eventOccurred(DatabaseEvent event) {
-        if (eventCount == -1) {
-            eventCount = event.getEventCount();
-        }
         lock.lock();
         try {
+            if (eventCount == -1) {
+                eventCount = event.getEventCount();
+            }
             receivedEvent.signalAll();
         } finally {
             lock.unlock();
         }
     }
 
-    public void await(long time, TimeUnit unit) throws InterruptedException {
+    void await(long time, TimeUnit unit) throws InterruptedException {
         lock.lock();
         try {
+            // Event already received, no need to wait
+            if (eventCount != -1) return;
             if (time == 0) {
                 receivedEvent.await();
             } else {
@@ -629,15 +633,14 @@ class OneTimeEventListener implements EventListener {
         }
     }
 
-    public int getEventCount() {
+    int getEventCount() {
         return eventCount;
     }
 }
 
-class DatabaseEventImpl implements DatabaseEvent {
+final class DatabaseEventImpl implements DatabaseEvent {
 
     private final int eventCount;
-
     private final String eventName;
 
     public DatabaseEventImpl(String eventName, int eventCount) {
