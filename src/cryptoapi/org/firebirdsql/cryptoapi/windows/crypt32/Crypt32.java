@@ -221,7 +221,7 @@ public class Crypt32 {
     decryptPara.rghCertStore = p;
     decryptPara.dwFlags = /*CRYPT_SILENT*/0;
 
-    IntByReference pdwDataLen = new IntByReference(pbData.length);
+    IntByReference pdwDataLen = new IntByReference();
 
     if (!lib.CryptDecryptMessage(decryptPara, pbData, pbData.length, null, pdwDataLen, null))
       throw CryptoUtil.raiseCryptoError("CryptDecryptMessage - initialization", Advapi.getLastError());
