@@ -623,7 +623,7 @@ public final class FirebirdSupportInfo {
     }
 
     /**
-     * @return {@code true} when this Firebird versions supports scrollable cursors. (NOTE: this does not mean
+     * @return {@code true} when this Firebird version supports scrollable cursors. (NOTE: this does not mean
      * the connection supports it, as that depends on the actual protocol (i.e. PURE_JAVA or derivative))
      */
     public boolean supportsScrollableCursors() {
@@ -631,11 +631,18 @@ public final class FirebirdSupportInfo {
     }
 
     /**
-     * @return {@code true} when this Firebird versions supports server-side batch updates. (NOTE: this does not mean
+     * @return {@code true} when this Firebird version supports server-side batch updates. (NOTE: this does not mean
      * the connection supports it, as that depends on the actual protocol (i.e. PURE_JAVA or derivative))
      */
     public boolean supportsServerBatch() {
         return isVersionEqualOrAbove(4, 0);
+    }
+
+    /**
+     * @return {@code true} when this Firebird version supports custom security databases
+     */
+    public boolean supportsCustomSecurityDb() {
+        return isVersionEqualOrAbove(3, 0);
     }
 
     /**

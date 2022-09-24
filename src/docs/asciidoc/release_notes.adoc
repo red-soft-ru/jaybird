@@ -533,6 +533,9 @@ See also <<compatibility-changes,Compatibility changes>> for details.
 +
 Backported to Jaybird 3.0.9 and 4.0.1.
 * Changed: build migrated from Ant to Gradle (https://github.com/FirebirdSQL/jaybird/issues/461[jaybird#461])
+* Changed: removed debugging logging in `AbstractFbStatement.ensureClosedCursor` (https://github.com/FirebirdSQL/jaybird/issues/604[jaybird#604])
++
+The solution for not closing the cursor on all code paths -- introduced in Jaybird 3.0.6 -- is no longer considered a stopgap measure.
 * Improvement: Optimization of `ResultSet.next()` (https://github.com/FirebirdSQL/jaybird/issues/663[jaybird#663])
 +
 This change was contributed by https://github.com/vasiliy-yashkov[Vasiliy Yashkov].
@@ -558,6 +561,11 @@ These options require Firebird 4.0 or higher.
 Now, after an exception, attempting to retrieve the update count with `getUpdateCount()` will return `-1`.
 * Improvement: Renamed `NativeResourceUnloadWebListener` to `NativeResourceUnloadWebListenerJavaX` and added its twin `NativeResourceUnloadWebListenerJakarta` using the `jakarta.servlet` namespace to support native resource unloading on Jakarta EE 9 and higher (https://github.com/FirebirdSQL/jaybird/issues/684[jaybird#684])
 * Improvement: `Connection.isValid(int)` now asynchronously checks validity of connections, allowing the timeout to also be honoured for native connections (https://github.com/FirebirdSQL/jaybird/issues/685[jaybird#685])
+* New feature: Support for `isc_spb_expected_db` on service manager (https://github.com/FirebirdSQL/jaybird/issues/691[jaybird#691])
++
+With Firebird 3.0 and higher, this is used by Firebird to find the non-default security database to use when authenticating.
++
+The `setDatabase` method of a service manager will also set the `expectedDb` property.
 * Change: Removed finalization from `FBConnection` and `FBStatement` (https://github.com/FirebirdSQL/jaybird/issues/699[jaybird#699])
 * Fix: XAResource checks at most 10 records for forget or recovery operations (https://github.com/FirebirdSQL/jaybird/issues/701[jaybird#701])
 +
