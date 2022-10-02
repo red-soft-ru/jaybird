@@ -836,7 +836,7 @@ public class FBConnection implements FirebirdConnection {
         throw new FBDriverNotCapableException();
     }
 
-    private Set<String> clientInfoPropNames = new HashSet<>();
+    private final Set<String> clientInfoPropNames = new HashSet<>();
 
     private static final AtomicIntegerFieldUpdater<FBConnection> SAVEPOINT_COUNTER_UPDATE =
             AtomicIntegerFieldUpdater.newUpdater(FBConnection.class, "savepointCounter");
@@ -1143,19 +1143,18 @@ public class FBConnection implements FirebirdConnection {
         stmt.setString(2, name);
 
         try (ResultSet rs = stmt.executeQuery()) {
-            if (!rs.next())
+            if (!rs.next()) {
                 return null;
+            }
 
             String sessionContext = rs.getString(1);
             String transactionContext = rs.getString(2);
 
-            if (transactionContext != null)
+            if (transactionContext != null) {
                 return transactionContext;
-            else if (sessionContext != null)
+            } else {
                 return sessionContext;
-            else
-                return null;
-
+            }
         }
 
     }
