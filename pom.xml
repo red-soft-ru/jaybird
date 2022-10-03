@@ -36,8 +36,6 @@
 	</properties>
 	<modules>
 		<module>modules/jaybird-jdk11</module>
-		<module>modules/cryptoapi-jdk11</module>
-		<module>modules/cryptoapi-security-jdk11</module>
 	</modules>
 	<profiles>
 		<profile>
@@ -48,6 +46,24 @@
 			<properties>
 				<javadoc.opts>-Xdoclint:none --no-module-directories -html5</javadoc.opts>
 			</properties>
+		</profile>
+		<profile>
+			<id>cryptoapi</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<modules>
+				<module>modules/cryptoapi-jdk11</module>
+			</modules>
+		</profile>
+		<profile>
+			<id>cryptoapi-security</id>
+			<activation>
+				<activeByDefault>false</activeByDefault>
+			</activation>
+			<modules>
+				<module>modules/cryptoapi-security-jdk11</module>
+			</modules>
 		</profile>
 		<profile>
 			<id>deploy-internal</id>
