@@ -54,7 +54,7 @@ public class Crypt32 {
     LOG.debug("Initializing Crypt32 API library");
     JnaUtils.init();
     try {
-      lib = (Crypt32Lib) Native.loadLibrary(CRYPT_LIB_NAME, Crypt32Lib.class);
+      lib = Native.load(CRYPT_LIB_NAME, Crypt32Lib.class);
       LOG.debug(lib.toString());
     } catch (Throwable e) {
       LOG.error("Crypt32 API Initialization failed", e);

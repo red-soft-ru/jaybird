@@ -34,7 +34,7 @@ public class Advapi {
     if (LOGGING)
       LOG.debug("static");
     try {
-      lib = (AdvapiLib)Native.loadLibrary(ADVAPI_LIB_NAME, AdvapiLib.class);
+      lib = Native.load(ADVAPI_LIB_NAME, AdvapiLib.class);
     } catch (Exception e) {
       LOG.error("Advapi Initialization failed", e);
       throw new RuntimeException(e);
