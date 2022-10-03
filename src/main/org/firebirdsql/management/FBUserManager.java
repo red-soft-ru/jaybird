@@ -82,7 +82,7 @@ public class FBUserManager extends FBServiceManager implements UserManager {
      *
      * @return a map of users parsed from the display buffer.
      */
-    private Map<String, User> getFBUsers() {
+    private Map<String, User> getFBUsers() throws UnsupportedEncodingException {
         User user = null;
         Map<String, User> users = new TreeMap<>();
         byte[] displayBuffer = ((ByteArrayOutputStream) getLogger()).toByteArray();
