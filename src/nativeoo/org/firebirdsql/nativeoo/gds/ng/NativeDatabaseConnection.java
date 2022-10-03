@@ -35,7 +35,7 @@ public class NativeDatabaseConnection extends AbstractNativeConnection<IConnecti
      *
      * @param clientLibrary    Client library to use
      * @param attachProperties Attach properties
-     * @param encodingFactory
+     * @param encodingFactory Factory for encoding definitions
      */
     protected NativeDatabaseConnection(FbClientLibrary clientLibrary, IConnectionProperties attachProperties,
                                        IEncodingFactory encodingFactory) throws SQLException {
@@ -56,6 +56,11 @@ public class NativeDatabaseConnection extends AbstractNativeConnection<IConnecti
         return toAttachUrl(dbAttachInfo);
     }
 
+    /**
+     * Contrary to the description in the super class, this will simply return an unconnected instance.
+     *
+     * @return FbDatabase instance
+     */
     @Override
     public IDatabaseImpl identify() throws SQLException {
         return new IDatabaseImpl(this);

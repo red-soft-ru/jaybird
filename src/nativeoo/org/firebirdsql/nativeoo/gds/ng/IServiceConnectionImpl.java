@@ -57,7 +57,6 @@ public class IServiceConnectionImpl extends AbstractNativeConnection<IServicePro
      * Contrary to the description in the super class, this will simply return an unconnected instance.
      *
      * @return FbDatabase instance
-     * @throws SQLException
      */
     @Override
     public IServiceImpl identify() throws SQLException {
