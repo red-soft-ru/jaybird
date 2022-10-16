@@ -615,6 +615,10 @@ The `org.firebirdsql.management.NBackupManager` interface has three new methods:
 These options require Firebird 4.0.3 or higher.
 +
 This feature was also backported to Jaybird 4.0.7.
+* Improvement: Allow statements longer than 64KB with native and embedded connections (https://github.com/FirebirdSQL/jaybird/issues/713[jaybird#713])
++
+This requires Firebird 3.0 or higher server and a Firebird 3.0 or higher fbclient.
+Longer statement texts were already supported for pure-java connections.
 
 [#removal-of-deprecated-classes-and-packages]
 === Removal of deprecated classes and packages
@@ -823,6 +827,15 @@ The following methods have been removed in Jaybird 5:
 * `FbStatement.getFieldDescriptor()`, use `FbStatement.getRowDescriptor()`
 * `AbstractFbStatement.setFieldDescriptor(RowDescriptor fieldDescriptor)`,  use `AbstractFbStatement.setRowDescriptor(RowDescriptor rowDescriptor)`
 * `FBField.isType(FieldDescriptor, int)`, use  `JdbcTypeConverter.isJdbcType(FieldDescriptor, int)`
+* `EncodingFactory`
+** `getCharacterSetSize(int)`, use `getEncodingDefinitionByCharacterSetId(int)` and then `getMaxBytesPerChar()`
+** `getEncoding(String)`, use `getEncodingForCharsetAlias(String, Encoding)`
+** `getEncoding(Charset)`, use `getEncodingForCharset(Charset, Encoding)` or `getOrCreateEncodingForCharset(Charset)`
+** `getIscEncoding(String)`, use `getEncodingDefinitionByCharsetAlias(String)` and then `getFirebirdEncodingName()`
+** `getIscEncoding(Charset)`, use `getEncodingDefinitionByCharset(Charset)` and then `getFirebirdEncodingName()`
+** `getIscEncodingSize(String)`, use `getEncodingDefinitionByFirebirdName(String)` and then `getMaxBytesPerChar()`
+** `getJavaEncoding(String)`, use `getEncodingDefinitionByFirebirdName(String)` and then `getJavaEncodingName()`
+** `getJavaEncodingForAlias(String)`, use `getEncodingDefinitionByCharsetAlias(String)` and then `getJavaEncodingName()`
 
 [#removal-of-deprecated-classes]
 ==== Removal of deprecated classes
