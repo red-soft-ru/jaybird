@@ -36,7 +36,7 @@ final class MessageLookup {
     private static final int CODE_MASK = 0x0000FFFF; // Specifies the code in the message file
     private static final String[] EMPTY_STRING_ARRAY = new String[0];
     // This constant will need to be updated if new facilities are added to Firebird
-    private static final int MAX_FACILITY = 26; // Jaybird = 26
+    private static final int MAX_FACILITY = 30; // Jaybird = 30
     static final int FACILITY_SIZE = MessageLookup.MAX_FACILITY + 1;
 
     // Lookup from facility + code to message
