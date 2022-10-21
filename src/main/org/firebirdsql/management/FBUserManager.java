@@ -150,13 +150,16 @@ public class FBUserManager extends FBServiceManager implements UserManager {
             srb.addArgument(isc_spb_sec_password, user.getPassword());
         }
         if (user.getFirstName() != null) {
-            srb.addArgument(isc_spb_sec_firstname, user.getFirstName(), EncodingFactory.getEncoding("UTF-8"));
+            srb.addArgument(isc_spb_sec_firstname, user.getFirstName(),
+                    EncodingFactory.getPlatformDefault().getEncodingForCharsetAlias("UTF-8"));
         }
         if (user.getMiddleName() != null) {
-            srb.addArgument(isc_spb_sec_middlename, user.getMiddleName(), EncodingFactory.getEncoding("UTF-8"));
+            srb.addArgument(isc_spb_sec_middlename, user.getMiddleName(),
+                    EncodingFactory.getPlatformDefault().getEncodingForCharsetAlias("UTF-8"));
         }
         if (user.getLastName() != null) {
-            srb.addArgument(isc_spb_sec_lastname, user.getLastName(), EncodingFactory.getEncoding("UTF-8"));
+            srb.addArgument(isc_spb_sec_lastname, user.getLastName(),
+                    EncodingFactory.getPlatformDefault().getEncodingForCharsetAlias("UTF-8"));
         }
         if (user.getUserId() != -1) {
             srb.addArgument(isc_spb_sec_userid, user.getUserId());
@@ -193,7 +196,8 @@ public class FBUserManager extends FBServiceManager implements UserManager {
         int length = iscVaxInteger(displayBuffer, count, 2);
         count += 2;
 
-        String string = new String(displayBuffer, count, length, EncodingFactory.getEncoding("UTF-8").getCharsetName());
+        String string = new String(displayBuffer, count, length,
+                EncodingFactory.getPlatformDefault().getEncodingForCharsetAlias("UTF-8").getCharsetName());
         count += length;
         return string;
     }
