@@ -3,7 +3,7 @@
 	<groupId>ru.red-soft.jdbc</groupId>
 	<artifactId>jaybird-parent</artifactId>
 	<name>jaybird-parent</name>
-	<version>4.0.22-SNAPSHOT</version>
+	<version>4.0.22</version>
 	<packaging>pom</packaging>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
