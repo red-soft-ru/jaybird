@@ -285,13 +285,13 @@ public class FBDriverTest {
     @Test
     public void testConnectionLegacy_Auth() throws Exception {
         // Might fail if plugin not enabled
-        checkAuthenticationPlugin(LegacyAuthenticationPluginSpi.LEGACY_AUTH_NAME);
+        checkAuthenticationPlugin(LegacyAuthenticationPluginSpi.LEGACY_AUTH_NAME, "LEGACY_SEC");
     }
 
     @Test
     public void testConnectionSrp() throws Exception {
         // Might fail if plugin not enabled
-        checkAuthenticationPlugin(SrpAuthenticationPluginSpi.SRP_AUTH_NAME);
+        checkAuthenticationPlugin(SrpAuthenticationPluginSpi.SRP_AUTH_NAME, "SRP_SEC");
     }
 
     @Test
@@ -299,28 +299,28 @@ public class FBDriverTest {
         // Might fail if plugin not enabled
         assumeThat("Srp224 not supported in Java 7 (SHA-224 not available by default)",
                 System.getProperty("java.version"), not(startsWith("1.7")));
-        checkAuthenticationPlugin(Srp224AuthenticationPluginSpi.SRP_224_AUTH_NAME);
+        checkAuthenticationPlugin(Srp224AuthenticationPluginSpi.SRP_224_AUTH_NAME, "SRP224_SEC");
     }
 
     @Test
     public void testConnectionSrp256() throws Exception {
         // Might fail if plugin not enabled
-        checkAuthenticationPlugin(Srp256AuthenticationPluginSpi.SRP_256_AUTH_NAME);
+        checkAuthenticationPlugin(Srp256AuthenticationPluginSpi.SRP_256_AUTH_NAME, "SRP256_SEC");
     }
 
     @Test
     public void testConnectionSrp384() throws Exception {
         // Might fail if plugin not enabled
-        checkAuthenticationPlugin(Srp384AuthenticationPluginSpi.SRP_384_AUTH_NAME);
+        checkAuthenticationPlugin(Srp384AuthenticationPluginSpi.SRP_384_AUTH_NAME, "SRP384_SEC");
     }
 
     @Test
     public void testConnectionSrp512() throws Exception {
         // Might fail if plugin not enabled
-        checkAuthenticationPlugin(Srp512AuthenticationPluginSpi.SRP_512_AUTH_NAME);
+        checkAuthenticationPlugin(Srp512AuthenticationPluginSpi.SRP_512_AUTH_NAME, "SRP512_SEC");
     }
 
-    private void checkAuthenticationPlugin(String pluginName) throws Exception {
+    private void checkAuthenticationPlugin(String pluginName, final String expectedPlugin) throws Exception {
         assumeThat("Test doesn't work with embedded", FBTestProperties.GDS_TYPE, not(isEmbeddedType()));
         assumeTrue("Requires Firebird 3 or higher", getDefaultSupportInfo().isVersionEqualOrAbove(3, 0));
         // NOTE: If the test still fails, then this plugin is not enabled in the Firebird AuthServer config
@@ -340,7 +340,7 @@ public class FBDriverTest {
              ResultSet rs = statement.executeQuery(
                      "select mon$auth_method from mon$attachments where mon$attachment_id = current_connection")) {
             assertTrue("expected row", rs.next());
-            assertEquals("Unexpected authentication method", pluginName, rs.getString(1));
+            assertEquals("Unexpected authentication method", expectedPlugin, rs.getString(1));
         }
     }
 
@@ -359,12 +359,12 @@ public class FBDriverTest {
 
     @Test
     public void authenticateDatabaseUsingCaseSensitiveSrpAccount() throws Exception {
-        checkCaseSensitiveLogin("Srp");
+        checkCaseSensitiveLogin("Srp", "SRP_SEC");
     }
 
     @Test
     public void authenticateDatabaseUsingCaseSensitiveLegacyAccount() throws Exception {
-        checkCaseSensitiveLogin("Legacy_Auth");
+        checkCaseSensitiveLogin("Legacy_Auth", "LEGACY_SEC");
     }
 
     /**
@@ -391,7 +391,7 @@ public class FBDriverTest {
         }
     }
 
-    private void checkCaseSensitiveLogin(String authPlugin) throws SQLException {
+    private void checkCaseSensitiveLogin(String authPlugin, final String expectedPlugin) throws SQLException {
         assumeThat("Test requires GDS type that performs real authentication", GDS_TYPE, not(isEmbeddedType()));
         assumeTrue("Test requires case sensitive user name support",
                 getDefaultSupportInfo().supportsCaseSensitiveUserNames());
@@ -411,7 +411,7 @@ public class FBDriverTest {
                              + "where MON$ATTACHMENT_ID = CURRENT_CONNECTION")
         ) {
             assertTrue("Expected a row with attachment information", resultSet.next());
-            assertEquals("Unexpected authentication method", authPlugin, resultSet.getString(1));
+            assertEquals("Unexpected authentication method", expectedPlugin, resultSet.getString(1));
             assertEquals("Unexpected user name", "CaseSensitiveUser", resultSet.getString(2).trim());
         }
     }
