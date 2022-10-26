@@ -51,7 +51,7 @@ public class TestScalarSystemFunctions {
             ResultSet rs = stmt.executeQuery("SELECT {fn DATABASE()} FROM RDB$DATABASE");
             assertTrue("Expected at least one row", rs.next());
             assertThat("Unexpected result for function escape DATABASE()",
-                    rs.getString(1), endsWith(FBTestProperties.DB_NAME.toUpperCase(Locale.ROOT)));
+                    rs.getString(1).toUpperCase(), endsWith(FBTestProperties.DB_NAME.toUpperCase(Locale.ROOT)));
         }
     }
 
