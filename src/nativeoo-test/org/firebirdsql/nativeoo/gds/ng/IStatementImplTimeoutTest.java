@@ -8,7 +8,7 @@ import org.junit.ClassRule;
 
 import java.sql.SQLException;
 
-public class IStatementimplTimeoutTest extends AbstractStatementTimeoutTest {
+public class IStatementImplTimeoutTest extends AbstractStatementTimeoutTest {
 
     @ClassRule
     public static final GdsTypeRule testType = GdsTypeRule.supportsFBOONativeOnly();
