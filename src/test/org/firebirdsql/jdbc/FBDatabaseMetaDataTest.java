@@ -32,6 +32,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+import static java.lang.String.format;
 import static org.firebirdsql.common.FBTestProperties.*;
 import static org.firebirdsql.common.matchers.RegexMatcher.matchesRegex;
 import static org.firebirdsql.jdbc.FBDatabaseMetaData.*;
@@ -868,8 +869,9 @@ public class FBDatabaseMetaDataTest {
     public void testDriverVersionInformation() throws Exception {
         assumeThat("Running with unfiltered org/firebirdsql/jaybird/version.properties; test ignored",
                 dmd.getDriverVersion(), not(equalTo("@VERSION@")));
-        String expectedVersionPattern = String.format("%d\\.%d\\.\\d+", dmd.getDriverMajorVersion(), dmd.getDriverMinorVersion());
-        assertThat(dmd.getDriverVersion(), matchesRegex(expectedVersionPattern));
+        String expectedVersionPattern =
+                format("%d\\.%d\\.\\d+", dmd.getDriverMajorVersion(), dmd.getDriverMinorVersion());
+        assertThat(dmd.getDriverVersion().replaceAll("-SNAPSHOT", ""), matchesRegex(expectedVersionPattern));
     }
 
     @Test
