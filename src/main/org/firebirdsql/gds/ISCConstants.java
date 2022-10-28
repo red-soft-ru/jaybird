@@ -170,6 +170,7 @@ public interface ISCConstants {
     int isc_dpb_set_bind                = 93;
     int isc_dpb_decfloat_round          = 94;
     int isc_dpb_decfloat_traps          = 95;
+    int isc_dpb_parallel_workers        = 100;
 
     /*
      * Driver-specific DPB params that will be removed before sending them
@@ -220,7 +221,7 @@ public interface ISCConstants {
     int isc_dpb_effective_login	        = 164;
     int isc_dpb_gss                     = 165;
     int isc_dpb_security_authentication = 166;
-    int isc_dpb_parallel_workers        = 167;
+    int isc_dpb_parallel_workers_rs     = 167;
     int isc_dpb_worker_attach           = 168;
     int isc_dpb_certificate_base64      = 169;
     int isc_dpb_exclude_crypto_plugins  = 170;
@@ -433,6 +434,7 @@ public interface ISCConstants {
     int isc_spb_bkp_length             =  7;
     int isc_spb_bkp_skip_data          =  8;
     int isc_spb_bkp_stat               =  15;
+    int isc_spb_bkp_parallel_workers   =  21;
     int isc_spb_bkp_ignore_checksums   =  0x01;
     int isc_spb_bkp_ignore_limbo       =  0x02;
     int isc_spb_bkp_metadata_only      =  0x04;
@@ -443,7 +445,8 @@ public interface ISCConstants {
     int isc_spb_bkp_expand             =  0x80;
     int isc_spb_bkp_no_triggers        =  0x8000;
 
-    int isc_spb_bkp_parallel_workers   =  101;
+    // Red Database specific
+    int isc_spb_bkp_parallel_workers_rs   =  101;
 
     /********************************************
      * Parameters for isc_action_svc_properties *
@@ -521,7 +524,10 @@ public interface ISCConstants {
     int isc_spb_rpr_commit_trans_64	=	49;
     int isc_spb_rpr_rollback_trans_64		=50;
     int isc_spb_rpr_recover_two_phase_64	=51;
-    int isc_spb_rpr_par_workers     =   100;
+    int isc_spb_rpr_par_workers     =   52;
+
+    // Red Database specific
+    int isc_spb_rpr_par_workers_rs     =   100;
 
     int isc_spb_rpr_validate_db		=	0x01;
     int isc_spb_rpr_sweep_db		=	0x02;
@@ -553,6 +559,9 @@ public interface ISCConstants {
     int isc_spb_res_replace			=	0x1000;
     int isc_spb_res_create			=	0x2000;
     int isc_spb_res_use_all_space	=	0x4000;
+
+    // Red Database specific
+    int isc_spb_res_parallel_workers_rs    =    isc_spb_bkp_parallel_workers_rs;
 
     /*****************************************
      * Parameters for isc_action_svc_validate *

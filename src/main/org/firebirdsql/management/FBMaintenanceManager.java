@@ -316,7 +316,10 @@ public class FBMaintenanceManager extends FBServiceManager implements Maintenanc
         if (parallelWorkers > 1) {
             try (FbService service = attachServiceManager()) {
                 ServiceRequestBuffer srb = createRepairSRB(service, isc_spb_rpr_sweep_db);
-                srb.addArgument(isc_spb_rpr_par_workers, parallelWorkers);
+                if (service.getServerVersion().isEqualOrAbove(5, 0))
+                    srb.addArgument(isc_spb_rpr_par_workers, parallelWorkers);
+                else
+                    srb.addArgument(isc_spb_rpr_par_workers_rs, parallelWorkers);
                 executeServicesOperation(service, srb);
             }
         } else {
@@ -328,7 +331,10 @@ public class FBMaintenanceManager extends FBServiceManager implements Maintenanc
         if (parallelWorkers > 1) {
             try (FbService service = attachServiceManager()) {
                 ServiceRequestBuffer srb = createRepairSRB(service, isc_spb_rpr_sweep_db);
-                srb.addArgument(isc_spb_rpr_par_workers, parallelWorkers);
+                if (service.getServerVersion().isEqualOrAbove(5, 0))
+                    srb.addArgument(isc_spb_rpr_par_workers, parallelWorkers);
+                else
+                    srb.addArgument(isc_spb_rpr_par_workers_rs, parallelWorkers);
                 executeServicesOperation(service, srb);
             }
         } else {

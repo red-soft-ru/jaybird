@@ -176,7 +176,10 @@ public abstract class FBBackupManagerBase extends FBServiceManager implements Ba
         }
 
         if (parallelWorkers > 1) {
-            backupSPB.addArgument(PARALLEL_WORKERS, parallelWorkers);
+            if (service.getServerVersion().isEqualOrAbove(5, 0))
+                backupSPB.addArgument(isc_spb_bkp_parallel_workers, parallelWorkers);
+            else
+                backupSPB.addArgument(isc_spb_bkp_parallel_workers_rs, parallelWorkers);
         }
 
         backupSPB.addArgument(isc_spb_options, options);
@@ -312,7 +315,10 @@ public abstract class FBBackupManagerBase extends FBServiceManager implements Ba
         }
 
         if (parallelWorkers > 1) {
-            restoreSPB.addArgument(PARALLEL_WORKERS, parallelWorkers);
+            if (service.getServerVersion().isEqualOrAbove(5, 0))
+                restoreSPB.addArgument(isc_spb_bkp_parallel_workers, parallelWorkers);
+            else
+                restoreSPB.addArgument(isc_spb_bkp_parallel_workers_rs, parallelWorkers);
         }
 
         if ((options & RESTORE_CREATE) != RESTORE_CREATE

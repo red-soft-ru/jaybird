@@ -182,6 +182,7 @@ public class ClumpletReader {
                 case isc_spb_rpr_rollback_trans:
                 case isc_spb_rpr_recover_two_phase:
                 case isc_spb_rpr_par_workers:
+                case isc_spb_rpr_par_workers_rs:
                     return ClumpletType.IntSpb;
                 case isc_spb_rpr_commit_trans_64:
                 case isc_spb_rpr_rollback_trans_64:
