@@ -5,15 +5,14 @@ import org.firebirdsql.common.FBTestProperties;
 import org.firebirdsql.common.JdbcResourceHelper;
 import org.firebirdsql.common.rules.GdsTypeRule;
 import org.firebirdsql.cryptoapi.AuthCryptoPluginImpl;
-import org.firebirdsql.gds.impl.GDSServerVersion;
 import org.firebirdsql.gds.impl.GDSType;
 import org.firebirdsql.jca.FBSADataSource;
-import org.firebirdsql.jdbc.FirebirdConnection;
 import org.junit.ClassRule;
 import org.junit.Test;
 
 import java.io.*;
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
@@ -37,9 +36,8 @@ public class TestAuthSspi extends FBJUnit4TestBase {
 
         try (Connection connection = getConnectionViaDriverManager();
             Statement statement = connection.createStatement()) {
-            GDSServerVersion serverVersion =
-                    connection.unwrap(FirebirdConnection.class).getFbDatabase().getServerVersion();
-            if (serverVersion.getMajorVersion() >= 4) {
+            DatabaseMetaData dmd = connection.getMetaData();
+            if (dmd.getDatabaseMajorVersion() >= 4) {
                 statement.execute("grant policy \"DEFAULT\" to \"TEST@RED-SOFT.RU\"");
             }
         } catch (Exception e) {
@@ -120,9 +118,8 @@ public class TestAuthSspi extends FBJUnit4TestBase {
 
         try (Connection connection = getConnectionViaDriverManager();
              Statement statement = connection.createStatement()) {
-            GDSServerVersion serverVersion =
-                    connection.unwrap(FirebirdConnection.class).getFbDatabase().getServerVersion();
-            if (serverVersion.getMajorVersion() >= 4) {
+            DatabaseMetaData dmd = connection.getMetaData();
+            if (dmd.getDatabaseMajorVersion() >= 4) {
                 statement.execute("grant policy TestPolicy to \"TEST@RED-SOFT.RU\"");
             }
         } catch (Exception e) {
