@@ -171,7 +171,11 @@ public class FBDatabaseMetaDataTest {
                 return;
             }
 
-            assertEquals("# of system tables is not expected count", sysTableCount, count);
+            if (getDefaultSupportInfo().isVersionEqualOrAbove(5, 0)) {
+                assertEquals("# of system tables is not expected count", sysTableCount, count);
+            } else {
+                assertEquals("# of system tables is not expected count", sysTableCount + 1, count);
+            }
         }
     }
 
