@@ -50,7 +50,7 @@ public class TestAuthSspi extends FBJUnit4TestBase {
         final FBSADataSource fbDataSource = new FBSADataSource(GDSType.getType("PURE_JAVA"));
 
         fbDataSource.setDatabase(FBTestProperties.DB_DATASOURCE_URL);
-        fbDataSource.setNonStandardProperty("isc_dpb_user_name", "test@red-soft.ru");
+        fbDataSource.setNonStandardProperty("isc_dpb_user_name", "TEST@RED-SOFT.RU");
         fbDataSource.setNonStandardProperty("isc_dpb_lc_ctype", "WIN1251");
         fbDataSource.setNonStandardProperty("isc_dpb_trusted_auth", "1");
         fbDataSource.setNonStandardProperty("isc_dpb_multi_factor_auth", "1");
@@ -133,7 +133,7 @@ public class TestAuthSspi extends FBJUnit4TestBase {
 
         fbDataSource.setDatabase(FBTestProperties.DB_DATASOURCE_URL);
         fbDataSource.setNonStandardProperty("isc_dpb_lc_ctype", "WIN1251");
-        fbDataSource.setNonStandardProperty("isc_dpb_user_name", "test@red-soft.ru");
+        fbDataSource.setNonStandardProperty("isc_dpb_user_name", "TEST@RED-SOFT.RU");
         fbDataSource.setNonStandardProperty("isc_dpb_password", "q3rgu7Ah");
         fbDataSource.setNonStandardProperty("isc_dpb_certificate", "/tmp/testuser.cer");
         fbDataSource.setNonStandardProperty("isc_dpb_repository_pin", "12345678");
@@ -203,7 +203,7 @@ public class TestAuthSspi extends FBJUnit4TestBase {
 
         fbDataSource.setDatabase(FBTestProperties.DB_DATASOURCE_URL);
         fbDataSource.setNonStandardProperty("isc_dpb_lc_ctype", "WIN1251");
-        fbDataSource.setNonStandardProperty("isc_dpb_user_name", "test@red-soft.ru");
+        fbDataSource.setNonStandardProperty("isc_dpb_user_name", "TEST@RED-SOFT.RU");
         fbDataSource.setNonStandardProperty("isc_dpb_password", "q3rgu7Ah");
         fbDataSource.setNonStandardProperty("isc_dpb_certificate_base64", loadFromFile("/tmp/testuser.cer"));
         fbDataSource.setNonStandardProperty("isc_dpb_repository_pin", "12345678");
