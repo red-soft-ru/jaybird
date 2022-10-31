@@ -268,8 +268,13 @@ public class FBDatabaseMetaDataPseudoColumnsTest {
                 tableCount += 1;
             }
 
-            assertEquals("Unexpected number of pseudo columns",
-                    getDefaultSupportInfo().getSystemTableCount() + 7, tableCount);
+            if (getDefaultSupportInfo().isVersionEqualOrAbove(5, 0)) {
+                assertEquals("Unexpected number of pseudo columns",
+                        getDefaultSupportInfo().getSystemTableCount() + 7, tableCount);
+            } else {
+                assertEquals("Unexpected number of pseudo columns",
+                        getDefaultSupportInfo().getSystemTableCount() + 8, tableCount);
+            }
         }
     }
 
@@ -281,9 +286,15 @@ public class FBDatabaseMetaDataPseudoColumnsTest {
                 tableCount += 1;
             }
 
-            assertEquals("Unexpected number of pseudo columns",
-                    // System tables + the 7 tables created for this test
-                    getDefaultSupportInfo().getSystemTableCount() + 7, tableCount);
+            if (getDefaultSupportInfo().isVersionEqualOrAbove(5, 0)) {
+                assertEquals("Unexpected number of pseudo columns",
+                        // System tables + the 7 tables created for this test
+                        getDefaultSupportInfo().getSystemTableCount() + 7, tableCount);
+            } else {
+                assertEquals("Unexpected number of pseudo columns",
+                        // System tables + the 6 tables created for this test
+                        getDefaultSupportInfo().getSystemTableCount() + 8, tableCount);
+            }
         }
     }
 
