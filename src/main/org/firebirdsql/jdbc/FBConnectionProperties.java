@@ -611,6 +611,9 @@ public class FBConnectionProperties extends AbstractFBConnectionProperties imple
                 case isc_dpb_wire_compression:
                     setWireCompression(true);
                     break;
+                case isc_dpb_session_time_zone:
+                    setSessionTimeZone(parameter.getValueAsString());
+                    break;
                 default:
                     if (parameterType < jaybirdMinIscDpbValue || parameterType > jaybirdMaxIscDpbValue) {
                         log.warn(String.format(
