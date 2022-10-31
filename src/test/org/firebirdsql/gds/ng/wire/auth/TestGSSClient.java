@@ -29,7 +29,7 @@ public class TestGSSClient extends FBJUnit4TestBase {
 
     @ClassRule
     public static final GdsTypeRule testType = GdsTypeRule.excludesNativeOnly();
-    
+
     @Test
     public void testGetToken() throws Exception {
         System.setProperty("javax.security.auth.useSubjectCredsOnly", "false");
