@@ -380,7 +380,7 @@ public abstract class AbstractFBConnectionProperties implements FirebirdConnecti
 
     @Override
     public boolean isWireCompression() {
-        return getBooleanProperty(IGNORE_PROCEDURE_TYPE);
+        return getBooleanProperty(WIRE_COMPRESSION);
     }
 
     @Override

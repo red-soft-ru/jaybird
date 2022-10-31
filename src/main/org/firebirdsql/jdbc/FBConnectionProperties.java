@@ -608,6 +608,9 @@ public class FBConnectionProperties extends AbstractFBConnectionProperties imple
                     setAuthPlugins(parameter.getValueAsString());
                     parameter.copyTo(getExtraDatabaseParameters(), null);
                     break;
+                case isc_dpb_wire_compression:
+                    setWireCompression(true);
+                    break;
                 default:
                     if (parameterType < jaybirdMinIscDpbValue || parameterType > jaybirdMaxIscDpbValue) {
                         log.warn(String.format(
