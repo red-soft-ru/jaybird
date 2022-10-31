@@ -3,11 +3,13 @@ package org.firebirdsql.gds.impl.wire.auth;
 import org.firebirdsql.common.FBJUnit4TestBase;
 import org.firebirdsql.common.FBTestProperties;
 import org.firebirdsql.common.JdbcResourceHelper;
+import org.firebirdsql.common.rules.GdsTypeRule;
 import org.firebirdsql.cryptoapi.AuthCryptoPluginImpl;
 import org.firebirdsql.gds.impl.GDSServerVersion;
 import org.firebirdsql.gds.impl.GDSType;
 import org.firebirdsql.jca.FBSADataSource;
 import org.firebirdsql.jdbc.FirebirdConnection;
+import org.junit.ClassRule;
 import org.junit.Test;
 
 import java.io.*;
@@ -26,6 +28,9 @@ import static org.junit.Assert.fail;
  * @since 3.0
  */
 public class TestAuthSspi extends FBJUnit4TestBase {
+
+    @ClassRule
+    public static final GdsTypeRule testType = GdsTypeRule.excludesNativeOnly();
 
     @Test
     public void testMultifactorAuthCertificateOnly() throws Exception {

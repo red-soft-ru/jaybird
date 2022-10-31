@@ -1,10 +1,12 @@
 package org.firebirdsql.gds.ng.wire.auth;
 
 import org.firebirdsql.common.FBJUnit4TestBase;
+import org.firebirdsql.common.rules.GdsTypeRule;
 import org.firebirdsql.jdbc.FBConnection;
 import org.ietf.jgss.GSSContext;
 import org.ietf.jgss.GSSManager;
 import org.ietf.jgss.GSSName;
+import org.junit.ClassRule;
 import org.junit.Test;
 
 import java.sql.DriverManager;
@@ -25,6 +27,9 @@ import static org.junit.Assert.fail;
  */
 public class TestGSSClient extends FBJUnit4TestBase {
 
+    @ClassRule
+    public static final GdsTypeRule testType = GdsTypeRule.excludesNativeOnly();
+    
     @Test
     public void testGetToken() throws Exception {
         System.setProperty("javax.security.auth.useSubjectCredsOnly", "false");
