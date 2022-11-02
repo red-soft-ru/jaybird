@@ -967,7 +967,7 @@ public class TestFBStatement extends FBJUnit4TestBase {
             }
 
             stmt.getMoreResults();
-            assertEquals(0, stmt.getUpdateCount());
+            assertEquals(-1, stmt.getUpdateCount());
         }
     }
 
