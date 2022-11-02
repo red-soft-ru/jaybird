@@ -186,7 +186,8 @@ public class TestJnaDatabase {
             assertFalse("Database should be detached after drop", db.isAttached());
             assertFalse("Expected database file to have been removed after drop", dbFile.exists());
         } finally {
-            safelyClose(db);
+            if (db.isAttached())
+                safelyClose(db);
             if (dbFile.exists()) {
                 dbFile.delete();
             }
@@ -235,7 +236,8 @@ public class TestJnaDatabase {
 
                 assertFalse("Expected database not attached", db.isAttached());
             } finally {
-                safelyClose(db);
+                if (db.isAttached())
+                    safelyClose(db);
             }
         } finally {
             defaultDatabaseTearDown(fbManager);
@@ -284,17 +286,13 @@ public class TestJnaDatabase {
         defaultDatabaseSetUp(fbManager);
         try {
             JnaDatabase db = (JnaDatabase) factory.connect(connectionInfo);
-            try {
-                db.attach();
-                assumeTrue("expected database attached", db.isAttached());
-                assumeTrue("Test requires cancel support", supportInfoFor(db).supportsCancelOperation());
+            db.attach();
+            assumeTrue("expected database attached", db.isAttached());
+            assumeTrue("Test requires cancel support", supportInfoFor(db).supportsCancelOperation());
 
-                db.cancelOperation(ISCConstants.fb_cancel_abort);
+            db.cancelOperation(ISCConstants.fb_cancel_abort);
 
-                assertFalse("Expected database not attached after abort", db.isAttached());
-            } finally {
-                safelyClose(db);
-            }
+            assertFalse("Expected database not attached after abort", db.isAttached());
         } finally {
             defaultDatabaseTearDown(fbManager);
         }
@@ -308,7 +306,6 @@ public class TestJnaDatabase {
                     getDatabasePath(), DB_USER, DB_PASSWORD);
             db.executeImmediate(createDb, null);
             assertTrue("Expected to be attached after create database", db.isAttached());
-            db.dropDatabase();
         } finally {
             safelyClose(db);
             new File(getDatabasePath()).delete();
