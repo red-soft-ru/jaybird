@@ -24,6 +24,7 @@ import org.firebirdsql.gds.impl.DatabaseParameterBufferExtension;
 import org.firebirdsql.gds.impl.GDSHelper;
 import org.firebirdsql.gds.ng.*;
 import org.firebirdsql.gds.ng.fields.RowValue;
+import org.firebirdsql.gds.ng.listeners.DefaultStatementListener;
 import org.firebirdsql.gds.ng.listeners.StatementListener;
 import org.firebirdsql.jdbc.escape.FBEscapedParser;
 import org.firebirdsql.jdbc.escape.FBEscapedParser.EscapeParserMode;
@@ -322,7 +323,7 @@ public class FBStatement implements FirebirdStatement, Synchronizable {
     @Override
     public ResultSet getGeneratedKeys() throws SQLException {
         checkValidity();
-        if (isGeneratedKeyQuery() && isSingletonResult) {
+        if (isGeneratedKeyQuery()) {
             return new FBResultSet(fbStatement.getRowDescriptor(), new ArrayList<>(specialResult),
                     resultSetListener);
         }
@@ -866,9 +867,36 @@ public class FBStatement implements FirebirdStatement, Synchronizable {
         checkValidity();
 
         prepareFixedStatement(sql);
-        fbStatement.execute(RowValue.EMPTY_ROW_VALUE);
+        return internalExecute(RowValue.EMPTY_ROW_VALUE);
+    }
 
-        return currentStatementResult == StatementResult.RESULT_SET;
+    protected boolean internalExecute(RowValue rowValue) throws SQLException {
+        try {
+            fbStatement.execute(rowValue);
+            final boolean hasResultSet = currentStatementResult == StatementResult.RESULT_SET;
+            if (hasResultSet && isGeneratedKeyQuery()) {
+                fetchMultiRowGeneratedKeys();
+                return false;
+            }
+            return hasResultSet;
+        } catch (SQLException e) {
+            currentStatementResult = StatementResult.NO_MORE_RESULTS;
+            throw e;
+        }
+    }
+
+    private void fetchMultiRowGeneratedKeys() throws SQLException {
+        RowsFetchedListener rowsFetchedListener = new RowsFetchedListener();
+        try {
+            fbStatement.addStatementListener(rowsFetchedListener);
+            while (!rowsFetchedListener.isAllRowsFetched()) {
+                fbStatement.fetchRows(Integer.MAX_VALUE);
+            }
+            fbStatement.closeCursor();
+            currentStatementResult = StatementResult.UPDATE_COUNT;
+        } finally {
+            fbStatement.removeStatementListener(rowsFetchedListener);
+        }
     }
 
     protected void prepareFixedStatement(String sql) throws SQLException {
@@ -1208,6 +1236,8 @@ public class FBStatement implements FirebirdStatement, Synchronizable {
             if (isSingletonResult) {
                 specialResult.clear();
                 specialResult.add(rowValue);
+            } else if (isGeneratedKeyQuery()) {
+                specialResult.add(rowValue);
             }
         }
 
@@ -1268,6 +1298,20 @@ public class FBStatement implements FirebirdStatement, Synchronizable {
                 return false;
             }
             return true;
+        }
+    }
+
+    private static final class RowsFetchedListener extends DefaultStatementListener {
+
+        private boolean allRowsFetched;
+
+        @Override
+        public void allRowsFetched(FbStatement sender) {
+            allRowsFetched = true;
+        }
+
+        public boolean isAllRowsFetched() {
+            return allRowsFetched;
         }
     }
 }

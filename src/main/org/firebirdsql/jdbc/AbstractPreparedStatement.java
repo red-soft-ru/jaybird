@@ -535,8 +535,7 @@ public abstract class AbstractPreparedStatement extends FBStatement implements F
             flushFields();
 
             try {
-                fbStatement.execute(fieldValues);
-                return currentStatementResult == StatementResult.RESULT_SET;
+                return internalExecute(fieldValues);
             } catch (SQLException e) {
                 currentStatementResult = StatementResult.NO_MORE_RESULTS;
                 throw e;
