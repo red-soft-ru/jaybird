@@ -18,7 +18,6 @@
  */
 package org.firebirdsql.gds.ng;
 
-import org.firebirdsql.common.rules.GdsTypeRule;
 import org.firebirdsql.common.rules.UsesDatabase;
 import org.firebirdsql.gds.ISCConstants;
 import org.firebirdsql.gds.ng.monitor.Operation;
@@ -42,9 +41,6 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 public class OperationMonitorTest {
-
-    @ClassRule
-    public static final GdsTypeRule testType = GdsTypeRule.excludesNativeOnly();
 
     @Rule
     public final UsesDatabase usesDatabase = UsesDatabase.noDatabase();
