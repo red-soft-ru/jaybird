@@ -43,7 +43,7 @@ import static org.junit.Assert.fail;
 public class OperationMonitorTest {
 
     @Rule
-    public final UsesDatabase usesDatabase = UsesDatabase.usesDatabase();
+    public final UsesDatabase usesDatabase = UsesDatabase.noDatabase();
     private final TestOperationAware testOperationAware = new TestOperationAware();
 
     @Before
@@ -88,6 +88,7 @@ public class OperationMonitorTest {
 
     @Test
     public void notificationDuringSimpleSelect() throws Exception {
+        usesDatabase.createDefaultDatabase();
         try (Connection connection = getConnectionViaDriverManager();
              Statement stmt = connection.createStatement()) {
             connection.setAutoCommit(false);
@@ -128,6 +129,7 @@ public class OperationMonitorTest {
             }
         };
         OperationMonitor.initOperationAware(syncCancelOperationAware);
+        usesDatabase.createDefaultDatabase();
         try (Connection connection = getConnectionViaDriverManager();
              Statement stmt = connection.createStatement()) {
             connection.setAutoCommit(false);
@@ -163,6 +165,7 @@ public class OperationMonitorTest {
             }
         };
         OperationMonitor.initOperationAware(syncCancelOperationAware);
+        usesDatabase.createDefaultDatabase();
         try (Connection connection = getConnectionViaDriverManager();
              Statement stmt = connection.createStatement()) {
             connection.setAutoCommit(false);
