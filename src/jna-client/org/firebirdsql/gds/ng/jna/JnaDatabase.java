@@ -60,7 +60,7 @@ public class JnaDatabase extends AbstractFbDatabase<JnaDatabaseConnection>
     private final FbClientLibrary clientLibrary;
     private final Set<FbClientFeature> clientFeatures;
     protected final IntByReference handle = new IntByReference(0);
-    protected final ISC_STATUS[] statusVector = new ISC_STATUS[STATUS_VECTOR_SIZE];
+    protected ISC_STATUS[] statusVector = new ISC_STATUS[STATUS_VECTOR_SIZE];
 
     public JnaDatabase(JnaDatabaseConnection connection) {
         super(connection, connection.createDatatypeCoder());
@@ -91,6 +91,7 @@ public class JnaDatabase extends AbstractFbDatabase<JnaDatabaseConnection>
     protected void internalDetach() throws SQLException {
         synchronized (getSynchronizationObject()) {
             try {
+                clearStatus();
                 clientLibrary.isc_detach_database(statusVector, handle);
                 processStatusVector();
             } catch (SQLException ex) {
@@ -130,6 +131,7 @@ public class JnaDatabase extends AbstractFbDatabase<JnaDatabaseConnection>
 
         synchronized (getSynchronizationObject()) {
             try {
+                clearStatus();
                 if (create) {
                     clientLibrary.isc_create_database(statusVector, (short) dbName.length, dbName, handle,
                             (short) dpbArray.length, dpbArray, getConnectionDialect());
@@ -188,6 +190,7 @@ public class JnaDatabase extends AbstractFbDatabase<JnaDatabaseConnection>
             checkConnected();
             synchronized (getSynchronizationObject()) {
                 try {
+                    clearStatus();
                     clientLibrary.isc_drop_database(statusVector, handle);
                     processStatusVector();
                 } finally {
@@ -207,6 +210,7 @@ public class JnaDatabase extends AbstractFbDatabase<JnaDatabaseConnection>
             // TODO Test what happens with 2.1 and earlier client library
             // No synchronization, otherwise cancel will never work; might conflict with sync policy of JNA (TODO: find out)
             try {
+                clearStatus();
                 clientLibrary.fb_cancel_operation(statusVector, handle, (short) kind);
             } finally {
                 if (kind == fb_cancel_abort) {
@@ -226,6 +230,7 @@ public class JnaDatabase extends AbstractFbDatabase<JnaDatabaseConnection>
             final IntByReference transactionHandle = new IntByReference(0);
             final byte[] tpbArray = tpb.toBytesWithType();
             synchronized (getSynchronizationObject()) {
+                clearStatus();
                 clientLibrary.isc_start_transaction(statusVector, transactionHandle, (short) 1, handle,
                         (short) tpbArray.length, tpbArray);
                 processStatusVector();
@@ -248,6 +253,7 @@ public class JnaDatabase extends AbstractFbDatabase<JnaDatabaseConnection>
 
             final IntByReference transactionHandle = new IntByReference(0);
             synchronized (getSynchronizationObject()) {
+                clearStatus();
                 clientLibrary.isc_reconnect_transaction(statusVector, handle, transactionHandle,
                         (short) transactionIdBuffer.length, transactionIdBuffer);
                 processStatusVector();
@@ -318,6 +324,7 @@ public class JnaDatabase extends AbstractFbDatabase<JnaDatabaseConnection>
         try {
             final ByteBuffer responseBuffer = ByteBuffer.allocateDirect(maxBufferLength);
             synchronized (getSynchronizationObject()) {
+                clearStatus();
                 clientLibrary.isc_database_info(statusVector, handle, (short) requestItems.length, requestItems,
                         (short) maxBufferLength, responseBuffer);
                 processStatusVector();
@@ -355,6 +362,7 @@ public class JnaDatabase extends AbstractFbDatabase<JnaDatabaseConnection>
 
             final byte[] statementArray = getEncoding().encodeToCharset(statementText);
             synchronized (getSynchronizationObject()) {
+                clearStatus();
                 clientLibrary.isc_dsql_execute_immediate(statusVector, handle,
                         transaction != null ? ((JnaTransaction) transaction).getJnaHandle() : new IntByReference(),
                         (short) statementArray.length, statementArray, getConnectionDialect(), null);
@@ -431,6 +439,7 @@ public class JnaDatabase extends AbstractFbDatabase<JnaDatabaseConnection>
 
             synchronized (getSynchronizationObject()) {
                 synchronized (jnaEventHandle) {
+                    clearStatus();
                     clientLibrary.isc_event_counts(statusVector, (short) jnaEventHandle.getSize(),
                             jnaEventHandle.getEventBuffer().getValue(), jnaEventHandle.getResultBuffer().getValue());
                 }
@@ -450,6 +459,7 @@ public class JnaDatabase extends AbstractFbDatabase<JnaDatabaseConnection>
 
             synchronized (getSynchronizationObject()) {
                 synchronized (jnaEventHandle) {
+                    clearStatus();
                     if (Platform.isWindows()) {
                         ((WinFbClientLibrary) clientLibrary).isc_que_events(statusVector, getJnaHandle(),
                                 jnaEventHandle.getJnaEventId(),
@@ -479,6 +489,7 @@ public class JnaDatabase extends AbstractFbDatabase<JnaDatabaseConnection>
             synchronized (getSynchronizationObject()) {
                 synchronized (jnaEventHandle) {
                     try {
+                        clearStatus();
                         clientLibrary.isc_cancel_events(statusVector, getJnaHandle(), jnaEventHandle.getJnaEventId());
                         processStatusVector();
                     } finally {
@@ -538,5 +549,9 @@ public class JnaDatabase extends AbstractFbDatabase<JnaDatabaseConnection>
     @Override
     public Set<FbClientFeature> getFeatures() {
         return clientFeatures;
+    }
+
+    private void clearStatus() {
+        statusVector = new ISC_STATUS[STATUS_VECTOR_SIZE];
     }
 }
