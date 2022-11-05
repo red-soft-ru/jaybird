@@ -69,7 +69,6 @@ public class FBDatabaseMetaData implements FirebirdDatabaseMetaData {
     private static final byte[] FALSE_BYTES = getBytes("F");
     private static final byte[] YES_BYTES = getBytes("YES");
     private static final byte[] NO_BYTES = getBytes("NO");
-    private static final byte[] EMPTY_STRING_BYTES = getBytes("");
     private static final byte[] CASESENSITIVE = TRUE_BYTES;
     private static final byte[] CASEINSENSITIVE = FALSE_BYTES;
     private static final byte[] UNSIGNED = TRUE_BYTES;
@@ -98,10 +97,7 @@ public class FBDatabaseMetaData implements FirebirdDatabaseMetaData {
     private static final byte[] TIME_WITH_TIMEZONE_PRECISION = createInt(FbMetadataConstants.TIME_WITH_TIMEZONE_PRECISION);
     private static final byte[] TIMESTAMP_WITH_TIMEZONE_PRECISION = createInt(FbMetadataConstants.TIMESTAMP_WITH_TIMEZONE_PRECISION);
     private static final byte[] BOOLEAN_PRECISION = createInt(FbMetadataConstants.BOOLEAN_BINARY_PRECISION);
-    private static final byte[] DECFLOAT_16_PRECISION = createInt(FbMetadataConstants.DECFLOAT_16_PRECISION);
     private static final byte[] DECFLOAT_34_PRECISION = createInt(FbMetadataConstants.DECFLOAT_34_PRECISION);
-    private static final byte[] COLUMN_NO_NULLS = createInt(DatabaseMetaData.columnNoNulls);
-    private static final byte[] COLUMN_NULLABLE = createInt(DatabaseMetaData.columnNullable);
     private static final byte[] IMPORTED_KEY_NO_ACTION = createShort(DatabaseMetaData.importedKeyNoAction);
     private static final byte[] IMPORTED_KEY_CASCADE = createShort(DatabaseMetaData.importedKeyCascade);
     private static final byte[] IMPORTED_KEY_SET_NULL = createShort(DatabaseMetaData.importedKeySetNull);
@@ -1257,45 +1253,6 @@ public class FBDatabaseMetaData implements FirebirdDatabaseMetaData {
         return getOdsMajorVersion() == 11 && getOdsMinorVersion() >= 2 || getOdsMajorVersion() > 11;
     }
 
-    //@formatter:off
-    private static final String GET_COLUMNS_COMMON =
-            "SELECT RF.RDB$RELATION_NAME AS RELATION_NAME," +
-            "RF.RDB$FIELD_NAME AS FIELD_NAME," +
-            "F.RDB$FIELD_TYPE AS FIELD_TYPE," +
-            "F.RDB$FIELD_SUB_TYPE AS FIELD_SUB_TYPE," +
-            "F.RDB$FIELD_PRECISION AS FIELD_PRECISION," +
-            "F.RDB$FIELD_SCALE AS FIELD_SCALE," +
-            "F.RDB$FIELD_LENGTH AS FIELD_LENGTH," +
-            "F.RDB$CHARACTER_LENGTH AS CHAR_LEN," +
-            "RF.RDB$DESCRIPTION AS REMARKS," +
-            "RF.RDB$DEFAULT_SOURCE AS DEFAULT_SOURCE," +
-            "F.RDB$DEFAULT_SOURCE AS DOMAIN_DEFAULT_SOURCE," +
-            "RF.RDB$FIELD_POSITION + 1 AS FIELD_POSITION," +
-            "RF.RDB$NULL_FLAG AS NULL_FLAG," +
-            "F.RDB$NULL_FLAG AS SOURCE_NULL_FLAG," +
-            "F.RDB$COMPUTED_BLR AS COMPUTED_BLR," +
-            "F.RDB$CHARACTER_SET_ID,";
-
-    private static final String GET_COLUMNS_3_0_START =
-            GET_COLUMNS_COMMON +
-            "CASE WHEN RF.RDB$IDENTITY_TYPE IS NULL THEN CAST('NO' AS VARCHAR(3)) ELSE CAST('YES' AS VARCHAR(3)) END AS IS_IDENTITY," +
-            "CASE RF.RDB$IDENTITY_TYPE WHEN 0 THEN CAST('ALWAYS' AS VARCHAR(10)) WHEN 1 THEN CAST('BY DEFAULT' AS VARCHAR(10)) ELSE NULL END AS JB_IDENTITY_TYPE " +
-            "FROM RDB$RELATION_FIELDS RF," +
-            "RDB$FIELDS F " +
-            "WHERE ";
-
-    private static final String GET_COLUMNS_START =
-            GET_COLUMNS_COMMON +
-            "'NO' AS IS_IDENTITY," +
-            "CAST(NULL AS VARCHAR(10)) AS JB_IDENTITY_TYPE " +
-            "FROM RDB$RELATION_FIELDS RF," +
-            "RDB$FIELDS F " +
-            "WHERE ";
-
-    public static final String GET_COLUMNS_END = " RF.RDB$FIELD_SOURCE = F.RDB$FIELD_NAME " +
-        "order by RF.RDB$RELATION_NAME, RF.RDB$FIELD_POSITION";
-    //@formatter:on
-
     /**
      * {@inheritDoc}
      *
@@ -1325,252 +1282,9 @@ public class FBDatabaseMetaData implements FirebirdDatabaseMetaData {
     @Override
     public ResultSet getColumns(String catalog, String schemaPattern, String tableNamePattern, String columnNamePattern)
             throws SQLException {
-        final RowDescriptor rowDescriptor = new RowDescriptorBuilder(26, datatypeCoder)
-                .at(0).simple(SQL_VARYING, OBJECT_NAME_LENGTH, "TABLE_CAT", "COLUMNINFO").addField()
-                .at(1).simple(SQL_VARYING, OBJECT_NAME_LENGTH, "TABLE_SCHEM", "COLUMNINFO").addField()
-                .at(2).simple(SQL_VARYING, OBJECT_NAME_LENGTH, "TABLE_NAME", "COLUMNINFO").addField()
-                .at(3).simple(SQL_VARYING, OBJECT_NAME_LENGTH, "COLUMN_NAME", "COLUMNINFO").addField()
-                .at(4).simple(SQL_LONG, 0, "DATA_TYPE", "COLUMNINFO").addField()
-                .at(5).simple(SQL_VARYING | 1, 31, "TYPE_NAME", "COLUMNINFO").addField()
-                .at(6).simple(SQL_LONG, 0, "COLUMN_SIZE", "COLUMNINFO").addField()
-                .at(7).simple(SQL_LONG, 0, "BUFFER_LENGTH", "COLUMNINFO").addField()
-                .at(8).simple(SQL_LONG, 0, "DECIMAL_DIGITS", "COLUMNINFO").addField()
-                .at(9).simple(SQL_LONG, 0, "NUM_PREC_RADIX", "COLUMNINFO").addField()
-                .at(10).simple(SQL_LONG, 0, "NULLABLE", "COLUMNINFO").addField()
-                // Field in Firebird is actually a blob, using Integer.MAX_VALUE for length
-                .at(11).simple(SQL_VARYING | 1, Integer.MAX_VALUE, "REMARKS", "COLUMNINFO").addField()
-                .at(12).simple(SQL_VARYING | 1, 31, "COLUMN_DEF", "COLUMNINFO").addField()
-                .at(13).simple(SQL_LONG, 0, "SQL_DATA_TYPE", "COLUMNINFO").addField()
-                .at(14).simple(SQL_LONG, 0, "SQL_DATETIME_SUB", "COLUMNINFO").addField()
-                .at(15).simple(SQL_LONG, 0, "CHAR_OCTET_LENGTH", "COLUMNINFO").addField()
-                .at(16).simple(SQL_LONG, 0, "ORDINAL_POSITION", "COLUMNINFO").addField()
-                .at(17).simple(SQL_VARYING, 3, "IS_NULLABLE", "COLUMNINFO").addField()
-                .at(18).simple(SQL_VARYING, OBJECT_NAME_LENGTH, "SCOPE_CATALOG", "COLUMNINFO").addField()
-                .at(19).simple(SQL_VARYING, OBJECT_NAME_LENGTH, "SCOPE_SCHEMA", "COLUMNINFO").addField()
-                .at(20).simple(SQL_VARYING, OBJECT_NAME_LENGTH, "SCOPE_TABLE", "COLUMNINFO").addField()
-                .at(21).simple(SQL_SHORT, 0, "SOURCE_DATA_TYPE", "COLUMNINFO").addField()
-                .at(22).simple(SQL_VARYING, 3, "IS_AUTOINCREMENT", "COLUMNINFO").addField()
-                .at(23).simple(SQL_VARYING, 3, "IS_GENERATEDCOLUMN", "COLUMNINFO").addField()
-                .at(24).simple(SQL_VARYING, 3, "JB_IS_IDENTITY", "COLUMNINFO").addField()
-                .at(25).simple(SQL_VARYING, 10, "JB_IDENTITY_TYPE", "COLUMNINFO").addField()
-                .toRowDescriptor();
-
-        Clause tableClause = new Clause("RF.RDB$RELATION_NAME", tableNamePattern);
-        Clause columnClause = new Clause("RF.RDB$FIELD_NAME", columnNamePattern);
-
-        String sql = hasIdentityColumns() ? GET_COLUMNS_3_0_START : GET_COLUMNS_START;
-        sql += tableClause.getCondition();
-        sql += columnClause.getCondition();
-        sql += GET_COLUMNS_END;
-
-        List<String> params = new ArrayList<>(2);
-        if (tableClause.hasCondition()) {
-            params.add(tableClause.getValue());
-        }
-        if (columnClause.hasCondition()) {
-            params.add(columnClause.getValue());
-        }
-
-        try (ResultSet rs = doQuery(sql, params)) {
-            if (!rs.next()) {
-                return new FBResultSet(rowDescriptor, Collections.emptyList());
-            }
-
-            final List<RowValue> rows = new ArrayList<>();
-            final RowValueBuilder valueBuilder = new RowValueBuilder(rowDescriptor);
-            final boolean supportsFloatBinaryPrecision = firebirdSupportInfo.supportsFloatBinaryPrecision();
-            do {
-                final short fieldType = rs.getShort("FIELD_TYPE");
-                final short fieldSubType = rs.getShort("FIELD_SUB_TYPE");
-                final short fieldScale = rs.getShort("FIELD_SCALE");
-                final int characterSetId = rs.getInt("RDB$CHARACTER_SET_ID");
-                final int dataType = getDataType(fieldType, fieldSubType, fieldScale, characterSetId);
-                valueBuilder
-                        .at(2).set(getBytes(rs.getString("RELATION_NAME")))
-                        .at(3).set(getBytes(rs.getString("FIELD_NAME")))
-                        .at(4).set(createInt(dataType))
-                        .at(5).set(getBytes(getDataTypeName(fieldType, fieldSubType, fieldScale)))
-                        .at(9).set(RADIX_TEN);
-
-                switch (dataType) {
-                case Types.DECIMAL:
-                case Types.NUMERIC: {
-                    short precision = rs.getShort("FIELD_PRECISION");
-                    if (precision == 0 && fieldType == int128_type) {
-                        precision = NUMERIC_INT128_PRECISION;
-                    }
-                    valueBuilder
-                            .at(6).set(createInt(precision))
-                            .at(8).set(createInt(fieldScale * (-1)));
-                }
-                    break;
-                case Types.CHAR:
-                case Types.VARCHAR:
-                case Types.BINARY:
-                case Types.VARBINARY:
-                    valueBuilder.at(15).set(createInt(rs.getShort("FIELD_LENGTH")));
-                    short charLen = rs.getShort("CHAR_LEN");
-                    if (!rs.wasNull()) {
-                        valueBuilder.at(6).set(createInt(charLen));
-                    } else {
-                        valueBuilder.at(6).set(valueBuilder.get(15));
-                    }
-                    break;
-                case Types.FLOAT:
-                    if (supportsFloatBinaryPrecision) {
-                        valueBuilder
-                                .at(6).set(createInt(FLOAT_BINARY_PRECISION))
-                                .at(9).set(RADIX_BINARY);
-                    } else {
-                        valueBuilder.at(6).set(createInt(FLOAT_DECIMAL_PRECISION));
-                    }
-                    break;
-                case Types.DOUBLE:
-                    if (supportsFloatBinaryPrecision) {
-                        valueBuilder
-                                .at(6).set(createInt(DOUBLE_BINARY_PRECISION))
-                                .at(9).set(RADIX_BINARY);
-                    } else {
-                        valueBuilder.at(6).set(createInt(DOUBLE_DECIMAL_PRECISION));
-                    }
-                    break;
-                case Types.BIGINT:
-                    valueBuilder
-                            .at(6).set(BIGINT_PRECISION)
-                            .at(8).set(INT_ZERO);
-                    break;
-                case Types.INTEGER:
-                    valueBuilder
-                            .at(6).set(INTEGER_PRECISION)
-                            .at(8).set(INT_ZERO);
-                    break;
-                case Types.SMALLINT:
-                    valueBuilder
-                            .at(6).set(SMALLINT_PRECISION)
-                            .at(8).set(INT_ZERO);
-                    break;
-                case Types.DATE:
-                    valueBuilder.at(6).set(DATE_PRECISION);
-                    break;
-                case Types.TIME:
-                    valueBuilder.at(6).set(TIME_PRECISION);
-                    break;
-                case Types.TIMESTAMP:
-                    valueBuilder.at(6).set(TIMESTAMP_PRECISION);
-                    break;
-                case Types.TIMESTAMP_WITH_TIMEZONE:
-                    valueBuilder.at(6).set(TIMESTAMP_WITH_TIMEZONE_PRECISION);
-                    break;
-                case Types.TIME_WITH_TIMEZONE:
-                    valueBuilder.at(6).set(TIME_WITH_TIMEZONE_PRECISION);
-                    break;
-                case Types.BOOLEAN:
-                    valueBuilder
-                            .at(6).set(BOOLEAN_PRECISION)
-                            .at(9).set(RADIX_BINARY);
-                    break;
-                case JaybirdTypeCodes.DECFLOAT:
-                    switch (fieldType) {
-                    case dec16_type:
-                        valueBuilder.at(6).set(DECFLOAT_16_PRECISION);
-                        break;
-                    case dec34_type:
-                        valueBuilder.at(6).set(DECFLOAT_34_PRECISION);
-                        break;
-                    }
-                    break;
-                }
-
-                final short nullFlag = rs.getShort("NULL_FLAG");
-                final short sourceNullFlag = rs.getShort("SOURCE_NULL_FLAG");
-                valueBuilder.at(10).set(nullFlag == 1 || sourceNullFlag == 1
-                        ? COLUMN_NO_NULLS
-                        : COLUMN_NULLABLE)
-                        .at(11).set(getBytes(rs.getString("REMARKS")));
-
-                String column_def = rs.getString("DEFAULT_SOURCE");
-                if (column_def == null) {
-                    column_def = rs.getString("DOMAIN_DEFAULT_SOURCE");
-                }
-                if (column_def != null) {
-                    // TODO This looks suspicious (what if it contains default)
-                    int defaultPos = column_def.toUpperCase(Locale.ROOT).indexOf("DEFAULT");
-                    if (defaultPos >= 0)
-                        column_def = column_def.substring(7).trim();
-                    valueBuilder.at(12).set(getBytes(column_def));
-                }
-
-                valueBuilder
-                        .at(16).set(createInt(rs.getInt("FIELD_POSITION")))
-                        .at(17).set(nullFlag == 1 || sourceNullFlag == 1 ? NO_BYTES : YES_BYTES);
-
-                final boolean isIdentity = Objects.equals("YES", rs.getString("IS_IDENTITY"));
-                if (isIdentity) {
-                    // identity column is an autoincrement for sure
-                    valueBuilder.at(22).set(YES_BYTES);
-                } else {
-                    switch (dataType) {
-                    case Types.INTEGER:
-                    case Types.TINYINT:
-                    case Types.BIGINT:
-                    case Types.SMALLINT:
-                        // Could be autoincrement by trigger, but we simply don't know
-                        valueBuilder.at(22).set(EMPTY_STRING_BYTES);
-                        break;
-                    case Types.NUMERIC:
-                    case Types.DECIMAL:
-                        if (fieldScale == 0 && fieldType != int128_type) {
-                            // Could be autoincrement by trigger, but we simply don't know
-                            valueBuilder.at(22).set(EMPTY_STRING_BYTES);
-                        } else {
-                            // Scaled NUMERIC/DECIMAL or INT128-based: definitely not autoincrement
-                            valueBuilder.at(22).set(NO_BYTES);
-                        }
-                        break;
-                    default:
-                        // All other types are never autoincrement
-                        valueBuilder.at(22).set(NO_BYTES);
-                    }
-                }
-                // Retrieving COMPUTED_BLR to check if it was NULL or not
-                rs.getString("COMPUTED_BLR");
-                // consider identity columns to be generated columns
-                boolean isGenerated = !rs.wasNull() || isIdentity;
-                valueBuilder.at(23).set(isGenerated ? YES_BYTES : NO_BYTES);
-
-                valueBuilder.at(24).set(isIdentity ? YES_BYTES : NO_BYTES);
-                valueBuilder.at(25).set(getBytes(rs.getString("JB_IDENTITY_TYPE")));
-
-                rows.add(valueBuilder.toRowValue(true));
-            } while (rs.next());
-            return new FBResultSet(rowDescriptor, rows);
-        }
+        return GetColumns.create(getDbMetadataMediator())
+                .getColumns(catalog, schemaPattern, tableNamePattern, columnNamePattern);
     }
-
-    private boolean hasIdentityColumns() throws SQLException {
-        return getOdsMajorVersion() >= 12;
-    }
-
-    private static final String GET_COLUMN_PRIVILEGES_START = "select "
-        + "RF.RDB$RELATION_NAME as TABLE_NAME,"
-        + "RF.RDB$FIELD_NAME as COLUMN_NAME,"
-        + "UP.RDB$GRANTOR as GRANTOR,"
-        + "UP.RDB$USER as GRANTEE,"
-        + "UP.RDB$PRIVILEGE as PRIVILEGE,"
-        + "UP.RDB$GRANT_OPTION as IS_GRANTABLE "
-        + "from "
-        + "RDB$RELATION_FIELDS RF,"
-        + "RDB$FIELDS F,"
-        + "RDB$USER_PRIVILEGES UP "
-        + "where "
-        + "RF.RDB$RELATION_NAME = UP.RDB$RELATION_NAME and "
-        + "RF.RDB$FIELD_SOURCE = F.RDB$FIELD_NAME  and "
-        + "(UP.RDB$FIELD_NAME is null or "
-        + "UP.RDB$FIELD_NAME = RF.RDB$FIELD_NAME) and "
-        + "UP.RDB$RELATION_NAME = " + OBJECT_NAME_PARAMETER + " and ((";
-    private static final String GET_COLUMN_PRIVILEGES_END = " UP.RDB$OBJECT_TYPE = 0) or "
-        + "(RF.RDB$FIELD_NAME is null and UP.RDB$OBJECT_TYPE = 0)) "
-        + "order by 2,5 ";
 
     private static final Map<String, byte[]> PRIVILEGE_MAPPING;
     static {
@@ -1596,53 +1310,32 @@ public class FBDatabaseMetaData implements FirebirdDatabaseMetaData {
         return PRIVILEGE_MAPPING.get(firebirdPrivilege);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * <p>
+     * Jaybird defines an additional column:
+     * <ol start="9">
+     * <li><b>JB_GRANTEE_TYPE</b> String  =&gt; Object type of {@code GRANTEE} (<b>NOTE: Jaybird specific column;
+     * retrieve by name!</b>).</li>
+     * </ol>
+     * </p>
+     * <p>
+     * Privileges granted to the table as a whole are reported for each individual column.
+     * </p>
+     * <p>
+     * <b>NOTE:</b> This implementation returns <b>all</b> privileges, not just applicable to the current user. It is
+     * unclear if this complies with the JDBC requirements. This may change in the future to only return only privileges
+     * applicable to the current user, user {@code PUBLIC} and &mdash; maybe &mdash; active roles. This note does not
+     * apply to the {@code OOREMOTE} sub-protocol, which already restricts privileges to the current user and
+     * {@code PUBLIC}.
+     * </p>
+     */
     @Override
     public ResultSet getColumnPrivileges(String catalog, String schema, String table, String columnNamePattern)
             throws SQLException {
-        final RowDescriptor rowDescriptor = new RowDescriptorBuilder(8, datatypeCoder)
-                .at(0).simple(SQL_VARYING, OBJECT_NAME_LENGTH, "TABLE_CAT", "COLUMNPRIV").addField()
-                .at(1).simple(SQL_VARYING, OBJECT_NAME_LENGTH, "TABLE_SCHEM", "COLUMNPRIV").addField()
-                .at(2).simple(SQL_VARYING, OBJECT_NAME_LENGTH, "TABLE_NAME", "COLUMNPRIV").addField()
-                .at(3).simple(SQL_VARYING, OBJECT_NAME_LENGTH, "COLUMN_NAME", "COLUMNPRIV").addField()
-                .at(4).simple(SQL_VARYING, OBJECT_NAME_LENGTH, "GRANTOR", "COLUMNPRIV").addField()
-                .at(5).simple(SQL_VARYING, OBJECT_NAME_LENGTH, "GRANTEE", "COLUMNPRIV").addField()
-                .at(6).simple(SQL_VARYING, 31, "PRIVILEGE", "COLUMNPRIV").addField()
-                .at(7).simple(SQL_VARYING, 31, "IS_GRANTABLE", "COLUMNPRIV").addField()
-                .toRowDescriptor();
-
-        Clause columnClause = new Clause("RF.RDB$FIELD_NAME", columnNamePattern);
-
-        String sql = GET_COLUMN_PRIVILEGES_START;
-        sql += columnClause.getCondition();
-        sql += GET_COLUMN_PRIVILEGES_END;
-
-        List<String> params = new ArrayList<>(2);
-        params.add(table);
-        if (columnClause.hasCondition()) {
-            params.add(columnClause.getValue());
-        }
-
-        try (ResultSet rs = doQuery(sql, params)) {
-            // return empty result set
-            if (!rs.next()) {
-                return new FBResultSet(rowDescriptor, Collections.emptyList());
-            }
-
-            final List<RowValue> rows = new ArrayList<>();
-            final RowValueBuilder valueBuilder = new RowValueBuilder(rowDescriptor);
-            do {
-                rows.add(valueBuilder
-                        .at(2).set(getBytes(rs.getString("TABLE_NAME")))
-                        .at(3).set(getBytes(rs.getString("COLUMN_NAME")))
-                        .at(4).set(getBytes(rs.getString("GRANTOR")))
-                        .at(5).set(getBytes(rs.getString("GRANTEE")))
-                        .at(6).set(mapPrivilege(rs.getString("PRIVILEGE")))
-                        .at(7).set(rs.getShort("IS_GRANTABLE") == 0 ? NO_BYTES : YES_BYTES)
-                        .toRowValue(true)
-                );
-            } while (rs.next());
-            return new FBResultSet(rowDescriptor, rows);
-        }
+        return GetColumnPrivileges.create(getDbMetadataMediator())
+                .getColumnPrivileges(catalog, schema, table, columnNamePattern);
     }
 
     private static final String GET_TABLE_PRIVILEGES_START = "select "
@@ -2843,33 +2536,6 @@ public class FBDatabaseMetaData implements FirebirdDatabaseMetaData {
      */
     public static String escapeWildcards(String objectName) {
         return MetadataPattern.escapeWildcards(objectName);
-    }
-
-    protected String getWantsSystemTables(String[] types) {
-        for (String type : types) {
-            if (SYSTEM_TABLE.equals(type)) {
-                return "T";
-            }
-        }
-        return "F";
-    }
-
-    protected String getWantsTables(String[] types) {
-        for (String type : types) {
-            if (TABLE.equals(type)) {
-                return "T";
-            }
-        }
-        return "F";
-    }
-
-    protected String getWantsViews(String[] types) {
-        for (String type : types) {
-            if (VIEW.equals(type)) {
-                return "T";
-            }
-        }
-        return "F";
     }
 
     //@formatter:off
