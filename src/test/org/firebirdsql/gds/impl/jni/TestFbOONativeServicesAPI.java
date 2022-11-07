@@ -8,7 +8,7 @@ import org.junit.ClassRule;
 public class TestFbOONativeServicesAPI extends TestServicesAPI {
 
     @ClassRule
-    public static final GdsTypeRule testType = GdsTypeRule.supportsFBOONativeOnly();
+    public static final GdsTypeRule testType = GdsTypeRule.supports(FbOONativeGDSFactoryPlugin.NATIVE_TYPE_NAME);
 
     public TestFbOONativeServicesAPI() {
         gdsType = GDSType.getType(FbOONativeGDSFactoryPlugin.NATIVE_TYPE_NAME);
