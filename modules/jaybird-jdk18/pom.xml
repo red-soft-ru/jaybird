@@ -250,6 +250,7 @@
 					</excludes>
 					<testFailureIgnore>true</testFailureIgnore>
 					<jvm>${test.java8.jvm}</jvm>
+					<runOrder>alphabetical</runOrder>
 				</configuration>
 			</plugin>
 			<plugin>
