@@ -1,7 +1,11 @@
 package org.firebirdsql.jca;
 
+import org.firebirdsql.common.rules.GdsTypeRule;
 import org.firebirdsql.gds.TransactionParameterBuffer;
+import org.firebirdsql.gds.impl.jni.EmbeddedGDSFactoryPlugin;
+import org.firebirdsql.gds.impl.nativeoo.FbOOEmbeddedGDSFactoryPlugin;
 import org.firebirdsql.jdbc.FBConnection;
+import org.junit.ClassRule;
 import org.junit.Test;
 
 import java.sql.Connection;
@@ -16,6 +20,10 @@ import static org.firebirdsql.common.FBTestProperties.*;
 import static org.junit.Assert.assertEquals;
 
 public class TestFBSADataSource extends TestXABase {
+
+    @ClassRule
+    public static final GdsTypeRule gdsTypeRule = GdsTypeRule.excludes(EmbeddedGDSFactoryPlugin.EMBEDDED_TYPE_NAME,
+            FbOOEmbeddedGDSFactoryPlugin.EMBEDDED_TYPE_NAME);
 
     @Test
     public void testFBSADataSource() throws Exception {
