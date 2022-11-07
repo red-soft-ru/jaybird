@@ -29,8 +29,6 @@ import org.firebirdsql.jdbc.FBDriverNotCapableException;
 import org.firebirdsql.jna.fbclient.FbClientLibrary;
 import org.firebirdsql.jna.fbclient.ISC_STATUS;
 import org.firebirdsql.jna.fbclient.WinFbClientLibrary;
-import org.firebirdsql.logging.Logger;
-import org.firebirdsql.logging.LoggerFactory;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -54,8 +52,6 @@ public class JnaDatabase extends AbstractFbDatabase<JnaDatabaseConnection>
         implements JnaAttachment, TransactionListener, FbClientFeatureAccess {
 
     // TODO Find out if there are any exception from JNA that we need to be prepared to handle.
-
-    private static final Logger log = LoggerFactory.getLogger(JnaDatabase.class);
 
     private static final ParameterConverter<JnaDatabaseConnection, ?> PARAMETER_CONVERTER = new JnaParameterConverter();
     public static final int STATUS_VECTOR_SIZE = 20;
@@ -143,11 +139,9 @@ public class JnaDatabase extends AbstractFbDatabase<JnaDatabaseConnection>
                 }
                 processStatusVector();
             } catch (SQLException ex) {
-                log.error(ex.getMessage(), ex);
                 safelyDetach();
                 throw ex;
             } catch (Exception ex) {
-                log.error(ex.getMessage(), ex);
                 safelyDetach();
                 // TODO Replace with specific error (eg native client error)
                 throw new FbExceptionBuilder()
