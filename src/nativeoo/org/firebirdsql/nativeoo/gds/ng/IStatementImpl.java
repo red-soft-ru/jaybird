@@ -94,6 +94,10 @@ public class IStatementImpl extends AbstractFbStatement {
                     setType(StatementType.NONE);
                 } else {
                     checkStatementValid();
+                    if (statement != null) {
+                        statement.free(getStatus());
+                        processStatus();
+                    }
                 }
 
                 ITransactionImpl transaction = (ITransactionImpl) getTransaction();
