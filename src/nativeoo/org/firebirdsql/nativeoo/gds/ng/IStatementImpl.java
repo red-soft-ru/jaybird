@@ -123,6 +123,10 @@ public class IStatementImpl extends AbstractFbStatement {
                     }
                 } else {
                     checkStatementValid();
+                    if (statement != null) {
+                        statement.free(getStatus());
+                        processStatus();
+                    }
                 }
 
                 switchState(StatementState.PREPARING);

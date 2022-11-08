@@ -21,14 +21,12 @@ public class ITransactionImpl extends AbstractFbTransaction {
 
     private static final Logger log = LoggerFactory.getLogger(ITransactionImpl.class);
 
-    private final FbClientLibrary clientLibrary;
     private final ITransaction transaction;
     private final IStatus status;
 
     public ITransactionImpl(IDatabaseImpl database, ITransaction iTransaction, TransactionState initialState) {
         super(initialState, database);
         transaction = iTransaction;
-        clientLibrary = database.getClientLibrary();
         status = database.getStatus();
     }
 
