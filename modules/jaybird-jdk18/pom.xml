@@ -251,6 +251,7 @@
 					<testFailureIgnore>true</testFailureIgnore>
 					<jvm>${test.java8.jvm}</jvm>
 					<runOrder>alphabetical</runOrder>
+					<useSystemClassLoader>false</useSystemClassLoader>
 				</configuration>
 			</plugin>
 			<plugin>
