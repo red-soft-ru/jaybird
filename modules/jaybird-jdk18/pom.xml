@@ -257,6 +257,7 @@
 					<reuseForks>false</reuseForks>
 					<trimStackTrace>false</trimStackTrace>
 					<argLine>-Xmx16G -noverify</argLine>
+					<rerunFailingTestsCount>3</rerunFailingTestsCount>
 				</configuration>
 			</plugin>
 			<plugin>
