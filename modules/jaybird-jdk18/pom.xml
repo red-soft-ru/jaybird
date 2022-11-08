@@ -251,7 +251,11 @@
 					<testFailureIgnore>true</testFailureIgnore>
 					<jvm>${test.java8.jvm}</jvm>
 					<runOrder>alphabetical</runOrder>
-					<argLine>-Xmx1024m -noverify</argLine>
+					<useSystemClassLoader>true</useSystemClassLoader>
+					<useManifestOnlyJar>false</useManifestOnlyJar>
+					<forkCount>1</forkCount>
+					<reuseForks>true</reuseForks>
+					<argLine>-Xmx4096m -noverify</argLine>
 				</configuration>
 			</plugin>
 			<plugin>
