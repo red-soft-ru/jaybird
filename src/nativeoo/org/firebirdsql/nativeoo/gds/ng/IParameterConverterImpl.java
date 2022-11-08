@@ -8,6 +8,8 @@ import org.firebirdsql.gds.ng.IAttachProperties;
 import org.firebirdsql.gds.ng.WireCrypt;
 
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Implementation of {@link org.firebirdsql.gds.ng.ParameterConverter} for native OO API.
@@ -28,11 +30,35 @@ public class IParameterConverterImpl extends AbstractParameterConverter<NativeDa
         if (props.getPassword() != null) {
             pb.addArgument(tagMapping.getPasswordTag(), props.getPassword());
         }
+        if (props.getEffectiveLogin() != null) {
+            pb.addArgument(tagMapping.getEffectiveLoginTag(), props.getEffectiveLogin());
+        }
+
+        Map<String, String> configMap = new HashMap<>();
 
         if (props.getWireCryptAsEnum() != WireCrypt.DEFAULT) {
-            // Need to do this differently when having to add multiple configs
-            String configString = "WireCrypt = " + props.getWireCrypt();
+            configMap.put("WireCrypt", props.getWireCrypt());
+        }
+
+        String authPlugins = props.getAuthPlugins();
+        if (authPlugins != null && !authPlugins.isEmpty()) {
+            configMap.put("AuthClient", authPlugins);
+        }
+
+        if (!configMap.isEmpty()) {
+            String configString = buildConfigString(configMap);
             pb.addArgument(tagMapping.getConfigTag(), configString);
         }
+    }
+
+    private String buildConfigString(Map<String, String> configMap) {
+        StringBuilder builder = new StringBuilder();
+        for (Map.Entry<String, String> configEntry : configMap.entrySet()) {
+            builder.append(configEntry.getKey())
+                    .append('=')
+                    .append(configEntry.getValue())
+                    .append('\n');
+        }
+        return builder.toString();
     }
 }

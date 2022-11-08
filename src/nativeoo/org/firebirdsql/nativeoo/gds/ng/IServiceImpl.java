@@ -72,7 +72,7 @@ public class IServiceImpl extends AbstractFbService<IServiceConnectionImpl> impl
         checkConnected();
         try {
             final byte[] serviceParameterBufferBytes = serviceParameterBuffer == null ? null
-                    : serviceParameterBuffer.toBytesWithType();
+                    : serviceParameterBuffer.toBytes();
             final byte[] serviceRequestBufferBytes =
                     serviceRequestBuffer == null ? null : serviceRequestBuffer.toBytes();
             final byte[] responseBuffer = new byte[maxBufferLength];
