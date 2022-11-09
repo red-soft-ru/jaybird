@@ -36,6 +36,7 @@ TEST_DIR=/tmp/jaybird_test
 TMPFS=/tmpfs
 export FIREBIRD="$INSTALLDIR"
 export LD_LIBRARY_PATH="$INSTALLDIR/lib"
+export LD_PRELOAD="$INSTALLDIR/lib/libjsig.so"
 export JAVA_HOME
 ARCH=`arch`
 if [ "$ARCH" == "i686" ]; then
@@ -232,5 +233,5 @@ fi
 echo rdb_server | kinit rdb_server/localhost
 klist
 
-mvn $MAVEN_CLI_OPTS -f "${CI_PROJECT_DIR}"/pom.xml test -Pdeploy-internal -Pcryptoapi -Pcryptoapi-security -DreportNamePrefix=$REPORT_PREFIX -DreleaseHubBuildVersion=$VERSION  -DfailIfNoTests=false -Dtest.db.dir=$TEST_DIR -Dtest.java8.jvm=$TEST_JAVA8_JVM -Dtest=$TEST_LIST -Dtest.gds_type=$GDS_TYPE
+mvn $MAVEN_CLI_OPTS -f "${CI_PROJECT_DIR}"/pom.xml test -Pdeploy-internal -Pcryptoapi -Pcryptoapi-security -DreportNamePrefix=$REPORT_PREFIX -DreleaseHubBuildVersion=$VERSION  -DfailIfNoTests=false -Dtest.db.dir=$TEST_DIR -Dtest.java8.jvm=$TEST_JAVA8_JVM -Dtest=$TEST_LIST -Dtest.gds_type=$GDS_TYPE -Dorg.firebirdsql.nativeResourceShutdownDisabled=true
 kdestroy
