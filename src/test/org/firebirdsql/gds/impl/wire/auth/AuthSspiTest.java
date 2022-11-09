@@ -4,9 +4,11 @@ import org.firebirdsql.common.FBTestProperties;
 import org.firebirdsql.common.JdbcResourceHelper;
 import org.firebirdsql.common.extension.UsesDatabaseExtension;
 import org.firebirdsql.cryptoapi.AuthCryptoPluginImpl;
+import org.firebirdsql.cryptoapi.cryptopro.exception.CryptoException;
 import org.firebirdsql.gds.impl.GDSServerVersion;
 import org.firebirdsql.gds.impl.GDSType;
 import org.firebirdsql.jaybird.xca.FBSADataSource;
+import org.firebirdsql.jdbc.FBDriver;
 import org.firebirdsql.jdbc.FirebirdConnection;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -27,6 +29,20 @@ import static org.junit.jupiter.api.Assertions.fail;
  * @since 3.0
  */
 public class AuthSspiTest {
+
+    static {
+        // Needed for supporting tests that don't reference DriverManager
+        try {
+            Class.forName(FBDriver.class.getName());
+        } catch (ClassNotFoundException ex) {
+            throw new ExceptionInInitializerError("No suitable driver.");
+        }
+        try {
+            AuthCryptoPlugin.register(new AuthCryptoPluginImpl());
+        } catch (CryptoException e) {
+            throw new ExceptionInInitializerError("Cannot register crypto plugin");
+        }
+    }
 
     @RegisterExtension
     static final UsesDatabaseExtension.UsesDatabaseForAll usesDatabase = UsesDatabaseExtension.usesDatabaseForAll();

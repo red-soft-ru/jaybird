@@ -1,9 +1,11 @@
 package org.firebirdsql.cryptoapi;
 
+import org.firebirdsql.cryptoapi.cryptopro.exception.CryptoException;
 import org.firebirdsql.gds.impl.wire.auth.AuthCryptoException;
 import org.firebirdsql.gds.impl.wire.auth.AuthCryptoPlugin;
 import org.firebirdsql.gds.impl.wire.auth.AuthPrivateKeyContext;
 import org.firebirdsql.gds.impl.wire.auth.GDSAuthException;
+import org.firebirdsql.jdbc.FBDriver;
 import org.junit.jupiter.api.Test;
 
 import java.io.FileInputStream;
@@ -13,6 +15,20 @@ import java.io.InputStream;
 import static org.junit.jupiter.api.Assertions.*;
 
 class AuthCryptoPluginImplTest {
+
+    static {
+        // Needed for supporting tests that don't reference DriverManager
+        try {
+            Class.forName(FBDriver.class.getName());
+        } catch (ClassNotFoundException ex) {
+            throw new ExceptionInInitializerError("No suitable driver.");
+        }
+        try {
+            AuthCryptoPlugin.register(new AuthCryptoPluginImpl());
+        } catch (CryptoException e) {
+            throw new ExceptionInInitializerError("Cannot register crypto plugin");
+        }
+    }
 
     private class HashThread extends Thread {
 

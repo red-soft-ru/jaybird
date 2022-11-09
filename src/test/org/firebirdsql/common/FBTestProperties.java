@@ -18,19 +18,15 @@
  */
 package org.firebirdsql.common;
 
-import org.firebirdsql.cryptoapi.AuthCryptoPluginImpl;
-import org.firebirdsql.cryptoapi.cryptopro.exception.CryptoException;
 import org.firebirdsql.gds.TransactionParameterBuffer;
 import org.firebirdsql.gds.impl.GDSFactory;
 import org.firebirdsql.gds.impl.GDSType;
 import org.firebirdsql.gds.impl.TransactionParameterBufferImpl;
-import org.firebirdsql.gds.impl.wire.auth.AuthCryptoPlugin;
 import org.firebirdsql.gds.ng.FbConnectionProperties;
 import org.firebirdsql.gds.ng.FbDatabaseFactory;
 import org.firebirdsql.gds.ng.FbServiceProperties;
 import org.firebirdsql.jaybird.fb.constants.TpbItems;
 import org.firebirdsql.jaybird.xca.FBManagedConnectionFactory;
-import org.firebirdsql.jdbc.FBDriver;
 import org.firebirdsql.jdbc.FirebirdConnection;
 import org.firebirdsql.management.FBManager;
 import org.firebirdsql.management.FBServiceManager;
@@ -48,21 +44,7 @@ import java.util.*;
 public final class FBTestProperties {
 
     private static FirebirdSupportInfo firebirdSupportInfo;
-    
-    static {
-        // Needed for supporting tests that don't reference DriverManager
-        try {
-            Class.forName(FBDriver.class.getName());
-        } catch (ClassNotFoundException ex) {
-            throw new ExceptionInInitializerError("No suitable driver.");
-        }
-	try {
-            AuthCryptoPlugin.register(new AuthCryptoPluginImpl());
-        } catch (CryptoException e) {
-            throw new ExceptionInInitializerError("Cannot register crypto plugin");
-        }
-    }
-    
+
     private static final ResourceBundle testDefaults = ResourceBundle.getBundle("unit_test_defaults");
 
     public static String getProperty(String property) {
