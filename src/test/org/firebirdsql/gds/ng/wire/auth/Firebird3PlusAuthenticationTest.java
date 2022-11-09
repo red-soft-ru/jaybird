@@ -84,7 +84,7 @@ class Firebird3PlusAuthenticationTest {
              ResultSet resultSet = statement.executeQuery(
                      "SELECT MON$AUTH_METHOD FROM MON$ATTACHMENTS WHERE MON$ATTACHMENT_ID = CURRENT_CONNECTION")) {
             assertTrue(resultSet.next(), "Expected a row with attachment information");
-            assertEquals("Legacy_Auth", resultSet.getString(1), "Unexpected authentication method");
+            assertEquals("LEGACY_SEC", resultSet.getString(1), "Unexpected authentication method");
         }
     }
 

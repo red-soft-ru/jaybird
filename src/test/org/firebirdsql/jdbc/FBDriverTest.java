@@ -285,20 +285,20 @@ class FBDriverTest {
         }
     }
 
-    static Stream<String> testConnectionAuthenticationPlugin() {
+    static Stream<String[]> testConnectionAuthenticationPlugin() {
         return Stream.of(
-                LegacyAuthenticationPluginSpi.LEGACY_AUTH_NAME,
-                SrpAuthenticationPluginSpi.SRP_AUTH_NAME,
-                Srp224AuthenticationPluginSpi.SRP_224_AUTH_NAME,
-                Srp256AuthenticationPluginSpi.SRP_256_AUTH_NAME,
-                Srp384AuthenticationPluginSpi.SRP_384_AUTH_NAME,
-                Srp512AuthenticationPluginSpi.SRP_512_AUTH_NAME);
+                new String[]{ LegacyAuthenticationPluginSpi.LEGACY_AUTH_NAME, "LEGACY_SEC" },
+                new String[]{ SrpAuthenticationPluginSpi.SRP_AUTH_NAME, "SRP_SEC" },
+                new String[]{ Srp224AuthenticationPluginSpi.SRP_224_AUTH_NAME, "SRP224_SEC" },
+                new String[]{ Srp256AuthenticationPluginSpi.SRP_256_AUTH_NAME, "SRP256_SEC" },
+                new String[]{ Srp384AuthenticationPluginSpi.SRP_384_AUTH_NAME, "SRP384_SEC" },
+                new String[]{ Srp512AuthenticationPluginSpi.SRP_512_AUTH_NAME, "SRP512_SEC" });
     }
 
     // Test might fail if plugin not enabled
     @ParameterizedTest
     @MethodSource
-    void testConnectionAuthenticationPlugin(String pluginName) throws Exception {
+    void testConnectionAuthenticationPlugin(String pluginName, String pluginValue) throws Exception {
         assumeThat("Test doesn't work with embedded", FBTestProperties.GDS_TYPE, not(isEmbeddedType()));
         assumeTrue(getDefaultSupportInfo().isVersionEqualOrAbove(3, 0), "Requires Firebird 3 or higher");
         assumeTrue(EnvironmentRequirement.ALL_SRP_PLUGINS.isMet(), "Requires " + pluginName);
@@ -319,7 +319,7 @@ class FBDriverTest {
              ResultSet rs = statement.executeQuery(
                      "select mon$auth_method from mon$attachments where mon$attachment_id = current_connection")) {
             assertTrue(rs.next(), "expected row");
-            assertEquals(pluginName, rs.getString(1), "Unexpected authentication method");
+            assertEquals(pluginValue, rs.getString(1), "Unexpected authentication method");
         }
     }
 
@@ -338,9 +338,15 @@ class FBDriverTest {
         assertThat(exception, errorCodeEquals(JaybirdErrorCodes.jb_noKnownAuthPlugins));
     }
 
+    static Stream<String[]> testAuthenticateDatabaseUsingCaseSensitive() {
+        return Stream.of(
+                new String[]{ "Srp", "SRP_SEC" },
+                new String[]{ "Legacy_Auth", "LEGACY_SEC" });
+    }
+
     @ParameterizedTest
-    @ValueSource(strings = { "Srp", "Legacy_Auth" })
-    void testAuthenticateDatabaseUsingCaseSensitive(String authPlugin) throws SQLException {
+    @MethodSource
+    void testAuthenticateDatabaseUsingCaseSensitive(String authPlugin, String pluginValue) throws SQLException {
         assumeThat("Test requires GDS type that performs real authentication", GDS_TYPE, not(isEmbeddedType()));
         assumeTrue(getDefaultSupportInfo().supportsCaseSensitiveUserNames(),
                 "Test requires case sensitive user name support");
@@ -360,7 +366,7 @@ class FBDriverTest {
                              + "where MON$ATTACHMENT_ID = CURRENT_CONNECTION")
         ) {
             assertTrue(resultSet.next(), "Expected a row with attachment information");
-            assertEquals(authPlugin, resultSet.getString(1), "Unexpected authentication method");
+            assertEquals(pluginValue, resultSet.getString(1), "Unexpected authentication method");
             assertEquals("CaseSensitiveUser", resultSet.getString(2).trim(), "Unexpected user name");
         }
     }
