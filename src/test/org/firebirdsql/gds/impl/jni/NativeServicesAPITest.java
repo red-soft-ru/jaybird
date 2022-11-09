@@ -10,10 +10,8 @@ public class NativeServicesAPITest extends ServicesAPITest {
     @RegisterExtension
     static final GdsTypeExtension testType = GdsTypeExtension.supports(NativeGDSFactoryPlugin.NATIVE_TYPE_NAME);
 
-    @Test
-    void testNativeServicesAPI() {
+    public NativeServicesAPITest() {
         gdsType = GDSType.getType(NativeGDSFactoryPlugin.NATIVE_TYPE_NAME);
         protocol = "jdbc:firebirdsql:native:";
-        port = 5066;
     }
 }

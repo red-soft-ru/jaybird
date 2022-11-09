@@ -63,7 +63,7 @@ class ServicesAPITest {
     private FBManager fbManager;
     protected String protocol;
     protected GDSType gdsType;
-    protected int port = 5066;
+    protected int port = 3050;
     private FbDatabaseFactory dbFactory;
     private Path logFolder;
 

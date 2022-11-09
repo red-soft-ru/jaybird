@@ -11,8 +11,7 @@ public class FbOOEmbeddedServicesAPITest extends ServicesAPITest {
     @RegisterExtension
     static final GdsTypeExtension testType = GdsTypeExtension.supports(FbOOEmbeddedGDSFactoryPlugin.EMBEDDED_TYPE_NAME);
 
-    @Test
-    void testFbOOEmbeddedServicesAPI() {
+    public FbOOEmbeddedServicesAPITest() {
         gdsType = GDSType.getType(FbOOEmbeddedGDSFactoryPlugin.EMBEDDED_TYPE_NAME);
         protocol = "jdbc:firebirdsql:fboo:embedded:";
     }

@@ -11,10 +11,8 @@ public class FbOONativeServicesAPITest extends ServicesAPITest {
     @RegisterExtension
     static final GdsTypeExtension testType = GdsTypeExtension.supports(FbOONativeGDSFactoryPlugin.NATIVE_TYPE_NAME);
 
-    @Test
-    void testFbOONativeServicesAPI() {
+    public FbOONativeServicesAPITest() {
         gdsType = GDSType.getType(FbOONativeGDSFactoryPlugin.NATIVE_TYPE_NAME);
         protocol = "jdbc:firebirdsql:fboo:native:";
-        port = 5066;
     }
 }
