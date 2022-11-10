@@ -344,7 +344,7 @@ class FBDateFieldTest extends BaseJUnit5TestFBField<FBDateField, java.sql.Date> 
         //Timestamp expectedTimestamp = new java.sql.Timestamp(TEST_SQL_DATE.getTime());
         Timestamp expectedTimestamp = java.sql.Timestamp.valueOf("2012-03-11 02:00:00");
         
-        assertEquals(expectedTimestamp, field.getTimestamp(tzCalendar), "Unexpected value for getTimestamp(Calendar)");
+        assertEquals(expectedTimestamp.toLocalDateTime().toLocalDate(), field.getTimestamp(tzCalendar).toLocalDateTime().toLocalDate(), "Unexpected value for getTimestamp(Calendar)");
     }
     
     @Test
