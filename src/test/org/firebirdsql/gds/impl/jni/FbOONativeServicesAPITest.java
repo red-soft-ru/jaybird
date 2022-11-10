@@ -3,16 +3,30 @@ package org.firebirdsql.gds.impl.jni;
 import org.firebirdsql.common.extension.GdsTypeExtension;
 import org.firebirdsql.gds.impl.GDSType;
 import org.firebirdsql.gds.impl.nativeoo.FbOONativeGDSFactoryPlugin;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
-public class FbOONativeServicesAPITest extends ServicesAPITest {
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+
+class FbOONativeServicesAPITest extends AbstractServicesAPITest {
 
     @RegisterExtension
     static final GdsTypeExtension testType = GdsTypeExtension.supports(FbOONativeGDSFactoryPlugin.NATIVE_TYPE_NAME);
 
-    public FbOONativeServicesAPITest() {
+    @BeforeEach
+    @Override
+    void setUp() throws Exception {
         gdsType = GDSType.getType(FbOONativeGDSFactoryPlugin.NATIVE_TYPE_NAME);
-        protocol = "jdbc:firebirdsql:fboo:native:";
+        port = 3050;
+        super.setUp();
+    }
+
+    @Override
+    void connectToDatabase() throws SQLException {
+        Connection connection = DriverManager.getConnection(
+                "jdbc:firebirdsql:fboo:native:" + mAbsoluteDatabasePath + "?encoding=NONE", "SYSDBA", "masterkey");
+        connection.close();
     }
 }

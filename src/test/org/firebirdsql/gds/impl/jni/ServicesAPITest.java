@@ -18,7 +18,6 @@
  */
 package org.firebirdsql.gds.impl.jni;
 
-import org.firebirdsql.common.extension.GdsTypeExtension;
 import org.firebirdsql.gds.ISCConstants;
 import org.firebirdsql.gds.ServiceRequestBuffer;
 import org.firebirdsql.gds.impl.GDSFactory;
@@ -35,14 +34,11 @@ import org.firebirdsql.management.FBManager;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.io.TempDir;
 
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -51,25 +47,25 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 /**
  * Initial tests for Services API.
  */
-class ServicesAPITest {
+abstract class AbstractServicesAPITest {
 
     @TempDir
     private Path tempDir;
 
     private final Logger log = LoggerFactory.getLogger(getClass());
 
-    private String mAbsoluteDatabasePath;
+    protected String mAbsoluteDatabasePath;
     private String mAbsoluteBackupPath;
     private FBManager fbManager;
-    protected String protocol;
     protected GDSType gdsType;
-    protected int port = 3050;
+    protected int port = 5066;
     private FbDatabaseFactory dbFactory;
     private Path logFolder;
 
     @BeforeEach
     void setUp() throws Exception {
         Class.forName(FBDriver.class.getName());
+
         dbFactory = GDSFactory.getDatabaseFactoryForType(gdsType);
 
         fbManager = new FBManager(gdsType);
@@ -125,11 +121,7 @@ class ServicesAPITest {
         connectToDatabase();
     }
 
-    private void connectToDatabase() throws SQLException {
-        Connection connection = DriverManager.getConnection(
-                protocol + mAbsoluteDatabasePath + "?encoding=NONE", "SYSDBA", "masterkey");
-        connection.close();
-    }
+    abstract void connectToDatabase() throws SQLException;
 
     private void restoreDatabase(FbService service) throws Exception {
         startRestore(service);
