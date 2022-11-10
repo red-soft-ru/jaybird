@@ -133,6 +133,54 @@ class FBTimestampFieldTest extends BaseJUnit5TestFBField<FBTimestampField, Times
 
     @Test
     @Override
+    void getObject_Long() throws SQLException {
+        toReturnLongExpectations(0);
+
+        assertEquals(0, (long) field.getObject(Long.class), "Unexpected value for getObject_Long(Long.class)");
+    }
+
+    @Test
+    @Override
+    void getIntNonNull() throws SQLException {
+        toReturnIntegerExpectations(0);
+
+        assertEquals(0, field.getInt(), "Unexpected value for getInt()");
+    }
+
+    @Test
+    @Override
+    void getLongNonNull() throws SQLException {
+        toReturnLongExpectations(0);
+
+        assertEquals(0, field.getLong(), "Unexpected value for getLong()");
+    }
+
+    @Test
+    @Override
+    public void getObject_Integer() throws SQLException {
+        toReturnIntegerExpectations(Integer.MAX_VALUE << 32);
+
+        assertEquals(Integer.MAX_VALUE, (int) field.getObject(Integer.class), "Unexpected value for getObject(Integer.class)");
+    }
+
+    @Test
+    @Override
+    void setInteger() throws SQLException {
+        field.setInteger(4543);
+
+        verifySetInteger(4543);
+    }
+
+    @Test
+    @Override
+    void setLong() throws SQLException {
+        field.setLong(Long.MAX_VALUE);
+
+        verifySetLong(Long.MAX_VALUE);
+    }
+
+    @Test
+    @Override
     void getStringNonNull() throws SQLException {
         toReturnTimestampExpectations(TEST_LOCAL_DATE_TIME);
 

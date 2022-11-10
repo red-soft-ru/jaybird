@@ -30,9 +30,7 @@ import java.sql.Types;
 import java.time.LocalDate;
 import java.util.Calendar;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Tests for {@link FBDateField}
@@ -185,6 +183,46 @@ class FBDateFieldTest extends BaseJUnit5TestFBField<FBDateField, java.sql.Date> 
     }
     
     // TODO Check if other objecttypes need to be tested as well.
+
+    @Test
+    @Override
+    void getObject_Long() throws SQLException {
+        toReturnLongExpectations(0);
+
+        assertEquals(0, (long) field.getObject(Long.class), "Unexpected value for getObject_Long(Long.class)");
+    }
+
+    @Test
+    @Override
+    void getIntNonNull() throws SQLException {
+        toReturnIntegerExpectations(0);
+
+        assertEquals(0, field.getInt(), "Unexpected value for getInt()");
+    }
+
+    @Test
+    @Override
+    void getLongNonNull() throws SQLException {
+        toReturnLongExpectations(0);
+
+        assertEquals(0, field.getLong(), "Unexpected value for getLong()");
+    }
+
+    @Test
+    @Override
+    void setInteger() throws SQLException {
+        field.setInteger(4543);
+
+        verifySetInteger(4543);
+    }
+
+    @Test
+    @Override
+    void setLong() throws SQLException {
+        field.setLong(Long.MAX_VALUE);
+
+        verifySetInteger(Integer.MAX_VALUE << 32);
+    }
     
     @Test
     void getStringNull() throws SQLException {
