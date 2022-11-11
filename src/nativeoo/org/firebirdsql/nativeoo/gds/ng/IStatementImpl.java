@@ -70,7 +70,7 @@ public class IStatementImpl extends AbstractFbStatement {
     @Override
     protected void free(int option) throws SQLException {
         try (LockCloseable ignored = withLock()) {
-            if (option == ISCConstants.DSQL_close) {
+            if (cursor != null && option == ISCConstants.DSQL_close) {
                 cursor.close(getStatus());
                 cursor = null;
                 processStatus();
