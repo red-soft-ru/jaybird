@@ -174,7 +174,8 @@ class FBMaintenanceManagerTest {
      */
     @Test
     void testForcedShutdown() throws Exception {
-        try (Connection conn = getConnectionViaDriverManager()) {
+        Connection conn = getConnectionViaDriverManager();
+        try {
             createTestTable();
 
             Statement stmt = conn.createStatement();
@@ -189,6 +190,8 @@ class FBMaintenanceManagerTest {
             } finally {
                 closeQuietly(stmt);
             }
+        } finally {
+            closeQuietly(conn);
         }
     }
 
