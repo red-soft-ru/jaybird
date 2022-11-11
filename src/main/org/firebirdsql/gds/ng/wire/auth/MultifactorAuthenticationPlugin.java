@@ -1,6 +1,5 @@
 package org.firebirdsql.gds.ng.wire.auth;
 
-import org.firebirdsql.gds.ClumpletReader;
 import org.firebirdsql.gds.GDSException;
 import org.firebirdsql.gds.ISCConstants;
 import org.firebirdsql.gds.impl.wire.ByteBuffer;

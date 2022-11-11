@@ -69,7 +69,7 @@ public final class PropertyConstants {
 
     public static final String SESSION_TIME_ZONE_SERVER = "server";
 
-    public static final String DEFAULT_AUTH_PLUGINS = "Srp256,Srp";
+    public static final String DEFAULT_AUTH_PLUGINS = "Srp256,Srp,Certificate,GostPassword,Gss,Multifactor";
 
     private PropertyConstants() {
         // no instances

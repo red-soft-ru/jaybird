@@ -4,17 +4,14 @@ import org.firebirdsql.common.FBTestProperties;
 import org.firebirdsql.common.JdbcResourceHelper;
 import org.firebirdsql.common.extension.UsesDatabaseExtension;
 import org.firebirdsql.cryptoapi.AuthCryptoPluginImpl;
-import org.firebirdsql.cryptoapi.cryptopro.exception.CryptoException;
-import org.firebirdsql.gds.impl.GDSServerVersion;
 import org.firebirdsql.gds.impl.GDSType;
 import org.firebirdsql.jaybird.xca.FBSADataSource;
-import org.firebirdsql.jdbc.FBDriver;
-import org.firebirdsql.jdbc.FirebirdConnection;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.io.*;
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
@@ -30,20 +27,6 @@ import static org.junit.jupiter.api.Assertions.fail;
  */
 public class AuthSspiTest {
 
-    static {
-        // Needed for supporting tests that don't reference DriverManager
-        try {
-            Class.forName(FBDriver.class.getName());
-        } catch (ClassNotFoundException ex) {
-            throw new ExceptionInInitializerError("No suitable driver.");
-        }
-        try {
-            AuthCryptoPlugin.register(new AuthCryptoPluginImpl());
-        } catch (CryptoException e) {
-            throw new ExceptionInInitializerError("Cannot register crypto plugin");
-        }
-    }
-
     @RegisterExtension
     static final UsesDatabaseExtension.UsesDatabaseForAll usesDatabase = UsesDatabaseExtension.usesDatabaseForAll();
 
@@ -52,9 +35,8 @@ public class AuthSspiTest {
 
         try (Connection connection = getConnectionViaDriverManager();
             Statement statement = connection.createStatement()) {
-            GDSServerVersion serverVersion =
-                    connection.unwrap(FirebirdConnection.class).getFbDatabase().getServerVersion();
-            if (serverVersion.getMajorVersion() == 4) {
+            DatabaseMetaData dmd = connection.getMetaData();
+            if (dmd.getDatabaseMajorVersion() >= 4) {
                 statement.execute("grant policy \"DEFAULT\" to \"TEST@RED-SOFT.RU\"");
             }
         } catch (Exception e) {
@@ -68,7 +50,7 @@ public class AuthSspiTest {
             final FBSADataSource fbDataSource = new FBSADataSource(GDSType.getType("PURE_JAVA"));
 
             fbDataSource.setDatabase(FBTestProperties.DB_DATASOURCE_URL);
-            fbDataSource.setNonStandardProperty("isc_dpb_user_name", "test@red-soft.ru");
+            fbDataSource.setNonStandardProperty("isc_dpb_user_name", "TEST@RED-SOFT.RU");
             fbDataSource.setNonStandardProperty("isc_dpb_lc_ctype", "WIN1251");
             fbDataSource.setNonStandardProperty("isc_dpb_trusted_auth", "1");
             fbDataSource.setNonStandardProperty("isc_dpb_multi_factor_auth", "1");
@@ -139,9 +121,8 @@ public class AuthSspiTest {
 
         try (Connection connection = getConnectionViaDriverManager();
              Statement statement = connection.createStatement()) {
-            GDSServerVersion serverVersion =
-                    connection.unwrap(FirebirdConnection.class).getFbDatabase().getServerVersion();
-            if (serverVersion.getMajorVersion() == 4) {
+            DatabaseMetaData dmd = connection.getMetaData();
+            if (dmd.getDatabaseMajorVersion() >= 4) {
                 statement.execute("grant policy TestPolicy to \"TEST@RED-SOFT.RU\"");
             }
         } catch (Exception e) {
@@ -156,7 +137,7 @@ public class AuthSspiTest {
 
             fbDataSource.setDatabase(FBTestProperties.DB_DATASOURCE_URL);
             fbDataSource.setNonStandardProperty("isc_dpb_lc_ctype", "WIN1251");
-            fbDataSource.setNonStandardProperty("isc_dpb_user_name", "test@red-soft.ru");
+            fbDataSource.setNonStandardProperty("isc_dpb_user_name", "TEST@RED-SOFT.RU");
             fbDataSource.setNonStandardProperty("isc_dpb_password", "q3rgu7Ah");
             fbDataSource.setNonStandardProperty("isc_dpb_certificate", "/tmp/testuser.cer");
             fbDataSource.setNonStandardProperty("isc_dpb_repository_pin", "12345678");
@@ -230,7 +211,7 @@ public class AuthSspiTest {
 
             fbDataSource.setDatabase(FBTestProperties.DB_DATASOURCE_URL);
             fbDataSource.setNonStandardProperty("isc_dpb_lc_ctype", "WIN1251");
-            fbDataSource.setNonStandardProperty("isc_dpb_user_name", "test@red-soft.ru");
+            fbDataSource.setNonStandardProperty("isc_dpb_user_name", "TEST@RED-SOFT.RU");
             fbDataSource.setNonStandardProperty("isc_dpb_password", "q3rgu7Ah");
             fbDataSource.setNonStandardProperty("isc_dpb_certificate_base64", loadFromFile("/tmp/testuser.cer"));
             fbDataSource.setNonStandardProperty("isc_dpb_repository_pin", "12345678");
