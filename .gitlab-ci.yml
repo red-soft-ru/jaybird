@@ -31,7 +31,7 @@ variables:
     - echo ${VERSION} > .ci/version
     - echo ${BRANCH} > .ci/branch
     - echo ${CONTEXT} > .ci/context
-    - mvn $MAVEN_CLI_OPTS releasehub-build:register -Pdeploy-internal -DreleaseHubBuildOnlyCreate -DreleaseHubBuildVersion=$VERSION -DreleaseHubBuildContext=${CONTEXT} -DreleaseHubBuildBranch=${BRANCH} -DreleaseHubBuildCommit=${CI_COMMIT_SHA} -DreleaseHubBuildCIURL=${CI_URL}
+    - mvn $MAVEN_CLI_OPTS releasehub-build:register -Pdeploy-internal -Pcryptoapi -Pcryptoapi-security -DreleaseHubBuildOnlyCreate -DreleaseHubBuildVersion=$VERSION -DreleaseHubBuildContext=${CONTEXT} -DreleaseHubBuildBranch=${BRANCH} -DreleaseHubBuildCommit=${CI_COMMIT_SHA} -DreleaseHubBuildCIURL=${CI_URL}
   artifacts:
     expire_in: 1 day
     paths:
@@ -44,7 +44,7 @@ prepare:snapshot:
     - REAL_VERSION=$(mvn $MAVEN_CLI_OPTS -q -Dexec.executable="echo" -Dexec.args='${project.version}' --non-recursive org.codehaus.mojo:exec-maven-plugin:1.3.1:exec)
     - VERSION=$(mvn $MAVEN_CLI_OPTS -q -Dexec.executable="echo" -Dexec.args='${project.version}' --non-recursive org.codehaus.mojo:exec-maven-plugin:1.3.1:exec|sed 's/\(.*\)-.*/\1/')
     - "[ \"$REAL_VERSION\" = \"${VERSION}-SNAPSHOT\" ] || (echo Stopping build. Expected ${VERSION}-SNAPSHOT version. Create tag for this commit!; exit 1)"
-    - export BUILDNO=$(mvn $MAVEN_CLI_OPTS -q --non-recursive releasehub-build:buildno -Pdeploy-internal -DreleaseHubBuildVersion=${VERSION}-SNAPSHOT)
+    - export BUILDNO=$(mvn $MAVEN_CLI_OPTS -q --non-recursive releasehub-build:buildno -Pdeploy-internal -Pcryptoapi -Pcryptoapi-security -DreleaseHubBuildVersion=${VERSION}-SNAPSHOT)
     - export VERSION=${VERSION}-SNAPSHOT.${BUILDNO}
     - export BRANCH=${CI_COMMIT_REF_NAME}
     - export CONTEXT=commit
@@ -160,7 +160,7 @@ deploy:nexus_snapshots:
   <<: *deploy_template
   stage: deploy
   script:
-    - mvn $MAVEN_CLI_OPTS deploy -Pdeploy-nexus-snapshots -Dmaven.test.skip.exec
+    - mvn $MAVEN_CLI_OPTS deploy -Pdeploy-nexus-snapshots -Pcryptoapi -Pcryptoapi-security -Dmaven.test.skip.exec
   except:
     - tags
 
@@ -168,6 +168,6 @@ deploy:nexus_releases:
  <<: *deploy_template
  stage: deploy
  script:
-   - mvn $MAVEN_CLI_OPTS deploy -Pdeploy-nexus-releases -Dmaven.test.skip.exec
+   - mvn $MAVEN_CLI_OPTS deploy -Pdeploy-nexus-releases -Pcryptoapi -Pcryptoapi-security -Dmaven.test.skip.exec
  only:
    - tags
