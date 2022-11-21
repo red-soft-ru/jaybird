@@ -379,9 +379,9 @@ public interface FbInterface extends FbClientLibrary
 		public int getSlice(IStatus status, ITransaction transaction, com.sun.jna.ptr.LongByReference id, int sdlLength, byte[] sdl, int paramLength, byte[] param, int sliceLength, byte[] slice);
 		public void putSlice(IStatus status, ITransaction transaction, com.sun.jna.ptr.LongByReference id, int sdlLength, byte[] sdl, int paramLength, byte[] param, int sliceLength, byte[] slice);
 		public void executeDyn(IStatus status, ITransaction transaction, int length, byte[] dyn);
-		public IStatement prepare(IStatus status, ITransaction tra, int stmtLength, String sqlStmt, int dialect, int flags);
-		public ITransaction execute(IStatus status, ITransaction transaction, int stmtLength, String sqlStmt, int dialect, IMessageMetadata inMetadata, com.sun.jna.Pointer inBuffer, IMessageMetadata outMetadata, com.sun.jna.Pointer outBuffer);
-		public IResultSet openCursor(IStatus status, ITransaction transaction, int stmtLength, String sqlStmt, int dialect, IMessageMetadata inMetadata, com.sun.jna.Pointer inBuffer, IMessageMetadata outMetadata, String cursorName, int cursorFlags);
+		public IStatement prepare(IStatus status, ITransaction tra, int stmtLength, byte[] sqlStmt, int dialect, int flags);
+		public ITransaction execute(IStatus status, ITransaction transaction, int stmtLength, byte[] sqlStmt, int dialect, IMessageMetadata inMetadata, com.sun.jna.Pointer inBuffer, IMessageMetadata outMetadata, com.sun.jna.Pointer outBuffer);
+		public IResultSet openCursor(IStatus status, ITransaction transaction, int stmtLength, byte[] sqlStmt, int dialect, IMessageMetadata inMetadata, com.sun.jna.Pointer inBuffer, IMessageMetadata outMetadata, String cursorName, int cursorFlags);
 		public IEvents queEvents(IStatus status, IEventCallback callback, int length, byte[] events);
 		public void cancelOperation(IStatus status, int option);
 		public void ping(IStatus status);
@@ -746,7 +746,7 @@ public interface FbInterface extends FbClientLibrary
 		public void loadBlob(IStatus status, com.sun.jna.ptr.LongByReference blobId, IAttachment att, ITransaction tra, String file, boolean txt);
 		public void dumpBlob(IStatus status, com.sun.jna.ptr.LongByReference blobId, IAttachment att, ITransaction tra, String file, boolean txt);
 		public void getPerfCounters(IStatus status, IAttachment att, String countersSet, long[] counters);
-		public IAttachment executeCreateDatabase(IStatus status, int stmtLength, String creatDBstatement, int dialect, boolean[] stmtIsCreateDb);
+		public IAttachment executeCreateDatabase(IStatus status, int stmtLength, byte[] creatDBstatement, int dialect, boolean[] stmtIsCreateDb);
 		public void decodeDate(ISC_DATE date, com.sun.jna.Pointer year, com.sun.jna.Pointer month, com.sun.jna.Pointer day);
 		public void decodeTime(ISC_TIME time, com.sun.jna.Pointer hours, com.sun.jna.Pointer minutes, com.sun.jna.Pointer seconds, com.sun.jna.Pointer fractions);
 		public ISC_DATE encodeDate(int year, int month, int day);
@@ -6686,17 +6686,17 @@ public interface FbInterface extends FbClientLibrary
 
 			public static interface Callback_prepare extends com.sun.jna.Callback
 			{
-				public IStatement invoke(IAttachment self, IStatus status, ITransaction tra, int stmtLength, String sqlStmt, int dialect, int flags);
+				public IStatement invoke(IAttachment self, IStatus status, ITransaction tra, int stmtLength, byte[] sqlStmt, int dialect, int flags);
 			}
 
 			public static interface Callback_execute extends com.sun.jna.Callback
 			{
-				public ITransaction invoke(IAttachment self, IStatus status, ITransaction transaction, int stmtLength, String sqlStmt, int dialect, IMessageMetadata inMetadata, com.sun.jna.Pointer inBuffer, IMessageMetadata outMetadata, com.sun.jna.Pointer outBuffer);
+				public ITransaction invoke(IAttachment self, IStatus status, ITransaction transaction, int stmtLength, byte[] sqlStmt, int dialect, IMessageMetadata inMetadata, com.sun.jna.Pointer inBuffer, IMessageMetadata outMetadata, com.sun.jna.Pointer outBuffer);
 			}
 
 			public static interface Callback_openCursor extends com.sun.jna.Callback
 			{
-				public IResultSet invoke(IAttachment self, IStatus status, ITransaction transaction, int stmtLength, String sqlStmt, int dialect, IMessageMetadata inMetadata, com.sun.jna.Pointer inBuffer, IMessageMetadata outMetadata, String cursorName, int cursorFlags);
+				public IResultSet invoke(IAttachment self, IStatus status, ITransaction transaction, int stmtLength, byte[] sqlStmt, int dialect, IMessageMetadata inMetadata, com.sun.jna.Pointer inBuffer, IMessageMetadata outMetadata, String cursorName, int cursorFlags);
 			}
 
 			public static interface Callback_queEvents extends com.sun.jna.Callback
@@ -6898,7 +6898,7 @@ public interface FbInterface extends FbClientLibrary
 
 				prepare = new Callback_prepare() {
 					@Override
-					public IStatement invoke(IAttachment self, IStatus status, ITransaction tra, int stmtLength, String sqlStmt, int dialect, int flags)
+					public IStatement invoke(IAttachment self, IStatus status, ITransaction tra, int stmtLength, byte[] sqlStmt, int dialect, int flags)
 					{
 						try
 						{
@@ -6914,7 +6914,7 @@ public interface FbInterface extends FbClientLibrary
 
 				execute = new Callback_execute() {
 					@Override
-					public ITransaction invoke(IAttachment self, IStatus status, ITransaction transaction, int stmtLength, String sqlStmt, int dialect, IMessageMetadata inMetadata, com.sun.jna.Pointer inBuffer, IMessageMetadata outMetadata, com.sun.jna.Pointer outBuffer)
+					public ITransaction invoke(IAttachment self, IStatus status, ITransaction transaction, int stmtLength, byte[] sqlStmt, int dialect, IMessageMetadata inMetadata, com.sun.jna.Pointer inBuffer, IMessageMetadata outMetadata, com.sun.jna.Pointer outBuffer)
 					{
 						try
 						{
@@ -6930,7 +6930,7 @@ public interface FbInterface extends FbClientLibrary
 
 				openCursor = new Callback_openCursor() {
 					@Override
-					public IResultSet invoke(IAttachment self, IStatus status, ITransaction transaction, int stmtLength, String sqlStmt, int dialect, IMessageMetadata inMetadata, com.sun.jna.Pointer inBuffer, IMessageMetadata outMetadata, String cursorName, int cursorFlags)
+					public IResultSet invoke(IAttachment self, IStatus status, ITransaction transaction, int stmtLength, byte[] sqlStmt, int dialect, IMessageMetadata inMetadata, com.sun.jna.Pointer inBuffer, IMessageMetadata outMetadata, String cursorName, int cursorFlags)
 					{
 						try
 						{
@@ -7193,7 +7193,7 @@ public interface FbInterface extends FbClientLibrary
 			vTable.executeDyn.invoke(this, status, transaction, length, dyn);
 		}
 
-		public IStatement prepare(IStatus status, ITransaction tra, int stmtLength, String sqlStmt, int dialect, int flags)
+		public IStatement prepare(IStatus status, ITransaction tra, int stmtLength, byte[] sqlStmt, int dialect, int flags)
 		{
 			VTable vTable = getVTable();
 			if (vTable.prepare == null) {
@@ -7204,7 +7204,7 @@ public interface FbInterface extends FbClientLibrary
 			return result;
 		}
 
-		public ITransaction execute(IStatus status, ITransaction transaction, int stmtLength, String sqlStmt, int dialect, IMessageMetadata inMetadata, com.sun.jna.Pointer inBuffer, IMessageMetadata outMetadata, com.sun.jna.Pointer outBuffer)
+		public ITransaction execute(IStatus status, ITransaction transaction, int stmtLength, byte[] sqlStmt, int dialect, IMessageMetadata inMetadata, com.sun.jna.Pointer inBuffer, IMessageMetadata outMetadata, com.sun.jna.Pointer outBuffer)
 		{
 			VTable vTable = getVTable();
 			if (vTable.execute == null) {
@@ -7215,7 +7215,7 @@ public interface FbInterface extends FbClientLibrary
 			return result;
 		}
 
-		public IResultSet openCursor(IStatus status, ITransaction transaction, int stmtLength, String sqlStmt, int dialect, IMessageMetadata inMetadata, com.sun.jna.Pointer inBuffer, IMessageMetadata outMetadata, String cursorName, int cursorFlags)
+		public IResultSet openCursor(IStatus status, ITransaction transaction, int stmtLength, byte[] sqlStmt, int dialect, IMessageMetadata inMetadata, com.sun.jna.Pointer inBuffer, IMessageMetadata outMetadata, String cursorName, int cursorFlags)
 		{
 			VTable vTable = getVTable();
 			if (vTable.openCursor == null) {
@@ -12591,7 +12591,7 @@ public interface FbInterface extends FbClientLibrary
 
 			public static interface Callback_executeCreateDatabase extends com.sun.jna.Callback
 			{
-				public IAttachment invoke(IUtil self, IStatus status, int stmtLength, String creatDBstatement, int dialect, boolean[] stmtIsCreateDb);
+				public IAttachment invoke(IUtil self, IStatus status, int stmtLength, byte[] creatDBstatement, int dialect, boolean[] stmtIsCreateDb);
 			}
 
 			public static interface Callback_decodeDate extends com.sun.jna.Callback
@@ -12707,7 +12707,7 @@ public interface FbInterface extends FbClientLibrary
 
 				executeCreateDatabase = new Callback_executeCreateDatabase() {
 					@Override
-					public IAttachment invoke(IUtil self, IStatus status, int stmtLength, String creatDBstatement, int dialect, boolean[] stmtIsCreateDb)
+					public IAttachment invoke(IUtil self, IStatus status, int stmtLength, byte[] creatDBstatement, int dialect, boolean[] stmtIsCreateDb)
 					{
 						try
 						{
@@ -12887,7 +12887,7 @@ public interface FbInterface extends FbClientLibrary
 			vTable.getPerfCounters.invoke(this, status, att, countersSet, counters);
 		}
 
-		public IAttachment executeCreateDatabase(IStatus status, int stmtLength, String creatDBstatement, int dialect, boolean[] stmtIsCreateDb)
+		public IAttachment executeCreateDatabase(IStatus status, int stmtLength, byte[] creatDBstatement, int dialect, boolean[] stmtIsCreateDb)
 		{
 			VTable vTable = getVTable();
 			if (vTable.executeCreateDatabase == null) {

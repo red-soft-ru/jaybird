@@ -44,7 +44,7 @@ public class IStatementImpl extends AbstractFbStatement {
     @Override
     protected void free(int option) throws SQLException {
         synchronized (getSynchronizationObject()) {
-            if (option == ISCConstants.DSQL_close) {
+            if (cursor != null && option == ISCConstants.DSQL_close) {
                 cursor.close(getStatus());
                 cursor = null;
                 processStatus();
@@ -76,6 +76,7 @@ public class IStatementImpl extends AbstractFbStatement {
     @Override
     public void prepare(String statementText) throws SQLException {
         try {
+            final byte[] statementArray = getDatabase().getEncoding().encodeToCharset(statementText);
             synchronized (getSynchronizationObject()) {
                 checkTransactionActive(getTransaction());
                 final StatementState currentState = getState();
@@ -92,11 +93,15 @@ public class IStatementImpl extends AbstractFbStatement {
                     setType(StatementType.NONE);
                 } else {
                     checkStatementValid();
+                    if (statement != null) {
+                        statement.free(getStatus());
+                        processStatus();
+                    }
                 }
 
                 ITransactionImpl transaction = (ITransactionImpl) getTransaction();
                 statement = getDatabase().getAttachment().prepare(getStatus(), transaction.getTransaction(),
-                        statementText.length(), statementText, getDatabase().getConnectionDialect(),
+                        statementArray.length, statementArray, getDatabase().getConnectionDialect(),
                         IStatement.PREPARE_PREFETCH_METADATA);
                 processStatus();
                 outMetadata = statement.getOutputMetadata(getStatus());
