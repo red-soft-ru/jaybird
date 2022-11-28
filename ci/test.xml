@@ -22,7 +22,6 @@
           <pathelement location="${srcdir}/lib/junit.jar" />
           <pathelement location="${srcdir}/src/lib/jna-5.3.0.jar" />
           <pathelement location="${srcdir}/src/lib/platform-5.3.0.jar" />
-          <pathelement location="${srcdir}/src/lib/antlr-runtime-4.7.2.jar" />
           <fileset dir="${srcdir}/lib/test/" includes="*.jar" />
         </classpath>
         <batchtest haltonfailure="false" todir="${test.report.dir}">
