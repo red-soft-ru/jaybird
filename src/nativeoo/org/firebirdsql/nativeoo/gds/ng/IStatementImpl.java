@@ -19,6 +19,7 @@ import org.firebirdsql.gds.ng.StatementState;
 import org.firebirdsql.gds.ng.StatementType;
 import org.firebirdsql.gds.ng.fields.*;
 import org.firebirdsql.gds.impl.BatchParameterBufferImp;
+import org.firebirdsql.jdbc.metadata.RowValueBuilder;
 import org.firebirdsql.jna.fbclient.XSQLVAR;
 import org.firebirdsql.logging.Logger;
 import org.firebirdsql.logging.LoggerFactory;
