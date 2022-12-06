@@ -35,6 +35,7 @@ import java.sql.Connection;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TimeZone;
 
 import static org.firebirdsql.jdbc.FBTpbMapper.TRANSACTION_READ_COMMITTED;
 import static org.junit.Assert.assertEquals;
@@ -283,6 +284,19 @@ public class FBConnectionPropertiesTest {
             Object value = method.invoke(immutable);
             String propertyName = descriptor.getName();
             assertEquals(String.format("Value for property %s doesn't match expected value", propertyName), testValues.get(propertyName), value);
+        }
+    }
+
+    @Test
+    public void testSessionTimeZoneSpecialGmtOffsetHandling() {
+        final TimeZone before = TimeZone.getDefault();
+        try {
+            TimeZone.setDefault(TimeZone.getTimeZone("GMT-08:00"));
+            // Need to create new instance after initializing TZ
+            FbConnectionProperties info = new FbConnectionProperties();
+            assertEquals("Expected sessionTimeZone without GMT prefix", "-08:00", info.getSessionTimeZone());
+        } finally {
+            TimeZone.setDefault(before);
         }
     }
 }

@@ -32,6 +32,8 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TimeZone;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static org.firebirdsql.jdbc.FBDriverPropertyManager.getCanonicalName;
 
@@ -41,6 +43,8 @@ import static org.firebirdsql.jdbc.FBDriverPropertyManager.getCanonicalName;
 public abstract class AbstractFBConnectionProperties implements FirebirdConnectionProperties, Serializable, Cloneable {
 
     private static final long serialVersionUID = 3930908474394844438L;
+
+    private static final Pattern GMT_WITH_OFFSET = Pattern.compile("^GMT([+-]\\d{2}:\\d{2})$");
 
     protected Map<String, Object> properties = new HashMap<>();
     protected String type;
@@ -53,7 +57,7 @@ public abstract class AbstractFBConnectionProperties implements FirebirdConnecti
     protected int defaultTransactionIsolation = Connection.TRANSACTION_READ_COMMITTED;
     protected Map<Integer, TransactionParameterBuffer> customMapping = new HashMap<>();
     protected FBTpbMapper mapper;
-    protected String sessionTimeZone = TimeZone.getDefault().getID();
+    protected String sessionTimeZone = defaultTimeZone();
     protected DatabaseParameterBuffer extraDatabaseParameters = new DatabaseParameterBufferImp(
             DatabaseParameterBufferImp.DpbMetaData.DPB_VERSION_1,
             EncodingFactory.getPlatformEncoding());
@@ -360,7 +364,7 @@ public abstract class AbstractFBConnectionProperties implements FirebirdConnecti
 
     @Override
     public String getSessionTimeZone() {
-        return getStringProperty(SESSION_TIME_ZONE);
+        return sessionTimeZone;
     }
 
     @Override
@@ -522,6 +526,17 @@ public abstract class AbstractFBConnectionProperties implements FirebirdConnecti
     @Override
     public FirebirdConnectionProperties asNewMutable() {
         return new FBConnectionProperties(this);
+    }
+
+    private static String defaultTimeZone() {
+        String timeZone = TimeZone.getDefault().getID();
+        if (timeZone.startsWith("GMT") && timeZone.length() > 3) {
+            Matcher matcher = GMT_WITH_OFFSET.matcher(timeZone);
+            if (matcher.matches()) {
+                return matcher.group(1);
+            }
+        }
+        return timeZone;
     }
 
     public void setNonStandardProperty(String propertyMapping) {
