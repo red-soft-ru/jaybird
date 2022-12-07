@@ -934,8 +934,7 @@ The replacement only trims trailing spaces.
 ** `getWantsSystemTables(String[])` -- there is no replacement
 ** `getWantsTables(String[])` -- there is no replacement
 ** `getWantsViews(String[])` -- there is no replacement
-* `RowValueBuilder` was moved to another package and (will be) made package private
-// TODO Change once refactor of FBDatabaseMetaData is complete
+* `RowValueBuilder` was moved to another package and will be made package private in Jaybird 6
 * `FBBlob.getGdsHelper()` has been made package private
 
 [#breaking-changes-statement-state]
@@ -983,6 +982,14 @@ In general, we expect the driver to remain functional, but chances are certain m
 Jaybird 6 will drop support for Java 8 and 11, making Java 17 the baseline version (see also https://github.com/FirebirdSQL/jaybird/tree/master/devdoc/jdp/jdp-2022-03-java-17-minimum-version.md[jdp-2022-03: Java 17 minimum version^]).
 
 Jaybird 5 will serve as a form of "`long-term support`" for Java 8 and 11, with maintenance releases at least until the release of Jaybird 7.
+
+==== Dropping support for OOREMOTE (OpenOffice/LibreOffice driver)
+
+The OOREMOTE protocol (JDBC URL prefix `jdbc:firebird:oo` and `jdbc:firebirdsql:oo`) are deprecated in Jaybird 5 and will be removed in Jaybird 6.
+
+See also https://github.com/FirebirdSQL/jaybird/tree/master/devdoc/jdp/jdp-2022-04-deprecate-ooremote.md[jdp-2022-04: Deprecate OOREMOTE (OpenOffice/LibreOffice driver) for removal^].
+
+The recommended replacement is to use LibreOffice and the builtin "`Firebird External`" connection option in LibreOffice Base, instead of the "`JDBC`" option with Jaybird on the classpath of LibreOffice.
 
 [#removal-of-deprecated-classes-packages-and-methods-6]
 ==== Removal of deprecated classes, packages and methods

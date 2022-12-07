@@ -41,6 +41,7 @@ import static org.hamcrest.Matchers.in;
  */
 public class GdsTypeMatchers {
 
+    @SuppressWarnings("deprecation")
     private static final List<String> PURE_JAVA_TYPES = Collections.unmodifiableList(
             Arrays.asList(WireGDSFactoryPlugin.PURE_JAVA_TYPE_NAME, OOGDSFactoryPlugin.TYPE_NAME));
     private static final List<String> EMBEDDED_TYPES = Collections.unmodifiableList(
