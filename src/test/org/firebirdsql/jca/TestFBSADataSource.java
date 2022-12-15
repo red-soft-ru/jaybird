@@ -8,10 +8,7 @@ import org.firebirdsql.jdbc.FBConnection;
 import org.junit.ClassRule;
 import org.junit.Test;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -191,6 +188,52 @@ public class TestFBSADataSource extends TestXABase {
             ps.close();
         } finally {
             dataSource.close();
+        }
+    }
+
+    @Test
+    public void testDeadlockFBSADataSourceWithFBConnection() throws Exception {
+
+        Connection[] connections = new Connection[1000];
+
+        final FBSADataSource dataSource = new FBSADataSource();
+
+        // Set the standard properties
+        dataSource.setDatabase(DB_DATASOURCE_URL);
+        dataSource.setDescription("An example database of employees");
+        dataSource.setUserName(DB_USER);
+        dataSource.setPassword(DB_PASSWORD);
+        dataSource.setEncoding(DB_LC_CTYPE);
+
+        for (int i = 0; i < connections.length; i++) {
+            connections[i] = dataSource.getConnection();
+        }
+
+        CloseConnectionClass closeConnectionClass = new CloseConnectionClass(connections);
+        Thread closeConnectionThread = new Thread(closeConnectionClass);
+
+        closeConnectionThread.start();
+
+        dataSource.close();
+
+        closeConnectionThread.join();
+    }
+
+    class CloseConnectionClass implements Runnable {
+
+        final Connection[] connections;
+
+        public CloseConnectionClass(Connection[] array) {
+            this.connections = array;
+        }
+        public void run() {
+            try {
+                for (Connection connection : connections) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 }

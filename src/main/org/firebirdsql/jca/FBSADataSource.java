@@ -22,11 +22,13 @@ import org.firebirdsql.gds.impl.GDSType;
 import org.firebirdsql.jdbc.FBDriverNotCapableException;
 import org.firebirdsql.jdbc.FBSQLException;
 import org.firebirdsql.jdbc.FirebirdConnectionProperties;
+import org.firebirdsql.jdbc.Synchronizable;
 
 import javax.resource.spi.ConnectionEvent;
 import javax.resource.spi.ConnectionEventListener;
 
-public class FBSADataSource implements DataSource, Serializable, Referenceable, FirebirdConnectionProperties, ConnectionEventListener {
+public class FBSADataSource implements DataSource, Serializable, Referenceable, FirebirdConnectionProperties,
+        ConnectionEventListener, Synchronizable {
     
     transient protected FBManagedConnectionFactory mcf;
     transient protected PrintWriter log;
@@ -565,29 +567,29 @@ public class FBSADataSource implements DataSource, Serializable, Referenceable, 
      * Frees phisical connection
      * @throws ResourceException
      */
-    public synchronized void close() throws ResourceException
+    public void close() throws ResourceException
     {
-    	List<FBManagedConnection> connections = new ArrayList<FBManagedConnection>(this.connections);
-    	for(FBManagedConnection mc1:connections)
-    	{
-        try {
-    		  mc1.cleanup();
-        } catch (Exception ignored) {
-          // ignored
-        }
-    	}
-    	this.connections.clear();
-        if (mc != null)
-        {
-            try {
-                // Clean up method should cause the database to detach,
-                // but if this does not happen, then do it manually
-                if (mc.getGDSHelper().getCurrentDatabase().isAttached())
-                    mc.destroy();
-            } catch (SQLException e) {
-                throw new ResourceException(e.getMessage(), e);
+        synchronized (getSynchronizationObject()) {
+            List<FBManagedConnection> connections = new ArrayList<FBManagedConnection>(this.connections);
+            for (FBManagedConnection mc1 : connections) {
+                try {
+                    mc1.cleanup();
+                } catch (Exception ignored) {
+                    // ignored
+                }
             }
-            mc = null;
+            this.connections.clear();
+            if (mc != null) {
+                try {
+                    // Clean up method should cause the database to detach,
+                    // but if this does not happen, then do it manually
+                    if (mc.getGDSHelper().getCurrentDatabase().isAttached())
+                        mc.destroy();
+                } catch (SQLException e) {
+                    throw new ResourceException(e.getMessage(), e);
+                }
+                mc = null;
+            }
         }
     }
     
@@ -859,5 +861,15 @@ public class FBSADataSource implements DataSource, Serializable, Referenceable, 
 
     public int getSoTimeout() {
         return mcf.getSoTimeout();
+    }
+
+    @Override
+    public Object getSynchronizationObject() {
+        final FBManagedConnection managedConnection = mc;
+        if (managedConnection != null) {
+            return managedConnection.getSynchronizationObject();
+        } else {
+            return this;
+        }
     }
 }
