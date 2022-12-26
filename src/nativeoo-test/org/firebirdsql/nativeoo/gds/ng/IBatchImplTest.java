@@ -1330,7 +1330,7 @@ class IBatchImplTest extends AbstractBatchTest {
     private void checkBlob(long blobID, byte[] originalContent) throws Exception {
         // Use sufficiently large value so that multiple segments are used
         final int requiredSize = (originalContent == null ? 10 : originalContent.length);
-        final FbBlob blob = db.createBlobForInput(transaction, null, blobID);
+        final FbBlob blob = db.createBlobForInput(transaction, blobID);
         blob.open();
         ByteArrayOutputStream bos = new ByteArrayOutputStream(requiredSize);
         while (!blob.isEof()) {
