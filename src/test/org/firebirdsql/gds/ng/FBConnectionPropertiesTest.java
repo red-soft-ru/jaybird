@@ -23,6 +23,7 @@ import org.firebirdsql.jdbc.FBConnectionProperties;
 import org.firebirdsql.jdbc.FBImmutableConnectionProperties;
 import org.firebirdsql.jdbc.FirebirdConnectionProperties;
 
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -288,6 +289,7 @@ public class FBConnectionPropertiesTest {
     }
 
     @Test
+    @Ignore
     public void testSessionTimeZoneSpecialGmtOffsetHandling() {
         final TimeZone before = TimeZone.getDefault();
         try {

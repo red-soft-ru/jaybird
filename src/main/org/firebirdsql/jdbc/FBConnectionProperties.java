@@ -342,7 +342,7 @@ public class FBConnectionProperties extends AbstractFBConnectionProperties imple
 
     @Override
     public void setSessionTimeZone(String sessionTimeZone) {
-        this.sessionTimeZone = sessionTimeZone;
+        setStringProperty(SESSION_TIME_ZONE, sessionTimeZone);
         dirtied();
     }
 

@@ -57,7 +57,7 @@ public abstract class AbstractFBConnectionProperties implements FirebirdConnecti
     protected int defaultTransactionIsolation = Connection.TRANSACTION_READ_COMMITTED;
     protected Map<Integer, TransactionParameterBuffer> customMapping = new HashMap<>();
     protected FBTpbMapper mapper;
-    protected String sessionTimeZone = defaultTimeZone();
+    protected String sessionTimeZone = TimeZone.getDefault().getID();
     protected DatabaseParameterBuffer extraDatabaseParameters = new DatabaseParameterBufferImp(
             DatabaseParameterBufferImp.DpbMetaData.DPB_VERSION_1,
             EncodingFactory.getPlatformEncoding());
@@ -364,7 +364,7 @@ public abstract class AbstractFBConnectionProperties implements FirebirdConnecti
 
     @Override
     public String getSessionTimeZone() {
-        return sessionTimeZone;
+        return getStringProperty(SESSION_TIME_ZONE);
     }
 
     @Override
@@ -526,17 +526,6 @@ public abstract class AbstractFBConnectionProperties implements FirebirdConnecti
     @Override
     public FirebirdConnectionProperties asNewMutable() {
         return new FBConnectionProperties(this);
-    }
-
-    private static String defaultTimeZone() {
-        String timeZone = TimeZone.getDefault().getID();
-        if (timeZone.startsWith("GMT") && timeZone.length() > 3) {
-            Matcher matcher = GMT_WITH_OFFSET.matcher(timeZone);
-            if (matcher.matches()) {
-                return matcher.group(1);
-            }
-        }
-        return timeZone;
     }
 
     public void setNonStandardProperty(String propertyMapping) {
