@@ -602,7 +602,6 @@ public class FBConnectionProperties extends AbstractFBConnectionProperties imple
                     break;
                 case isc_dpb_provider_id:
                     setProviderID(parameter.getValueAsInt());
-                    parameter.copyTo(getExtraDatabaseParameters(), null);
                     break;
                 case isc_dpb_auth_plugin_list:
                     setAuthPlugins(parameter.getValueAsString());
