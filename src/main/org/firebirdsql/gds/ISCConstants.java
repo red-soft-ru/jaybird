@@ -283,9 +283,9 @@ public interface ISCConstants {
     int isc_dpb_parallel_workers        = 167;
     int isc_dpb_worker_attach           = 168;
     int isc_dpb_certificate_base64      = 169;
-    int isc_dpb_exclude_crypto_plugins  = 170;
-    int isc_dpb_provider_id             = 171;
-    int isc_dpb_not_encrypt_password    = 172;
+    int isc_dpb_exclude_crypto_plugins  = 1001;
+    int isc_dpb_provider_id             = 1002;
+    int isc_dpb_not_encrypt_password    = 1003;
 
     // Firebird 4 constants
     @Deprecated
