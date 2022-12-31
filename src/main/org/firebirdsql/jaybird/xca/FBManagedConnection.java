@@ -39,7 +39,6 @@ import org.firebirdsql.util.ByteArrayHelper;
 import javax.transaction.xa.XAException;
 import javax.transaction.xa.XAResource;
 import javax.transaction.xa.Xid;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.SocketTimeoutException;
 import java.sql.DriverManager;
@@ -61,7 +60,7 @@ import static java.util.Collections.unmodifiableSet;
  * @author <a href="mailto:mrotteveel@users.sourceforge.net">Mark Rotteveel</a>
  * @version 1.0
  */
-public class FBManagedConnection implements ExceptionListener {
+public final class FBManagedConnection implements ExceptionListener {
 
     public static final String ERROR_NO_CHARSET = "Connection rejected: No connection character set specified (property lc_ctype, encoding, charSet or localEncoding). "
             + "Please specify a connection character set (eg property charSet=utf-8) or consult the Jaybird documentation for more information.";
@@ -430,7 +429,7 @@ public class FBManagedConnection implements ExceptionListener {
     }
 
     /**
-     * Returns an {@code javax.transaction.xa.XAresource} instance. An application server enlists this XAResource
+     * Returns an {@code javax.transaction.xa.XAResource} instance. An application server enlists this XAResource
      * instance with the Transaction Manager if the FBManagedConnection instance is being used in a Java EE transaction
      * that is coordinated by the Transaction Manager.
      *
@@ -623,7 +622,7 @@ public class FBManagedConnection implements ExceptionListener {
                 byte[] inLimboMessage = field1.getBytes();
 
                 try {
-                    FBXid xid = new FBXid(new ByteArrayInputStream(inLimboMessage), inLimboTxId);
+                    FBXid xid = new FBXid(inLimboMessage, inLimboTxId);
 
                     boolean gtridEquals = Arrays.equals(xid.getGlobalTransactionId(), id.getGlobalTransactionId());
                     boolean bqualEquals = Arrays.equals(xid.getBranchQualifier(), id.getBranchQualifier());
@@ -640,7 +639,7 @@ public class FBManagedConnection implements ExceptionListener {
 
             stmtHandle2.close();
             trHandle2.commit();
-        } catch (SQLException | IOException ex) {
+        } catch (SQLException ex) {
             log.debug("can't perform query to fetch xids", ex);
             throw new FBXAException(XAException.XAER_RMFAIL, ex);
         }
@@ -788,7 +787,7 @@ public class FBManagedConnection implements ExceptionListener {
 
     private static FBXid extractXid(byte[] xidData, long txId) throws IOException {
         try {
-            return new FBXid(new ByteArrayInputStream(xidData), txId);
+            return new FBXid(xidData, txId);
         } catch (FBIncorrectXidException e) {
             if (log.isWarnEnabled()) {
                 log.warn(format(
@@ -809,7 +808,7 @@ public class FBManagedConnection implements ExceptionListener {
      *         An error has occurred. Possible values are XAER_RMERR,
      *         XAER_RMFAIL, XAER_INVAL, and XAER_PROTO.
      */
-    protected Xid findSingleXid(Xid externalXid) throws javax.transaction.xa.XAException {
+    Xid findSingleXid(Xid externalXid) throws javax.transaction.xa.XAException {
         try {
             FbTransaction trHandle2 = database.startTransaction(tpb.getTransactionParameterBuffer());
 
@@ -851,14 +850,14 @@ public class FBManagedConnection implements ExceptionListener {
     /**
      * @see FbAttachment#withLock()
      */
-    public final LockCloseable withLock() {
+    public LockCloseable withLock() {
         return database.withLock();
     }
 
     /**
      * @see FbAttachment#isLockedByCurrentThread()
      */
-    public final boolean isLockedByCurrentThread() {
+    public boolean isLockedByCurrentThread() {
         return database.isLockedByCurrentThread();
     }
 
@@ -974,7 +973,7 @@ public class FBManagedConnection implements ExceptionListener {
      * Associates a JDBC connection with a global transaction. We assume that
      * end will be called followed by prepare, commit, or rollback. If start is
      * called after end but before commit or rollback, there is no way to
-     * distinguish work done by different transactions on the same connection).
+     * distinguish work done by different transactions on the same connection.
      * If start is called more than once before end, either it's a duplicate
      * transaction ID or illegal transaction ID (since you can't have two
      * transactions associated with one DB connection).
@@ -1039,7 +1038,7 @@ public class FBManagedConnection implements ExceptionListener {
     // FB public methods. Could be package if packages reorganized.
 
     /**
-     * Close this connection with regards to a wrapping {@code AbstractConnection}.
+     * Close this connection with regard to a wrapping {@code AbstractConnection}.
      *
      * @param c
      *         The {@code AbstractConnection} that is being closed

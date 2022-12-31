@@ -197,7 +197,7 @@ public class FBSimpleDataSource extends AbstractConnectionPropertiesDataSource
      * Get JDBC connection with the specified credentials.
      *
      * @param username
-     *         user name for the connection.
+     *         username for the connection.
      * @param password
      *         password for the connection.
      * @return new JDBC connection.

@@ -60,7 +60,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author <a href="mailto:d_jencks@users.sourceforge.net">David Jencks </a>
  * @author <a href="mailto:mrotteveel@users.sourceforge.net">Mark Rotteveel</a>
  */
-public class FBManagedConnectionFactory implements FirebirdConnectionProperties, Serializable {
+public final class FBManagedConnectionFactory implements FirebirdConnectionProperties, Serializable {
 
     // This class uses a serialization proxy, see class at end of file
 
@@ -378,12 +378,12 @@ public class FBManagedConnectionFactory implements FirebirdConnectionProperties,
         throw new InvalidObjectException("Serialization proxy required");
     }
 
-    protected Object writeReplace() {
+    private Object writeReplace() {
         return new SerializationProxy(this);
     }
 
     /**
-     * The {@code canonicalize} method is used in FBDriver to reuse previous fbmcf instances if they have been create.
+     * The {@code canonicalize} method is used in FBDriver to reuse previous fbmcf instances if they have been created.
      * It should really be package access level
      *
      * @return a {@code FBManagedConnectionFactory} value
@@ -645,7 +645,7 @@ public class FBManagedConnectionFactory implements FirebirdConnectionProperties,
         }
     }
 
-    public final FBConnectionProperties getCacheKey() {
+    public FBConnectionProperties getCacheKey() {
         return (FBConnectionProperties) connectionProperties.clone();
     }
 

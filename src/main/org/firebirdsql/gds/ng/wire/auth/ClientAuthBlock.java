@@ -309,7 +309,7 @@ public final class ClientAuthBlock {
      * TODO Need to handle this differently
      * @return {@code true} if the encryption is supported
      * @throws SQLException
-     *         If it is impossible to determine if encryption is supported (eg there is no current auth plugin)
+     *         If it is impossible to determine if encryption is supported (e.g. there is no current auth plugin)
      */
     public boolean supportsEncryption() throws SQLException {
         if (currentPlugin == null) {
@@ -334,7 +334,7 @@ public final class ClientAuthBlock {
     }
 
     /**
-     * Normalizes a login by uppercasing unquoted user names, or stripping and unescaping (double) quoted user names.
+     * Normalizes a login by uppercasing unquoted usernames, or stripping and unescaping (double) quoted user names.
      *
      * @param login Login to process
      * @return Normalized login

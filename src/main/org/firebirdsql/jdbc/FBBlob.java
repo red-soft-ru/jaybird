@@ -184,7 +184,7 @@ public final class FBBlob implements FirebirdBlob, TransactionListener {
      * @return configuration associated with this blob
      * @since 5
      */
-    final Config config() {
+    Config config() {
         return config;
     }
 
@@ -196,7 +196,7 @@ public final class FBBlob implements FirebirdBlob, TransactionListener {
      *         For errors opening the blob
      * @since 5
      */
-    final FbBlob openBlob() throws SQLException {
+    FbBlob openBlob() throws SQLException {
         try (LockCloseable ignored = withLock()) {
             checkClosed();
             if (isNew) {
@@ -214,7 +214,7 @@ public final class FBBlob implements FirebirdBlob, TransactionListener {
      *         For errors creating the blob
      * @since 5
      */
-    final FbBlob createBlob() throws SQLException {
+    FbBlob createBlob() throws SQLException {
         try (LockCloseable ignored = withLock()) {
             checkClosed();
             // For historic reasons we allow creating an output blob even if this is not a new blob. This may need to
@@ -223,7 +223,7 @@ public final class FBBlob implements FirebirdBlob, TransactionListener {
         }
     }
 
-    protected final LockCloseable withLock() {
+    LockCloseable withLock() {
         GDSHelper gdsHelper = this.gdsHelper;
         if (gdsHelper != null) {
             return gdsHelper.withLock();
