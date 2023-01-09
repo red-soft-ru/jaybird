@@ -24,7 +24,6 @@ import org.firebirdsql.gds.impl.jni.EmbeddedGDSFactoryPlugin;
 import org.firebirdsql.gds.impl.jni.NativeGDSFactoryPlugin;
 import org.firebirdsql.gds.impl.nativeoo.FbOOEmbeddedGDSFactoryPlugin;
 import org.firebirdsql.gds.impl.nativeoo.FbOONativeGDSFactoryPlugin;
-import org.firebirdsql.gds.impl.oo.OOGDSFactoryPlugin;
 import org.firebirdsql.gds.impl.wire.WireGDSFactoryPlugin;
 import org.firebirdsql.jaybird.xca.FBManagedConnectionFactory;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -62,8 +61,6 @@ class JDBCUrlPrefixTest {
                 testCase("jdbc:firebirdsql:java:", WireGDSFactoryPlugin.PURE_JAVA_TYPE_NAME),
                 testCase("jdbc:firebird:", WireGDSFactoryPlugin.PURE_JAVA_TYPE_NAME),
                 testCase("jdbc:firebird:java:", WireGDSFactoryPlugin.PURE_JAVA_TYPE_NAME),
-                testCase("jdbc:firebirdsql:oo:", OOGDSFactoryPlugin.TYPE_NAME),
-                testCase("jdbc:firebird:oo:", OOGDSFactoryPlugin.TYPE_NAME),
                 testCase("jdbc:firebirdsql:embedded:", EmbeddedGDSFactoryPlugin.EMBEDDED_TYPE_NAME),
                 testCase("jdbc:firebird:embedded:", EmbeddedGDSFactoryPlugin.EMBEDDED_TYPE_NAME),
                 testCase("jdbc:firebirdsql:fboo:embedded:", FbOOEmbeddedGDSFactoryPlugin.EMBEDDED_TYPE_NAME),
