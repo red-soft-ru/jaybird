@@ -16,7 +16,7 @@ variables:
   MAVEN_CLI_OPTS: "-s .m2/settings.xml --batch-mode -U"
   MAVEN_OPTS: "-Dmaven.repo.local=.m2/repository"
   RDB3_VERSION: "3.0.10-rc.3"
-  RDB5_VERSION: "5.0.0-SNAPSHOT.944"
+  RDB5_VERSION: "5.0.0-SNAPSHOT.946"
   http_proxy: http://git.red-soft.biz:3128
   https_proxy: http://git.red-soft.biz:3128
   no_proxy: localhost,172.0.0.0/8,127.0.0.0/8,.red-soft.biz
@@ -66,7 +66,7 @@ prepare:release:
 
 .deploy_template: &deploy_template
   image:
-    name: openjdk:11-jdk-buster
+    name: openjdk:17-jdk-buster
     entrypoint: []
   tags:
     - docker
@@ -84,7 +84,7 @@ build_and_test:
     - tester
   stage: build_and_test
   variables:
-    JAVA_HOME: /usr/java11
+    JAVA_HOME: /usr/java17
   image:
     name: registry.red-soft.biz:5000/docker-images/rdbbuildenv:rdb5-6
   before_script:
@@ -110,46 +110,47 @@ build_and_test:
       priority=1
       EOF
     - echo proxy=$http_proxy >> /etc/yum.conf
-    - yum install -y maven krb5-server krb5-workstation expect java-11-openjdk git $EXTRA_DEPENDENCIES
+    - yum install -y maven krb5-server krb5-workstation expect git $EXTRA_DEPENDENCIES
+    - wget https://download.oracle.com/java/17/latest/jdk-17_linux-x64_bin.rpm && rpm -Uvh jdk-17_linux-x64_bin.rpm
     - yum install -y https://dl.min.io/client/mc/release/linux-amd64/archive/mcli-20210613174822.0.0.x86_64.rpm
     - /opt/cprocsp/sbin/amd64/cpconfig -license -set $LICENSE_CRYPTOPRO4
     - ./ci/configure_kerberos.sh
     - export VERSION=`cat .ci/version`
-    - ln -s `update-alternatives --display jre_11_openjdk | sed -n '2p;3q' | awk -F\" '{split($1, v, " ");printf("%s", v[5])}'` /usr/java11
+    - ln -s `update-alternatives --display java | sed -n '2p;3q' | awk -F\" '{split($1, v, " ");printf("%s", v[5])}' | awk '{ NF -= 2 } 1' FS=/ OFS=/` /usr/java17
   script:
     - ./ci/test.sh
   parallel:
     matrix:
-      - TYPE: JDK11
-        TEST_JAVA_JVM: /usr/java11/bin/java
+      - TYPE: JDK17
+        TEST_JAVA_JVM: /usr/java17/bin/java
         GDS_TYPE: "PURE_JAVA"
         RDB_VERSION: [ $RDB3_VERSION, $RDB5_VERSION ]
-      - TYPE: JDK11_fboonative_only
-        TEST_JAVA_JVM: /usr/java11/bin/java
+      - TYPE: JDK17_fboonative_only
+        TEST_JAVA_JVM: /usr/java17/bin/java
         GDS_TYPE: "FBOONATIVE"
-        REPORT_PREFIX: jdk11_fboonative_
+        REPORT_PREFIX: jdk17_fboonative_
         RDB_VERSION: $RDB5_VERSION
-      - TYPE: JDK11_native_only
-        TEST_JAVA_JVM: /usr/java11/bin/java
+      - TYPE: JDK17_native_only
+        TEST_JAVA_JVM: /usr/java17/bin/java
         GDS_TYPE: "NATIVE"
-        REPORT_PREFIX: jdk11_native_
+        REPORT_PREFIX: jdk17_native_
         RDB_VERSION: $RDB5_VERSION
-      - TYPE: JDK11_fbooembedded_only
-        TEST_JAVA_JVM: /usr/java11/bin/java
+      - TYPE: JDK17_fbooembedded_only
+        TEST_JAVA_JVM: /usr/java17/bin/java
         GDS_TYPE: "FBOOEMBEDDED"
-        REPORT_PREFIX: jdk11_fbooembedded_
+        REPORT_PREFIX: jdk17_fbooembedded_
         RDB_VERSION: $RDB5_VERSION
-      - TYPE: JDK11_embedded_only
-        TEST_JAVA_JVM: /usr/java11/bin/java
+      - TYPE: JDK17_embedded_only
+        TEST_JAVA_JVM: /usr/java17/bin/java
         GDS_TYPE: "EMBEDDED"
-        REPORT_PREFIX: jdk11_embedded_
+        REPORT_PREFIX: jdk17_embedded_
         RDB_VERSION: $RDB5_VERSION
-      - TYPE: JDK11_rdb3_liberica_11
-        TEST_JAVA_JVM: /usr/lib/jvm/bellsoft-java11-runtime.x86_64/bin/java
-        JDK_VER: 11-runtime
+      - TYPE: JDK17_rdb3_liberica_17
+        TEST_JAVA_JVM: /usr/lib/jvm/bellsoft-java17-runtime.x86_64/bin/java
+        JDK_VER: 17-runtime
         GDS_TYPE: "PURE_JAVA"
-        EXTRA_DEPENDENCIES: bellsoft-java11-runtime
-        REPORT_PREFIX: liberica_jdk11_
+        EXTRA_DEPENDENCIES: bellsoft-java17-runtime
+        REPORT_PREFIX: liberica_jdk17_
         RDB_VERSION: $RDB3_VERSION
 
 deploy:internal:

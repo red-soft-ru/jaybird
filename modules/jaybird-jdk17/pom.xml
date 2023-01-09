@@ -98,7 +98,7 @@
 		<test.db.dir>/tmp/db</test.db.dir>
 		<test.db.lc_ctype>NONE</test.db.lc_ctype>
 		<test.report.dir>${basedir}/../../reports</test.report.dir>
-		<test.java.jvm>/usr/lib/jvm/java-11-openjdk-11.0.6.10-1.el7_7.x86_64/bin/java</test.java.jvm>
+		<test.java.jvm>/usr/java17/bin/java</test.java.jvm>
 		<test.use.firebird.autocommit>false</test.use.firebird.autocommit>
 		<report_name>jdk${jdk.version}</report_name>
 	</properties>
