@@ -142,6 +142,32 @@ public final class DpbItems {
     public static final int isc_dpb_parallel_workers = 100;
     public static final int isc_dpb_worker_attach = 101;
 
+    /* Red Database security parameters */
+    public static final int isc_dpb_mac_plugin = 148;
+    public static final int isc_dpb_krb5 = 149;
+    public static final int isc_dpb_multi_factor_auth = 150;
+    public static final int isc_dpb_certificate = 151;
+    public static final int isc_dpb_repository_name = 152;
+    public static final int isc_dpb_eye = 153;
+    public static final int isc_dpb_session_key = 154;
+    public static final int isc_dpb_session_key_iv = 155;
+    public static final int isc_dpb_verify_server = 156;
+    public static final int isc_dpb_hw_address = 157;
+    public static final int isc_dpb_certificate_body = 158;
+    public static final int isc_dpb_repository_pin = 159;
+    public static final int isc_dpb_session_encryption = 161;
+    public static final int isc_dpb_salt = 162;
+    public static final int isc_dpb_master_attach = 163;
+    public static final int isc_dpb_effective_login = 164;
+    public static final int isc_dpb_gss = 165;
+    public static final int isc_dpb_security_authentication = 166;
+    public static final int isc_dpb_parallel_workers_rs = 167;
+    public static final int isc_dpb_worker_attach_rs = 168;
+    public static final int isc_dpb_certificate_base64 = 169;
+    public static final int isc_dpb_exclude_crypto_plugins = 1001;
+    public static final int isc_dpb_provider_id = 1002;
+    public static final int isc_dpb_not_encrypt_password = 1003;
+
     private DpbItems() {
         // no instances
     }

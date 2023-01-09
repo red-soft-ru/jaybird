@@ -63,6 +63,23 @@ public final class SpbItems {
     public static final int isc_spb_config = 123;
     public static final int isc_spb_expected_db = 124;
 
+    /* Red Database security parameters */
+
+    public static final int isc_spb_multi_factor_auth = DpbItems.isc_dpb_multi_factor_auth;
+    public static final int isc_spb_certificate = DpbItems.isc_dpb_certificate;
+    public static final int isc_spb_repository_name = DpbItems.isc_dpb_repository_name;
+    public static final int isc_spb_eye = DpbItems.isc_dpb_eye;
+    public static final int isc_spb_session_key = DpbItems.isc_dpb_session_key;
+    public static final int isc_spb_session_key_iv = DpbItems.isc_dpb_session_key_iv;
+    public static final int isc_spb_svc_name = 156;
+    public static final int isc_spb_verify_server = 157;
+    public static final int isc_spb_hw_address = 158;
+    public static final int isc_spb_repository_pin = DpbItems.isc_dpb_repository_pin;
+    public static final int isc_spb_provider_id = DpbItems.isc_dpb_provider_id;
+    public static final int isc_spb_not_encrypt_password = DpbItems.isc_dpb_not_encrypt_password;
+    public static final int isc_spb_effective_login = DpbItems.isc_dpb_effective_login;
+    public static final int isc_spb_bkp_parallel_workers = 101;
+
     private SpbItems() {
         // no instances
     }

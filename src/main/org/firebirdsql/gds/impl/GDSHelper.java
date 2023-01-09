@@ -34,18 +34,12 @@ import java.sql.SQLException;
 import java.util.TimeZone;
 
 import static java.util.Objects.requireNonNull;
-import static org.firebirdsql.gds.ng.IConnectionProperties.SESSION_TIME_ZONE_SERVER;
+import static org.firebirdsql.jaybird.props.PropertyConstants.SESSION_TIME_ZONE_SERVER;
 
 /**
  * Helper class for all GDS-related operations.
  */
 public final class GDSHelper {
-
-    /**
-     * @deprecated will be removed in Jaybird 6, use {@link org.firebirdsql.jaybird.props.PropertyConstants#DEFAULT_BLOB_BUFFER_SIZE}
-     */
-    @Deprecated
-    public static final int DEFAULT_BLOB_BUFFER_SIZE = PropertyConstants.DEFAULT_BLOB_BUFFER_SIZE;
 
     private final FbDatabase database;
     private FbTransaction transaction;
@@ -262,17 +256,6 @@ public final class GDSHelper {
      */
     public String getUserName() {
         return database.getConnectionProperties().getUser();
-    }
-
-    /**
-     * Get the encoding used for this connection.
-     *
-     * @return The name of the encoding used
-     * @deprecated Will be removed in Jaybird 6
-     */
-    @Deprecated
-    public String getIscEncoding() {
-        return database.getEncodingFactory().getDefaultEncodingDefinition().getFirebirdEncodingName();
     }
 
     /**
