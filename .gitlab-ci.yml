@@ -76,7 +76,12 @@ prepare:release:
     - export VERSION=`cat .ci/version`
     - export BRANCH=`cat .ci/branch`
     - export CONTEXT=`cat .ci/context`
-    - apt update -y && apt install maven -y
+    - wget https://archive.apache.org/dist/maven/maven-3/3.8.6/binaries/apache-maven-3.8.6-bin.tar.gz
+    - tar -xvf apache-maven-3.8.6-bin.tar.gz
+    - mv apache-maven-3.8.6 /opt/
+    - M2_HOME='/opt/apache-maven-3.8.6'
+    - PATH="$M2_HOME/bin:$PATH"
+    - export PATH
 
 build_and_test:
   tags:
