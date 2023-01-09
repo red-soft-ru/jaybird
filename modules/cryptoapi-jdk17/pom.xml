@@ -6,13 +6,13 @@
 		<version>5.0.0-SNAPSHOT</version>
 		<relativePath>../../pom.xml</relativePath>
 	</parent>
-	<artifactId>jaybird-cryptoapi-jdk11</artifactId>
-	<name>jaybird-cryptoapi-jdk11</name>
+	<artifactId>jaybird-cryptoapi-jdk17</artifactId>
+	<name>jaybird-cryptoapi-jdk17</name>
 	<packaging>jar</packaging>
 	<dependencies>
 		<dependency>
 			<groupId>ru.red-soft.jdbc</groupId>
-			<artifactId>jaybird-jdk11</artifactId>
+			<artifactId>jaybird-jdk17</artifactId>
 			<version>5.0.0-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>

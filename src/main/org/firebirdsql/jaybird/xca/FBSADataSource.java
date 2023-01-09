@@ -74,12 +74,9 @@ public class FBSADataSource implements DataSource, Serializable, Referenceable, 
      * 
      * @return database name, value is equal to the part of full JDBC URL without
      * the <code>jdbc:firebirdsql:</code> part.
-     * 
-     * @deprecated use {@link #getDatabase} instead for the sake of naming
-     * compatibility.
      */
     public String getDatabaseName() {
-        return getDatabase();
+        return mcf.getDatabaseName();
     }
     
     /**
@@ -88,35 +85,11 @@ public class FBSADataSource implements DataSource, Serializable, Referenceable, 
      * @param name connection URL without <code>"jdbc:firebirdsql:"</code>
      * prefix (<code>"//localhost:3050/c:/database/employee.gdb"</code>) for
      * example).
-     * 
-     * @deprecated use {@link #setDatabase(String)} instead for the sake of 
-     * naming compatibility.
      */
     public void setDatabaseName(String name) {
-        setDatabase(name);
+        mcf.setDatabaseName(name);
     }
 
-    /**
-     * Get name of the database. 
-     * 
-     * @return database name, value is equal to the part of full JDBC URL without
-     * the <code>jdbc:firebirdsql:</code> part.
-     */
-    public String getDatabase() {
-        return mcf.getDatabase();
-    }
-
-    /**
-     * Set database name.
-     * 
-     * @param name connection URL without <code>"jdbc:firebirdsql:"</code>
-     * prefix (<code>"//localhost:3050/c:/database/employee.gdb"</code>) for
-     * example).
-     */
-    public void setDatabase(String name) {
-        mcf.setDatabase(name);
-    }
-    
     /**
      * Get user name that is used in {@link #getConnection()} method.
      * 
@@ -209,10 +182,6 @@ public class FBSADataSource implements DataSource, Serializable, Referenceable, 
         return mcf.getBlobBufferSize();
     }
 
-    public int getBuffersNumber() {
-        return mcf.getBuffersNumber();
-    }
-
     public String getCharSet() {
         return mcf.getCharSet();
     }
@@ -223,10 +192,6 @@ public class FBSADataSource implements DataSource, Serializable, Referenceable, 
 
     public int getDefaultTransactionIsolation() {
         return mcf.getDefaultTransactionIsolation();
-    }
-
-    public String getNonStandardProperty(String key) {
-        return mcf.getNonStandardProperty(key);
     }
 
     public String getRoleName() {
@@ -261,10 +226,6 @@ public class FBSADataSource implements DataSource, Serializable, Referenceable, 
         mcf.setBlobBufferSize(bufferSize);
     }
 
-    public void setBuffersNumber(int buffersNumber) {
-        mcf.setBuffersNumber(buffersNumber);
-    }
-
     public void setCharSet(String charSet) {
         mcf.setCharSet(charSet);
     }
@@ -275,10 +236,6 @@ public class FBSADataSource implements DataSource, Serializable, Referenceable, 
 
     public void setDefaultTransactionIsolation(int defaultIsolationLevel) {
         mcf.setDefaultTransactionIsolation(defaultIsolationLevel);
-    }
-
-    public void setNonStandardProperty(String key, String value) {
-        mcf.setNonStandardProperty(key, value);
     }
 
     public void setNonStandardProperty(String propertyMapping) {
@@ -491,7 +448,7 @@ public class FBSADataSource implements DataSource, Serializable, Referenceable, 
         if (mc != null)
             return mc;
             
-        if (mcf.getDatabase() == null || "".equals(mcf.getDatabase().trim()))
+        if (mcf.getDatabaseName() == null || mcf.getDatabaseName().trim().isEmpty())
             throw new SQLException(
                 "Database was not specified. Cannot provide connections.");
 

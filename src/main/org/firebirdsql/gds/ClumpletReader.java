@@ -20,6 +20,7 @@ package org.firebirdsql.gds;
 
 import org.firebirdsql.encodings.Encoding;
 import org.firebirdsql.gds.ng.FbExceptionBuilder;
+import org.firebirdsql.jaybird.fb.constants.DpbItems;
 import org.firebirdsql.jaybird.fb.constants.SpbItems;
 import org.firebirdsql.jaybird.fb.constants.TpbItems;
 
@@ -108,7 +109,7 @@ public class ClumpletReader {
         case UnTagged:
         case SpbAttach:
             switch(type) {
-            case ISCConstants.isc_dpb_certificate_body:
+            case DpbItems.isc_dpb_certificate_body:
                 return ClumpletType.Wide;
             }
             return ClumpletType.TraditionalDpb;

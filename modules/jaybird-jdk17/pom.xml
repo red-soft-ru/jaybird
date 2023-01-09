@@ -6,8 +6,8 @@
 		<version>5.0.0-SNAPSHOT</version>
 		<relativePath>../../pom.xml</relativePath>
 	</parent>
-	<artifactId>jaybird-jdk11</artifactId>
-	<name>jaybird-jdk11</name>
+	<artifactId>jaybird-jdk17</artifactId>
+	<name>jaybird-jdk17</name>
 	<packaging>jar</packaging>
 	<dependencies>
 		<dependency>
@@ -100,7 +100,7 @@
 		<test.report.dir>${basedir}/../../reports</test.report.dir>
 		<test.java.jvm>/usr/lib/jvm/java-11-openjdk-11.0.6.10-1.el7_7.x86_64/bin/java</test.java.jvm>
 		<test.use.firebird.autocommit>false</test.use.firebird.autocommit>
-		<report_name>jdk11</report_name>
+		<report_name>jdk${jdk.version}</report_name>
 	</properties>
 	<build>
 		<resources>
@@ -143,7 +143,6 @@
 						</goals>
 						<configuration>
 							<sources>
-								<source>../../src/chacha_j11</source>
 								<source>../../src/extern</source>
 								<source>../../src/main</source>
 								<source>../../src/jna-client</source>
@@ -174,8 +173,8 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>${maven-compiler-plugin.version}</version>
 				<configuration>
-					<source>11</source>
-					<target>11</target>
+					<source>${jdk.version}</source>
+					<target>${jdk.version}</target>
 					<compilerArgs>
 						<arg>-Xpkginfo:always</arg>
 					</compilerArgs>
@@ -211,7 +210,6 @@
 					<extdirs>${module.thirdparty}</extdirs>
 					<bottom>Copyright &amp;copy; 2001-${maven.build.timestamp} Jaybird (Firebird JDBC/JCA) team. All rights reserved.</bottom>
 					<sourcepath>
-						../../src/chacha_j11:
 						../../src/main:
 						../../src/extern:
 						../../src/jna-client:

@@ -25,6 +25,8 @@ import org.firebirdsql.gds.ng.FbExceptionBuilder;
 import org.firebirdsql.gds.ng.LockCloseable;
 import org.firebirdsql.gds.ng.dbcrypt.DbCryptCallback;
 import org.firebirdsql.gds.ng.wire.*;
+import org.firebirdsql.jaybird.fb.constants.DpbItems;
+import org.firebirdsql.jaybird.fb.constants.SpbItems;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -109,8 +111,8 @@ public class V10Service extends AbstractFbWireService implements FbWireService {
     protected void sendAttachToBuffer(ServiceParameterBuffer spb) throws SQLException, IOException {
         final XdrOutputStream xdrOut = getXdrOut();
         
-        final boolean trustedAuth = spb.hasArgument(ISCConstants.isc_spb_trusted_auth);
-        final boolean multifactor = spb.hasArgument(ISCConstants.isc_spb_multi_factor_auth);
+        final boolean trustedAuth = spb.hasArgument(SpbItems.isc_spb_trusted_auth);
+        final boolean multifactor = spb.hasArgument(SpbItems.isc_spb_multi_factor_auth);
 
         if (connection.getProtocolVersion() < PROTOCOL_VERSION13) {
             if (trustedAuth && !multifactor)
@@ -118,17 +120,17 @@ public class V10Service extends AbstractFbWireService implements FbWireService {
 
             AuthSspi sspi;
             if (multifactor) {
-                if (!spb.hasArgument(ISCConstants.isc_dpb_password) && connection.getAttachProperties().getPassword() != null)
-                    spb.addArgument(ISCConstants.isc_dpb_password, connection.getAttachProperties().getPassword());
+                if (!spb.hasArgument(DpbItems.isc_dpb_password) && connection.getAttachProperties().getPassword() != null)
+                    spb.addArgument(DpbItems.isc_dpb_password, connection.getAttachProperties().getPassword());
                 sspi = new AuthSspi();
                 try {
                     sspi.setClumpletReaderType(ClumpletReader.Kind.Tagged);
                     sspi.setSkipWireKeyTag(true);
-                    if (spb.hasArgument(ISCConstants.isc_dpb_repository_pin))
+                    if (spb.hasArgument(DpbItems.isc_dpb_repository_pin))
                         sspi.setRepositoryPin(connection.getAttachProperties().getRepositoryPin());
-                    if (spb.hasArgument(ISCConstants.isc_spb_provider_id)) {
-                        sspi.setProviderID(spb.getArgumentAsInt(ISCConstants.isc_spb_provider_id));
-                        spb.removeArgument(ISCConstants.isc_spb_provider_id);
+                    if (spb.hasArgument(SpbItems.isc_spb_provider_id)) {
+                        sspi.setProviderID(spb.getArgumentAsInt(SpbItems.isc_spb_provider_id));
+                        spb.removeArgument(SpbItems.isc_spb_provider_id);
                     }
                     sspi.fillFactors(spb);
                 } catch (GDSException e) {
@@ -138,8 +140,8 @@ public class V10Service extends AbstractFbWireService implements FbWireService {
 
             connection.setSspi(sspi);
         } else {
-            if (spb.hasArgument(ISCConstants.isc_spb_multi_factor_auth))
-                spb.removeArgument(ISCConstants.isc_spb_multi_factor_auth); // no need to send it to server
+            if (spb.hasArgument(SpbItems.isc_spb_multi_factor_auth))
+                spb.removeArgument(SpbItems.isc_spb_multi_factor_auth); // no need to send it to server
         }
 
 

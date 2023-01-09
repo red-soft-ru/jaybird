@@ -27,6 +27,7 @@ import org.firebirdsql.gds.ng.IAttachProperties;
 import org.firebirdsql.gds.ng.wire.WireDatabaseConnection;
 import org.firebirdsql.gds.ng.wire.WireServiceConnection;
 import org.firebirdsql.gds.ng.wire.auth.legacy.UnixCrypt;
+import org.firebirdsql.jaybird.fb.constants.DpbItems;
 
 import java.sql.SQLException;
 
@@ -62,13 +63,13 @@ public class V10ParameterConverter extends AbstractParameterConverter<WireDataba
             pb.addArgument(tagMapping.getGSSAuthenticationTag(), 1);
         }
         if (props.getCertificate() != null) {
-            pb.addArgument(ISCConstants.isc_dpb_certificate, props.getCertificate());
+            pb.addArgument(DpbItems.isc_dpb_certificate, props.getCertificate());
         }
         if (props.getCertificateBase64() != null) {
-            pb.addArgument(ISCConstants.isc_dpb_certificate_base64, props.getCertificateBase64());
+            pb.addArgument(DpbItems.isc_dpb_certificate_base64, props.getCertificateBase64());
         }
         if (props.getRepositoryPin() != null) {
-            pb.addArgument(ISCConstants.isc_dpb_repository_pin, props.getRepositoryPin());
+            pb.addArgument(DpbItems.isc_dpb_repository_pin, props.getRepositoryPin());
         }
     }
 

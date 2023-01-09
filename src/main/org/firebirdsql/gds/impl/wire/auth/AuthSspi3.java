@@ -2,6 +2,7 @@ package org.firebirdsql.gds.impl.wire.auth;
 
 import org.firebirdsql.gds.ISCConstants;
 import org.firebirdsql.gds.impl.wire.ByteBuffer;
+import org.firebirdsql.jaybird.fb.constants.DpbItems;
 
 /**
  * Provides compatibility with multifactor authentication plugin
@@ -23,13 +24,13 @@ public class AuthSspi3 extends AuthSspi {
 
         int dataCount = data.getLength();
         if (dataCount != 0) {
-            if ((data.get(dataCount - 1) & 0xFF)  == ISCConstants.isc_dpb_session_encryption)
+            if ((data.get(dataCount - 1) & 0xFF)  == DpbItems.isc_dpb_session_encryption)
             {
                 setSessionEncyption(true);
                 data.setLength(dataCount - 1);
                 dataCount = data.getLength();
             }
-            if ((data.get(dataCount - 1) & 0xFF)  == ISCConstants.isc_dpb_security_authentication)
+            if ((data.get(dataCount - 1) & 0xFF)  == DpbItems.isc_dpb_security_authentication)
             {
                 setSecurityAuthentication(true);
                 data.setLength(dataCount - 1);

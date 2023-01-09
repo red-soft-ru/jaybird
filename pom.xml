@@ -12,6 +12,8 @@
 		<project.version.maven>${project.version}</project.version.maven>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
+		<jdk.version>17</jdk.version>
+
 		<build-helper-maven-plugin.version>3.0.0</build-helper-maven-plugin.version>
 		<maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
 		<maven-source-plugin.version>3.2.0</maven-source-plugin.version>
@@ -35,7 +37,7 @@
 		<junit.jupiter.version>5.9.1</junit.jupiter.version>
 	</properties>
 	<modules>
-		<module>modules/jaybird-jdk11</module>
+		<module>modules/jaybird-jdk17</module>
 	</modules>
 	<profiles>
 		<profile>
@@ -53,7 +55,7 @@
 				<activeByDefault>true</activeByDefault>
 			</activation>
 			<modules>
-				<module>modules/cryptoapi-jdk11</module>
+				<module>modules/cryptoapi-jdk17</module>
 			</modules>
 		</profile>
 		<profile>
@@ -62,7 +64,7 @@
 				<activeByDefault>false</activeByDefault>
 			</activation>
 			<modules>
-				<module>modules/cryptoapi-security-jdk11</module>
+				<module>modules/cryptoapi-security-jdk17</module>
 			</modules>
 		</profile>
 		<profile>

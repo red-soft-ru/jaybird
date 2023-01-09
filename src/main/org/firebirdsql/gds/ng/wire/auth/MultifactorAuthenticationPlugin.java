@@ -5,6 +5,7 @@ import org.firebirdsql.gds.ISCConstants;
 import org.firebirdsql.gds.impl.wire.ByteBuffer;
 import org.firebirdsql.gds.impl.wire.auth.*;
 import org.firebirdsql.gds.ng.wire.auth.legacy.UnixCrypt;
+import org.firebirdsql.jaybird.fb.constants.DpbItems;
 import org.firebirdsql.logging.Logger;
 import org.firebirdsql.logging.LoggerFactory;
 import org.firebirdsql.util.ByteArrayHelper;
@@ -77,7 +78,7 @@ public class MultifactorAuthenticationPlugin implements AuthenticationPlugin {
             if ((certificate != null && !certificate.isEmpty()) ||
                     (certificateBase64 != null && !certificateBase64.isEmpty())) {
                 AuthFactorCertificate authFactorCertificate = new AuthFactorCertificate(authSspi);
-                authFactorCertificate.setSdRandomNumber(ISCConstants.isc_dpb_certificate_body);
+                authFactorCertificate.setSdRandomNumber(DpbItems.isc_dpb_certificate_body);
                 try {
                     if (certificate != null && !certificate.isEmpty())
                         authFactorCertificate.loadFromFile(certificate);

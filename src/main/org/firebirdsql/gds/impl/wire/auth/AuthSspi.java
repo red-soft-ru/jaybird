@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.firebirdsql.gds.*;
 import org.firebirdsql.gds.impl.wire.ByteBuffer;
+import org.firebirdsql.jaybird.fb.constants.DpbItems;
 
 import static org.firebirdsql.gds.ClumpletReader.Kind.WideTagged;
 
@@ -55,50 +56,50 @@ public class AuthSspi {
 
   public void fillFactors(final ConnectionParameterBuffer dpb) throws GDSException {
     // Password factor
-    if (dpb.hasArgument(ISCConstants.isc_dpb_password) || dpb.hasArgument(ISCConstants.isc_dpb_user_name)) {
+    if (dpb.hasArgument(DpbItems.isc_dpb_password) || dpb.hasArgument(DpbItems.isc_dpb_user_name)) {
       final AuthFactorGostPassword f = new AuthFactorGostPassword(this);
-      f.setUserName(dpb.getArgumentAsString(ISCConstants.isc_dpb_user_name));
-      if (dpb.hasArgument(ISCConstants.isc_dpb_password)) {
-        f.setPassword(dpb.getArgumentAsString(ISCConstants.isc_dpb_password));
-        dpb.removeArgument(ISCConstants.isc_dpb_password);
+      f.setUserName(dpb.getArgumentAsString(DpbItems.isc_dpb_user_name));
+      if (dpb.hasArgument(DpbItems.isc_dpb_password)) {
+        f.setPassword(dpb.getArgumentAsString(DpbItems.isc_dpb_password));
+        dpb.removeArgument(DpbItems.isc_dpb_password);
       }
-      if (dpb.hasArgument(ISCConstants.isc_dpb_password_enc)) {
-        f.setPasswordEnc(dpb.getArgumentAsString(ISCConstants.isc_dpb_password_enc));
-        dpb.removeArgument(ISCConstants.isc_dpb_password_enc);
+      if (dpb.hasArgument(DpbItems.isc_dpb_password_enc)) {
+        f.setPasswordEnc(dpb.getArgumentAsString(DpbItems.isc_dpb_password_enc));
+        dpb.removeArgument(DpbItems.isc_dpb_password_enc);
       }
       addFactor(f);
     }
 
     // Certificate factor
-    if (dpb.hasArgument(ISCConstants.isc_dpb_certificate) || dpb.hasArgument(ISCConstants.isc_dpb_certificate_base64)) {
+    if (dpb.hasArgument(DpbItems.isc_dpb_certificate) || dpb.hasArgument(DpbItems.isc_dpb_certificate_base64)) {
       final AuthFactorCertificate f = new AuthFactorCertificate(this);
-      if (dpb.hasArgument(ISCConstants.isc_dpb_certificate)) {
-        final String filePath = dpb.getArgumentAsString(ISCConstants.isc_dpb_certificate);
+      if (dpb.hasArgument(DpbItems.isc_dpb_certificate)) {
+        final String filePath = dpb.getArgumentAsString(DpbItems.isc_dpb_certificate);
         f.loadFromFile(filePath);
-        dpb.removeArgument(ISCConstants.isc_dpb_certificate);
+        dpb.removeArgument(DpbItems.isc_dpb_certificate);
       } else {
-        final String cert = dpb.getArgumentAsString(ISCConstants.isc_dpb_certificate_base64);
+        final String cert = dpb.getArgumentAsString(DpbItems.isc_dpb_certificate_base64);
         f.setCertBase64(cert);
-        dpb.removeArgument(ISCConstants.isc_dpb_certificate_base64);
+        dpb.removeArgument(DpbItems.isc_dpb_certificate_base64);
       }
       addFactor(f);
     }
 
     // Server certificate factor
-    if (dpb.hasArgument(ISCConstants.isc_dpb_verify_server)) {
+    if (dpb.hasArgument(DpbItems.isc_dpb_verify_server)) {
       final AuthFactorServerCertificate f = new AuthFactorServerCertificate(this);
-      dpb.removeArgument(ISCConstants.isc_dpb_verify_server);
+      dpb.removeArgument(DpbItems.isc_dpb_verify_server);
       addFactor(f);
     }
 
-    if (dpb.hasArgument(ISCConstants.isc_dpb_trusted_auth)) {
+    if (dpb.hasArgument(DpbItems.isc_dpb_trusted_auth)) {
       trusted = true;
 //      dpb.removeArgument(ISCConstants.isc_dpb_trusted_auth);
     }
-    if (dpb.hasArgument(ISCConstants.isc_dpb_multi_factor_auth)) {
+    if (dpb.hasArgument(DpbItems.isc_dpb_multi_factor_auth)) {
       multifactor = true;
-      dpb.removeArgument(ISCConstants.isc_dpb_multi_factor_auth);
-      dpb.addArgument(ISCConstants.isc_dpb_multi_factor_auth, factors.size());
+      dpb.removeArgument(DpbItems.isc_dpb_multi_factor_auth);
+      dpb.addArgument(DpbItems.isc_dpb_multi_factor_auth, factors.size());
     }
   }
 

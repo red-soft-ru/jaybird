@@ -9,6 +9,7 @@ import org.firebirdsql.gds.ClumpletReader;
 import org.firebirdsql.gds.GDSException;
 import org.firebirdsql.gds.ISCConstants;
 import org.firebirdsql.gds.impl.wire.ByteBuffer;
+import org.firebirdsql.jaybird.fb.constants.DpbItems;
 
 import static org.firebirdsql.gds.ClumpletReader.Kind.WideTagged;
 
@@ -61,7 +62,7 @@ public class AuthFactorCertificate extends AuthFactor {
     @Override
     public boolean stage(final ByteBuffer data) throws GDSAuthException {
       if (sspi instanceof AuthSspi3) {
-        sdRandomNumber = ISCConstants.isc_dpb_certificate_body;
+        sdRandomNumber = DpbItems.isc_dpb_certificate_body;
         sdWireKey = 1;
       }
       final ClumpletReader serverData = new ClumpletReader(clumpletReaderType, data.getData());

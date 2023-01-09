@@ -73,7 +73,7 @@ public enum ParameterTagMapping {
 
         @Override
         public int getGSSAuthenticationTag() {
-            return ISCConstants.isc_dpb_gss;
+            return DpbItems.isc_dpb_gss;
         }
 
         @Override
@@ -83,12 +83,12 @@ public enum ParameterTagMapping {
 
         @Override
         public int getEffectiveLoginTag() {
-            return ISCConstants.isc_dpb_effective_login;
+            return DpbItems.isc_dpb_effective_login;
         }
 
         @Override
         public int getExcludeCryptoPluginsTag() {
-            return ISCConstants.isc_dpb_exclude_crypto_plugins;
+            return DpbItems.isc_dpb_exclude_crypto_plugins;
         }
     },
     SPB {
@@ -129,7 +129,7 @@ public enum ParameterTagMapping {
 
         @Override
         public int getGSSAuthenticationTag() {
-            return ISCConstants.isc_dpb_gss;
+            return DpbItems.isc_dpb_gss;
         }
 
         @Override
@@ -139,12 +139,12 @@ public enum ParameterTagMapping {
 
         @Override
         public int getEffectiveLoginTag() {
-            return ISCConstants.isc_dpb_effective_login;
+            return DpbItems.isc_dpb_effective_login;
         }
 
         @Override
         public int getExcludeCryptoPluginsTag() {
-            return ISCConstants.isc_dpb_exclude_crypto_plugins;
+            return DpbItems.isc_dpb_exclude_crypto_plugins;
         }
     };
 

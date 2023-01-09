@@ -23,6 +23,7 @@ import org.firebirdsql.gds.DatabaseParameterBuffer;
 import org.firebirdsql.gds.ISCConstants;
 import org.firebirdsql.gds.ParameterTagMapping;
 import org.firebirdsql.gds.impl.argument.ArgumentType;
+import org.firebirdsql.jaybird.fb.constants.DpbItems;
 
 /**
  * Implementation for DatabaseParameterBuffer.
@@ -69,8 +70,8 @@ public final class DatabaseParameterBufferImp extends ParameterBufferBase implem
         @Override
         public final ArgumentType getStringArgumentType(int tag) {
             switch (tag) {
-            case ISCConstants.isc_dpb_certificate:
-            case ISCConstants.isc_dpb_certificate_base64:
+            case DpbItems.isc_dpb_certificate:
+            case DpbItems.isc_dpb_certificate_base64:
                 return ArgumentType.Wide;
             default:
                 return argumentType;
