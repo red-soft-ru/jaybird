@@ -49,13 +49,13 @@ public class AuthSspiTest {
 
             final FBSADataSource fbDataSource = new FBSADataSource(GDSType.getType("PURE_JAVA"));
 
-            fbDataSource.setDatabase(FBTestProperties.DB_DATASOURCE_URL);
-            fbDataSource.setNonStandardProperty("isc_dpb_user_name", "TEST@RED-SOFT.RU");
-            fbDataSource.setNonStandardProperty("isc_dpb_lc_ctype", "WIN1251");
-            fbDataSource.setNonStandardProperty("isc_dpb_trusted_auth", "1");
-            fbDataSource.setNonStandardProperty("isc_dpb_multi_factor_auth", "1");
-            fbDataSource.setNonStandardProperty("isc_dpb_certificate", "/tmp/testuser.cer");
-            fbDataSource.setNonStandardProperty("isc_dpb_repository_pin", "12345678");
+            fbDataSource.setDatabaseName(FBTestProperties.DB_DATASOURCE_URL);
+            fbDataSource.setProperty("isc_dpb_user_name", "TEST@RED-SOFT.RU");
+            fbDataSource.setProperty("isc_dpb_lc_ctype", "WIN1251");
+            fbDataSource.setProperty("isc_dpb_trusted_auth", "1");
+            fbDataSource.setProperty("isc_dpb_multi_factor_auth", "1");
+            fbDataSource.setProperty("isc_dpb_certificate", "/tmp/testuser.cer");
+            fbDataSource.setProperty("isc_dpb_repository_pin", "12345678");
 
             Connection conn = null;
             try {
@@ -88,12 +88,12 @@ public class AuthSspiTest {
             final String username = "UserWithGostPassword";
             final String password = "password";
 
-            fbDataSource.setDatabase(FBTestProperties.DB_DATASOURCE_URL);
-            fbDataSource.setNonStandardProperty("isc_dpb_lc_ctype", "WIN1251");
-            fbDataSource.setNonStandardProperty("isc_dpb_user_name", username);
-            fbDataSource.setNonStandardProperty("isc_dpb_password", password);
-            fbDataSource.setNonStandardProperty("isc_dpb_trusted_auth", "1");
-            fbDataSource.setNonStandardProperty("isc_dpb_multi_factor_auth", "1");
+            fbDataSource.setDatabaseName(FBTestProperties.DB_DATASOURCE_URL);
+            fbDataSource.setProperty("isc_dpb_lc_ctype", "WIN1251");
+            fbDataSource.setProperty("isc_dpb_user_name", username);
+            fbDataSource.setProperty("isc_dpb_password", password);
+            fbDataSource.setProperty("isc_dpb_trusted_auth", "1");
+            fbDataSource.setProperty("isc_dpb_multi_factor_auth", "1");
 
             Connection conn = null;
             try {
@@ -135,14 +135,14 @@ public class AuthSspiTest {
 
             final FBSADataSource fbDataSource = new FBSADataSource(GDSType.getType("PURE_JAVA"));
 
-            fbDataSource.setDatabase(FBTestProperties.DB_DATASOURCE_URL);
-            fbDataSource.setNonStandardProperty("isc_dpb_lc_ctype", "WIN1251");
-            fbDataSource.setNonStandardProperty("isc_dpb_user_name", "TEST@RED-SOFT.RU");
-            fbDataSource.setNonStandardProperty("isc_dpb_password", "q3rgu7Ah");
-            fbDataSource.setNonStandardProperty("isc_dpb_certificate", "/tmp/testuser.cer");
-            fbDataSource.setNonStandardProperty("isc_dpb_repository_pin", "12345678");
-            fbDataSource.setNonStandardProperty("isc_dpb_trusted_auth", "1");
-            fbDataSource.setNonStandardProperty("isc_dpb_multi_factor_auth", "1");
+            fbDataSource.setDatabaseName(FBTestProperties.DB_DATASOURCE_URL);
+            fbDataSource.setProperty("isc_dpb_lc_ctype", "WIN1251");
+            fbDataSource.setProperty("isc_dpb_user_name", "TEST@RED-SOFT.RU");
+            fbDataSource.setProperty("isc_dpb_password", "q3rgu7Ah");
+            fbDataSource.setProperty("isc_dpb_certificate", "/tmp/testuser.cer");
+            fbDataSource.setProperty("isc_dpb_repository_pin", "12345678");
+            fbDataSource.setProperty("isc_dpb_trusted_auth", "1");
+            fbDataSource.setProperty("isc_dpb_multi_factor_auth", "1");
 
             Connection conn = null;
             try {
@@ -172,13 +172,13 @@ public class AuthSspiTest {
 
             final FBSADataSource fbDataSource = new FBSADataSource(GDSType.getType("PURE_JAVA"));
 
-            fbDataSource.setDatabase(FBTestProperties.DB_DATASOURCE_URL);
-            fbDataSource.setNonStandardProperty("isc_dpb_lc_ctype", "WIN1251");
-            fbDataSource.setNonStandardProperty("isc_dpb_user_name", "trusted_user");
-            fbDataSource.setNonStandardProperty("isc_dpb_certificate", "/tmp/testuser.cer");
-            fbDataSource.setNonStandardProperty("isc_dpb_repository_pin", "12345678");
-            fbDataSource.setNonStandardProperty("isc_dpb_trusted_auth", "1");
-            fbDataSource.setNonStandardProperty("isc_dpb_multi_factor_auth", "1");
+            fbDataSource.setDatabaseName(FBTestProperties.DB_DATASOURCE_URL);
+            fbDataSource.setProperty("isc_dpb_lc_ctype", "WIN1251");
+            fbDataSource.setProperty("isc_dpb_user_name", "trusted_user");
+            fbDataSource.setProperty("isc_dpb_certificate", "/tmp/testuser.cer");
+            fbDataSource.setProperty("isc_dpb_repository_pin", "12345678");
+            fbDataSource.setProperty("isc_dpb_trusted_auth", "1");
+            fbDataSource.setProperty("isc_dpb_multi_factor_auth", "1");
 
             Connection conn = null;
             try {
@@ -209,15 +209,15 @@ public class AuthSspiTest {
 
             final FBSADataSource fbDataSource = new FBSADataSource(GDSType.getType("PURE_JAVA"));
 
-            fbDataSource.setDatabase(FBTestProperties.DB_DATASOURCE_URL);
-            fbDataSource.setNonStandardProperty("isc_dpb_lc_ctype", "WIN1251");
-            fbDataSource.setNonStandardProperty("isc_dpb_user_name", "TEST@RED-SOFT.RU");
-            fbDataSource.setNonStandardProperty("isc_dpb_password", "q3rgu7Ah");
-            fbDataSource.setNonStandardProperty("isc_dpb_certificate_base64", loadFromFile("/tmp/testuser.cer"));
-            fbDataSource.setNonStandardProperty("isc_dpb_repository_pin", "12345678");
-            fbDataSource.setNonStandardProperty("isc_dpb_trusted_auth", "1");
-            fbDataSource.setNonStandardProperty("isc_dpb_multi_factor_auth", "1");
-            fbDataSource.setNonStandardProperty("isc_dpb_verify_server", "1");
+            fbDataSource.setDatabaseName(FBTestProperties.DB_DATASOURCE_URL);
+            fbDataSource.setProperty("isc_dpb_lc_ctype", "WIN1251");
+            fbDataSource.setProperty("isc_dpb_user_name", "TEST@RED-SOFT.RU");
+            fbDataSource.setProperty("isc_dpb_password", "q3rgu7Ah");
+            fbDataSource.setProperty("isc_dpb_certificate_base64", loadFromFile("/tmp/testuser.cer"));
+            fbDataSource.setProperty("isc_dpb_repository_pin", "12345678");
+            fbDataSource.setProperty("isc_dpb_trusted_auth", "1");
+            fbDataSource.setProperty("isc_dpb_multi_factor_auth", "1");
+            fbDataSource.setProperty("isc_dpb_verify_server", "1");
 
             Connection conn = null;
             try {
@@ -248,11 +248,11 @@ public class AuthSspiTest {
 
             final FBSADataSource fbDataSource = new FBSADataSource(GDSType.getType("PURE_JAVA"));
 
-            fbDataSource.setDatabase(FBTestProperties.DB_DATASOURCE_URL);
-            fbDataSource.setNonStandardProperty("isc_dpb_lc_ctype", "WIN1251");
-            fbDataSource.setNonStandardProperty("isc_dpb_user_name", "trusted_user");
-            fbDataSource.setNonStandardProperty("isc_dpb_password", "trusted");
-            fbDataSource.setNonStandardProperty("isc_dpb_effective_login", "effective_user");
+            fbDataSource.setDatabaseName(FBTestProperties.DB_DATASOURCE_URL);
+            fbDataSource.setProperty("isc_dpb_lc_ctype", "WIN1251");
+            fbDataSource.setProperty("isc_dpb_user_name", "trusted_user");
+            fbDataSource.setProperty("isc_dpb_password", "trusted");
+            fbDataSource.setProperty("isc_dpb_effective_login", "effective_user");
 
             Connection conn = null;
             try {

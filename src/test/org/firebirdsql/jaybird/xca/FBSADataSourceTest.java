@@ -5,6 +5,7 @@ import org.firebirdsql.common.extension.UsesDatabaseExtension;
 import org.firebirdsql.gds.TransactionParameterBuffer;
 import org.firebirdsql.gds.impl.jni.EmbeddedGDSFactoryPlugin;
 import org.firebirdsql.gds.impl.nativeoo.FbOOEmbeddedGDSFactoryPlugin;
+import org.firebirdsql.jaybird.fb.constants.TpbItems;
 import org.firebirdsql.jdbc.FBConnection;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -38,7 +39,7 @@ public class FBSADataSourceTest {
         final FBSADataSource dataSource = new FBSADataSource();
 
         // Set the standard properties
-        dataSource.setDatabase(DB_DATASOURCE_URL);
+        dataSource.setDatabaseName(DB_DATASOURCE_URL);
         dataSource.setDescription("An example database of employees");
         dataSource.setUserName(DB_USER);
         dataSource.setPassword(DB_PASSWORD);
@@ -121,7 +122,7 @@ public class FBSADataSourceTest {
         FBSADataSource dataSource = new FBSADataSource();
 
         // Set the standard properties
-        dataSource.setDatabase(DB_DATASOURCE_URL);
+        dataSource.setDatabaseName(DB_DATASOURCE_URL);
         dataSource.setDescription("An example database of employees");
         dataSource.setUserName("sysdba");
         dataSource.setPassword("masterkey");
@@ -132,10 +133,10 @@ public class FBSADataSourceTest {
 
 
             TransactionParameterBuffer tpb = c1.createTransactionParameterBuffer();
-            tpb.addArgument(TransactionParameterBuffer.READ_COMMITTED);
-            tpb.addArgument(TransactionParameterBuffer.REC_VERSION);
-            tpb.addArgument(TransactionParameterBuffer.READ);
-            tpb.addArgument(TransactionParameterBuffer.NOWAIT);
+            tpb.addArgument(TpbItems.isc_tpb_read_committed);
+            tpb.addArgument(TpbItems.isc_tpb_rec_version);
+            tpb.addArgument(TpbItems.isc_tpb_read);
+            tpb.addArgument(TpbItems.isc_tpb_nowait);
 
             c1.setTransactionParameters(tpb);
 
@@ -180,14 +181,14 @@ public class FBSADataSourceTest {
     void testEncryptedPassword() throws Exception {
         FBSADataSource dataSource = new FBSADataSource();
         // Set the standard properties
-        dataSource.setDatabase(DB_DATASOURCE_URL);
+        dataSource.setDatabaseName(DB_DATASOURCE_URL);
         dataSource.setDescription("An example database of employees");
         dataSource.setUserName("sysdba");
         dataSource.setEncoding("WIN1251");
 
         // Legacy plugin use it
-        dataSource.setNonStandardProperty("isc_dpb_password_enc", "QP3LMZ/MJh.");
-        dataSource.setNonStandardProperty("authPlugins", "Legacy_Auth");
+        dataSource.setProperty("isc_dpb_password_enc", "QP3LMZ/MJh.");
+        dataSource.setProperty("authPlugins", "Legacy_Auth");
         try (Connection connection = dataSource.getConnection()) {
             PreparedStatement ps = connection.prepareStatement(
                     "select rdb$get_context('SYSTEM', 'ENGINE_VERSION') from rdb$database");

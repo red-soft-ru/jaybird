@@ -10,6 +10,7 @@ import org.firebirdsql.gds.ng.*;
 import org.firebirdsql.gds.ng.fields.RowValue;
 import org.firebirdsql.gds.ng.wire.SimpleStatementListener;
 import org.firebirdsql.jaybird.fb.constants.BatchItems;
+import org.firebirdsql.jaybird.fb.constants.BpbItems;
 import org.firebirdsql.jdbc.FBBlob;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -941,7 +942,7 @@ class IBatchImplTest extends AbstractBatchTest {
         String blobSegment3 = INSERT_QUERY_ONLY_BLOBS;
 
         BlobParameterBuffer bpb = new BlobParameterBufferImp();
-        bpb.addArgument(ISCConstants.isc_bpb_type, ISCConstants.isc_bpb_type_segmented);
+        bpb.addArgument(BpbItems.isc_bpb_type, BpbItems.TypeValues.isc_bpb_type_segmented);
 
         batch.addSegmentedBlob(1, b1.getBlobId(), bpb);
         batch.addBlobSegment(blobSegment1.getBytes(), false);
@@ -1022,7 +1023,7 @@ class IBatchImplTest extends AbstractBatchTest {
         String blobSegment3 = INSERT_QUERY_ONLY_BLOBS;
 
         BlobParameterBuffer bpb = new BlobParameterBufferImp();
-        bpb.addArgument(ISCConstants.isc_bpb_type, ISCConstants.isc_bpb_type_segmented);
+        bpb.addArgument(BpbItems.isc_bpb_type, BpbItems.TypeValues.isc_bpb_type_segmented);
 
         batch.addSegmentedBlob(1, b1.getBlobId(), bpb);
         batch.addBlobSegment(blobSegment1.getBytes(), false);
