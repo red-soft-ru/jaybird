@@ -19,7 +19,6 @@ import org.firebirdsql.gds.ng.StatementState;
 import org.firebirdsql.gds.ng.StatementType;
 import org.firebirdsql.gds.ng.fields.*;
 import org.firebirdsql.gds.impl.BatchParameterBufferImp;
-import org.firebirdsql.jdbc.metadata.RowValueBuilder;
 import org.firebirdsql.jna.fbclient.XSQLVAR;
 import org.firebirdsql.logging.Logger;
 import org.firebirdsql.logging.LoggerFactory;
@@ -335,15 +334,14 @@ public class IStatementImpl extends AbstractFbStatement {
     }
 
     protected RowValue toRowValue(RowDescriptor rowDescriptor, IMessageMetadata meta, Pointer ptr) throws SQLException {
-        final RowValueBuilder row = new RowValueBuilder(rowDescriptor);
+        final RowValue row = rowDescriptor.createDefaultFieldValues();
         int columns = meta.getCount(getStatus());
         processStatus();
         for (int idx = 0; idx < columns; idx++) {
-            row.setFieldIndex(idx);
             int nullOffset = meta.getNullOffset(getStatus(), idx);
             processStatus();
             if (ptr.getShort(nullOffset) == XSQLVAR.SQLIND_NULL) {
-                row.set(null);
+                row.setFieldData(idx, null);
             } else {
                 int bufferLength = meta.getLength(getStatus(), idx);
                 processStatus();
@@ -355,10 +353,10 @@ public class IStatementImpl extends AbstractFbStatement {
                 }
                 byte[] data = new byte[bufferLength];
                 ptr.read(offset, data, 0, bufferLength);
-                row.set(data);
+                row.setFieldData(idx, data);
             }
         }
-        return row.toRowValue(false);
+        return row;
     }
 
     @Override
