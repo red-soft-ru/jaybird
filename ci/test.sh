@@ -138,8 +138,6 @@ echo Will use build $RDB_VERSION for testing
 echo "Downloading RedDatabase $RDB_BUILD_ID"
 if [[ "$RDB_MAJOR_VERSION" == "3" ]]; then
   RDB_URL=http://builds.red-soft.biz/release_hub/rdb30/${RDB_VERSION}/download/red-database:linux-${ARCH}-enterprise:${RDB_VERSION}:bin
-elif [[ "$RDB_MAJOR_VERSION" == "4" ]]; then
-  RDB_URL=http://builds.red-soft.biz/release_hub/rdb40/${RDB_VERSION}/download/red-database:linux-${ARCH}-enterprise:${RDB_VERSION}:bin
 elif [[ "$RDB_MAJOR_VERSION" == "5" ]]; then
   RDB_URL=http://builds.red-soft.biz/release_hub/rdb50/${RDB_VERSION}/download/red-database:linux-${ARCH}-enterprise:${RDB_VERSION}:bin
 fi
@@ -147,10 +145,7 @@ fi
 (curl -s "$RDB_URL" -o /tmp/installer.bin && chmod +x /tmp/installer.bin) || die "Unable to download RedDatabase"
 
 echo "Installing RedDatabase"
-if [[ "$RDB_MAJOR_VERSION" == "2" ]]; then
-  /tmp/installer.bin --DBAPasswd masterkey --mode unattended --architecture $ARCHITECTURE || die "Unable to install RedDatabase"
-else
-  /tmp/installer.bin --mode unattended --sysdba_password masterkey --debuglevel 4 || die "Unable to install RedDatabase"
+/tmp/installer.bin --mode unattended --sysdba_password masterkey --debuglevel 4 || die "Unable to install RedDatabase"
 fi
 rm -f /tmp/installer.bin
 chmod 777 $TEST_DIR
