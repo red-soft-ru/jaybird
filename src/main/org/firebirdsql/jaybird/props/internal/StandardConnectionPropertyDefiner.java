@@ -64,6 +64,12 @@ class StandardConnectionPropertyDefiner implements ConnectionPropertyDefinerSpi 
                         .dpbItem(isc_dpb_process_id).spbItem(isc_spb_process_id),
                 builder(processName).aliases("process_name", "isc_dpb_process_name")
                         .dpbItem(isc_dpb_process_name).spbItem(isc_spb_process_name),
+                builder(certificate).aliases("certificate", "isc_dpb_certificate")
+                        .dpbItem(isc_dpb_certificate).spbItem(isc_spb_certificate),
+                builder(certificateBase64).aliases("certificateBase64", "isc_dpb_certificate_base64")
+                        .dpbItem(isc_dpb_certificate_base64).spbItem(isc_dpb_certificate_base64),
+                builder(repositoryPin).aliases("repositoryPin", "isc_dpb_repository_pin")
+                        .dpbItem(isc_dpb_repository_pin).spbItem(isc_spb_repository_pin),
                 builder(socketBufferSize).type(INT).aliases("socket_buffer_size"),
                 builder(soTimeout).type(INT).aliases("so_timeout"),
                 builder(connectTimeout).type(INT).aliases("connect_timeout", "isc_dpb_connect_timeout")
