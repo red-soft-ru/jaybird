@@ -151,7 +151,7 @@ build_and_test:
         REPORT_PREFIX: jdk17_embedded_
         RDB_VERSION: $RDB5_VERSION
       - TYPE: JDK17_rdb3_liberica_17
-        TEST_JAVA_JVM: /usr/lib/jvm/bellsoft-java17.x86_64/bin/java
+        TEST_JAVA_JVM: /usr/java17/bin/java
         JDK_VER: 17
         GDS_TYPE: "PURE_JAVA"
         EXTRA_DEPENDENCIES: bellsoft-java17
