@@ -146,7 +146,7 @@ fi
 
 echo "Installing RedDatabase"
 /tmp/installer.bin --mode unattended --sysdba_password masterkey --debuglevel 4 || die "Unable to install RedDatabase"
-fi
+
 rm -f /tmp/installer.bin
 chmod 777 $TEST_DIR
 
