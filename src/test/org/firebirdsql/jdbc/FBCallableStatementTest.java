@@ -48,7 +48,7 @@ import static org.junit.jupiter.api.Assumptions.assumeTrue;
  * This test case checks callable statements by executing procedure through
  * {@link java.sql.CallableStatement} and {@link java.sql.PreparedStatement}.
  *
- * @author <a href="mailto:d_jencks@users.sourceforge.net">David Jencks</a>
+ * @author David Jencks
  * @version 1.0
  */
 class FBCallableStatementTest {
@@ -1032,6 +1032,28 @@ class FBCallableStatementTest {
                 assertEquals("DGPII", rs.getString(1), "First row value must be DGPII");
                 assertFalse(rs.next(), "Should not have a second row");
             }
+        }
+    }
+
+    /**
+     * Tests for <a href="https://github.com/FirebirdSQL/jaybird/issues/729">jaybird#729</a>.
+     */
+    @Test
+    void callableStatementExecuteProcedureShouldNotTrim_729() throws Exception {
+        executeDDL(con, """
+                create procedure char_return returns (val char(5)) as
+                begin
+                  val = 'A';
+                end""");
+
+        try (CallableStatement cstmt = con.prepareCall("execute procedure char_return")) {
+            cstmt.execute();
+            ResultSet rs = cstmt.getResultSet();
+            assertTrue(rs.next(), "Expected a row");
+            assertAll(
+                    () -> assertEquals("A    ", rs.getString(1), "Unexpected trim by rs.getString"),
+                    () -> assertEquals("A    ", cstmt.getObject(1), "Unexpected trim by cstmt.getObject"),
+                    () -> assertEquals("A    ", cstmt.getString(1), "Unexpected trim by cstmt.getString"));
         }
     }
 

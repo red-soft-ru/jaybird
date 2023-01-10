@@ -35,7 +35,7 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * Tests for {@link FBDateField}
  * 
- * @author <a href="mailto:mrotteveel@users.sourceforge.net">Mark Rotteveel</a>
+ * @author Mark Rotteveel
  */
 class FBDateFieldTest extends BaseJUnit5TestFBField<FBDateField, java.sql.Date> {
 
