@@ -247,7 +247,7 @@
 					<reuseForks>false</reuseForks>
 					<trimStackTrace>false</trimStackTrace>
 					<rerunFailingTestsCount>3</rerunFailingTestsCount>
-					<argLine>-Xmx16G -noverify --add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.util=ALL-UNNAMED -Djdk.attach.allowAttachSelf=true -XX:+StartAttachListener</argLine>
+					<argLine>-Xmx16G -noverify --add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.util=ALL-UNNAMED --add-opens java.base/javax.crypto=ALL-UNNAMED -Djdk.attach.allowAttachSelf=true -XX:+StartAttachListener</argLine>
 				</configuration>
 			</plugin>
 			<plugin>
