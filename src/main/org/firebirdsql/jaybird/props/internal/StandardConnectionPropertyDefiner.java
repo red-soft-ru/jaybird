@@ -70,6 +70,8 @@ class StandardConnectionPropertyDefiner implements ConnectionPropertyDefinerSpi 
                         .dpbItem(isc_dpb_certificate_base64).spbItem(isc_dpb_certificate_base64),
                 builder(repositoryPin).aliases("repositoryPin", "isc_dpb_repository_pin")
                         .dpbItem(isc_dpb_repository_pin).spbItem(isc_spb_repository_pin),
+                builder(effectiveLogin).aliases("effectiveLogin", "isc_dpb_effective_login")
+                        .dpbItem(isc_dpb_effective_login).spbItem(isc_spb_effective_login),
                 builder(socketBufferSize).type(INT).aliases("socket_buffer_size"),
                 builder(soTimeout).type(INT).aliases("so_timeout"),
                 builder(connectTimeout).type(INT).aliases("connect_timeout", "isc_dpb_connect_timeout")
