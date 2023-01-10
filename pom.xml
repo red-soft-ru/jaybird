@@ -34,7 +34,7 @@
 		<mockito.core.version>4.11.0</mockito.core.version>
 		<objenesis.version>3.2</objenesis.version>
 		<releasehub.plugin.version>1.1</releasehub.plugin.version>
-		<junit.jupiter.version>5.9.1</junit.jupiter.version>
+		<junit.jupiter.version>5.9.2</junit.jupiter.version>
 	</properties>
 	<modules>
 		<module>modules/jaybird-jdk17</module>
