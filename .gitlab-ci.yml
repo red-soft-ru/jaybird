@@ -164,7 +164,14 @@ deploy:internal:
   script:
     - mvn $MAVEN_CLI_OPTS deploy -Pdeploy-internal -Pcryptoapi -Pcryptoapi-security -Dmaven.test.skip.exec -DreleaseHubBuildVersion=$VERSION
     - mvn $MAVEN_CLI_OPTS --non-recursive releasehub-build:publish -Pdeploy-internal -Pcryptoapi -Pcryptoapi-security -DreleaseHubBuildVersion=$VERSION
+
+deploy:nexus_snapshots:
+  <<: *deploy_template
+  stage: deploy
+  script:
     - mvn $MAVEN_CLI_OPTS deploy -Pdeploy-nexus-snapshots -Pcryptoapi -Pcryptoapi-security -Dmaven.test.skip.exec
+  except:
+    - tags
 
 deploy:nexus_releases:
   <<: *deploy_template
