@@ -907,7 +907,7 @@ class FBConnectionTest {
     void testErrorWhenNoCredentials() {
         assumeThat("Embedded does not use authentication", FBTestProperties.GDS_TYPE, not(isEmbeddedType()));
         final Properties properties = new Properties();
-        properties.setProperty("authPlugins", "Srp256,Srp,Certificate,GostPassword,Gss,Multifactor");
+        properties.setProperty("authPlugins", "Srp256,Srp,Certificate,GostPassword,Multifactor");
         try (Connection ignored = DriverManager.getConnection(getUrl(), properties)) {
             fail("expected exception when connecting without user name and password");
         } catch (SQLException e) {
