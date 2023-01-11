@@ -38,6 +38,7 @@ import static org.firebirdsql.common.FBTestProperties.createFBManager;
 import static org.firebirdsql.common.FBTestProperties.defaultDatabaseSetUp;
 import static org.firebirdsql.common.FBTestProperties.getConnectionViaDriverManager;
 import static org.firebirdsql.common.FBTestProperties.getDatabasePath;
+import static org.firebirdsql.common.FBTestProperties.initCryptoPlugin;
 
 /**
  * JUnit 5 extension that creates and deletes a database.
@@ -103,6 +104,7 @@ public abstract class UsesDatabaseExtension {
 
     public void createDefaultDatabase() throws Exception {
         addDatabase(getDatabasePath());
+        initCryptoPlugin();
         defaultDatabaseSetUp(fbManager);
         executeInitStatements();
     }

@@ -18,10 +18,13 @@
  */
 package org.firebirdsql.common;
 
+import org.firebirdsql.cryptoapi.AuthCryptoPluginImpl;
+import org.firebirdsql.cryptoapi.cryptopro.exception.CryptoException;
 import org.firebirdsql.gds.TransactionParameterBuffer;
 import org.firebirdsql.gds.impl.GDSFactory;
 import org.firebirdsql.gds.impl.GDSType;
 import org.firebirdsql.gds.impl.TransactionParameterBufferImpl;
+import org.firebirdsql.gds.impl.wire.auth.AuthCryptoPlugin;
 import org.firebirdsql.gds.ng.FbConnectionProperties;
 import org.firebirdsql.gds.ng.FbDatabaseFactory;
 import org.firebirdsql.gds.ng.FbServiceProperties;
@@ -299,6 +302,10 @@ public final class FBTestProperties {
         } finally {
             fbManager.stop();
         }
+    }
+
+    public static void initCryptoPlugin() throws CryptoException {
+        AuthCryptoPlugin.register(new AuthCryptoPluginImpl());
     }
 
     private FBTestProperties() {
