@@ -714,7 +714,7 @@ class FBPreparedStatementTest {
         try (Statement stmt = con.createStatement()) {
             Thread cancelThread = new Thread(() -> {
                 try {
-                    Thread.sleep(5);
+                    Thread.sleep(5000);
                     stmt.cancel();
                 } catch (SQLException ex) {
                     cancelFailed.set(true);
