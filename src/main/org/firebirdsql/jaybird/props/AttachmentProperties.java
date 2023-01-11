@@ -453,7 +453,7 @@ public interface AttachmentProperties extends BaseProperties {
         setBooleanProperty(PropertyNames.notEncryptedPassword, notEncryptedPassword);
     }
 
-    default int getProviderID() {
+    default Integer getProviderID() {
         return getIntProperty(PropertyNames.providerID);
     }
 

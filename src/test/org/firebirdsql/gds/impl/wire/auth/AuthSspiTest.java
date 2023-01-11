@@ -2,10 +2,14 @@ package org.firebirdsql.gds.impl.wire.auth;
 
 import org.firebirdsql.common.FBTestProperties;
 import org.firebirdsql.common.JdbcResourceHelper;
+import org.firebirdsql.common.extension.GdsTypeExtension;
 import org.firebirdsql.common.extension.UsesDatabaseExtension;
 import org.firebirdsql.cryptoapi.AuthCryptoPluginImpl;
 import org.firebirdsql.gds.impl.GDSType;
+import org.firebirdsql.gds.impl.jni.EmbeddedGDSFactoryPlugin;
+import org.firebirdsql.gds.impl.nativeoo.FbOOEmbeddedGDSFactoryPlugin;
 import org.firebirdsql.jaybird.xca.FBSADataSource;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -28,6 +32,12 @@ import static org.junit.jupiter.api.Assertions.fail;
 public class AuthSspiTest {
 
     @RegisterExtension
+    @Order(1)
+    static final GdsTypeExtension gdsType = GdsTypeExtension.excludes(EmbeddedGDSFactoryPlugin.EMBEDDED_TYPE_NAME,
+            FbOOEmbeddedGDSFactoryPlugin.EMBEDDED_TYPE_NAME);
+
+    @RegisterExtension
+    @Order(2)
     static final UsesDatabaseExtension.UsesDatabaseForAll usesDatabase = UsesDatabaseExtension.usesDatabaseForAll();
 
     @Test

@@ -531,7 +531,7 @@ public final class ClientAuthBlock {
     }
 
     public int getProviderID() {
-        return attachProperties.getProviderID();
+        return attachProperties.getProviderID() != null ? attachProperties.getProviderID() : 0;
     }
 
     public boolean getVerifyServerCertificate() {
