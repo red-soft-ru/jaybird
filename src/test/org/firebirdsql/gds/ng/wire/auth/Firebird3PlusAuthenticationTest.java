@@ -88,6 +88,25 @@ class Firebird3PlusAuthenticationTest {
         }
     }
 
+    @Test
+    void authenticateDatabaseUsingLegacyAuthWithoutPasswordEncryption() throws Exception {
+        final String username = "legacyauth";
+        final String password = "legacy";
+        databaseUser.createUser(username, password, "Legacy_UserManager");
+        Properties connectionProperties = getDefaultPropertiesForConnection();
+        connectionProperties.setProperty("user", username);
+        connectionProperties.setProperty("password", password);
+        connectionProperties.setProperty("isc_dpb_not_encrypt_password", "true");
+        connectionProperties.setProperty("authPlugins", "Legacy_Auth");
+        try (Connection connection = DriverManager.getConnection(getUrl(), connectionProperties);
+             Statement statement = connection.createStatement();
+             ResultSet resultSet = statement.executeQuery(
+                     "SELECT MON$AUTH_METHOD FROM MON$ATTACHMENTS WHERE MON$ATTACHMENT_ID = CURRENT_CONNECTION")) {
+            assertTrue(resultSet.next(), "Expected a row with attachment information");
+            assertEquals("LEGACY_SEC", resultSet.getString(1), "Unexpected authentication method");
+        }
+    }
+
     /**
      * This test assumes that the Firebird 3 config for {@code UserManager} contains {@code Legacy_UserManager}.
      * <p>
