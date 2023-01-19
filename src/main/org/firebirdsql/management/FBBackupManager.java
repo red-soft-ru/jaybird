@@ -54,6 +54,17 @@ public class FBBackupManager extends FBBackupManagerBase implements BackupManage
     }
 
     /**
+     * Create a new instance of <code>FBBackupManager</code> based on the default GDSType
+     * and specify the number of parallel workers.
+     *
+     * @param parallelWorkers
+     *        value must be greater than 1 (no parallelism).
+     */
+    public FBBackupManager(int parallelWorkers) {
+        setParallelWorkers(parallelWorkers);
+    }
+
+    /**
      * Create a new instance of <code>FBBackupManager</code> based on a given GDSType.
      *
      * @param gdsType
@@ -64,6 +75,20 @@ public class FBBackupManager extends FBBackupManagerBase implements BackupManage
     }
 
     /**
+     * Create a new instance of <code>FBBackupManager</code> based on a given GDSType
+     * and specify the number of parallel workers.
+     *
+     * @param gdsType
+     *        type must be PURE_JAVA, EMBEDDED, or NATIVE
+     * @param parallelWorkers
+     *        value must be greater than 1 (no parallelism).
+     */
+    public FBBackupManager(String gdsType, int parallelWorkers) {
+        super(gdsType);
+        setParallelWorkers(parallelWorkers);
+    }
+
+    /**
      * Create a new instance of <code>FBBackupManager</code> based on a given GDSType.
      *
      * @param gdsType
@@ -71,6 +96,20 @@ public class FBBackupManager extends FBBackupManagerBase implements BackupManage
      */
     public FBBackupManager(GDSType gdsType) {
         super(gdsType);
+    }
+
+    /**
+     * Create a new instance of <code>FBBackupManager</code> based on a given GDSType
+     * and specify the number of parallel workers.
+     *
+     * @param gdsType
+     *        type must be PURE_JAVA, EMBEDDED, or NATIVE
+     * @param parallelWorkers
+     *        value must be greater than 1 (no parallelism).
+     */
+    public FBBackupManager(GDSType gdsType, int parallelWorkers) {
+        super(gdsType);
+        setParallelWorkers(parallelWorkers);
     }
 
     public void setBackupPath(String backupPath) {

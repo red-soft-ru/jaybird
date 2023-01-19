@@ -32,6 +32,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import static java.lang.String.format;
 import static org.firebirdsql.common.FBTestProperties.*;
@@ -78,6 +79,28 @@ class FBStreamingBackupManagerTest {
     @Test
     void testStreamingBackupAndRestore() throws Exception {
         usesDatabase.createDefaultDatabase();
+        Path backupPath = tempFolder.resolve("testbackup.fbk");
+        try (OutputStream backupOutputStream = new FileOutputStream(backupPath.toFile())) {
+            backupManager.setBackupOutputStream(backupOutputStream);
+            backupManager.backupDatabase();
+        }
+        assertTrue(Files.exists(backupPath), () -> format("Expected backup file %s to exist", backupPath));
+
+        Path restorePath = tempFolder.resolve("testrestore.fdb");
+        backupManager.clearRestorePaths();
+        usesDatabase.addDatabase(restorePath.toString());
+        backupManager.setDatabase(restorePath.toString());
+        try (InputStream restoreInputStream = new FileInputStream(backupPath.toFile())) {
+            backupManager.setRestoreInputStream(restoreInputStream);
+            backupManager.restoreDatabase();
+        }
+        assertTrue(Files.exists(backupPath), () -> format("Expected database file %s to exist", backupPath));
+    }
+
+    @Test
+    public void testMultithreadingStreamingBackupAndRestore() throws Exception {
+        usesDatabase.createDefaultDatabase();
+        backupManager.setParallelWorkers(8);
         Path backupPath = tempFolder.resolve("testbackup.fbk");
         try (OutputStream backupOutputStream = new FileOutputStream(backupPath.toFile())) {
             backupManager.setBackupOutputStream(backupOutputStream);

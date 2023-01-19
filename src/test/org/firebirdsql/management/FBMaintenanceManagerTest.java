@@ -421,6 +421,42 @@ class FBMaintenanceManagerTest {
     }
 
     @Test
+    public void testSweepDatabaseParallelWorkersParameter() throws Exception {
+        FBMaintenanceManager localMaintenanceManager = new FBMaintenanceManager(getGdsType(), 8);
+        if (getGdsType() == GDSType.getType("PURE_JAVA") || getGdsType() == GDSType.getType("NATIVE")) {
+            localMaintenanceManager.setServerName(DB_SERVER_URL);
+            localMaintenanceManager.setPort(DB_SERVER_PORT);
+        }
+
+        localMaintenanceManager.setUser(DB_USER);
+        localMaintenanceManager.setPassword(DB_PASSWORD);
+        localMaintenanceManager.setDatabase(getDatabasePath());
+        localMaintenanceManager.setLogger(System.out);
+        // Just run it to see if it throws an exception
+        localMaintenanceManager.sweepDatabase();
+    }
+
+    @Test
+    public void testSweepDatabaseParallelWorkersSetMethod() throws Exception {
+        maintenanceManager.setParallelWorkers(8);
+        // Just run it to see if it throws an exception
+        maintenanceManager.sweepDatabase();
+    }
+
+    @Test
+    public void testSweepDatabaseParallelWorkersRunMethod() throws Exception {
+        // Just run it to see if it throws an exception
+        maintenanceManager.sweepDatabase(8);
+    }
+
+    @Test
+    public void testSweepDatabaseParallelWorkersProperty() throws Exception {
+        maintenanceManager.setProperty("isc_spb_rpr_par_workers", String.valueOf(8));
+        // Just run it to see if it throws an exception
+        maintenanceManager.sweepDatabase();
+    }
+
+    @Test
     void testActivateShadowFile() throws Exception {
         // Just run it to see if it throws an exception
         maintenanceManager.activateShadowFile();

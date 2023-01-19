@@ -65,11 +65,25 @@ import static org.firebirdsql.gds.VaxEncoding.iscVaxLong;
  */
 public class FBMaintenanceManager extends FBServiceManager implements MaintenanceManager {
 
+    private int parallelWorkers = 1;
+
     /**
      * Create a new instance of {@code FBMaintenanceManager} based on the default GDSType.
      */
     public FBMaintenanceManager() {
         super();
+    }
+
+    /**
+     * Create a new instance of <code>FBMaintenanceManager</code> based on the default GDSType
+     * and specify the number of parallel workers.
+     *
+     * @param parallelWorkers
+     *        value must be greater than 1 (no parallelism).
+     */
+    public FBMaintenanceManager(int parallelWorkers) {
+        super();
+        this.parallelWorkers = parallelWorkers;
     }
 
     /**
@@ -83,6 +97,20 @@ public class FBMaintenanceManager extends FBServiceManager implements Maintenanc
     }
 
     /**
+     * Create a new instance of <code>FBMaintenanceManager</code> based on a given GDSType
+     * and specify the number of parallel workers.
+     *
+     * @param gdsType
+     *         type must be PURE_JAVA, EMBEDDED, or NATIVE
+     * @param parallelWorkers
+     *        value must be greater than 1 (no parallelism).
+     */
+    public FBMaintenanceManager(String gdsType, int parallelWorkers) {
+        super(gdsType);
+        this.parallelWorkers = parallelWorkers;
+    }
+
+    /**
      * Create a new instance of {@code FBMaintenanceManager} based on a given GDSType.
      *
      * @param gdsType
@@ -90,6 +118,20 @@ public class FBMaintenanceManager extends FBServiceManager implements Maintenanc
      */
     public FBMaintenanceManager(GDSType gdsType) {
         super(gdsType);
+    }
+
+    /**
+     * Create a new instance of <code>FBMaintenanceManager</code> based on a given GDSType
+     * and specify the number of parallel workers.
+     *
+     * @param gdsType
+     *         The GDS implementation type to use
+     * @param parallelWorkers
+     *        value must be greater than 1 (no parallelism).
+     */
+    public FBMaintenanceManager(GDSType gdsType, int parallelWorkers) {
+        super(gdsType);
+        this.parallelWorkers = parallelWorkers;
     }
 
     public void setDatabaseAccessMode(int mode) throws SQLException {
@@ -241,6 +283,19 @@ public class FBMaintenanceManager extends FBServiceManager implements Maintenanc
 
     // ----------- Sweeping -------------------------
 
+    /**
+     * Set the number of parallel workers.
+     *
+     * @param parallelWorkers
+     *         Valid values must be greater than 1 (no parallelism).
+     *         Values less than 1 is silently ignored and default value of 1 is used.
+     */
+    public void setParallelWorkers(int parallelWorkers) {
+        if (parallelWorkers > 1) {
+            this.parallelWorkers = parallelWorkers;
+        }
+    }
+
     public void setSweepThreshold(int transactions) throws SQLException {
         if (transactions < 0) {
             throw new IllegalArgumentException("transactions must be >= 0");
@@ -254,7 +309,36 @@ public class FBMaintenanceManager extends FBServiceManager implements Maintenanc
     }
 
     public void sweepDatabase() throws SQLException {
-        executeRepairOperation(isc_spb_rpr_sweep_db);
+        if (getProperty("isc_spb_rpr_par_workers") != null && parallelWorkers <= 1) {
+            parallelWorkers = Integer.parseInt(getProperty("isc_spb_rpr_par_workers"));
+        }
+        if (parallelWorkers > 1) {
+            try (FbService service = attachServiceManager()) {
+                ServiceRequestBuffer srb = createRepairSRB(service, isc_spb_rpr_sweep_db);
+                if (service.getServerVersion().isEqualOrAbove(5, 0))
+                    srb.addArgument(isc_spb_rpr_par_workers, parallelWorkers);
+                else
+                    srb.addArgument(isc_spb_rpr_par_workers_rs, parallelWorkers);
+                executeServicesOperation(service, srb);
+            }
+        } else {
+            executeRepairOperation(isc_spb_rpr_sweep_db);
+        }
+    }
+
+    public void sweepDatabase(int parallelWorkers) throws SQLException {
+        if (parallelWorkers > 1) {
+            try (FbService service = attachServiceManager()) {
+                ServiceRequestBuffer srb = createRepairSRB(service, isc_spb_rpr_sweep_db);
+                if (service.getServerVersion().isEqualOrAbove(5, 0))
+                    srb.addArgument(isc_spb_rpr_par_workers, parallelWorkers);
+                else
+                    srb.addArgument(isc_spb_rpr_par_workers_rs, parallelWorkers);
+                executeServicesOperation(service, srb);
+            }
+        } else {
+            throw new IllegalArgumentException("Parallel workers number must be >= 1");
+        }
     }
 
     // ----------- Shadow Files ------------------------------------

@@ -295,6 +295,10 @@ public interface ISCConstants {
     int isc_spb_rpr_commit_trans_64	=	49;
     int isc_spb_rpr_rollback_trans_64		=50;
     int isc_spb_rpr_recover_two_phase_64	=51;
+    int isc_spb_rpr_par_workers     =   52;
+
+    // Red Database specific
+    int isc_spb_rpr_par_workers_rs     =   100;
 
     int isc_spb_rpr_validate_db		=	0x01;
     int isc_spb_rpr_sweep_db		=	0x02;
