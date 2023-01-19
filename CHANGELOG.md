@@ -1,3 +1,23 @@
+# v5.0.2
+
+## Fixed
+
+* Frontported multithreaded backup/restore and sweep via services. See RS-95035
+* Add ability to set property for non-encrypted password passing. See RS-95205
+* Skip authentication in `GostPassword` plugin if no username and password are set. See RS-95205
+
+# v5.0.1
+
+## Improvements
+
+* Add support for Java 1.8. RS-94949
+
+
+## Ported from Jaybird
+
+* Fix NPE in result set metadata of connectionless result set. GH-730
+
+
 # v5.0.0
 
 ## Fixed
