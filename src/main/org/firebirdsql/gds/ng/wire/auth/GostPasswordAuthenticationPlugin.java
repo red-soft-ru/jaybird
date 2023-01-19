@@ -38,14 +38,14 @@ public class GostPasswordAuthenticationPlugin implements AuthenticationPlugin {
             String userName = clientAuthBlock.getLogin();
             String password = clientAuthBlock.getPassword();
 
-            if (!(userName == null || userName.isEmpty()) && (password == null || password.isEmpty()))
+            if ((userName == null || userName.isEmpty()) || (password == null || password.isEmpty()))
                 return AuthStatus.AUTH_CONTINUE;
 
             AuthFactorGostPassword authFactorGostPassword = new AuthFactorGostPassword(authSspi);
 
             authFactorGostPassword.setUserName(userName);
             authFactorGostPassword.setPassword(password);
-            authFactorGostPassword.setPasswordEnc(password == null ? null : UnixCrypt.crypt(password, "9z").substring(2, 13));
+            authFactorGostPassword.setPasswordEnc(UnixCrypt.crypt(password, "9z").substring(2, 13));
             authSspi.addFactor(authFactorGostPassword);
             try {
                 authSspi.request(data);
