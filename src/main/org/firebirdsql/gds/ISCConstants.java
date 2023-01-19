@@ -209,6 +209,7 @@ public interface ISCConstants {
     int isc_spb_bkp_length             =  7;
     int isc_spb_bkp_skip_data          =  8;
     int isc_spb_bkp_stat               =  15;
+    int isc_spb_bkp_parallel_workers   =  21;
     int isc_spb_bkp_ignore_checksums   =  0x01;
     int isc_spb_bkp_ignore_limbo       =  0x02;
     int isc_spb_bkp_metadata_only      =  0x04;
@@ -218,6 +219,7 @@ public interface ISCConstants {
     int isc_spb_bkp_convert            =  0x40;
     int isc_spb_bkp_expand             =  0x80;
     int isc_spb_bkp_no_triggers        =  0x8000;
+    int isc_spb_bkp_parallel_workers_rs=  101;
 
     /********************************************
      * Parameters for isc_action_svc_properties *
