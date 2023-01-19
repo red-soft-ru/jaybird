@@ -36,23 +36,22 @@ public class GostPasswordAuthenticationPlugin implements AuthenticationPlugin {
             ByteBuffer data = new ByteBuffer(0);
 
             String userName = clientAuthBlock.getLogin();
-            if (userName != null && !userName.isEmpty()) {
-                AuthFactorGostPassword authFactorGostPassword = new AuthFactorGostPassword(authSspi);
+            String password = clientAuthBlock.getPassword();
 
-                authFactorGostPassword.setUserName(userName);
-                String password = clientAuthBlock.getPassword();
-                authFactorGostPassword.setPassword(password);
-                authFactorGostPassword.setPasswordEnc(password == null ? null : UnixCrypt.crypt(password, "9z").substring(2, 13));
-                authSspi.addFactor(authFactorGostPassword);
-                try {
-                    authSspi.request(data);
-                } catch (GDSAuthException e) {
-                    throw new SQLException(e);
-                }
+            if (!(userName == null || userName.isEmpty()) && (password == null || password.isEmpty()))
+                return AuthStatus.AUTH_CONTINUE;
+
+            AuthFactorGostPassword authFactorGostPassword = new AuthFactorGostPassword(authSspi);
+
+            authFactorGostPassword.setUserName(userName);
+            authFactorGostPassword.setPassword(password);
+            authFactorGostPassword.setPasswordEnc(password == null ? null : UnixCrypt.crypt(password, "9z").substring(2, 13));
+            authSspi.addFactor(authFactorGostPassword);
+            try {
+                authSspi.request(data);
+            } catch (GDSAuthException e) {
+                throw new SQLException(e);
             }
-
-            if (userName == null)
-                return  AuthStatus.AUTH_CONTINUE;
 
             clientData = Arrays.copyOf(data.getData(), data.getLength());
 
