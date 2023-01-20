@@ -379,6 +379,9 @@ class FBResultSetMetaDataTest {
         }
     }
 
+    /**
+     * Tests for <a href="https://github.com/FirebirdSQL/jaybird/issues/730">jaybird#730</a>.
+     */
     @Test
     void getPrecision_connectionLessResultSet_shouldSucceedWithoutException_730() throws Exception {
         var rowDescriptor = new RowDescriptorBuilder(2,
@@ -394,7 +397,7 @@ class FBResultSetMetaDataTest {
     }
 
     /**
-     * Test for <a href="https://github.com/FirebirdSQL/jaybird/issues/731">https://github.com/FirebirdSQL/jaybird/issues/731</a>.
+     * Test for <a href="https://github.com/FirebirdSQL/jaybird/issues/731">jaybird#731</a>.
      */
     @Test
     void extendedFieldInfo_moreThan70Columns_731() throws Exception {
