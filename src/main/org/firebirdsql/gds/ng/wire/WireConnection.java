@@ -146,11 +146,11 @@ public abstract class WireConnection<T extends IAttachProperties<T>, C extends F
     }
 
     public final String getServerName() {
-        return dbAttachInfo.getServerName();
+        return dbAttachInfo.serverName();
     }
 
     public final int getPortNumber() {
-        return dbAttachInfo.getPortNumber();
+        return dbAttachInfo.portNumber();
     }
 
     /**
@@ -161,7 +161,7 @@ public abstract class WireConnection<T extends IAttachProperties<T>, C extends F
     }
 
     public final String getAttachObjectName() {
-        return dbAttachInfo.getAttachObjectName();
+        return dbAttachInfo.attachObjectName();
     }
 
     protected abstract DbAttachInfo toDbAttachInfo(T attachProperties) throws SQLException;
