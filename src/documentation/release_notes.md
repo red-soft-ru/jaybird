@@ -15,6 +15,10 @@ The following has been changed or fixed since Jaybird 4.0.8
   configure `sessionTimeZone` with offset only, e.g. `-08:00` ([jaybird#720](https://github.com/FirebirdSQL/jaybird/issues/720))
 - Fixed: Executing DML with a RETURNING clause containing a blob column would 
   return the blob-id instead of the blob value ([jaybird#728](https://github.com/FirebirdSQL/jaybird/issues/728))
+- Fixed: `CallableStatement.getString` would incorrectly trim string values ([jaybird#729](https://github.com/FirebirdSQL/jaybird/issues/729))
+- Fixed: `ResultSetMetaData.getPrecision(int)` of a connectionless result set 
+  could throw a `NullPointerException` if the column was of type `FLOAT` or 
+  `DOUBLE PRECISION` ([jaybird#730](https://github.com/FirebirdSQL/jaybird/issues/730))
 
 Jaybird 4.0.8
 -------------
@@ -25,7 +29,7 @@ The following has been changed or fixed since Jaybird 4.0.7
   dependency on ANTLR ([jaybird#718](https://github.com/FirebirdSQL/jaybird/issues/718)) \
   With this change, Jaybird no longer relies on `antlr-runtime-4.7.2.jar`, if
   you don't need it yourself, you can remove this library from the classpath.
-  See [New parser for generated keys handling][#generated-keys-parser-replaced] 
+  See <a href="#generated-keys-parser-replaced">New parser for generated keys handling</a> 
   for more information.
 
 Jaybird 4.0.7
@@ -417,7 +421,7 @@ support at the Firebird 4.0 feature set, but there are some caveats.
 
 Most notably, the generated-keys support will not work for DML statements that 
 now use multi-row `RETURNING` (all DML except `insert ... values (..) returning ...`).
-Full support for multi-row `RETURNING` with generated-keys will be provided in 
+Full support for multi-row `RETURNING` with generated-keys is provided in 
 Jaybird 5. As a workaround, use `executeQuery()` with an explicit `RETURNING`
 clause.
 
@@ -2380,10 +2384,10 @@ Generated keys support always available {#generated-keys-always}
 Since Jaybird 4.0.8.
 
 Previously, support for generated keys depended on the presence of 
-the antlr4-runtime library on the classpath. With [New parser for generated keys handling][#generated-keys-parser-replaced], 
+the antlr4-runtime library on the classpath. With <a href="#generated-keys-parser-replaced">New parser for generated keys handling</a>, 
 generated keys support is now always available.
 
-See [New parser for generated keys handling][#generated-keys-parser-replaced] 
+See <a href="#generated-keys-parser-replaced">New parser for generated keys handling</a>
 for information on disabling or ignoring generated keys support if you relied on
 this behaviour.
 
@@ -2466,6 +2470,9 @@ Jaybird 5 will drop support for Java 7.
 ### Dropping support for Java 8 (tentative) ###
 
 Jaybird 5 will continue to support Java 8.
+
+(this section exists because in previous versions it announced tentative removal
+of Java 8 support in Jaybird 5.)
 
 ### Dropping JCA support ###
 
