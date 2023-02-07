@@ -24,7 +24,6 @@
  */
 package org.firebirdsql.gds.impl;
 
-import org.firebirdsql.gds.GDSException;
 import org.firebirdsql.gds.ng.FbDatabaseFactory;
 import org.firebirdsql.jaybird.props.DatabaseConnectionProperties;
 import org.firebirdsql.logging.Logger;
@@ -101,7 +100,7 @@ public final class GDSFactory {
      * @return Collection of {@link ClassLoader} instances
      */
     private static List<ClassLoader> classLoadersForLoading() {
-        final List<ClassLoader> classLoaders = new ArrayList<>(2);
+        final var classLoaders = new ArrayList<ClassLoader>(2);
         final ClassLoader classLoader = GDSFactoryPlugin.class.getClassLoader();
         if (classLoader != null) {
             classLoaders.add(classLoader);
@@ -150,11 +149,11 @@ public final class GDSFactory {
      * <p>
      * This method is intended as a fallback in case the plugins could not be discovered from the
      * {@code META-INF/services/org.firebirdsql.gds.impl.GDSFactoryPlugin} file(s). See also
-     * <a href="http://tracker.firebirdsql.org/browse/JDBC-325">issue JDBC-325</a>
+     * <a href="https://github.com/FirebirdSQL/jaybird/issues/371">jaybird#371 (JDBC-325)</a>
      * </p>
      */
     private static void loadPluginsFallback(final ClassLoader classLoader) {
-        String[] pluginClasses = new String[] {
+        var pluginClasses = new String[] {
                 "org.firebirdsql.gds.impl.wire.WireGDSFactoryPlugin",
                 "org.firebirdsql.gds.impl.jni.NativeGDSFactoryPlugin",
                 "org.firebirdsql.gds.impl.jni.EmbeddedGDSFactoryPlugin",
@@ -198,20 +197,18 @@ public final class GDSFactory {
         if (defaultType == null) defaultType = type;
 
         // register aliases
-        String[] aliases = plugin.getTypeAliases();
-        for (String alias : aliases) {
+        for (String alias : plugin.getTypeAliasList()) {
             GDSType aliasType = GDSType.registerType(alias);
             typeToPluginMap.put(aliasType, plugin);
         }
 
-        String[] jdbcUrls = plugin.getSupportedProtocols();
-        for (String jdbcUrl : jdbcUrls) {
+        for (String jdbcUrl : plugin.getSupportedProtocolList()) {
             GDSFactoryPlugin otherPlugin = jdbcUrlToPluginMap.put(jdbcUrl, plugin);
 
             if (otherPlugin != null && !otherPlugin.equals(plugin))
                 throw new IllegalArgumentException(
-                        "Duplicate JDBC URL pattern detected: URL " + jdbcUrl + ", plugin " + plugin.getTypeName() +
-                                ", other plugin " + otherPlugin.getTypeName());
+                        "Duplicate JDBC URL pattern detected: URL %s, plugin %s, other plugin %s".formatted(
+                                jdbcUrl, plugin.getTypeName(), otherPlugin.getTypeName()));
         }
     }
 
@@ -245,11 +242,11 @@ public final class GDSFactory {
      * @param path
      *         database name or path to the database
      * @return full connection string
-     * @throws GDSException
+     * @throws SQLException
      *         if connection string cannot be obtained.
      */
     public static String getDatabasePath(GDSType gdsType, String server, Integer port, String path)
-            throws GDSException {
+            throws SQLException {
         return getPlugin(gdsType).getDatabasePath(server, port, path);
     }
 
@@ -263,11 +260,10 @@ public final class GDSFactory {
      * @param jdbcUrl
      *         JDBC url from which the database path must be extracted.
      * @return path to the database specified in the JDBC URL.
-     * @throws GDSException
+     * @throws SQLException
      *         error when database path cannot be extracted.
      */
-    public static String getDatabasePath(GDSType gdsType, String jdbcUrl)
-            throws GDSException {
+    public static String getDatabasePath(GDSType gdsType, String jdbcUrl) throws SQLException {
         return getPlugin(gdsType).getDatabasePath(jdbcUrl);
     }
 
