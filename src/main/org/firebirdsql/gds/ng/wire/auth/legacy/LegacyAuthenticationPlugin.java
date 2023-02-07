@@ -23,7 +23,6 @@ import org.firebirdsql.gds.ng.wire.auth.ClientAuthBlock;
 import org.firebirdsql.logging.Logger;
 import org.firebirdsql.logging.LoggerFactory;
 
-import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 
 /**
@@ -52,15 +51,15 @@ class LegacyAuthenticationPlugin implements AuthenticationPlugin {
                 (clientAuthBlock.getPassword() == null && clientAuthBlock.getPasswordEnc() == null)) {
             return AuthStatus.AUTH_CONTINUE;
         }
+
         if (clientAuthBlock.getPassword() != null) {
             if (clientAuthBlock.isNotEncryptedPassword()) {
-                clientData = ("\u0000" + clientAuthBlock.getPassword()).getBytes(StandardCharsets.US_ASCII);
+                clientData = ("\u0000" + clientAuthBlock.getPassword()).getBytes();
             } else {
-                clientData = UnixCrypt.crypt(clientAuthBlock.getPassword(), LEGACY_PASSWORD_SALT).substring(2, 13)
-                        .getBytes(StandardCharsets.US_ASCII);
+                clientData = UnixCrypt.fbCrypt(clientAuthBlock.getPassword());
             }
         } else {
-            clientData = clientAuthBlock.getPasswordEnc().getBytes(StandardCharsets.US_ASCII);
+            clientData = clientAuthBlock.getPasswordEnc().getBytes();
         }
         return AuthStatus.AUTH_SUCCESS;
     }
