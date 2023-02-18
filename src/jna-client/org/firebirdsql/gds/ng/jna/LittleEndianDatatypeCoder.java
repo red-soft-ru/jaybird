@@ -19,11 +19,7 @@
 package org.firebirdsql.gds.ng.jna;
 
 import org.firebirdsql.encodings.IEncodingFactory;
-import org.firebirdsql.extern.decimal.Decimal128;
-import org.firebirdsql.extern.decimal.Decimal64;
 import org.firebirdsql.gds.ng.DefaultDatatypeCoder;
-
-import java.math.BigInteger;
 
 /**
  * Datatype encoder and decoder for little endian platforms, specifically for use with the Firebird client library.
@@ -32,15 +28,16 @@ import java.math.BigInteger;
  * </p>
  *
  * @author Mark Rotteveel
- * @since 3.0
+ * @since 3
  */
 public final class LittleEndianDatatypeCoder extends DefaultDatatypeCoder {
 
     /**
      * Returns an instance of {@code LittleEndianDatatypeCoder} for an encoding factory.
      *
-     * @param encodingFactory Encoding factory
-     * @return Datatype coder, this might be a cached instance
+     * @param encodingFactory
+     *         encoding factory
+     * @return datatype coder, this might be a cached instance
      */
     public static LittleEndianDatatypeCoder forEncodingFactory(IEncodingFactory encodingFactory) {
         return encodingFactory.getOrCreateDatatypeCoder(LittleEndianDatatypeCoder.class);
@@ -52,7 +49,8 @@ public final class LittleEndianDatatypeCoder extends DefaultDatatypeCoder {
      * In almost all cases, it is better to use {@link #forEncodingFactory(IEncodingFactory)}.
      * </p>
      *
-     * @param encodingFactory Encoding factory
+     * @param encodingFactory
+     *         encoding factory
      */
     public LittleEndianDatatypeCoder(IEncodingFactory encodingFactory) {
         super(encodingFactory);
@@ -64,129 +62,68 @@ public final class LittleEndianDatatypeCoder extends DefaultDatatypeCoder {
     }
 
     @Override
-    public byte[] encodeShort(short value) {
-        byte[] ret = new byte[2];
-        ret[0] = (byte) (value & 0xff);
-        ret[1] = (byte) ((value >>> 8) & 0xff);
-        return ret;
+    public void encodeShort(int val, byte[] buf, int off) {
+        buf[off] = (byte) val;
+        buf[off + 1] = (byte) (val >>> 8);
     }
 
     @Override
-    public void encodeShort(int value, byte[] target, int fromIndex) {
-        target[fromIndex] = (byte) (value & 0xff);
-        target[fromIndex + 1] = (byte) ((value >>> 8) & 0xff);
-    }
-
-    @Override
-    public short decodeShort(byte[] byte_int) {
+    public short decodeShort(byte[] buf, int off) {
         return (short)
-                ((byte_int[0] & 0xFF) +
-                ((byte_int[1] & 0xFF) << 8));
+                ((buf[off] & 0xFF) +
+                 (buf[off + 1] << 8));
     }
 
     @Override
-    public short decodeShort(byte[] bytes, int fromIndex) {
-        return (short)
-                ((bytes[fromIndex] & 0xFF) +
-                ((bytes[fromIndex + 1] & 0xFF) << 8));
+    public void encodeInt(int val, byte[] buf, int off) {
+        buf[off] = (byte) val;
+        buf[off + 1] = (byte) (val >>> 8);
+        buf[off + 2] = (byte) (val >>> 16);
+        buf[off + 3] = (byte) (val >>> 24);
     }
 
     @Override
-    public byte[] encodeInt(int value) {
-        byte[] ret = new byte[4];
-        ret[0] = (byte) (value & 0xff);
-        ret[1] = (byte) ((value >>> 8) & 0xff);
-        ret[2] = (byte) ((value >>> 16) & 0xff);
-        ret[3] = (byte) ((value >>> 24) & 0xff);
-        return ret;
+    public int decodeInt(byte[] buf, int off) {
+        return (buf[off] & 0xFF) +
+               ((buf[off + 1] & 0xFF) << 8) +
+               ((buf[off + 2] & 0xFF) << 16) +
+               (buf[off + 3] << 24);
     }
 
     @Override
-    public void encodeInt(int value, byte[] target, int fromIndex) {
-        target[fromIndex] = (byte) (value & 0xff);
-        target[fromIndex + 1] = (byte) ((value >>> 8) & 0xff);
-        target[fromIndex + 2] = (byte) ((value >>> 16) & 0xff);
-        target[fromIndex + 3] = (byte) ((value >>> 24) & 0xff);
+    public byte[] encodeLong(long val) {
+        final byte[] buf = new byte[8];
+        buf[0] = (byte) val;
+        buf[1] = (byte) (val >>> 8);
+        buf[2] = (byte) (val >>> 16);
+        buf[3] = (byte) (val >>> 24);
+        buf[4] = (byte) (val >>> 32);
+        buf[5] = (byte) (val >>> 40);
+        buf[6] = (byte) (val >>> 48);
+        buf[7] = (byte) (val >>> 56);
+        return buf;
     }
 
     @Override
-    public int decodeInt(byte[] byte_int) {
-        return ((byte_int[0] & 0xFF) +
-                ((byte_int[1] & 0xFF) << 8) +
-                ((byte_int[2] & 0xFF) << 16) +
-                ((byte_int[3] & 0xFF) << 24));
+    public long decodeLong(byte[] buf) {
+        return (buf[0] & 0xFFL) +
+               ((buf[1] & 0xFFL) << 8) +
+               ((buf[2] & 0xFFL) << 16) +
+               ((buf[3] & 0xFFL) << 24) +
+               ((buf[4] & 0xFFL) << 32) +
+               ((buf[5] & 0xFFL) << 40) +
+               ((buf[6] & 0xFFL) << 48) +
+               (((long) buf[7]) << 56);
     }
 
     @Override
-    public int decodeInt(byte[] bytes, int fromIndex) {
-        return ((bytes[fromIndex] & 0xFF) +
-                ((bytes[fromIndex + 1] & 0xFF) << 8) +
-                ((bytes[fromIndex + 2] & 0xFF) << 16) +
-                ((bytes[fromIndex + 3] & 0xFF) << 24));
-    }
-
-    @Override
-    public byte[] encodeLong(long value) {
-        byte[] ret = new byte[8];
-        ret[0] = (byte) (value & 0xFF);
-        ret[1] = (byte) (value >>> 8 & 0xFF);
-        ret[2] = (byte) (value >>> 16 & 0xFF);
-        ret[3] = (byte) (value >>> 24 & 0xFF);
-        ret[4] = (byte) (value >>> 32 & 0xFF);
-        ret[5] = (byte) (value >>> 40 & 0xFF);
-        ret[6] = (byte) (value >>> 48 & 0xFF);
-        ret[7] = (byte) (value >>> 56 & 0xFF);
-        return ret;
-    }
-
-    @Override
-    public long decodeLong(byte[] byte_int) {
-        return (((long) (byte_int[0] & 0xFF)) +
-                (((long) (byte_int[1] & 0xFF)) << 8) +
-                (((long) (byte_int[2] & 0xFF)) << 16) +
-                (((long) (byte_int[3] & 0xFF)) << 24) +
-                (((long) (byte_int[4] & 0xFF)) << 32) +
-                (((long) (byte_int[5] & 0xFF)) << 40) +
-                (((long) (byte_int[6] & 0xFF)) << 48) +
-                (((long) (byte_int[7] & 0xFF)) << 56));
-    }
-
-    @Override
-    public Decimal64 decodeDecimal64(byte[] data) {
-        return super.decodeDecimal64(reverseByteOrder(data));
-    }
-
-    @Override
-    public byte[] encodeDecimal64(Decimal64 decimal64) {
-        return reverseByteOrder(super.encodeDecimal64(decimal64));
-    }
-
-    @Override
-    public Decimal128 decodeDecimal128(byte[] data) {
-        return super.decodeDecimal128(reverseByteOrder(data));
-    }
-
-    @Override
-    public byte[] encodeDecimal128(Decimal128 decimal128) {
-        return reverseByteOrder(super.encodeDecimal128(decimal128));
-    }
-
-    @Override
-    public BigInteger decodeInt128(byte[] data) {
-        return super.decodeInt128(reverseByteOrder(data));
-    }
-
-    @Override
-    public byte[] encodeInt128(BigInteger bigInteger) {
-        return reverseByteOrder(super.encodeInt128(bigInteger));
-    }
-
-    private byte[] reverseByteOrder(byte[] array) {
-        final byte[] newArray = new byte[array.length];
+    protected byte[] networkOrder(final byte[] buf) {
+        final byte[] newArray = new byte[buf.length];
         final int maxIndex = newArray.length - 1;
-        for (int idx = 0; idx < array.length; idx++) {
-            newArray[idx] = array[maxIndex - idx];
+        for (int idx = 0; idx <= maxIndex; idx++) {
+            newArray[idx] = buf[maxIndex - idx];
         }
         return newArray;
     }
+
 }
