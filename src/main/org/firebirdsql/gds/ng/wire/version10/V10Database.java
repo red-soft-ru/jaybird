@@ -43,7 +43,6 @@ import org.firebirdsql.logging.Logger;
 import org.firebirdsql.logging.LoggerFactory;
 import org.ietf.jgss.GSSException;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.sql.SQLException;
@@ -390,16 +389,6 @@ public class V10Database extends AbstractFbWireDatabase implements FbWireDatabas
             exceptionListenerDispatcher.errorOccurred(ex);
             throw ex;
         }
-    }
-
-    protected byte[] getTransactionIdBuffer(long transactionId) {
-        ByteArrayOutputStream bos = new ByteArrayOutputStream(4);
-        try {
-            VaxEncoding.encodeVaxIntegerWithoutLength(bos, (int) transactionId);
-        } catch (IOException e) {
-            // ignored: won't happen with a ByteArrayOutputStream
-        }
-        return bos.toByteArray();
     }
 
     @Override
