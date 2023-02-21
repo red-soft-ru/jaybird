@@ -81,7 +81,7 @@ build_and_test:
     - tester
   stage: build_and_test
   image:
-    name: registry.red-soft.biz:5000/docker-images/rdbbuildenv:rdb4-3
+    name: registry.red-soft.biz:5000/docker-images/rdbbuildenv:rdb4-6
   before_script:
     - |
       if [[ "${RDB_VERSION:0:1}" -eq "4" ]]; then
