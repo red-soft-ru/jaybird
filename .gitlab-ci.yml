@@ -79,6 +79,7 @@ build_and_test:
   tags:
     - docker
     - tester
+    - x86_64
   stage: build_and_test
   image:
     name: registry.red-soft.biz:5000/docker-images/rdbbuildenv:rdb4-6
