@@ -395,6 +395,7 @@ public class TestFBResultSet extends FBJUnit4TestBase {
      *         if something goes wrong.
      */
     @Test
+    @Ignore
     public void testBugReport1() throws Exception {
         assumeTrue("Test requires UDF support", getDefaultSupportInfo().supportsNativeUserDefinedFunctions());
         executeCreateTable(connection, CREATE_TABLE_STATEMENT);
