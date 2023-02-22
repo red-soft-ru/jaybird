@@ -100,7 +100,6 @@ build_and_test:
         elif [[ "${TEST_JAVA8_JVM}" == *"bellsoft-java11"* ]]; then
           export REPORT_PREFIX=${TYPE}_11_RDB3_${GDS_TYPE}_
         fi
-        export EXTRA_DEPENDENCIES="$EXTRA_DEPENDENCIES icu" # Remove icu library dependency after 3.0.7 release
       else
         die "Do not know how to test RDB ${RDB_VERSION}"
       fi
