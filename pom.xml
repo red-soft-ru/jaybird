@@ -38,6 +38,8 @@
 		<awaitility.version>4.2.0</awaitility.version>
 	</properties>
 	<modules>
+		<module>modules/cryptoapi-security-jdk17</module>
+		<module>modules/cryptoapi-jdk17</module>
 		<module>modules/jaybird-jdk17</module>
 	</modules>
 	<profiles>
@@ -49,24 +51,6 @@
 			<properties>
 				<javadoc.opts>-Xdoclint:none -html5</javadoc.opts>
 			</properties>
-		</profile>
-		<profile>
-			<id>cryptoapi</id>
-			<activation>
-				<activeByDefault>true</activeByDefault>
-			</activation>
-			<modules>
-				<module>modules/cryptoapi-jdk17</module>
-			</modules>
-		</profile>
-		<profile>
-			<id>cryptoapi-security</id>
-			<activation>
-				<activeByDefault>false</activeByDefault>
-			</activation>
-			<modules>
-				<module>modules/cryptoapi-security-jdk17</module>
-			</modules>
 		</profile>
 		<profile>
 			<id>deploy-internal</id>
