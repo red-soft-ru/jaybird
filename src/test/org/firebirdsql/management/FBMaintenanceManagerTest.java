@@ -73,15 +73,7 @@ class FBMaintenanceManagerTest {
 
     @BeforeEach
     void setUp() {
-        maintenanceManager = new FBMaintenanceManager(getGdsType());
-        if (getGdsType() == GDSType.getType("PURE_JAVA") || getGdsType() == GDSType.getType("NATIVE")
-                || getGdsType() == GDSType.getType("FBOONATIVE")) {
-            maintenanceManager.setServerName(DB_SERVER_URL);
-            maintenanceManager.setPortNumber(DB_SERVER_PORT);
-        }
-
-        maintenanceManager.setUser(DB_USER);
-        maintenanceManager.setPassword(DB_PASSWORD);
+        maintenanceManager = configureDefaultServiceProperties(new FBMaintenanceManager(getGdsType()));
         maintenanceManager.setDatabase(getDatabasePath());
         maintenanceManager.setLogger(System.out);
     }

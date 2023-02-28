@@ -52,8 +52,7 @@ public class GdsTypeExtension implements BeforeAllCallback {
 
     @Override
     public void beforeAll(ExtensionContext context) {
-        String gdsType = FBTestProperties.GDS_TYPE;
-        assumeThat("Test type not supported, test ignored", gdsType, testTypeMatcher);
+        assumeThat("Test type not supported, test ignored", FBTestProperties.GDS_TYPE, testTypeMatcher);
     }
 
     /**

@@ -22,7 +22,6 @@ import org.firebirdsql.common.extension.RunEnvironmentExtension;
 import org.firebirdsql.common.extension.UsesDatabaseExtension;
 import org.firebirdsql.gds.ISCConstants;
 import org.firebirdsql.gds.JaybirdErrorCodes;
-import org.firebirdsql.gds.impl.GDSType;
 import org.firebirdsql.gds.ng.AbstractFbAttachment;
 import org.firebirdsql.gds.ng.AbstractFbDatabase;
 import org.firebirdsql.gds.ng.FbDatabase;
@@ -90,14 +89,7 @@ class FBEventManagerTest {
     private static final int LONG_DELAY = 1000;
 
     private void setupDefaultEventManager() throws SQLException {
-        eventManager = new FBEventManager(getGdsType());
-        if (getGdsType() == GDSType.getType("PURE_JAVA") || getGdsType() == GDSType.getType("NATIVE")
-                || getGdsType() == GDSType.getType("FBOONATIVE")) {
-            eventManager.setServerName(DB_SERVER_URL);
-        }
-        eventManager.setUser(DB_USER);
-        eventManager.setPassword(DB_PASSWORD);
-        eventManager.setPortNumber(DB_SERVER_PORT);
+        eventManager = configureDefaultAttachmentProperties(new FBEventManager(getGdsType()));
 
         // have to resolve relative path to the absolute one
         eventManager.setDatabaseName(new File(getDatabasePath()).getAbsolutePath());

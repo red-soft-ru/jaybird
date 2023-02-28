@@ -39,7 +39,7 @@ public class FBSADataSourceTest {
         final FBSADataSource dataSource = new FBSADataSource();
 
         // Set the standard properties
-        dataSource.setDatabaseName(DB_DATASOURCE_URL);
+        dataSource.setDatabaseName(getdbpath(DB_NAME));
         dataSource.setDescription("An example database of employees");
         dataSource.setUserName(DB_USER);
         dataSource.setPassword(DB_PASSWORD);
@@ -122,7 +122,7 @@ public class FBSADataSourceTest {
         FBSADataSource dataSource = new FBSADataSource();
 
         // Set the standard properties
-        dataSource.setDatabaseName(DB_DATASOURCE_URL);
+        dataSource.setDatabaseName(getdbpath(DB_NAME));
         dataSource.setDescription("An example database of employees");
         dataSource.setUserName("sysdba");
         dataSource.setPassword("masterkey");
@@ -181,7 +181,7 @@ public class FBSADataSourceTest {
     void testEncryptedPassword() throws Exception {
         FBSADataSource dataSource = new FBSADataSource();
         // Set the standard properties
-        dataSource.setDatabaseName(DB_DATASOURCE_URL);
+        dataSource.setDatabaseName(getdbpath(DB_NAME));
         dataSource.setDescription("An example database of employees");
         dataSource.setUserName("sysdba");
         dataSource.setEncoding("WIN1251");

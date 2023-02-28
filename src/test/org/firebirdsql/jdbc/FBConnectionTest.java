@@ -501,6 +501,7 @@ class FBConnectionTest {
 
     @Test
     void testUseActualProcessId() throws Exception {
+        assumeThat("embedded does not report process id", GDS_TYPE, not(isEmbeddedType()));
         assumeTrue(getDefaultSupportInfo().supportsMonitoringTables(), "Test requires monitoring tables");
         final Properties props = getDefaultPropertiesForConnection();
         final long actualProcessId = ProcessHandle.current().pid();
@@ -934,13 +935,32 @@ class FBConnectionTest {
         assumeThat("Embedded does not use authentication", FBTestProperties.GDS_TYPE, not(isEmbeddedType()));
         final Properties properties = new Properties();
         properties.setProperty("authPlugins", "Srp256,Srp,Certificate,GostPassword,Multifactor");
-        try (Connection ignored = DriverManager.getConnection(getUrl(), properties)) {
+        String url = ENABLE_PROTOCOL == null ? getUrl() : getUrl() + "?enableProtocol=" + ENABLE_PROTOCOL;
+        try (Connection ignored = DriverManager.getConnection(url, properties)) {
             fail("expected exception when connecting without user name and password");
         } catch (SQLException e) {
             assertThat(e, allOf(
                     errorCodeEquals(ISCConstants.isc_login),
                     fbMessageStartsWith(ISCConstants.isc_login)));
         }
+    }
+
+    @Test
+    void errorConnectingToUnsupportedVersion() {
+        assumeFalse(getDefaultSupportInfo().isSupportedVersion(), "test can only work on unsupported version");
+        assumeThat("restricted protocol support only in the pure Java protocol",
+                FBTestProperties.GDS_TYPE, isPureJavaType());
+        Properties props = getDefaultPropertiesForConnection();
+        props.remove("enableProtocol");
+
+        try (var ignored = DriverManager.getConnection(getUrl(), props)) {
+            fail("expected exception when connecting to unsupported version");
+        } catch (SQLException e) {
+            assertThat(e, allOf(
+                    errorCodeEquals(ISCConstants.isc_connect_reject),
+                    fbMessageStartsWith(ISCConstants.isc_connect_reject)));
+        }
+
     }
 
 }

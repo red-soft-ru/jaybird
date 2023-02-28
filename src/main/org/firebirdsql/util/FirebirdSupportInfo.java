@@ -661,6 +661,13 @@ public final class FirebirdSupportInfo {
     }
 
     /**
+     * @return {@code true} when this Firebird version is considered a supported version
+     */
+    public boolean isSupportedVersion() {
+        return isVersionEqualOrAbove(3, 0);
+    }
+
+    /**
      * @return {@code true} if the default ODS of this Firebird version has column {@code RDB$PROCEDURE_TYPE}
      */
     public boolean hasProcedureTypeColumn() {

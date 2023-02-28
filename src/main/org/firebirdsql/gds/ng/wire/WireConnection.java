@@ -76,6 +76,10 @@ public abstract class WireConnection<T extends IAttachProperties<T>, C extends F
     // TODO Check if methods currently throwing IOException should throw SQLException instead
 
     private static final Logger log = LoggerFactory.getLogger(WireConnection.class);
+    private static final String REJECTION_POSSIBLE_REASON =
+            "The server and client could not agree on connection options. A possible reasons is attempting to connect "
+            + "to an unsupported Firebird version. See the documentation of connection property 'enableProtocol' for "
+            + "a possible workaround.";
 
     // Micro-optimization: we usually expect at most 3 (Firebird 5)
     private final List<KnownServerKey> knownServerKeys = new ArrayList<>(3);
@@ -118,7 +122,8 @@ public abstract class WireConnection<T extends IAttachProperties<T>, C extends F
      *         Attach properties
      */
     protected WireConnection(T attachProperties) throws SQLException {
-        this(attachProperties, EncodingFactory.getPlatformDefault(), ProtocolCollection.getDefaultCollection());
+        this(attachProperties, EncodingFactory.getPlatformDefault(),
+                ProtocolCollection.getProtocols(attachProperties.getEnableProtocol()));
     }
 
     /**
@@ -325,6 +330,7 @@ public abstract class WireConnection<T extends IAttachProperties<T>, C extends F
                 cryptKeyCallbackWireOperations.handleCryptKeyCallback(dbCryptCallback);
                 operation = readNextOperation();
             }
+
             if (operation == op_accept || operation == op_cond_accept || operation == op_accept_data) {
                 FbWireAttachment.AcceptPacket acceptPacket = new FbWireAttachment.AcceptPacket();
                 acceptPacket.operation = operation;
@@ -375,7 +381,13 @@ public abstract class WireConnection<T extends IAttachProperties<T>, C extends F
                         // Handle exception from response
                         AbstractWireOperations wireOperations = getDefaultWireOperations();
                         wireOperations.processResponse(wireOperations.processOperation(operation));
+                    } else if (operation == op_reject) {
+                        throw new FbExceptionBuilder().exception(ISCConstants.isc_connect_reject)
+                                .messageParameter(REJECTION_POSSIBLE_REASON).toSQLException();
                     }
+                    log.debugf("Reached end of identify without error or connection, last operation: %d", operation);
+                    // If we reach here, authentication failed (or never authenticated for lack of username and password)
+                    throw new FbExceptionBuilder().exception(ISCConstants.isc_login).toSQLException();
                 } finally {
                     try {
                         close();
@@ -383,9 +395,6 @@ public abstract class WireConnection<T extends IAttachProperties<T>, C extends F
                         log.debug("Ignoring exception on disconnect in connect phase of protocol", ex);
                     }
                 }
-                log.debugf("Reached end of identify without error or connection, last operation: %d", operation);
-                // If we reach here, authentication failed (or never authenticated for lack of username and password)
-                throw new FbExceptionBuilder().exception(ISCConstants.isc_login).toSQLException();
             }
         } catch (SocketTimeoutException ste) {
             throw new FbExceptionBuilder().timeoutException(ISCConstants.isc_network_error)

@@ -59,6 +59,7 @@ public final class PropertyNames {
     public static final String dbCryptConfig = "dbCryptConfig";
     public static final String authPlugins = "authPlugins";
     public static final String wireCompression = "wireCompression";
+    public static final String enableProtocol = "enableProtocol";
     public static final String certificate = "certificate";
     public static final String certificateBase64 = "certificateBase64";
     public static final String effectiveLogin = "effectiveLogin";

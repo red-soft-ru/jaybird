@@ -19,7 +19,7 @@ import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
-import static org.firebirdsql.common.FBTestProperties.getConnectionViaDriverManager;
+import static org.firebirdsql.common.FBTestProperties.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -59,7 +59,7 @@ public class AuthSspiTest {
 
             final FBSADataSource fbDataSource = new FBSADataSource(GDSType.getType("PURE_JAVA"));
 
-            fbDataSource.setDatabaseName(FBTestProperties.DB_DATASOURCE_URL);
+            fbDataSource.setDatabaseName(getdbpath(DB_NAME));
             fbDataSource.setProperty("isc_dpb_user_name", "TEST@RED-SOFT.RU");
             fbDataSource.setProperty("isc_dpb_lc_ctype", "WIN1251");
             fbDataSource.setProperty("isc_dpb_trusted_auth", "1");
@@ -98,7 +98,7 @@ public class AuthSspiTest {
             final String username = "UserWithGostPassword";
             final String password = "password";
 
-            fbDataSource.setDatabaseName(FBTestProperties.DB_DATASOURCE_URL);
+            fbDataSource.setDatabaseName(getdbpath(DB_NAME));
             fbDataSource.setProperty("isc_dpb_lc_ctype", "WIN1251");
             fbDataSource.setProperty("isc_dpb_user_name", username);
             fbDataSource.setProperty("isc_dpb_password", password);
@@ -145,7 +145,7 @@ public class AuthSspiTest {
 
             final FBSADataSource fbDataSource = new FBSADataSource(GDSType.getType("PURE_JAVA"));
 
-            fbDataSource.setDatabaseName(FBTestProperties.DB_DATASOURCE_URL);
+            fbDataSource.setDatabaseName(getdbpath(DB_NAME));
             fbDataSource.setProperty("isc_dpb_lc_ctype", "WIN1251");
             fbDataSource.setProperty("isc_dpb_user_name", "TEST@RED-SOFT.RU");
             fbDataSource.setProperty("isc_dpb_password", "q3rgu7Ah");
@@ -182,7 +182,7 @@ public class AuthSspiTest {
 
             final FBSADataSource fbDataSource = new FBSADataSource(GDSType.getType("PURE_JAVA"));
 
-            fbDataSource.setDatabaseName(FBTestProperties.DB_DATASOURCE_URL);
+            fbDataSource.setDatabaseName(getdbpath(DB_NAME));
             fbDataSource.setProperty("isc_dpb_lc_ctype", "WIN1251");
             fbDataSource.setProperty("isc_dpb_user_name", "trusted_user");
             fbDataSource.setProperty("isc_dpb_certificate", "/tmp/testuser.cer");
@@ -219,7 +219,7 @@ public class AuthSspiTest {
 
             final FBSADataSource fbDataSource = new FBSADataSource(GDSType.getType("PURE_JAVA"));
 
-            fbDataSource.setDatabaseName(FBTestProperties.DB_DATASOURCE_URL);
+            fbDataSource.setDatabaseName(getdbpath(DB_NAME));
             fbDataSource.setProperty("isc_dpb_lc_ctype", "WIN1251");
             fbDataSource.setProperty("isc_dpb_user_name", "TEST@RED-SOFT.RU");
             fbDataSource.setProperty("isc_dpb_password", "q3rgu7Ah");
@@ -258,7 +258,7 @@ public class AuthSspiTest {
 
             final FBSADataSource fbDataSource = new FBSADataSource(GDSType.getType("PURE_JAVA"));
 
-            fbDataSource.setDatabaseName(FBTestProperties.DB_DATASOURCE_URL);
+            fbDataSource.setDatabaseName(getdbpath(DB_NAME));
             fbDataSource.setProperty("isc_dpb_lc_ctype", "WIN1251");
             fbDataSource.setProperty("isc_dpb_user_name", "trusted_user");
             fbDataSource.setProperty("isc_dpb_password", "trusted");
