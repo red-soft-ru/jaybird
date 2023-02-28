@@ -2,6 +2,8 @@ package org.firebirdsql.gds.impl.wire.auth;
 
 import org.firebirdsql.gds.impl.wire.ByteBuffer;
 
+import java.sql.SQLException;
+
 /**
  * @author roman.kisluhin
  * @version 1.0
@@ -9,7 +11,7 @@ import org.firebirdsql.gds.impl.wire.ByteBuffer;
  *          Time: 23:45
  */
 public interface Stage {
-  public abstract boolean stage(ByteBuffer data) throws GDSAuthException;
+  public abstract boolean stage(ByteBuffer data) throws SQLException;
 
   public abstract Stage nextStage();
 }

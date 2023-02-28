@@ -65,9 +65,9 @@ public abstract class AbstractNativeConnection<T extends IAttachProperties<T>, C
         DbAttachInfo initialDbAttachInfo = DbAttachInfo.of(attachProperties);
 
         if (!initialDbAttachInfo.hasServerName() && initialDbAttachInfo.hasAttachObjectName()
-                && initialDbAttachInfo.getAttachObjectName().startsWith("//")) {
+                && initialDbAttachInfo.attachObjectName().startsWith("//")) {
             // This is a connection string using the default URL format which is not directly supported by fbclient
-            return DbAttachInfo.parseConnectString(initialDbAttachInfo.getAttachObjectName());
+            return DbAttachInfo.parseConnectString(initialDbAttachInfo.attachObjectName());
         }
 
         return initialDbAttachInfo;
@@ -203,10 +203,10 @@ public abstract class AbstractNativeConnection<T extends IAttachProperties<T>, C
      */
     protected static String toAttachUrl(DbAttachInfo dbAttachInfo) {
         if (!dbAttachInfo.hasServerName()) {
-            return dbAttachInfo.getAttachObjectName();
+            return dbAttachInfo.attachObjectName();
         }
-        String serverName = dbAttachInfo.getServerName();
-        String attachObjectName = dbAttachInfo.getAttachObjectName();
+        String serverName = dbAttachInfo.serverName();
+        String attachObjectName = dbAttachInfo.attachObjectName();
         StringBuilder sb = new StringBuilder(serverName.length() + attachObjectName.length() + 4);
         boolean ipv6 = serverName.indexOf(':') != -1;
         if (ipv6) {
@@ -214,7 +214,7 @@ public abstract class AbstractNativeConnection<T extends IAttachProperties<T>, C
         } else {
             sb.append(serverName);
         }
-        sb.append('/').append(dbAttachInfo.getPortNumber())
+        sb.append('/').append(dbAttachInfo.portNumber())
                 .append(':').append(attachObjectName);
         return sb.toString();
     }

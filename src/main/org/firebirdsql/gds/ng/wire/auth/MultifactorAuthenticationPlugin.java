@@ -1,10 +1,9 @@
 package org.firebirdsql.gds.ng.wire.auth;
 
 import org.firebirdsql.gds.GDSException;
-import org.firebirdsql.gds.ISCConstants;
 import org.firebirdsql.gds.impl.wire.ByteBuffer;
 import org.firebirdsql.gds.impl.wire.auth.*;
-import org.firebirdsql.gds.ng.wire.auth.legacy.UnixCrypt;
+import org.firebirdsql.gds.ng.wire.auth.legacy.LegacyHash;
 import org.firebirdsql.jaybird.fb.constants.DpbItems;
 import org.firebirdsql.logging.Logger;
 import org.firebirdsql.logging.LoggerFactory;
@@ -67,7 +66,7 @@ public class MultifactorAuthenticationPlugin implements AuthenticationPlugin {
                 authFactorPassword.setUserName(userName);
                 if (clientAuthBlock.getPassword() != null && !clientAuthBlock.getPassword().isEmpty()) {
                     authFactorPassword.setPassword(clientAuthBlock.getPassword());
-                    authFactorPassword.setPasswordEnc(UnixCrypt.crypt(clientAuthBlock.getPassword(), "9z").substring(2, 13));
+                    authFactorPassword.setPasswordEnc(Arrays.toString(LegacyHash.fbCrypt(clientAuthBlock.getPassword())));
                 }
                 authSspi.addFactor(authFactorPassword);
                 data.add((byte) AuthFactor.TYPE_PASSWORD);

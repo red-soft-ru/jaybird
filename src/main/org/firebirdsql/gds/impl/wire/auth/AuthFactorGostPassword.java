@@ -2,9 +2,10 @@ package org.firebirdsql.gds.impl.wire.auth;
 
 import org.firebirdsql.gds.ClumpletReader;
 import org.firebirdsql.gds.impl.wire.ByteBuffer;
-import org.firebirdsql.gds.ng.wire.auth.legacy.UnixCrypt;
+import org.firebirdsql.gds.ng.wire.auth.legacy.LegacyHash;
 
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.Base64;
 
 import static org.firebirdsql.gds.ClumpletReader.Kind.Tagged;
@@ -51,9 +52,9 @@ public class AuthFactorGostPassword extends AuthFactor {
 
   private final Stage CHALLENGE = new Stage() {
     @Override
-    public boolean stage(final ByteBuffer data) throws GDSAuthException {
+    public boolean stage(final ByteBuffer data) throws SQLException {
       if (userName == null || userName.length() == 0)
-        throw new GDSAuthException("User name not specified");
+        throw new SQLException("User name not specified");
       data.clear();
       data.add(userName.getBytes());
       return true;
@@ -67,9 +68,9 @@ public class AuthFactorGostPassword extends AuthFactor {
 
   private final Stage TRANSFER = new Stage() {
     @Override
-    public boolean stage(final ByteBuffer data) throws GDSAuthException {
+    public boolean stage(final ByteBuffer data) throws SQLException {
       if (passwordEnc == null && password != null)
-        passwordEnc = UnixCrypt.crypt(password, "9z").substring(2);
+        passwordEnc = Arrays.toString(LegacyHash.fbCrypt(password));
 
       if (data.getLength() == 0 && passwordEnc != null) {
         // We need to send encrypted password for legacy password verify
@@ -101,19 +102,16 @@ public class AuthFactorGostPassword extends AuthFactor {
       return true;
     }
 
-    private void fillMultifactorBuffer(final ByteBuffer data) throws GDSAuthException {
+    private void fillMultifactorBuffer(final ByteBuffer data) throws SQLException {
       if (password == null || password.length() == 0)
-        throw new GDSAuthException("User password not specified");
+        throw new SQLException("User password not specified");
 
       // parseSessionKeyData
       final ClumpletReader cr = new ClumpletReader(Tagged, data.getData());
 
-      try {
-        if (!cr.find(rdSymmetricMethod))
-          throw new GDSAuthException("Can't find data (symmetric method) in server response");
-      } catch (SQLException e) {
-        throw new GDSAuthException(e.getMessage(), e);
-      }
+      if (!cr.find(rdSymmetricMethod))
+        throw new SQLException("Can't find data (symmetric method) in server response");
+
       // todo Kill the param from auth protocol. Replace by algId or OID.
 //      final Bytes smBytes = cr.getBytes();
 //      try {
@@ -122,55 +120,27 @@ public class AuthFactorGostPassword extends AuthFactor {
 //        throw new GDSAuthException("Can't find data (symmetric method) in server response");
 //      }
 
-      try {
       if (!cr.find(rdHashMethod))
-        throw new GDSAuthException("Can't find data (hash method) in server response");
-      } catch (SQLException e) {
-        throw new GDSAuthException(e.getMessage(), e);
-      }
-      final byte[] hmBytes;
-      try {
-        hmBytes = cr.getBytes();
-      } catch (SQLException e) {
-        throw new GDSAuthException(e.getMessage(), e);
-      }
+        throw new SQLException("Can't find data (hash method) in server response");
+
+      final byte[] hmBytes = cr.getBytes();
+
       final int hashMethod = byteArrayToInt(hmBytes);
 
-      try {
-        if (!cr.find(rdCryptData))
-          throw new GDSAuthException("Can't find data (crypt data) in server response");
-      } catch (SQLException e) {
-        throw new GDSAuthException(e.getMessage(), e);
-      }
-      final byte[] cryptData;
-      try {
-        cryptData = cr.getBytes();
-      } catch (SQLException e) {
-        throw new GDSAuthException(e.getMessage(), e);
-      }
+      if (!cr.find(rdCryptData))
+        throw new SQLException("Can't find data (crypt data) in server response");
+
+      final byte[] cryptData = cr.getBytes();
 
       byte[] sessionIV = null;
-      try {
-        if (cr.find(rdSessionIV)) {
-          sessionIV = cr.getBytes();
-        }
-      } catch (SQLException e) {
-        throw new GDSAuthException(e.getMessage(), e);
+      if (cr.find(rdSessionIV)) {
+        sessionIV = cr.getBytes();
       }
 
-      try {
-        if (!cr.find(rdSalt))
-          throw new GDSAuthException("Can't find data (salt) in server response");
-      } catch (SQLException e) {
-        throw new GDSAuthException(e.getMessage(), e);
-      }
+      if (!cr.find(rdSalt))
+        throw new SQLException("Can't find data (salt) in server response");
 
-      final byte[] saltData;
-      try {
-        saltData = cr.getBytes();
-      } catch (SQLException e) {
-        throw new GDSAuthException(e.getMessage(), e);
-      }
+      final byte[] saltData = cr.getBytes();
 
       final byte[] hash = hashMf(userName, password, saltData, hashMethod);
 
@@ -178,7 +148,7 @@ public class AuthFactorGostPassword extends AuthFactor {
       final byte[] randomData;
       try {
         if (!cr.find(rdRandomIV))
-          throw new GDSAuthException("Can't find data (random IV) in server response");
+          throw new SQLException("Can't find data (random IV) in server response");
 
         final byte[] ivData = cr.getBytes();
         randomData = AuthMethods.decrypt(cryptData, sessionKey, ivData);
@@ -193,8 +163,6 @@ public class AuthFactorGostPassword extends AuthFactor {
             // no wire key in protocol
           }
         }
-      } catch (SQLException e) {
-        throw new GDSAuthException(e.getMessage(), e);
       } finally {
         AuthMethods.freeKey(sessionKey);
       }
@@ -219,7 +187,7 @@ public class AuthFactorGostPassword extends AuthFactor {
       data.add(bytes);
     }
 
-    private byte[] hashMf(final String userName, final String password, byte[] salt, int hashMethod) throws GDSAuthException {
+    private byte[] hashMf(final String userName, final String password, byte[] salt, int hashMethod) throws SQLException {
       ByteBuffer buffer = new ByteBuffer(0);
       buffer.add(salt);
       for (int i = buffer.getLength(); i < SALT_LENGTH; i++) {
@@ -249,9 +217,9 @@ public class AuthFactorGostPassword extends AuthFactor {
 
   public Stage RESULT = new Stage() {
     @Override
-    public boolean stage(final ByteBuffer data) throws GDSAuthException {
+    public boolean stage(final ByteBuffer data) throws SQLException {
       if (data.getLength() != 1)
-        throw new GDSAuthException("Error processing " + getFactorName() + " factor");
+        throw new SQLException("Error processing " + getFactorName() + " factor");
       return true;
     }
 

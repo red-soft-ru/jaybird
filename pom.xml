@@ -35,6 +35,7 @@
 		<objenesis.version>3.2</objenesis.version>
 		<releasehub.plugin.version>1.1</releasehub.plugin.version>
 		<junit.jupiter.version>5.9.2</junit.jupiter.version>
+		<awaitility.version>4.2.0</awaitility.version>
 	</properties>
 	<modules>
 		<module>modules/jaybird-jdk17</module>
@@ -260,6 +261,12 @@
 				<groupId>org.mockito</groupId>
 				<artifactId>mockito-junit-jupiter</artifactId>
 				<version>${mockito.core.version}</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.awaitility</groupId>
+				<artifactId>awaitility</artifactId>
+				<version>${awaitility.version}</version>
 				<scope>test</scope>
 			</dependency>
 		</dependencies>

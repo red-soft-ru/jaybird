@@ -311,8 +311,7 @@ public abstract class AbstractWireOperations implements FbWireOperations {
                 log.warn("IOException in receiveAuthResponse", ex);
             // ex.getMessage() makes little sense here, it will not be displayed
             // because error message for isc_net_read_err does not accept params
-            throw new GDSException(ISCConstants.isc_arg_gds,
-                    ISCConstants.isc_net_read_err, ex.getMessage());
+            throw new SQLException(ex);
         }
     }
 

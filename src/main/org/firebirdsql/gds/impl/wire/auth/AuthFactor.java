@@ -3,6 +3,8 @@ package org.firebirdsql.gds.impl.wire.auth;
 import org.firebirdsql.gds.ISCConstants;
 import org.firebirdsql.gds.impl.wire.ByteBuffer;
 
+import java.sql.SQLException;
+
 /**
  * @author roman.kisluhin
  * @version 1.0
@@ -48,14 +50,14 @@ public abstract class AuthFactor {
     this.type = type;
   }
 
-  public final boolean request(final ByteBuffer data) throws GDSAuthException {
+  public final boolean request(final ByteBuffer data) throws SQLException {
     if (stage == null)
-      throw new GDSAuthException("Error processing factor " + getFactorName() + ".");
+      throw new SQLException("Error processing factor " + getFactorName() + ".");
     try {
       final boolean result = stage.stage(data);
       stage = stage.nextStage();
       return result;
-    } catch (GDSAuthException e) {
+    } catch (SQLException e) {
       stage = STAGE_OVER;
       try {
         sspi.releaseFailSessionKey();

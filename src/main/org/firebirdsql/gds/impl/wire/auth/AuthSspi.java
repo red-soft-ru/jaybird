@@ -1,5 +1,6 @@
 package org.firebirdsql.gds.impl.wire.auth;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,7 +38,7 @@ public class AuthSspi {
     factors.add(factor);
   }
 
-  public boolean request(ByteBuffer data) throws GDSAuthException {
+  public boolean request(ByteBuffer data) throws SQLException {
     if (factors.isEmpty())
       return false;
 
@@ -54,7 +55,7 @@ public class AuthSspi {
     return true;
   }
 
-  public void fillFactors(final ConnectionParameterBuffer dpb) throws GDSException {
+  public void fillFactors(final ConnectionParameterBuffer dpb) throws SQLException {
     // Password factor
     if (dpb.hasArgument(DpbItems.isc_dpb_password) || dpb.hasArgument(DpbItems.isc_dpb_user_name)) {
       final AuthFactorGostPassword f = new AuthFactorGostPassword(this);
@@ -94,7 +95,6 @@ public class AuthSspi {
 
     if (dpb.hasArgument(DpbItems.isc_dpb_trusted_auth)) {
       trusted = true;
-//      dpb.removeArgument(ISCConstants.isc_dpb_trusted_auth);
     }
     if (dpb.hasArgument(DpbItems.isc_dpb_multi_factor_auth)) {
       multifactor = true;
@@ -107,25 +107,25 @@ public class AuthSspi {
     return sessionKey;
   }
 
-  public void setSessionKey(final Object sessionKey) throws GDSAuthException {
+  public void setSessionKey(final Object sessionKey) throws SQLException {
     releaseSessionKey();
     this.sessionKey = sessionKey;
   }
 
-  void releaseFailSessionKey() throws GDSAuthException {
+  void releaseFailSessionKey() throws SQLException {
     if (sessionKey != null && !freezeSessionKey) {
       releaseSessionKey();
     }
   }
 
-  private void releaseSessionKey() throws GDSAuthException {
+  private void releaseSessionKey() throws SQLException {
     if (sessionKey == null)
       return;
     AuthCryptoPlugin.getPlugin().freeKeyHandle(sessionKey);
     sessionKey = null;
   }
 
-  public void free() throws GDSAuthException {
+  public void free() throws SQLException {
     releaseSessionKey();
   }
 
@@ -151,15 +151,15 @@ public class AuthSspi {
     this.sessionEncyption = sessionEncyption;
   }
 
-  public void setRepositoryPin(String pin) throws GDSAuthException {
+  public void setRepositoryPin(String pin) throws SQLException {
     AuthCryptoPlugin.getPlugin().setRepositoryPin(pin);
   }
 
-  public void setProviderID(int providerID) throws GDSAuthException {
+  public void setProviderID(int providerID) throws SQLException {
     try {
       AuthCryptoPlugin.getPlugin().setProviderID(providerID);
     } catch (AuthCryptoException e) {
-      throw new GDSAuthException(String.format("Can't initialize provider with provider type %s", providerID), e);
+      throw new SQLException(String.format("Can't initialize provider with provider type %s", providerID), e);
     }
   }
 

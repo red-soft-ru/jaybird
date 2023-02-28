@@ -1,6 +1,9 @@
 package org.firebirdsql.gds.impl.wire.auth;
 
 import org.firebirdsql.gds.ISCConstants;
+import org.firebirdsql.gds.ng.FbExceptionBuilder;
+
+import java.sql.SQLException;
 
 /**
  * @author roman.kisluhin
@@ -11,9 +14,10 @@ import org.firebirdsql.gds.ISCConstants;
 public abstract class AuthCryptoPlugin {
   private static AuthCryptoPlugin _plugin;
 
-  public static AuthCryptoPlugin getPlugin() throws GDSAuthException {
+  public static AuthCryptoPlugin getPlugin() throws SQLException {
     if (_plugin == null)
-      throw new GDSAuthException(ISCConstants.isc_login, "Crypto plugin is not installed. Please, register with AuthCryptoPlugin#register(AuthCryptoPlugin).");
+      throw new FbExceptionBuilder().exception(ISCConstants.isc_login).cause(
+              new Throwable("Crypto plugin is not installed. Please, register with AuthCryptoPlugin#register(AuthCryptoPlugin).")).toSQLException();
     return _plugin;
   }
 

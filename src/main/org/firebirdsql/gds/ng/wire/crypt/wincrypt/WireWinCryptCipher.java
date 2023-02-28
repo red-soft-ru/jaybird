@@ -6,6 +6,7 @@ import org.firebirdsql.gds.impl.wire.auth.GDSAuthException;
 import javax.crypto.*;
 import java.security.*;
 import java.security.spec.AlgorithmParameterSpec;
+import java.sql.SQLException;
 import java.util.Arrays;
 
 /**
@@ -60,7 +61,7 @@ public final class WireWinCryptCipher extends CipherSpi {
                     key.getEncoded().length - this.INIT_VECTOR_LEN));
             AuthMethods.setIV(this.sessionKey, Arrays.copyOfRange(key.getEncoded(),
                     key.getEncoded().length - this.INIT_VECTOR_LEN, key.getEncoded().length));
-        } catch (GDSAuthException e) {
+        } catch (SQLException e) {
             throw new InvalidKeyException("Can't initialize WireWinCrypt cipher", e);
         }
     }
@@ -85,7 +86,7 @@ public final class WireWinCryptCipher extends CipherSpi {
             } else {
                 return AuthMethods.symmetricDecrypt(this.sessionKey, Arrays.copyOfRange(input, inputOffset, inputLen), false);
             }
-        } catch (GDSAuthException e) {
+        } catch (SQLException e) {
             throw new RuntimeException(
                     String.format("Can't update data using symmetric %s", this.encrypt ? "encryption" : "decryption"), e);
         }
@@ -106,7 +107,7 @@ public final class WireWinCryptCipher extends CipherSpi {
         try {
             bytes = this.engineUpdate(input, inputOffset, inputLen);
             AuthMethods.freeKey(this.sessionKey);
-        } catch (GDSAuthException e) {
+        } catch (SQLException e) {
             throw new RuntimeException("Can't destroy session key", e);
         }
         return bytes;

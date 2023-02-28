@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.sql.SQLException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -52,7 +53,7 @@ class AuthCryptoPluginImplTest {
                     System.out.println(threadName + ": hash destroyed");
                     assertTrue(res);
                     System.out.println(threadName + " is complete");
-            } catch (GDSAuthException | AuthCryptoException e) {
+            } catch (SQLException | AuthCryptoException e) {
                 System.out.println("Exception in " + threadName + ": " + e.getMessage());
                 throw new RuntimeException(e);
             }

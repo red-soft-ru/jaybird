@@ -9,6 +9,7 @@ import org.firebirdsql.gds.ClumpletReader;
 import org.firebirdsql.gds.GDSException;
 import org.firebirdsql.gds.ISCConstants;
 import org.firebirdsql.gds.impl.wire.ByteBuffer;
+import org.firebirdsql.gds.ng.FbExceptionBuilder;
 import org.firebirdsql.jaybird.fb.constants.DpbItems;
 
 import static org.firebirdsql.gds.ClumpletReader.Kind.WideTagged;
@@ -44,11 +45,12 @@ public class AuthFactorCertificate extends AuthFactor {
 
   public Stage RESULT = new Stage() {
     @Override
-    public boolean stage(final ByteBuffer data) throws GDSAuthException {
+    public boolean stage(final ByteBuffer data) throws SQLException {
       if (data.getLength() != 1)
-        throw new GDSAuthException("Error processing " + getFactorName() + " factor");
+        throw new SQLException("Error processing " + getFactorName() + " factor");
       if (data.get(0) == 0)
-        throw new GDSAuthException(ISCConstants.isc_login, "Bad " + getFactorName() + " factor");
+        throw new FbExceptionBuilder().exception(ISCConstants.isc_login).cause(
+              new Throwable("Bad " + getFactorName() + " factor")).toSQLException();
       return true;
     }
 
@@ -60,31 +62,23 @@ public class AuthFactorCertificate extends AuthFactor {
 
   private final Stage TRANSFER = new Stage() {
     @Override
-    public boolean stage(final ByteBuffer data) throws GDSAuthException {
+    public boolean stage(final ByteBuffer data) throws SQLException {
       if (sspi instanceof AuthSspi3) {
         sdRandomNumber = DpbItems.isc_dpb_certificate_body;
         sdWireKey = 1;
       }
       final ClumpletReader serverData = new ClumpletReader(clumpletReaderType, data.getData());
-      try {
-        if (!serverData.find(sdRandomNumber))
-          throw new GDSAuthException("No random number found in server data");
-      } catch (SQLException e) {
-        throw new GDSAuthException(e.getMessage(), e);
-      }
+      if (!serverData.find(sdRandomNumber))
+        throw new SQLException("No random number found in server data");
       final byte[] encryptNumber;
-      try {
-        encryptNumber = serverData.getBytes();
-      } catch (SQLException e) {
-        throw new GDSAuthException(e.getMessage(), e);
-      }
+      encryptNumber = serverData.getBytes();
 
       final AuthCryptoPlugin p = AuthCryptoPlugin.getPlugin();
       final AuthPrivateKeyContext userKey; // cache the user key context to avoid password dialog appearing 2 times
       try {
         userKey = p.getUserKey(certBase64);
       } catch (AuthCryptoException e) {
-        throw new GDSAuthException("No private key found for certificate: " + e.getMessage(), e);
+        throw new SQLException("No private key found for certificate: " + e.getMessage(), e);
       }
       final byte[] signData;
       final byte[] wireKeyData;
@@ -97,8 +91,6 @@ public class AuthFactorCertificate extends AuthFactor {
             sspi.setWireKeyData(AuthMethods.ccfiDecrypt(userKey, wireKeyData, certBase64));
           }
         }
-      } catch (SQLException e) {
-        throw new GDSAuthException(e.getMessage(), e);
       } finally {
         userKey.free(p);
       }
@@ -128,7 +120,7 @@ public class AuthFactorCertificate extends AuthFactor {
     this.certBase64 = certBase64;
   }
 
-  public void loadFromFile(String filePath) throws GDSException {
+  public void loadFromFile(String filePath) throws SQLException {
     final byte buf[] = new byte[4096];
     final StringBuilder res = new StringBuilder();
     try {
@@ -146,7 +138,7 @@ public class AuthFactorCertificate extends AuthFactor {
         }
       }
     } catch (IOException e) {
-      throw new GDSException("Error reading certificate from file " + filePath + ": " + e.getMessage());
+      throw new SQLException("Error reading certificate from file " + filePath + ": " + e.getMessage());
     }
   }
 

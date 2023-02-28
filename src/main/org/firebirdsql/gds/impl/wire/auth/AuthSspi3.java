@@ -4,6 +4,8 @@ import org.firebirdsql.gds.ISCConstants;
 import org.firebirdsql.gds.impl.wire.ByteBuffer;
 import org.firebirdsql.jaybird.fb.constants.DpbItems;
 
+import java.sql.SQLException;
+
 /**
  * Provides compatibility with multifactor authentication plugin
  *
@@ -12,7 +14,7 @@ import org.firebirdsql.jaybird.fb.constants.DpbItems;
 public class AuthSspi3 extends AuthSspi {
 
     @Override
-    public boolean request(ByteBuffer data) throws GDSAuthException {
+    public boolean request(ByteBuffer data) throws SQLException {
         if (factors.isEmpty())
             return false;
 
@@ -39,7 +41,7 @@ public class AuthSspi3 extends AuthSspi {
             int type = data.get(dataCount - 1);
             if (type == AuthFactor.TYPE_NONE) {
                 if (currentFactor >= factors.size())
-                    throw new GDSAuthException("Error multi factor authentication");
+                    throw new SQLException("Error multi factor authentication");
                 if (sessionKey != null)
                     freezeSessionKey = true;
                 // Current factor was passed. Move to the next if possible

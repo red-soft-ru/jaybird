@@ -8,17 +8,10 @@ import org.firebirdsql.gds.GDSException;
  *          Date: 12.10.12
  *          Time: 15:18
  */
+@Deprecated
 public class GDSAuthException extends GDSException {
-  public GDSAuthException(String message, Throwable e) {
-    super(message, e);
-  }
 
   public GDSAuthException(String message) {
     super(message);
-  }
-
-  public GDSAuthException(final int errorCode, final String strParam) {
-    super(errorCode);
-    setNext(new GDSAuthException("(" + strParam + ")"));
   }
 }

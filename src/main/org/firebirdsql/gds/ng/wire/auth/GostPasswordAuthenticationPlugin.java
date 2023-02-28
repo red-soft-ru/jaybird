@@ -2,7 +2,7 @@ package org.firebirdsql.gds.ng.wire.auth;
 
 import org.firebirdsql.gds.impl.wire.ByteBuffer;
 import org.firebirdsql.gds.impl.wire.auth.*;
-import org.firebirdsql.gds.ng.wire.auth.legacy.UnixCrypt;
+import org.firebirdsql.gds.ng.wire.auth.legacy.LegacyHash;
 import org.firebirdsql.logging.Logger;
 import org.firebirdsql.logging.LoggerFactory;
 
@@ -45,7 +45,7 @@ public class GostPasswordAuthenticationPlugin implements AuthenticationPlugin {
 
             authFactorGostPassword.setUserName(userName);
             authFactorGostPassword.setPassword(password);
-            authFactorGostPassword.setPasswordEnc(UnixCrypt.crypt(password, "9z").substring(2, 13));
+            authFactorGostPassword.setPasswordEnc(Arrays.toString(LegacyHash.fbCrypt(password)));
             authSspi.addFactor(authFactorGostPassword);
             try {
                 authSspi.request(data);
