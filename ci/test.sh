@@ -57,7 +57,7 @@ if [ "$ARCH" == "x86" ]; then
 	CPROCSP_ARCH=ia32
 fi
 
-Do not generate CryptoPRO certificates in test stage
+echo "Do not generate CryptoPRO certificates in test stage"
 
 mcli alias set myminio ${MINIO_SERVER} ${MINIO_USER} ${MINIO_PASSWORD}
 
