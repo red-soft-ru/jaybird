@@ -81,13 +81,8 @@ chmod 700 $KEYS_DIR/root/TestKeys.000 -R
 echo Will use build $RDB_VERSION for testing
 
 echo "Downloading RedDatabase $RDB_BUILD_ID"
-if [[ "$RDB_MAJOR_VERSION" == "2" ]]; then
-  RDB_URL=http://builds.red-soft.biz/release_hub/rdb26/${RDB_VERSION}/download/red-database:linux-${ARCH}:${RDB_VERSION}:bin:installer
-  ARCHITECTURE=super
-elif [[ "$RDB_MAJOR_VERSION" == "3" ]]; then
+if [[ "$RDB_MAJOR_VERSION" == "3" ]]; then
   RDB_URL=http://builds.red-soft.biz/release_hub/rdb30/${RDB_VERSION}/download/red-database:linux-${ARCH}-enterprise:${RDB_VERSION}:bin
-elif [[ "$RDB_MAJOR_VERSION" == "4" ]]; then
-  RDB_URL=http://builds.red-soft.biz/release_hub/rdb40/${RDB_VERSION}/download/red-database:linux-${ARCH}-enterprise:${RDB_VERSION}:bin
 fi
 
 if [[ "$RDB_MAJOR_VERSION" == "FB3.0.7" ]]; then
@@ -111,29 +106,7 @@ fi
 rm -f /tmp/installer.bin
 chmod 777 $TEST_DIR
 
-if [[ "$RDB_MAJOR_VERSION" == "4" ]]; then
-  sed -i 's/#AuthServer = Srp256/AuthServer = Srp256, Srp, Legacy_Auth, Gss, GostPassword, Certificate, Policy/g' "${INSTALLDIR}"/firebird.conf
-  sed -i 's/#AuthClient = Srp256, Srp, Legacy_Auth, Gss\s*#Non Windows clients/AuthClient = Srp256, Srp, Legacy_Auth, Gss, GostPassword, Certificate/g' "${INSTALLDIR}"/firebird.conf
-  sed -i 's/#UserManager = Srp/UserManager = Srp, Legacy_UserManager, GostPassword_Manager /g' "${INSTALLDIR}"/firebird.conf
-  sed -i 's/#WireCrypt = Enabled (for client) \/ Required (for server)/WireCrypt = Enabled/g' "${INSTALLDIR}"/firebird.conf
-  sed -i 's/#WireCryptPlugin = ChaCha, Arc4/WireCryptPlugin = Wire_WinCrypt/g' "${INSTALLDIR}"/firebird.conf
-
-  sed -i 's/#KrbServerKeyfile/KrbServerKeyfile/g' "${INSTALLDIR}"/firebird.conf
-  sed -i 's/#GssServiceName/GssServiceName/g' "${INSTALLDIR}"/firebird.conf
-  sed -i 's/#GssHostName =/GssHostName = localhost/g' "${INSTALLDIR}"/firebird.conf
-  sed -i 's/#TraceAuthentication = 0/TraceAuthentication = 1/g' "${INSTALLDIR}"/firebird.conf
-
-  sed -i 's/#ProviderName = 75/ProviderName = 80/g' "${INSTALLDIR}"/firebird.conf
-
-  sed -i 's/#VerifyCertificateChain = 1/VerifyCertificateChain = 0/g' "${INSTALLDIR}"/firebird.conf
-  sed -i 's/#CertUsernameDN = CN/CertUsernameDN = E/g' "${INSTALLDIR}"/firebird.conf
-  sed -i 's/#ServerCertificate =/ServerCertificate = Test Test Test,CRYPTO-PRO Test Center 2,'"$CERT_SERIAL"'/g' "${INSTALLDIR}"/firebird.conf
-  sed -i 's/#ServerPrivatePin =/ServerPrivatePin = 12345678/g' "${INSTALLDIR}"/firebird.conf
-  sed -i 's/#TrustedCertificate =/TrustedCertificate = Test Test Test,CRYPTO-PRO Test Center 2,'"$CERT_SERIAL"'/g' "${INSTALLDIR}"/firebird.conf
-  sed -i 's/#TrustedUser =/TrustedUser = trusted_user/g' "${INSTALLDIR}"/firebird.conf
-
-"${INSTALLDIR}"/bin/isql -user SYSDBA -password masterkey "${INSTALLDIR}"/security4.fdb -i "${SOURCES}"/ci/user4.sql
-elif [[ "$RDB_MAJOR_VERSION" == "3" ]]; then
+if [[ "$RDB_MAJOR_VERSION" == "3" ]]; then
   sed -i 's/#AuthServer = Srp/AuthServer = Multifactor, Srp, Srp256, Legacy_Auth, Gss/g' "${INSTALLDIR}"/firebird.conf
   sed -i 's/#AuthClient = Srp, Srp256, Legacy_Auth, Gss, Multifactor, ExtAuth\s*#Non Windows clients/AuthClient = Multifactor, Srp, Srp256, Legacy_Auth, Gss, ExtAuth/g' "${INSTALLDIR}"/firebird.conf
   sed -i 's/#UserManager = Srp/UserManager = Srp, Legacy_UserManager, Multifactor_Manager /g' "${INSTALLDIR}"/firebird.conf
@@ -166,23 +139,11 @@ elif [[ "$RDB_MAJOR_VERSION" == "FB3.0.7" ]]; then
   sed -i 's/#UserManager = Srp/UserManager = Srp, Legacy_UserManager/g' "${INSTALLDIR}"/firebird.conf
   sed -i 's/#WireCrypt = Enabled (for client) \/ Required (for server)/WireCrypt = Disabled/g' "${INSTALLDIR}"/firebird.conf
 
-else
-  sed -i 's/#VerifyCertChain = 1/VerifyCertChain = 0/g' "${INSTALLDIR}/firebird.conf"
-  sed -i 's/#CertUsernameDN = CN/CertUsernameDN = E/g' "${INSTALLDIR}/firebird.conf"
-  sed -i 's/#ServerCertificate =/ServerCertificate = Test Test Test,CRYPTO-PRO Test Center 2,'"$CERT_SERIAL"'/g' "${INSTALLDIR}"/firebird.conf
-  sed -i 's/#PrivateKeyPin = /PrivateKeyPin = 12345678/g' "${INSTALLDIR}/firebird.conf"
-  sed -i 's/#TrustedCertificate =/TrustedCertificate = Test Test Test,CRYPTO-PRO Test Center 2,'"$CERT_SERIAL"'/g' "${INSTALLDIR}"/firebird.conf
-  sed -i 's/#TraceAuthentication = 0/TraceAuthentication = 1/g' "${INSTALLDIR}/firebird.conf"
-
-  sed -i 's/#ProviderName = 75/ProviderName = 80/g' "${INSTALLDIR}"/firebird.conf
-
 fi
 
 echo "Start RDB..."
 
-if [[ "$RDB_MAJOR_VERSION" == "2" ]]; then
-  /etc/init.d/firebird restart
-elif [[ "$RDB_MAJOR_VERSION" == "FB3.0.7" ]]; then
+if [[ "$RDB_MAJOR_VERSION" == "FB3.0.7" ]]; then
   /etc/init.d/firebird restart
 else
   "$INSTALLDIR"/bin/rdbguard -daemon -forever
@@ -200,10 +161,7 @@ while ! $NC localhost 3050 </dev/null; do
     fi
 done
 
-if [[ "$RDB_MAJOR_VERSION" == "2" ]]; then
-  "$INSTALLDIR/bin/gsec" -user SYSDBA -password masterkey -add TEST@RED-SOFT.RU -pw q3rgu7Ah
-  "$INSTALLDIR/bin/gsec" -user SYSDBA -password masterkey -add trusted_user -pw trusted
-elif [[ "$RDB_MAJOR_VERSION" == "FB3.0.7" ]]; then
+if [[ "$RDB_MAJOR_VERSION" == "FB3.0.7" ]]; then
   "$INSTALLDIR/bin/gsec" -modify SYSDBA -password masterkey -user SYSDBA
 fi
 
