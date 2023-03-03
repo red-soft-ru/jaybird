@@ -61,7 +61,8 @@ public class FbEmbeddedDatabaseFactory extends AbstractNativeDatabaseFactory {
     @Override
     protected FbClientLibrary createClientLibrary() {
         final List<Throwable> throwables = new ArrayList<>();
-        for (String libraryName : LIBRARIES_TO_TRY) {
+        final List<String> librariesToTry = findLibrariesToTry();
+        for (String libraryName : librariesToTry) {
             try {
                 if (Platform.isWindows()) {
                     return Native.loadLibrary(libraryName, WinFbClientLibrary.class);
@@ -74,13 +75,21 @@ public class FbEmbeddedDatabaseFactory extends AbstractNativeDatabaseFactory {
                 // continue with next
             }
         }
-        assert throwables.size() == LIBRARIES_TO_TRY.size();
-        log.error("Could not load any of the libraries in " + LIBRARIES_TO_TRY + ":");
-        for (int idx = 0; idx < LIBRARIES_TO_TRY.size(); idx++) {
-            log.error("Loading " + LIBRARIES_TO_TRY.get(idx) + " failed", throwables.get(idx));
+        assert throwables.size() == librariesToTry.size();
+        log.error("Could not load any of the libraries in " + librariesToTry + ":");
+        for (int idx = 0; idx < librariesToTry.size(); idx++) {
+            log.error("Loading " + librariesToTry.get(idx) + " failed", throwables.get(idx));
         }
-        throw new NativeLibraryLoadException("Could not load any of " + LIBRARIES_TO_TRY + "; linking first exception",
+        throw new NativeLibraryLoadException("Could not load any of " + librariesToTry + "; linking first exception",
                 throwables.get(0));
     }
 
+    private List<String> findLibrariesToTry() {
+        final String libraryPath = System.getProperty("org.firebirdsql.jna.fbclient");
+        if (libraryPath != null) {
+            return Collections.singletonList(libraryPath);
+        }
+
+        return LIBRARIES_TO_TRY;
+    }
 }

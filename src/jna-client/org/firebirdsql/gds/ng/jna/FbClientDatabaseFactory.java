@@ -45,9 +45,9 @@ public final class FbClientDatabaseFactory extends AbstractNativeDatabaseFactory
     protected FbClientLibrary createClientLibrary() {
         try {
             if (Platform.isWindows()) {
-                return Native.loadLibrary("fbclient", WinFbClientLibrary.class);
+                return Native.loadLibrary(System.getProperty("org.firebirdsql.jna.fbclient", "fbclient"), WinFbClientLibrary.class);
             } else {
-                return Native.loadLibrary("fbclient", FbClientLibrary.class);
+                return Native.loadLibrary(System.getProperty("org.firebirdsql.jna.fbclient", "fbclient"), FbClientLibrary.class);
             }
         } catch (RuntimeException | UnsatisfiedLinkError e) {
             throw new NativeLibraryLoadException("Could not load fbclient", e);
