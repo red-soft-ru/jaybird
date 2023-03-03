@@ -20,6 +20,7 @@ package org.firebirdsql.gds.ng.jna;
 
 import com.sun.jna.Native;
 import com.sun.jna.Platform;
+import org.firebirdsql.gds.JaybirdSystemProperties;
 import org.firebirdsql.jna.fbclient.FbClientLibrary;
 import org.firebirdsql.jna.fbclient.WinFbClientLibrary;
 
@@ -44,10 +45,12 @@ public final class FbClientDatabaseFactory extends AbstractNativeDatabaseFactory
     @Override
     protected FbClientLibrary createClientLibrary() {
         try {
+            final String fbclient = JaybirdSystemProperties.getNativeLibraryFbclient() != null ?
+                    JaybirdSystemProperties.getNativeLibraryFbclient() : "fbclient";
             if (Platform.isWindows()) {
-                return Native.load("fbclient", WinFbClientLibrary.class);
+                return Native.load(fbclient, WinFbClientLibrary.class);
             } else {
-                return Native.load("fbclient", FbClientLibrary.class);
+                return Native.load(fbclient, FbClientLibrary.class);
             }
         } catch (RuntimeException | UnsatisfiedLinkError e) {
             throw new NativeLibraryLoadException("Could not load fbclient", e);

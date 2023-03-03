@@ -53,7 +53,8 @@ public class FbOOEmbeddedDatabaseFactory extends AbstractNativeOODatabaseFactory
 
         private static FbClientLibrary initClientLibrary() {
             final List<Throwable> throwables = new ArrayList<>();
-            for (String libraryName : LIBRARIES_TO_TRY) {
+            final List<String> librariesToTry = findLibrariesToTry();
+            for (String libraryName : librariesToTry) {
                 try {
                     return Native.load(libraryName, FbInterface.class);
                 } catch (UnsatisfiedLinkError e) {
@@ -62,10 +63,10 @@ public class FbOOEmbeddedDatabaseFactory extends AbstractNativeOODatabaseFactory
                     // continue with next
                 }
             }
-            assert throwables.size() == LIBRARIES_TO_TRY.size();
-            log.error("Could not load any of the libraries in " + LIBRARIES_TO_TRY + ":");
-            for (int idx = 0; idx < LIBRARIES_TO_TRY.size(); idx++) {
-                log.error("Loading " + LIBRARIES_TO_TRY.get(idx) + " failed", throwables.get(idx));
+            assert throwables.size() == librariesToTry.size();
+            log.error("Could not load any of the libraries in " + librariesToTry + ":");
+            for (int idx = 0; idx < librariesToTry.size(); idx++) {
+                log.error("Loading " + librariesToTry.get(idx) + " failed", throwables.get(idx));
             }
             throw new ExceptionInInitializerError(throwables.get(0));
         }
@@ -75,6 +76,15 @@ public class FbOOEmbeddedDatabaseFactory extends AbstractNativeOODatabaseFactory
                 return (FbClientLibrary) Native.synchronizedLibrary(clientLibrary);
             }
             return clientLibrary;
+        }
+
+        private static List<String> findLibrariesToTry() {
+            final String libraryPath = JaybirdSystemProperties.getNativeLibraryFbclient();
+            if (libraryPath != null) {
+                return Collections.singletonList(libraryPath);
+            }
+
+            return LIBRARIES_TO_TRY;
         }
     }
 }

@@ -30,7 +30,9 @@ public class FbOOClientDatabaseFactory extends AbstractNativeOODatabaseFactory {
         private static final FbClientLibrary clientLibrary = syncWrapIfNecessary(initClientLibrary());
 
         private static FbClientLibrary initClientLibrary() {
-            return Native.load("fbclient", FbInterface.class);
+            final String fbclient = JaybirdSystemProperties.getNativeLibraryFbclient() != null ?
+                    JaybirdSystemProperties.getNativeLibraryFbclient() : "fbclient";
+            return Native.load(fbclient, FbInterface.class);
         }
 
         private static FbClientLibrary syncWrapIfNecessary(FbClientLibrary clientLibrary) {

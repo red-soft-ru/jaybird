@@ -20,6 +20,7 @@ package org.firebirdsql.gds.ng.jna;
 
 import com.sun.jna.Native;
 import com.sun.jna.Platform;
+import org.firebirdsql.gds.JaybirdSystemProperties;
 import org.firebirdsql.gds.ng.IAttachProperties;
 import org.firebirdsql.jaybird.util.Cleaners;
 import org.firebirdsql.jna.embedded.FirebirdEmbeddedLookup;
@@ -91,6 +92,10 @@ public class FbEmbeddedDatabaseFactory extends AbstractNativeDatabaseFactory {
     }
 
     private List<String> findLibrariesToTry() {
+        final String libraryPath = JaybirdSystemProperties.getNativeLibraryFbclient();
+        if (libraryPath != null) {
+            return Collections.singletonList(libraryPath);
+        }
         Optional<FirebirdEmbeddedLibrary> optionalFbEmbeddedInstance = FirebirdEmbeddedLookup.findFirebirdEmbedded();
         if (optionalFbEmbeddedInstance.isPresent()) {
             FirebirdEmbeddedLibrary firebirdEmbeddedLibrary = optionalFbEmbeddedInstance.get();

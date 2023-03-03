@@ -49,6 +49,7 @@ public final class JaybirdSystemProperties {
     public static final String WIRE_DECRYPT_BUFFER_SIZE = WIRE_PREFIX + "decryptBufferSize";
     public static final String WIRE_INPUT_BUFFER_SIZE = WIRE_PREFIX + "inputBufferSize";
     public static final String WIRE_OUTPUT_BUFFER_SIZE = WIRE_PREFIX + "outputBufferSize";
+    public static final String NATIVE_LIBRARY_JNA_FBCLIENT = COMMON_PREFIX + "jna.fbclient";
 
     private JaybirdSystemProperties() {
         // no instances
@@ -88,6 +89,10 @@ public final class JaybirdSystemProperties {
 
     public static boolean isNativeResourceShutdownDisabled() {
         return getBooleanSystemPropertyPrivileged(NATIVE_LIBRARY_SHUTDOWN_DISABLED);
+    }
+
+    public static String getNativeLibraryFbclient() {
+        return getSystemPropertyPrivileged(NATIVE_LIBRARY_JNA_FBCLIENT);
     }
 
     public static int getDatatypeCoderCacheSize(int defaultValue) {
