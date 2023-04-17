@@ -61,9 +61,7 @@ public abstract class FBBackupManagerBase extends FBServiceManager implements Ba
 
         public boolean equals(Object obj) {
             if (obj == this) return true;
-            if (!(obj instanceof PathSizeStruct)) return false;
-
-            PathSizeStruct that = (PathSizeStruct) obj;
+            if (!(obj instanceof PathSizeStruct that)) return false;
 
             return this.path.equals(that.path);
         }
