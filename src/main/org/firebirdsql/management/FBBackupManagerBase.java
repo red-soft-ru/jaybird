@@ -29,6 +29,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import static org.firebirdsql.gds.ISCConstants.*;
+import static org.firebirdsql.util.FirebirdSupportInfo.supportInfoFor;
 
 /**
  * Implements the common functionality between regular and streaming backup/restore
