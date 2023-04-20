@@ -183,9 +183,11 @@ public interface FbInterface extends FbClientLibrary
 		public static int TYPE_DB_CRYPT = 9;
 		public static int TYPE_KEY_HOLDER = 10;
 		public static int TYPE_REPLICATOR = 11;
-		public static int TYPE_CRYPTO_API = 12;
-		public static int TYPE_LDAP = 13;
-		public static int TYPE_COUNT = 14;
+		public static int TYPE_PROFILER = 12;
+		public static int TYPE_CRYPTO_API = 13;
+		public static int TYPE_LDAP = 14;
+		public static int TYPE_LICENSE = 15;
+		public static int TYPE_COUNT = 16;
 
 		public void registerPluginFactory(int pluginType, String defaultName, IPluginFactory factory);
 		public void registerModule(IPluginModule cleanup);
@@ -462,7 +464,7 @@ public interface FbInterface extends FbClientLibrary
 
 	public static interface IAttachmentIntf extends IReferenceCountedIntf
 	{
-		public int VERSION = 5;
+		public int VERSION = 6;
 
 		public void getInfo(IStatus status, int itemsLength, byte[] items, int bufferLength, byte[] buffer);
 		public ITransaction startTransaction(IStatus status, int tpbLength, byte[] tpb);
@@ -490,6 +492,7 @@ public interface FbInterface extends FbClientLibrary
 		public IReplicator createReplicator(IStatus status);
 		public void detach(IStatus status);
 		public void dropDatabase(IStatus status);
+		public void reconnect(IStatus status, String password, String certificate, String pin);
 	}
 
 	public static interface IServiceIntf extends IReferenceCountedIntf
@@ -631,6 +634,7 @@ public interface FbInterface extends FbClientLibrary
 		public static int OP_USER_DISPLAY = 4;
 		public static int OP_USER_SET_MAP = 5;
 		public static int OP_USER_DROP_MAP = 6;
+		public static int OP_USER_UPDATE_LDAP = 101;
 
 		public int operation();
 		public ICharUserField userName();
@@ -1098,6 +1102,7 @@ public interface FbInterface extends FbClientLibrary
 		public int getTraceSessionID();
 		public String getTraceSessionName();
 		public int getTraceSessionFlags();
+		public int getTraceSessionFormat();
 		public String getFirebirdRootDirectory();
 		public String getDatabaseName();
 		public ITraceDatabaseConnection getConnection();
@@ -1291,6 +1296,46 @@ public interface FbInterface extends FbClientLibrary
 		public IReplicatedTransaction startTransaction(IStatus status, ITransaction transaction, long number);
 		public void cleanupTransaction(IStatus status, long number);
 		public void setSequence(IStatus status, String name, long value);
+	}
+
+	public static interface IProfilerPluginIntf extends IPluginBaseIntf
+	{
+		public int VERSION = 4;
+
+		public void init(IStatus status, IAttachment attachment);
+		public IProfilerSession startSession(IStatus status, String description, String options, ISC_TIMESTAMP_TZ timestamp);
+		public void flush(IStatus status);
+	}
+
+	public static interface IProfilerSessionIntf extends IDisposableIntf
+	{
+		public int VERSION = 3;
+
+		public static int FLAG_BEFORE_EVENTS = 0x1;
+		public static int FLAG_AFTER_EVENTS = 0x2;
+
+		public long getId();
+		public int getFlags();
+		public void cancel(IStatus status);
+		public void finish(IStatus status, ISC_TIMESTAMP_TZ timestamp);
+		public void defineStatement(IStatus status, long statementId, long parentStatementId, String type, String packageName, String routineName, String sqlText);
+		public void defineCursor(long statementId, int cursorId, String name, int line, int column);
+		public void defineRecordSource(long statementId, int cursorId, int recSourceId, String accessPath, int parentRecSourceId);
+		public void onRequestStart(IStatus status, long requestId, long statementId, long callerRequestId, ISC_TIMESTAMP_TZ timestamp);
+		public void onRequestFinish(IStatus status, long requestId, ISC_TIMESTAMP_TZ timestamp, IProfilerStats stats);
+		public void beforePsqlLineColumn(long requestId, int line, int column);
+		public void afterPsqlLineColumn(long requestId, int line, int column, IProfilerStats stats);
+		public void beforeRecordSourceOpen(long requestId, int cursorId, int recSourceId);
+		public void afterRecordSourceOpen(long requestId, int cursorId, int recSourceId, IProfilerStats stats);
+		public void beforeRecordSourceGetRecord(long requestId, int cursorId, int recSourceId);
+		public void afterRecordSourceGetRecord(long requestId, int cursorId, int recSourceId, IProfilerStats stats);
+	}
+
+	public static interface IProfilerStatsIntf extends IVersionedIntf
+	{
+		public int VERSION = 2;
+
+		public long getElapsedTime();
 	}
 
 	public static interface ICryptoKeyIntf extends IVersionedIntf
@@ -1513,6 +1558,14 @@ public interface FbInterface extends FbClientLibrary
 
 		public int authenticate(IStatus status, IServerBlock sBlock, IWriter writerInterface);
 		public boolean verifyPassword(String secDbName, String user, String password, boolean isNew, String plugin, com.sun.jna.Pointer isEqual);
+	}
+
+	public static interface ILicensePluginIntf extends IPluginBaseIntf
+	{
+		public int VERSION = 4;
+
+		public boolean isFeatureAvailable(int feature);
+		public int getEdition();
 	}
 
 	public static class IVersioned extends com.sun.jna.Structure implements IVersionedIntf
@@ -2920,6 +2973,10 @@ public interface FbInterface extends FbClientLibrary
 		public void getList(IListElementCallback callback)
 		{
 			VTable vTable = getVTable();
+			if (vTable.version < 4)
+			{
+				return;
+			}
 			if (vTable.getList == null) {
 				return;
 			}
@@ -3274,6 +3331,10 @@ public interface FbInterface extends FbClientLibrary
 		public void asList(int key, IListElementCallback callback)
 		{
 			VTable vTable = getVTable();
+			if (vTable.version < 4)
+			{
+				return;
+			}
 			if (vTable.asList == null) {
 				return;
 			}
@@ -3621,6 +3682,10 @@ public interface FbInterface extends FbClientLibrary
 		public void threadDetach()
 		{
 			VTable vTable = getVTable();
+			if (vTable.version < 3)
+			{
+				return;
+			}
 			if (vTable.threadDetach == null) {
 				return;
 			}
@@ -4203,6 +4268,10 @@ public interface FbInterface extends FbClientLibrary
 		public String getDefaultSecurityDb()
 		{
 			VTable vTable = getVTable();
+			if (vTable.version < 3)
+			{
+				return null;
+			}
 			if (vTable.getDefaultSecurityDb == null) {
 				return null;
 			}
@@ -8618,6 +8687,11 @@ public interface FbInterface extends FbClientLibrary
 				public void invoke(IAttachment self, IStatus status);
 			}
 
+			public static interface Callback_reconnect extends com.sun.jna.Callback
+			{
+				public void invoke(IAttachment self, IStatus status, String password, String certificate, String pin);
+			}
+
 			public VTable(com.sun.jna.Pointer pointer)
 			{
 				super(pointer);
@@ -9032,6 +9106,21 @@ public interface FbInterface extends FbClientLibrary
 						}
 					}
 				};
+
+				reconnect = new Callback_reconnect() {
+					@Override
+					public void invoke(IAttachment self, IStatus status, String password, String certificate, String pin)
+					{
+						try
+						{
+							obj.reconnect(status, password, certificate, pin);
+						}
+						catch (Throwable t)
+						{
+							FbInterfaceException.catchException(status, t);
+						}
+					}
+				};
 			}
 
 			public VTable()
@@ -9064,12 +9153,13 @@ public interface FbInterface extends FbClientLibrary
 			public Callback_createReplicator createReplicator;
 			public Callback_detach detach;
 			public Callback_dropDatabase dropDatabase;
+			public Callback_reconnect reconnect;
 
 			@Override
 			protected java.util.List<String> getFieldOrder()
 			{
 				java.util.List<String> fields = super.getFieldOrder();
-				fields.addAll(java.util.Arrays.asList("getInfo", "startTransaction", "reconnectTransaction", "compileRequest", "transactRequest", "createBlob", "openBlob", "getSlice", "putSlice", "executeDyn", "prepare", "execute", "openCursor", "queEvents", "cancelOperation", "ping", "deprecatedDetach", "deprecatedDropDatabase", "getIdleTimeout", "setIdleTimeout", "getStatementTimeout", "setStatementTimeout", "createBatch", "createReplicator", "detach", "dropDatabase"));
+				fields.addAll(java.util.Arrays.asList("getInfo", "startTransaction", "reconnectTransaction", "compileRequest", "transactRequest", "createBlob", "openBlob", "getSlice", "putSlice", "executeDyn", "prepare", "execute", "openCursor", "queEvents", "cancelOperation", "ping", "deprecatedDetach", "deprecatedDropDatabase", "getIdleTimeout", "setIdleTimeout", "getStatementTimeout", "setStatementTimeout", "createBatch", "createReplicator", "detach", "dropDatabase", "reconnect"));
 				return fields;
 			}
 		}
@@ -9412,6 +9502,21 @@ public interface FbInterface extends FbClientLibrary
 				return;
 			}
 			vTable.dropDatabase.invoke(this, status);
+		}
+
+		public void reconnect(IStatus status, String password, String certificate, String pin)
+		{
+			VTable vTable = getVTable();
+			if (vTable.version < 6)
+			{
+				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IAttachmentIntf.VERSION);
+				return;
+			}
+			if (vTable.reconnect == null) {
+				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IAttachmentIntf.VERSION);
+				return;
+			}
+			vTable.reconnect.invoke(this, status, password, certificate, pin);
 		}
 	}
 
@@ -10850,6 +10955,10 @@ public interface FbInterface extends FbClientLibrary
 		public String getEffectiveLogin()
 		{
 			VTable vTable = getVTable();
+			if (vTable.version < 5)
+			{
+				return null;
+			}
 			if (vTable.getEffectiveLogin == null) {
 				return null;
 			}
@@ -10860,6 +10969,10 @@ public interface FbInterface extends FbClientLibrary
 		public String getCertificate()
 		{
 			VTable vTable = getVTable();
+			if (vTable.version < 5)
+			{
+				return null;
+			}
 			if (vTable.getCertificate == null) {
 				return null;
 			}
@@ -10870,6 +10983,10 @@ public interface FbInterface extends FbClientLibrary
 		public String getRepositoryPin()
 		{
 			VTable vTable = getVTable();
+			if (vTable.version < 5)
+			{
+				return null;
+			}
 			if (vTable.getRepositoryPin == null) {
 				return null;
 			}
@@ -10880,6 +10997,10 @@ public interface FbInterface extends FbClientLibrary
 		public boolean getVerifyServer()
 		{
 			VTable vTable = getVTable();
+			if (vTable.version < 6)
+			{
+				return false;
+			}
 			if (vTable.getVerifyServer == null) {
 				return false;
 			}
@@ -16973,6 +17094,10 @@ public interface FbInterface extends FbClientLibrary
 		public long getInitialID()
 		{
 			VTable vTable = getVTable();
+			if (vTable.version < 3)
+			{
+				return 0;
+			}
 			if (vTable.getInitialID == null) {
 				return 0;
 			}
@@ -16983,6 +17108,10 @@ public interface FbInterface extends FbClientLibrary
 		public long getPreviousID()
 		{
 			VTable vTable = getVTable();
+			if (vTable.version < 3)
+			{
+				return 0;
+			}
 			if (vTable.getPreviousID == null) {
 				return 0;
 			}
@@ -18760,6 +18889,11 @@ public interface FbInterface extends FbClientLibrary
 				public int invoke(ITraceInitInfo self);
 			}
 
+			public static interface Callback_getTraceSessionFormat extends com.sun.jna.Callback
+			{
+				public int invoke(ITraceInitInfo self);
+			}
+
 			public static interface Callback_getFirebirdRootDirectory extends com.sun.jna.Callback
 			{
 				public String invoke(ITraceInitInfo self);
@@ -18828,6 +18962,14 @@ public interface FbInterface extends FbClientLibrary
 					}
 				};
 
+				getTraceSessionFormat = new Callback_getTraceSessionFormat() {
+					@Override
+					public int invoke(ITraceInitInfo self)
+					{
+						return obj.getTraceSessionFormat();
+					}
+				};
+
 				getFirebirdRootDirectory = new Callback_getFirebirdRootDirectory() {
 					@Override
 					public String invoke(ITraceInitInfo self)
@@ -18877,6 +19019,7 @@ public interface FbInterface extends FbClientLibrary
 			public Callback_getTraceSessionID getTraceSessionID;
 			public Callback_getTraceSessionName getTraceSessionName;
 			public Callback_getTraceSessionFlags getTraceSessionFlags;
+			public Callback_getTraceSessionFormat getTraceSessionFormat;
 			public Callback_getFirebirdRootDirectory getFirebirdRootDirectory;
 			public Callback_getDatabaseName getDatabaseName;
 			public Callback_getConnection getConnection;
@@ -18887,7 +19030,7 @@ public interface FbInterface extends FbClientLibrary
 			protected java.util.List<String> getFieldOrder()
 			{
 				java.util.List<String> fields = super.getFieldOrder();
-				fields.addAll(java.util.Arrays.asList("getConfigText", "getTraceSessionID", "getTraceSessionName", "getTraceSessionFlags", "getFirebirdRootDirectory", "getDatabaseName", "getConnection", "getService", "getLogWriter"));
+				fields.addAll(java.util.Arrays.asList("getConfigText", "getTraceSessionID", "getTraceSessionName", "getTraceSessionFlags", "getTraceSessionFormat", "getFirebirdRootDirectory", "getDatabaseName", "getConnection", "getService", "getLogWriter"));
 				return fields;
 			}
 		}
@@ -18947,6 +19090,16 @@ public interface FbInterface extends FbClientLibrary
 				return 0;
 			}
 			int result = vTable.getTraceSessionFlags.invoke(this);
+			return result;
+		}
+
+		public int getTraceSessionFormat()
+		{
+			VTable vTable = getVTable();
+			if (vTable.getTraceSessionFormat == null) {
+				return 0;
+			}
+			int result = vTable.getTraceSessionFormat.invoke(this);
 			return result;
 		}
 
@@ -19594,6 +19747,10 @@ public interface FbInterface extends FbClientLibrary
 		public boolean trace_dsql_restart(ITraceDatabaseConnection connection, ITraceTransaction transaction, ITraceSQLStatement statement, int number)
 		{
 			VTable vTable = getVTable();
+			if (vTable.version < 4)
+			{
+				return false;
+			}
 			if (vTable.trace_dsql_restart == null) {
 				return false;
 			}
@@ -21564,6 +21721,659 @@ public interface FbInterface extends FbClientLibrary
 				return;
 			}
 			vTable.setSequence.invoke(this, status, name, value);
+		}
+	}
+
+	public static class IProfilerPlugin extends IPluginBase implements IProfilerPluginIntf
+	{
+		public static class VTable extends IPluginBase.VTable
+		{
+			public static interface Callback_init extends com.sun.jna.Callback
+			{
+				public void invoke(IProfilerPlugin self, IStatus status, IAttachment attachment);
+			}
+
+			public static interface Callback_startSession extends com.sun.jna.Callback
+			{
+				public IProfilerSession invoke(IProfilerPlugin self, IStatus status, String description, String options, ISC_TIMESTAMP_TZ timestamp);
+			}
+
+			public static interface Callback_flush extends com.sun.jna.Callback
+			{
+				public void invoke(IProfilerPlugin self, IStatus status);
+			}
+
+			public VTable(com.sun.jna.Pointer pointer)
+			{
+				super(pointer);
+			}
+
+			public VTable(final IProfilerPluginIntf obj)
+			{
+				super(obj);
+
+				version = IProfilerPluginIntf.VERSION;
+
+				init = new Callback_init() {
+					@Override
+					public void invoke(IProfilerPlugin self, IStatus status, IAttachment attachment)
+					{
+						try
+						{
+							obj.init(status, attachment);
+						}
+						catch (Throwable t)
+						{
+							FbInterfaceException.catchException(status, t);
+						}
+					}
+				};
+
+				startSession = new Callback_startSession() {
+					@Override
+					public IProfilerSession invoke(IProfilerPlugin self, IStatus status, String description, String options, ISC_TIMESTAMP_TZ timestamp)
+					{
+						try
+						{
+							return obj.startSession(status, description, options, timestamp);
+						}
+						catch (Throwable t)
+						{
+							FbInterfaceException.catchException(status, t);
+							return null;
+						}
+					}
+				};
+
+				flush = new Callback_flush() {
+					@Override
+					public void invoke(IProfilerPlugin self, IStatus status)
+					{
+						try
+						{
+							obj.flush(status);
+						}
+						catch (Throwable t)
+						{
+							FbInterfaceException.catchException(status, t);
+						}
+					}
+				};
+			}
+
+			public VTable()
+			{
+			}
+
+			public Callback_init init;
+			public Callback_startSession startSession;
+			public Callback_flush flush;
+
+			@Override
+			protected java.util.List<String> getFieldOrder()
+			{
+				java.util.List<String> fields = super.getFieldOrder();
+				fields.addAll(java.util.Arrays.asList("init", "startSession", "flush"));
+				return fields;
+			}
+		}
+
+		public IProfilerPlugin()
+		{
+		}
+
+		public IProfilerPlugin(final IProfilerPluginIntf obj)
+		{
+			vTable = new VTable(obj);
+			vTable.write();
+			cloopVTable = vTable.getPointer();
+			write();
+		}
+
+		@Override
+		protected VTable createVTable()
+		{
+			return new VTable(cloopVTable);
+		}
+
+		public void init(IStatus status, IAttachment attachment)
+		{
+			VTable vTable = getVTable();
+			if (vTable.init == null) {
+				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IProfilerPluginIntf.VERSION);
+				return;
+			}
+			vTable.init.invoke(this, status, attachment);
+		}
+
+		public IProfilerSession startSession(IStatus status, String description, String options, ISC_TIMESTAMP_TZ timestamp)
+		{
+			VTable vTable = getVTable();
+			if (vTable.startSession == null) {
+				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IProfilerPluginIntf.VERSION);
+				return null;
+			}
+			IProfilerSession result = vTable.startSession.invoke(this, status, description, options, timestamp);
+			return result;
+		}
+
+		public void flush(IStatus status)
+		{
+			VTable vTable = getVTable();
+			if (vTable.flush == null) {
+				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IProfilerPluginIntf.VERSION);
+				return;
+			}
+			vTable.flush.invoke(this, status);
+		}
+	}
+
+	public static class IProfilerSession extends IDisposable implements IProfilerSessionIntf
+	{
+		public static class VTable extends IDisposable.VTable
+		{
+			public static interface Callback_getId extends com.sun.jna.Callback
+			{
+				public long invoke(IProfilerSession self);
+			}
+
+			public static interface Callback_getFlags extends com.sun.jna.Callback
+			{
+				public int invoke(IProfilerSession self);
+			}
+
+			public static interface Callback_cancel extends com.sun.jna.Callback
+			{
+				public void invoke(IProfilerSession self, IStatus status);
+			}
+
+			public static interface Callback_finish extends com.sun.jna.Callback
+			{
+				public void invoke(IProfilerSession self, IStatus status, ISC_TIMESTAMP_TZ timestamp);
+			}
+
+			public static interface Callback_defineStatement extends com.sun.jna.Callback
+			{
+				public void invoke(IProfilerSession self, IStatus status, long statementId, long parentStatementId, String type, String packageName, String routineName, String sqlText);
+			}
+
+			public static interface Callback_defineCursor extends com.sun.jna.Callback
+			{
+				public void invoke(IProfilerSession self, long statementId, int cursorId, String name, int line, int column);
+			}
+
+			public static interface Callback_defineRecordSource extends com.sun.jna.Callback
+			{
+				public void invoke(IProfilerSession self, long statementId, int cursorId, int recSourceId, String accessPath, int parentRecSourceId);
+			}
+
+			public static interface Callback_onRequestStart extends com.sun.jna.Callback
+			{
+				public void invoke(IProfilerSession self, IStatus status, long requestId, long statementId, long callerRequestId, ISC_TIMESTAMP_TZ timestamp);
+			}
+
+			public static interface Callback_onRequestFinish extends com.sun.jna.Callback
+			{
+				public void invoke(IProfilerSession self, IStatus status, long requestId, ISC_TIMESTAMP_TZ timestamp, IProfilerStats stats);
+			}
+
+			public static interface Callback_beforePsqlLineColumn extends com.sun.jna.Callback
+			{
+				public void invoke(IProfilerSession self, long requestId, int line, int column);
+			}
+
+			public static interface Callback_afterPsqlLineColumn extends com.sun.jna.Callback
+			{
+				public void invoke(IProfilerSession self, long requestId, int line, int column, IProfilerStats stats);
+			}
+
+			public static interface Callback_beforeRecordSourceOpen extends com.sun.jna.Callback
+			{
+				public void invoke(IProfilerSession self, long requestId, int cursorId, int recSourceId);
+			}
+
+			public static interface Callback_afterRecordSourceOpen extends com.sun.jna.Callback
+			{
+				public void invoke(IProfilerSession self, long requestId, int cursorId, int recSourceId, IProfilerStats stats);
+			}
+
+			public static interface Callback_beforeRecordSourceGetRecord extends com.sun.jna.Callback
+			{
+				public void invoke(IProfilerSession self, long requestId, int cursorId, int recSourceId);
+			}
+
+			public static interface Callback_afterRecordSourceGetRecord extends com.sun.jna.Callback
+			{
+				public void invoke(IProfilerSession self, long requestId, int cursorId, int recSourceId, IProfilerStats stats);
+			}
+
+			public VTable(com.sun.jna.Pointer pointer)
+			{
+				super(pointer);
+			}
+
+			public VTable(final IProfilerSessionIntf obj)
+			{
+				super(obj);
+
+				version = IProfilerSessionIntf.VERSION;
+
+				getId = new Callback_getId() {
+					@Override
+					public long invoke(IProfilerSession self)
+					{
+						return obj.getId();
+					}
+				};
+
+				getFlags = new Callback_getFlags() {
+					@Override
+					public int invoke(IProfilerSession self)
+					{
+						return obj.getFlags();
+					}
+				};
+
+				cancel = new Callback_cancel() {
+					@Override
+					public void invoke(IProfilerSession self, IStatus status)
+					{
+						try
+						{
+							obj.cancel(status);
+						}
+						catch (Throwable t)
+						{
+							FbInterfaceException.catchException(status, t);
+						}
+					}
+				};
+
+				finish = new Callback_finish() {
+					@Override
+					public void invoke(IProfilerSession self, IStatus status, ISC_TIMESTAMP_TZ timestamp)
+					{
+						try
+						{
+							obj.finish(status, timestamp);
+						}
+						catch (Throwable t)
+						{
+							FbInterfaceException.catchException(status, t);
+						}
+					}
+				};
+
+				defineStatement = new Callback_defineStatement() {
+					@Override
+					public void invoke(IProfilerSession self, IStatus status, long statementId, long parentStatementId, String type, String packageName, String routineName, String sqlText)
+					{
+						try
+						{
+							obj.defineStatement(status, statementId, parentStatementId, type, packageName, routineName, sqlText);
+						}
+						catch (Throwable t)
+						{
+							FbInterfaceException.catchException(status, t);
+						}
+					}
+				};
+
+				defineCursor = new Callback_defineCursor() {
+					@Override
+					public void invoke(IProfilerSession self, long statementId, int cursorId, String name, int line, int column)
+					{
+						obj.defineCursor(statementId, cursorId, name, line, column);
+					}
+				};
+
+				defineRecordSource = new Callback_defineRecordSource() {
+					@Override
+					public void invoke(IProfilerSession self, long statementId, int cursorId, int recSourceId, String accessPath, int parentRecSourceId)
+					{
+						obj.defineRecordSource(statementId, cursorId, recSourceId, accessPath, parentRecSourceId);
+					}
+				};
+
+				onRequestStart = new Callback_onRequestStart() {
+					@Override
+					public void invoke(IProfilerSession self, IStatus status, long requestId, long statementId, long callerRequestId, ISC_TIMESTAMP_TZ timestamp)
+					{
+						try
+						{
+							obj.onRequestStart(status, requestId, statementId, callerRequestId, timestamp);
+						}
+						catch (Throwable t)
+						{
+							FbInterfaceException.catchException(status, t);
+						}
+					}
+				};
+
+				onRequestFinish = new Callback_onRequestFinish() {
+					@Override
+					public void invoke(IProfilerSession self, IStatus status, long requestId, ISC_TIMESTAMP_TZ timestamp, IProfilerStats stats)
+					{
+						try
+						{
+							obj.onRequestFinish(status, requestId, timestamp, stats);
+						}
+						catch (Throwable t)
+						{
+							FbInterfaceException.catchException(status, t);
+						}
+					}
+				};
+
+				beforePsqlLineColumn = new Callback_beforePsqlLineColumn() {
+					@Override
+					public void invoke(IProfilerSession self, long requestId, int line, int column)
+					{
+						obj.beforePsqlLineColumn(requestId, line, column);
+					}
+				};
+
+				afterPsqlLineColumn = new Callback_afterPsqlLineColumn() {
+					@Override
+					public void invoke(IProfilerSession self, long requestId, int line, int column, IProfilerStats stats)
+					{
+						obj.afterPsqlLineColumn(requestId, line, column, stats);
+					}
+				};
+
+				beforeRecordSourceOpen = new Callback_beforeRecordSourceOpen() {
+					@Override
+					public void invoke(IProfilerSession self, long requestId, int cursorId, int recSourceId)
+					{
+						obj.beforeRecordSourceOpen(requestId, cursorId, recSourceId);
+					}
+				};
+
+				afterRecordSourceOpen = new Callback_afterRecordSourceOpen() {
+					@Override
+					public void invoke(IProfilerSession self, long requestId, int cursorId, int recSourceId, IProfilerStats stats)
+					{
+						obj.afterRecordSourceOpen(requestId, cursorId, recSourceId, stats);
+					}
+				};
+
+				beforeRecordSourceGetRecord = new Callback_beforeRecordSourceGetRecord() {
+					@Override
+					public void invoke(IProfilerSession self, long requestId, int cursorId, int recSourceId)
+					{
+						obj.beforeRecordSourceGetRecord(requestId, cursorId, recSourceId);
+					}
+				};
+
+				afterRecordSourceGetRecord = new Callback_afterRecordSourceGetRecord() {
+					@Override
+					public void invoke(IProfilerSession self, long requestId, int cursorId, int recSourceId, IProfilerStats stats)
+					{
+						obj.afterRecordSourceGetRecord(requestId, cursorId, recSourceId, stats);
+					}
+				};
+			}
+
+			public VTable()
+			{
+			}
+
+			public Callback_getId getId;
+			public Callback_getFlags getFlags;
+			public Callback_cancel cancel;
+			public Callback_finish finish;
+			public Callback_defineStatement defineStatement;
+			public Callback_defineCursor defineCursor;
+			public Callback_defineRecordSource defineRecordSource;
+			public Callback_onRequestStart onRequestStart;
+			public Callback_onRequestFinish onRequestFinish;
+			public Callback_beforePsqlLineColumn beforePsqlLineColumn;
+			public Callback_afterPsqlLineColumn afterPsqlLineColumn;
+			public Callback_beforeRecordSourceOpen beforeRecordSourceOpen;
+			public Callback_afterRecordSourceOpen afterRecordSourceOpen;
+			public Callback_beforeRecordSourceGetRecord beforeRecordSourceGetRecord;
+			public Callback_afterRecordSourceGetRecord afterRecordSourceGetRecord;
+
+			@Override
+			protected java.util.List<String> getFieldOrder()
+			{
+				java.util.List<String> fields = super.getFieldOrder();
+				fields.addAll(java.util.Arrays.asList("getId", "getFlags", "cancel", "finish", "defineStatement", "defineCursor", "defineRecordSource", "onRequestStart", "onRequestFinish", "beforePsqlLineColumn", "afterPsqlLineColumn", "beforeRecordSourceOpen", "afterRecordSourceOpen", "beforeRecordSourceGetRecord", "afterRecordSourceGetRecord"));
+				return fields;
+			}
+		}
+
+		public IProfilerSession()
+		{
+		}
+
+		public IProfilerSession(final IProfilerSessionIntf obj)
+		{
+			vTable = new VTable(obj);
+			vTable.write();
+			cloopVTable = vTable.getPointer();
+			write();
+		}
+
+		@Override
+		protected VTable createVTable()
+		{
+			return new VTable(cloopVTable);
+		}
+
+		public long getId()
+		{
+			VTable vTable = getVTable();
+			if (vTable.getId == null) {
+				return 0;
+			}
+			long result = vTable.getId.invoke(this);
+			return result;
+		}
+
+		public int getFlags()
+		{
+			VTable vTable = getVTable();
+			if (vTable.getFlags == null) {
+				return 0;
+			}
+			int result = vTable.getFlags.invoke(this);
+			return result;
+		}
+
+		public void cancel(IStatus status)
+		{
+			VTable vTable = getVTable();
+			if (vTable.cancel == null) {
+				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IProfilerSessionIntf.VERSION);
+				return;
+			}
+			vTable.cancel.invoke(this, status);
+		}
+
+		public void finish(IStatus status, ISC_TIMESTAMP_TZ timestamp)
+		{
+			VTable vTable = getVTable();
+			if (vTable.finish == null) {
+				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IProfilerSessionIntf.VERSION);
+				return;
+			}
+			vTable.finish.invoke(this, status, timestamp);
+		}
+
+		public void defineStatement(IStatus status, long statementId, long parentStatementId, String type, String packageName, String routineName, String sqlText)
+		{
+			VTable vTable = getVTable();
+			if (vTable.defineStatement == null) {
+				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IProfilerSessionIntf.VERSION);
+				return;
+			}
+			vTable.defineStatement.invoke(this, status, statementId, parentStatementId, type, packageName, routineName, sqlText);
+		}
+
+		public void defineCursor(long statementId, int cursorId, String name, int line, int column)
+		{
+			VTable vTable = getVTable();
+			if (vTable.defineCursor == null) {
+				return;
+			}
+			vTable.defineCursor.invoke(this, statementId, cursorId, name, line, column);
+		}
+
+		public void defineRecordSource(long statementId, int cursorId, int recSourceId, String accessPath, int parentRecSourceId)
+		{
+			VTable vTable = getVTable();
+			if (vTable.defineRecordSource == null) {
+				return;
+			}
+			vTable.defineRecordSource.invoke(this, statementId, cursorId, recSourceId, accessPath, parentRecSourceId);
+		}
+
+		public void onRequestStart(IStatus status, long requestId, long statementId, long callerRequestId, ISC_TIMESTAMP_TZ timestamp)
+		{
+			VTable vTable = getVTable();
+			if (vTable.onRequestStart == null) {
+				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IProfilerSessionIntf.VERSION);
+				return;
+			}
+			vTable.onRequestStart.invoke(this, status, requestId, statementId, callerRequestId, timestamp);
+		}
+
+		public void onRequestFinish(IStatus status, long requestId, ISC_TIMESTAMP_TZ timestamp, IProfilerStats stats)
+		{
+			VTable vTable = getVTable();
+			if (vTable.onRequestFinish == null) {
+				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IProfilerSessionIntf.VERSION);
+				return;
+			}
+			vTable.onRequestFinish.invoke(this, status, requestId, timestamp, stats);
+		}
+
+		public void beforePsqlLineColumn(long requestId, int line, int column)
+		{
+			VTable vTable = getVTable();
+			if (vTable.beforePsqlLineColumn == null) {
+				return;
+			}
+			vTable.beforePsqlLineColumn.invoke(this, requestId, line, column);
+		}
+
+		public void afterPsqlLineColumn(long requestId, int line, int column, IProfilerStats stats)
+		{
+			VTable vTable = getVTable();
+			if (vTable.afterPsqlLineColumn == null) {
+				return;
+			}
+			vTable.afterPsqlLineColumn.invoke(this, requestId, line, column, stats);
+		}
+
+		public void beforeRecordSourceOpen(long requestId, int cursorId, int recSourceId)
+		{
+			VTable vTable = getVTable();
+			if (vTable.beforeRecordSourceOpen == null) {
+				return;
+			}
+			vTable.beforeRecordSourceOpen.invoke(this, requestId, cursorId, recSourceId);
+		}
+
+		public void afterRecordSourceOpen(long requestId, int cursorId, int recSourceId, IProfilerStats stats)
+		{
+			VTable vTable = getVTable();
+			if (vTable.afterRecordSourceOpen == null) {
+				return;
+			}
+			vTable.afterRecordSourceOpen.invoke(this, requestId, cursorId, recSourceId, stats);
+		}
+
+		public void beforeRecordSourceGetRecord(long requestId, int cursorId, int recSourceId)
+		{
+			VTable vTable = getVTable();
+			if (vTable.beforeRecordSourceGetRecord == null) {
+				return;
+			}
+			vTable.beforeRecordSourceGetRecord.invoke(this, requestId, cursorId, recSourceId);
+		}
+
+		public void afterRecordSourceGetRecord(long requestId, int cursorId, int recSourceId, IProfilerStats stats)
+		{
+			VTable vTable = getVTable();
+			if (vTable.afterRecordSourceGetRecord == null) {
+				return;
+			}
+			vTable.afterRecordSourceGetRecord.invoke(this, requestId, cursorId, recSourceId, stats);
+		}
+	}
+
+	public static class IProfilerStats extends IVersioned implements IProfilerStatsIntf
+	{
+		public static class VTable extends IVersioned.VTable
+		{
+			public static interface Callback_getElapsedTime extends com.sun.jna.Callback
+			{
+				public long invoke(IProfilerStats self);
+			}
+
+			public VTable(com.sun.jna.Pointer pointer)
+			{
+				super(pointer);
+			}
+
+			public VTable(final IProfilerStatsIntf obj)
+			{
+				super(obj);
+
+				version = IProfilerStatsIntf.VERSION;
+
+				getElapsedTime = new Callback_getElapsedTime() {
+					@Override
+					public long invoke(IProfilerStats self)
+					{
+						return obj.getElapsedTime();
+					}
+				};
+			}
+
+			public VTable()
+			{
+			}
+
+			public Callback_getElapsedTime getElapsedTime;
+
+			@Override
+			protected java.util.List<String> getFieldOrder()
+			{
+				java.util.List<String> fields = super.getFieldOrder();
+				fields.addAll(java.util.Arrays.asList("getElapsedTime"));
+				return fields;
+			}
+		}
+
+		public IProfilerStats()
+		{
+		}
+
+		public IProfilerStats(final IProfilerStatsIntf obj)
+		{
+			vTable = new VTable(obj);
+			vTable.write();
+			cloopVTable = vTable.getPointer();
+			write();
+		}
+
+		@Override
+		protected VTable createVTable()
+		{
+			return new VTable(cloopVTable);
+		}
+
+		public long getElapsedTime()
+		{
+			VTable vTable = getVTable();
+			if (vTable.getElapsedTime == null) {
+				return 0;
+			}
+			long result = vTable.getElapsedTime.invoke(this);
+			return result;
 		}
 	}
 
@@ -25030,6 +25840,10 @@ public interface FbInterface extends FbClientLibrary
 		public int change_active_attr(String name, boolean[] active)
 		{
 			VTable vTable = getVTable();
+			if (vTable.version < 4)
+			{
+				return 0;
+			}
 			if (vTable.change_active_attr == null) {
 				return 0;
 			}
@@ -25040,6 +25854,10 @@ public interface FbInterface extends FbClientLibrary
 		public boolean check_idle()
 		{
 			VTable vTable = getVTable();
+			if (vTable.version < 4)
+			{
+				return false;
+			}
 			if (vTable.check_idle == null) {
 				return false;
 			}
@@ -25232,6 +26050,103 @@ public interface FbInterface extends FbClientLibrary
 				return false;
 			}
 			boolean result = vTable.verifyPassword.invoke(this, secDbName, user, password, isNew, plugin, isEqual);
+			return result;
+		}
+	}
+
+	public static class ILicensePlugin extends IPluginBase implements ILicensePluginIntf
+	{
+		public static class VTable extends IPluginBase.VTable
+		{
+			public static interface Callback_isFeatureAvailable extends com.sun.jna.Callback
+			{
+				public boolean invoke(ILicensePlugin self, int feature);
+			}
+
+			public static interface Callback_getEdition extends com.sun.jna.Callback
+			{
+				public int invoke(ILicensePlugin self);
+			}
+
+			public VTable(com.sun.jna.Pointer pointer)
+			{
+				super(pointer);
+			}
+
+			public VTable(final ILicensePluginIntf obj)
+			{
+				super(obj);
+
+				version = ILicensePluginIntf.VERSION;
+
+				isFeatureAvailable = new Callback_isFeatureAvailable() {
+					@Override
+					public boolean invoke(ILicensePlugin self, int feature)
+					{
+						return obj.isFeatureAvailable(feature);
+					}
+				};
+
+				getEdition = new Callback_getEdition() {
+					@Override
+					public int invoke(ILicensePlugin self)
+					{
+						return obj.getEdition();
+					}
+				};
+			}
+
+			public VTable()
+			{
+			}
+
+			public Callback_isFeatureAvailable isFeatureAvailable;
+			public Callback_getEdition getEdition;
+
+			@Override
+			protected java.util.List<String> getFieldOrder()
+			{
+				java.util.List<String> fields = super.getFieldOrder();
+				fields.addAll(java.util.Arrays.asList("isFeatureAvailable", "getEdition"));
+				return fields;
+			}
+		}
+
+		public ILicensePlugin()
+		{
+		}
+
+		public ILicensePlugin(final ILicensePluginIntf obj)
+		{
+			vTable = new VTable(obj);
+			vTable.write();
+			cloopVTable = vTable.getPointer();
+			write();
+		}
+
+		@Override
+		protected VTable createVTable()
+		{
+			return new VTable(cloopVTable);
+		}
+
+		public boolean isFeatureAvailable(int feature)
+		{
+			VTable vTable = getVTable();
+			if (vTable.isFeatureAvailable == null) {
+				return false;
+			}
+			boolean result = vTable.isFeatureAvailable.invoke(this, feature);
+			return result;
+		}
+
+		public int getEdition()
+		{
+			VTable vTable = getVTable();
+			if (vTable.getEdition == null) {
+				return 0;
+			}
+			int result = vTable.getEdition.invoke(this);
 			return result;
 		}
 	}
