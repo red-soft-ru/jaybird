@@ -39,6 +39,7 @@ import java.util.List;
 import static org.firebirdsql.gds.ISCConstants.*;
 import static org.firebirdsql.gds.VaxEncoding.iscVaxInteger2;
 import static org.firebirdsql.gds.VaxEncoding.iscVaxLong;
+import static org.firebirdsql.util.FirebirdSupportInfo.supportInfoFor;
 
 /**
  * The {@code FBMaintenanceManager} class is responsible for replicating the functionality provided by
@@ -65,8 +66,6 @@ import static org.firebirdsql.gds.VaxEncoding.iscVaxLong;
  */
 public class FBMaintenanceManager extends FBServiceManager implements MaintenanceManager {
 
-    private int parallelWorkers = 1;
-
     /**
      * Create a new instance of {@code FBMaintenanceManager} based on the default GDSType.
      */
@@ -83,7 +82,7 @@ public class FBMaintenanceManager extends FBServiceManager implements Maintenanc
      */
     public FBMaintenanceManager(int parallelWorkers) {
         super();
-        this.parallelWorkers = parallelWorkers;
+        setParallelWorkers(parallelWorkers);
     }
 
     /**
@@ -107,7 +106,7 @@ public class FBMaintenanceManager extends FBServiceManager implements Maintenanc
      */
     public FBMaintenanceManager(String gdsType, int parallelWorkers) {
         super(gdsType);
-        this.parallelWorkers = parallelWorkers;
+        setParallelWorkers(parallelWorkers);
     }
 
     /**
@@ -131,7 +130,7 @@ public class FBMaintenanceManager extends FBServiceManager implements Maintenanc
      */
     public FBMaintenanceManager(GDSType gdsType, int parallelWorkers) {
         super(gdsType);
-        this.parallelWorkers = parallelWorkers;
+        setParallelWorkers(parallelWorkers);
     }
 
     public void setDatabaseAccessMode(int mode) throws SQLException {
@@ -283,19 +282,6 @@ public class FBMaintenanceManager extends FBServiceManager implements Maintenanc
 
     // ----------- Sweeping -------------------------
 
-    /**
-     * Set the number of parallel workers.
-     *
-     * @param parallelWorkers
-     *         Valid values must be greater than 1 (no parallelism).
-     *         Values less than 1 is silently ignored and default value of 1 is used.
-     */
-    public void setParallelWorkers(int parallelWorkers) {
-        if (parallelWorkers > 1) {
-            this.parallelWorkers = parallelWorkers;
-        }
-    }
-
     public void setSweepThreshold(int transactions) throws SQLException {
         if (transactions < 0) {
             throw new IllegalArgumentException("transactions must be >= 0");
@@ -309,16 +295,15 @@ public class FBMaintenanceManager extends FBServiceManager implements Maintenanc
     }
 
     public void sweepDatabase() throws SQLException {
-        if (getProperty("isc_spb_rpr_par_workers") != null && parallelWorkers <= 1) {
-            parallelWorkers = Integer.parseInt(getProperty("isc_spb_rpr_par_workers"));
-        }
-        if (parallelWorkers > 1) {
+
+        if (getParallelWorkers() > 0) {
             try (FbService service = attachServiceManager()) {
                 ServiceRequestBuffer srb = createRepairSRB(service, isc_spb_rpr_sweep_db);
-                if (service.getServerVersion().isEqualOrAbove(5, 0))
-                    srb.addArgument(isc_spb_rpr_par_workers, parallelWorkers);
-                else
-                    srb.addArgument(isc_spb_rpr_par_workers_rs, parallelWorkers);
+                if (supportInfoFor(service).isVersionEqualOrAbove(5, 0)) {
+                    srb.addArgument(isc_spb_rpr_par_workers, getParallelWorkers());
+                } else {
+                    srb.addArgument(isc_spb_rpr_par_workers_rs, getParallelWorkers());
+                }
                 executeServicesOperation(service, srb);
             }
         } else {
@@ -327,13 +312,14 @@ public class FBMaintenanceManager extends FBServiceManager implements Maintenanc
     }
 
     public void sweepDatabase(int parallelWorkers) throws SQLException {
-        if (parallelWorkers > 1) {
+        if (parallelWorkers > 0) {
             try (FbService service = attachServiceManager()) {
                 ServiceRequestBuffer srb = createRepairSRB(service, isc_spb_rpr_sweep_db);
-                if (service.getServerVersion().isEqualOrAbove(5, 0))
+                if (supportInfoFor(service).isVersionEqualOrAbove(5, 0)) {
                     srb.addArgument(isc_spb_rpr_par_workers, parallelWorkers);
-                else
+                } else {
                     srb.addArgument(isc_spb_rpr_par_workers_rs, parallelWorkers);
+                }
                 executeServicesOperation(service, srb);
             }
         } else {

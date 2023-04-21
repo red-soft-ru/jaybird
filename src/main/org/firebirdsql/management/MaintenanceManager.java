@@ -385,15 +385,6 @@ public interface MaintenanceManager extends ServiceManager {
     // ----------- Sweeping -------------------------
 
     /**
-     * Set the number of parallel workers.
-     *
-     * @param parallelWorkers
-     *         Valid values must be greater than 1 (no parallelism).
-     *         Values less than 1 is silently ignored and default value of 1 is used.
-     */
-    void setParallelWorkers(int parallelWorkers);
-
-    /**
      * Set the database automatic sweep interval to a given number of
      * transactions.
      * <p>
