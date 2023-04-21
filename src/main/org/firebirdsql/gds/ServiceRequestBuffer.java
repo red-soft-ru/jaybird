@@ -265,6 +265,7 @@ public interface ServiceRequestBuffer extends ParameterBuffer {
     int STATS_RECORD_VERSIONS           = ISCConstants.isc_spb_sts_record_versions;
     int STATS_TABLE                     = ISCConstants.isc_spb_sts_table;
     int STATS_NOCREATION                = ISCConstants.isc_spb_sts_nocreation;
+    int STATS_PARALLEL_WORKERS          = ISCConstants.isc_spb_sts_parallel_workers;
 
     //@formatter:on
 

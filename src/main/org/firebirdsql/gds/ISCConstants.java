@@ -407,6 +407,7 @@ public interface ISCConstants {
     int isc_spb_sts_table       =   0x40;
     int isc_spb_sts_nocreation  =   0x80;
     int isc_spb_sts_encryption	=  0x100;
+    int isc_spb_sts_parallel_workers  =  0x200;
 
     /****************************/
     /* Common, structural codes */

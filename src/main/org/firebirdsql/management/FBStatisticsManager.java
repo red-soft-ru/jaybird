@@ -43,6 +43,7 @@ import java.sql.SQLException;
 import static org.firebirdsql.gds.ISCConstants.*;
 import static org.firebirdsql.gds.VaxEncoding.iscVaxInteger2;
 import static org.firebirdsql.gds.VaxEncoding.iscVaxLong;
+import static org.firebirdsql.util.FirebirdSupportInfo.supportInfoFor;
 
 /**
  * The <code>FBStatisticsManager</code> class is responsible for replicating the functionality of
@@ -76,6 +77,19 @@ public class FBStatisticsManager extends FBServiceManager implements StatisticsM
 
     /**
      * Create a new instance of <code>FBMaintenanceManager</code> based on
+     * the default GDSType and specify the number of parallel workers.
+     *
+     * @param parallelWorkers
+     * value must be greater than 1 (no parallelism).
+     */
+    public FBStatisticsManager(int parallelWorkers) {
+        super();
+        setParallelWorkers(parallelWorkers);
+    }
+
+
+    /**
+     * Create a new instance of <code>FBMaintenanceManager</code> based on
      * a given GDSType.
      *
      * @param gdsType
@@ -87,6 +101,20 @@ public class FBStatisticsManager extends FBServiceManager implements StatisticsM
 
     /**
      * Create a new instance of <code>FBMaintenanceManager</code> based on
+     * a given GDSType and specify the number of parallel workers.
+     *
+     * @param gdsType
+     *         type must be PURE_JAVA, EMBEDDED, or NATIVE
+     * @param parallelWorkers
+     *        value must be greater than 1 (no parallelism).
+     */
+    public FBStatisticsManager(String gdsType, int parallelWorkers) {
+        super(gdsType);
+        setParallelWorkers(parallelWorkers);
+    }
+
+    /**
+     * Create a new instance of <code>FBMaintenanceManager</code> based on
      * a given GDSType.
      *
      * @param gdsType
@@ -94,6 +122,20 @@ public class FBStatisticsManager extends FBServiceManager implements StatisticsM
      */
     public FBStatisticsManager(GDSType gdsType) {
         super(gdsType);
+    }
+
+    /**
+     * Create a new instance of <code>FBMaintenanceManager</code> based on
+     * a given GDSType and specify the number of parallel workers.
+     *
+     * @param gdsType
+     *         The GDS implementation type to use
+     * @param parallelWorkers
+     *        value must be greater than 1 (no parallelism).
+     */
+    public FBStatisticsManager(GDSType gdsType, int parallelWorkers) {
+        super(gdsType);
+        setParallelWorkers(parallelWorkers);
     }
 
     public void getHeaderPage() throws SQLException {
@@ -194,7 +236,15 @@ public class FBStatisticsManager extends FBServiceManager implements StatisticsM
      *         The options bitmask for the request buffer
      */
     private ServiceRequestBuffer createStatsSRB(FbService service, int options) {
-        return createRequestBuffer(service, isc_action_svc_db_stats, options);
+        final ServiceRequestBuffer requestBuffer = createRequestBuffer(service, isc_action_svc_db_stats, options);
+
+        if (getParallelWorkers() > 1) {
+            if (supportInfoFor(service).isVersionEqualOrAbove(5, 0)) {
+                requestBuffer.addArgument(isc_spb_sts_parallel_workers, getParallelWorkers());
+            }
+        }
+
+        return requestBuffer;
     }
 
     private static final class DatabaseTransactionInfoProcessor implements InfoProcessor<DatabaseTransactionInfo> {
