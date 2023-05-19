@@ -39,8 +39,6 @@ import org.firebirdsql.jaybird.fb.constants.DpbItems;
 import org.firebirdsql.jaybird.fb.constants.SpbItems;
 import org.firebirdsql.jdbc.FBDriverNotCapableException;
 import org.firebirdsql.jdbc.SQLStateConstants;
-import org.firebirdsql.logging.Logger;
-import org.firebirdsql.logging.LoggerFactory;
 import org.ietf.jgss.GSSException;
 
 import java.io.IOException;
@@ -59,8 +57,6 @@ import static org.firebirdsql.gds.ng.TransactionHelper.checkTransactionActive;
  * @since 3.0
  */
 public class V10Database extends AbstractFbWireDatabase implements FbWireDatabase {
-
-    private static final Logger log = LoggerFactory.getLogger(V10Database.class);
 
     private BlrCalculator blrCalculator;
 
@@ -324,7 +320,8 @@ public class V10Database extends AbstractFbWireDatabase implements FbWireDatabas
                 try {
                     closeConnection();
                 } catch (IOException e) {
-                    log.debug("Ignored exception on connection close in dropDatabase()", e);
+                    System.getLogger(getClass().getName()).log(System.Logger.Level.DEBUG,
+                            "Ignored exception on connection close in dropDatabase()", e);
                 }
             }
         } catch (SQLException ex) {
