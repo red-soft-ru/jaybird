@@ -12,8 +12,6 @@ import org.firebirdsql.gds.ng.WarningMessageCallback;
 import org.firebirdsql.gds.ng.jna.BigEndianDatatypeCoder;
 import org.firebirdsql.gds.ng.jna.LittleEndianDatatypeCoder;
 import org.firebirdsql.jna.fbclient.FbClientLibrary;
-import org.firebirdsql.logging.Logger;
-import org.firebirdsql.logging.LoggerFactory;
 import org.firebirdsql.nativeoo.gds.ng.FbInterface.IStatus;
 
 import java.nio.ByteOrder;
@@ -40,7 +38,7 @@ import static org.firebirdsql.gds.ISCConstants.isc_arg_warning;
  */
 public abstract class AbstractNativeConnection<T extends IAttachProperties<T>, C extends FbAttachment>
         extends AbstractConnection<T, C> {
-    private static final Logger log = LoggerFactory.getLogger(AbstractNativeConnection.class);
+    private static final System.Logger log = System.getLogger(AbstractNativeConnection.class.getName());
     private static final boolean bigEndian = ByteOrder.nativeOrder() == ByteOrder.BIG_ENDIAN;
 
     private final FbClientLibrary clientLibrary;
@@ -91,17 +89,16 @@ public abstract class AbstractNativeConnection<T extends IAttachProperties<T>, C
             throw new NullPointerException("warningMessageCallback is null");
         }
 
-        boolean debug = log.isDebugEnabled();
         final FbExceptionBuilder builder = new FbExceptionBuilder();
 
         if (status.getState() == IStatus.STATE_WARNINGS) {
             final long[] warningVector = status.getWarnings().getLongArray(0, 20);
-            processVector(warningVector, debug, builder);
+            processVector(warningVector, builder);
         }
 
         if (status.getState() == IStatus.STATE_ERRORS) {
             final long[] errorVector = status.getErrors().getLongArray(0, 20);
-            processVector(errorVector, debug, builder);
+            processVector(errorVector, builder);
         }
 
         if (!builder.isEmpty()) {
@@ -114,7 +111,7 @@ public abstract class AbstractNativeConnection<T extends IAttachProperties<T>, C
         }
     }
 
-    private void processVector(long[] errorVector, boolean debug, FbExceptionBuilder builder) {
+    private void processVector(long[] errorVector, FbExceptionBuilder builder) {
         int vectorIndex = 0;
         processingLoop:
         while (vectorIndex < errorVector.length) {
@@ -123,14 +120,14 @@ public abstract class AbstractNativeConnection<T extends IAttachProperties<T>, C
             switch (arg) {
                 case isc_arg_gds:
                     errorCode = (int) errorVector[vectorIndex++];
-                    if (debug) log.debug("readStatusVector arg:isc_arg_gds int: " + errorCode);
+                    log.log(System.Logger.Level.DEBUG, "readStatusVector arg:isc_arg_gds int: " + errorCode);
                     if (errorCode != 0) {
                         builder.exception(errorCode);
                     }
                     break;
                 case isc_arg_warning:
                     errorCode = (int) errorVector[vectorIndex++];
-                    if (debug) log.debug("readStatusVector arg:isc_arg_warning int: " + errorCode);
+                    log.log(System.Logger.Level.DEBUG, "readStatusVector arg:isc_arg_warning int: " + errorCode);
                     if (errorCode != 0) {
                         builder.warning(errorCode);
                     }
@@ -140,7 +137,7 @@ public abstract class AbstractNativeConnection<T extends IAttachProperties<T>, C
                 case isc_arg_sql_state:
                     long stringPointerAddress = errorVector[vectorIndex++];
                     if (stringPointerAddress == 0L) {
-                        log.warn("Received NULL pointer address for isc_arg_interpreted, isc_arg_string or " +
+                        log.log(System.Logger.Level.WARNING, "Received NULL pointer address for isc_arg_interpreted, isc_arg_string or " +
                                 "isc_arg_sql_state");
                         break processingLoop;
                     }
@@ -148,10 +145,10 @@ public abstract class AbstractNativeConnection<T extends IAttachProperties<T>, C
                     String stringValue = stringPointer.getString(0,
                             getEncodingDefinition().getJavaEncodingName());
                     if (arg != isc_arg_sql_state) {
-                        if (debug) log.debug("readStatusVector string: " + stringValue);
+                        log.log(System.Logger.Level.DEBUG, "readStatusVector string: " + stringValue);
                         builder.messageParameter(stringValue);
                     } else {
-                        if (debug) log.debug("readStatusVector sqlstate: " + stringValue);
+                        log.log(System.Logger.Level.DEBUG, "readStatusVector sqlstate: " + stringValue);
                         builder.sqlState(stringValue);
                     }
                     break;
@@ -165,14 +162,14 @@ public abstract class AbstractNativeConnection<T extends IAttachProperties<T>, C
                     break;
                 case isc_arg_number:
                     int intValue = (int) errorVector[vectorIndex++];
-                    if (debug) log.debug("readStatusVector arg:isc_arg_number int: " + intValue);
+                    log.log(System.Logger.Level.DEBUG, "readStatusVector arg:isc_arg_number int: " + intValue);
                     builder.messageParameter(intValue);
                     break;
                 case isc_arg_end:
                     break processingLoop;
                 default:
                     int e = (int) errorVector[vectorIndex++];
-                    if (debug) log.debug("readStatusVector arg: " + arg + " int: " + e);
+                    log.log(System.Logger.Level.DEBUG, "readStatusVector arg: " + arg + " int: " + e);
                     builder.messageParameter(e);
                     break;
             }

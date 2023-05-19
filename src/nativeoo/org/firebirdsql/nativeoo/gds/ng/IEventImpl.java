@@ -5,10 +5,9 @@ import com.sun.jna.ptr.PointerByReference;
 import org.firebirdsql.encodings.Encoding;
 import org.firebirdsql.gds.EventHandler;
 import org.firebirdsql.gds.ng.AbstractEventHandle;
+import org.firebirdsql.gds.ng.jna.JnaEventHandle;
 import org.firebirdsql.nativeoo.gds.ng.FbInterface.IEventCallback;
 import org.firebirdsql.nativeoo.gds.ng.FbInterface.IEventCallbackIntf;
-import org.firebirdsql.logging.Logger;
-import org.firebirdsql.logging.LoggerFactory;
 
 /**
  * Event handle for the native OO API.
@@ -18,7 +17,7 @@ import org.firebirdsql.logging.LoggerFactory;
  */
 public class IEventImpl extends AbstractEventHandle {
 
-    private static final Logger log = LoggerFactory.getLogger(IEventImpl.class);
+    private static final System.Logger log = System.getLogger(IEventImpl.class.getName());
 
     private final CloseableMemory eventNameMemory;
     private int size = -1;
@@ -67,6 +66,21 @@ public class IEventImpl extends AbstractEventHandle {
      */
     IEventCallback getCallback() {
         return callback;
+    }
+
+    /**
+     * Dumps the event buffers to the logger, if debug is enabled.
+     */
+    @SuppressWarnings("unused")
+    public void debugMemoryDump() {
+        if (!log.isLoggable(System.Logger.Level.DEBUG)) return;
+        if (size == -1) {
+            log.log(System.Logger.Level.DEBUG, "Event handle not allocated");
+        }
+        synchronized (JnaEventHandle.class) {
+            log.log(System.Logger.Level.DEBUG, "{0}: Event Buffer: {1}, Result Buffer: {2}", getEventName(),
+                    getEventBuffer().getValue().dump(0, size), getResultBuffer().getValue().dump(0, size));
+        }
     }
 
     public synchronized void releaseMemory() {

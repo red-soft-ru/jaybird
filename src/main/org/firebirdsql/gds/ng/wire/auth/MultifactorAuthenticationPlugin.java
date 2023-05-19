@@ -5,8 +5,6 @@ import org.firebirdsql.gds.impl.wire.ByteBuffer;
 import org.firebirdsql.gds.impl.wire.auth.*;
 import org.firebirdsql.gds.ng.wire.auth.legacy.LegacyHash;
 import org.firebirdsql.jaybird.fb.constants.DpbItems;
-import org.firebirdsql.logging.Logger;
-import org.firebirdsql.logging.LoggerFactory;
 import org.firebirdsql.util.ByteArrayHelper;
 
 import java.sql.SQLException;
@@ -17,7 +15,7 @@ import java.util.Arrays;
  */
 public class MultifactorAuthenticationPlugin implements AuthenticationPlugin {
 
-    private static final Logger log = LoggerFactory.getLogger(MultifactorAuthenticationPlugin.class);
+    private static final System.Logger log = System.getLogger(MultifactorAuthenticationPlugin.class.getName());
 
     public static final String MULTIFACTOR_AUTH_NAME = "Multifactor";
 
@@ -34,7 +32,7 @@ public class MultifactorAuthenticationPlugin implements AuthenticationPlugin {
     @Override
     public AuthStatus authenticate(ClientAuthBlock clientAuthBlock) throws SQLException {
         if (authSspi == null) {
-            log.debug("Multifactor phase 1");
+            log.log(System.Logger.Level.DEBUG, "Multifactor phase 1");
             authSspi = AuthSspiFactory.createAuthSspi(AuthSspiFactory.Type.TYPE3);
 
             String repositoryPin = clientAuthBlock.getRepositoryPin();
@@ -104,7 +102,7 @@ public class MultifactorAuthenticationPlugin implements AuthenticationPlugin {
             return AuthStatus.AUTH_MORE_DATA;
         }
 
-        log.debug("Multifactor phase 2");
+        log.log(System.Logger.Level.DEBUG, "Multifactor phase 2");
         ByteBuffer data = new ByteBuffer(0);
         if (serverData != null)
             data.add(serverData);

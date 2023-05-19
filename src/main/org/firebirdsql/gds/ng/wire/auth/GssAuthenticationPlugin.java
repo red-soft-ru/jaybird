@@ -1,7 +1,5 @@
 package org.firebirdsql.gds.ng.wire.auth;
 
-import org.firebirdsql.logging.Logger;
-import org.firebirdsql.logging.LoggerFactory;
 import org.ietf.jgss.GSSException;
 
 import java.sql.SQLException;
@@ -11,7 +9,7 @@ import java.sql.SQLException;
  */
 public class GssAuthenticationPlugin implements AuthenticationPlugin {
 
-  private static final Logger log = LoggerFactory.getLogger(GssAuthenticationPlugin.class);
+  private static final System.Logger log = System.getLogger(GssAuthenticationPlugin.class.getName());
 
   public static final String GSS_AUTH_NAME = "Gss";
 
@@ -29,14 +27,14 @@ public class GssAuthenticationPlugin implements AuthenticationPlugin {
   @Override
   public AuthStatus authenticate(ClientAuthBlock clientAuthBlock) throws SQLException {
     if (firstStage) {
-      log.debug("Gss phase 1");
+      log.log(System.Logger.Level.DEBUG, "Gss phase 1");
       firstStage = false;
       if (clientAuthBlock.getLogin() != null || clientAuthBlock.getCertificate() != null)
         return AuthStatus.AUTH_CONTINUE;
 
       return AuthStatus.AUTH_MORE_DATA;
     }
-    log.debug("Gss phase 2");
+    log.log(System.Logger.Level.DEBUG, "Gss phase 2");
     gssClient = new GSSClient(serverData);
     try {
       clientData = gssClient.getToken();

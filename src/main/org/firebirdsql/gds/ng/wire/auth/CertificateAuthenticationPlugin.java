@@ -3,8 +3,6 @@ package org.firebirdsql.gds.ng.wire.auth;
 import org.firebirdsql.gds.GDSException;
 import org.firebirdsql.gds.impl.wire.ByteBuffer;
 import org.firebirdsql.gds.impl.wire.auth.*;
-import org.firebirdsql.logging.Logger;
-import org.firebirdsql.logging.LoggerFactory;
 
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -14,7 +12,7 @@ import java.util.Arrays;
  */
 public class CertificateAuthenticationPlugin implements AuthenticationPlugin {
 
-    private static final Logger log = LoggerFactory.getLogger(CertificateAuthenticationPlugin.class);
+    private static final System.Logger log = System.getLogger(CertificateAuthenticationPlugin.class.getName());
 
     public static final String CERTIFICATE_AUTH_NAME = "Certificate";
 
@@ -30,7 +28,7 @@ public class CertificateAuthenticationPlugin implements AuthenticationPlugin {
     @Override
     public AuthStatus authenticate(ClientAuthBlock clientAuthBlock) throws SQLException {
         if (authSspi == null) {
-            log.debug("Certificate phase 1");
+            log.log(System.Logger.Level.DEBUG, "Certificate phase 1");
             authSspi = AuthSspiFactory.createAuthSspi(AuthSspiFactory.Type.TYPE4);
 
             String repositoryPin = clientAuthBlock.getRepositoryPin();
@@ -78,7 +76,7 @@ public class CertificateAuthenticationPlugin implements AuthenticationPlugin {
             return AuthStatus.AUTH_MORE_DATA;
         }
 
-        log.debug("Certificate phase 2");
+        log.log(System.Logger.Level.DEBUG, "Certificate phase 2");
         ByteBuffer data = new ByteBuffer(0);
         if (serverData != null)
             data.add(serverData);

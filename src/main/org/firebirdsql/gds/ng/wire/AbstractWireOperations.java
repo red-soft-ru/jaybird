@@ -19,11 +19,9 @@
 package org.firebirdsql.gds.ng.wire;
 
 import org.firebirdsql.encodings.Encoding;
-import org.firebirdsql.gds.DatabaseParameterBuffer;
 import org.firebirdsql.gds.GDSException;
 import org.firebirdsql.gds.ISCConstants;
 import org.firebirdsql.gds.JaybirdErrorCodes;
-import org.firebirdsql.gds.impl.DatabaseParameterBufferImp;
 import org.firebirdsql.gds.impl.wire.ByteBuffer;
 import org.firebirdsql.gds.impl.wire.XdrInputStream;
 import org.firebirdsql.gds.impl.wire.XdrOutputStream;
@@ -165,12 +163,8 @@ public abstract class AbstractWireOperations implements FbWireOperations {
                     writeAuthData(authData);
                     operation = readNextOperation();
                 }
-            } catch (GDSAuthException e) {
+            } catch (GDSException | IOException e) {
                 throw new SQLException(e);
-            } catch (GDSException e) {
-                throw new SQLException(e);
-            } catch (IOException e) {
-                e.printStackTrace();
             } finally {
                 try {
                     sspi.free();
@@ -272,18 +266,14 @@ public abstract class AbstractWireOperations implements FbWireOperations {
 
     private void receiveAuthResponse(ByteBuffer data) throws GDSException, SQLException {
         final XdrInputStream xdrIn = getXdrIn();
-        final boolean debug = log != null && log.isDebugEnabled();
         try {
-            if (debug)
-                log.debug("op_auth_response ");
+            log.log(System.Logger.Level.DEBUG, "op_auth_response ");
             final int size = xdrIn.readInt();
-            if (debug)
-                log.debug("received");
+            log.log(System.Logger.Level.DEBUG, "received");
             data.clear();
             data.read(xdrIn, size);
         } catch (IOException ex) {
-            if (debug)
-                log.warn("IOException in receiveAuthResponse", ex);
+            log.log(System.Logger.Level.DEBUG, "IOException in receiveAuthResponse", ex);
             // ex.getMessage() makes little sense here, it will not be displayed
             // because error message for isc_net_read_err does not accept params
             throw new SQLException(ex);
@@ -291,14 +281,12 @@ public abstract class AbstractWireOperations implements FbWireOperations {
     }
 
     protected void writeAuthData(final ByteBuffer authData) throws IOException, SQLException {
-        boolean debug = log != null && log.isDebugEnabled();
         final XdrOutputStream xdrOut = getXdrOut();
         xdrOut.writeInt(op_trusted_auth);
 //      db.out.writeInt(0); // packet->p_atch->p_atch_database
         authData.write(xdrOut);
         xdrOut.flush();
-        if (debug)
-            log.debug("auth data");
+        log.log(System.Logger.Level.DEBUG, "auth data");
     }
 
     /**

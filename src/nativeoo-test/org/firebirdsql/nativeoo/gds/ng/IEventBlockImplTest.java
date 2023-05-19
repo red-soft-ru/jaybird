@@ -10,9 +10,6 @@ import org.firebirdsql.gds.ng.FbStatement;
 import org.firebirdsql.gds.ng.FbTransaction;
 import org.firebirdsql.gds.ng.SimpleEventHandler;
 import org.firebirdsql.gds.ng.fields.RowValue;
-import org.firebirdsql.gds.ng.jna.JnaDatabase;
-import org.firebirdsql.logging.Logger;
-import org.firebirdsql.logging.LoggerFactory;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -31,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 class IEventBlockImplTest {
 
-    private final Logger log = LoggerFactory.getLogger(IEventBlockImplTest.class);
+    private static final System.Logger log = System.getLogger(IEventBlockImplTest.class.getName());
 
     @RegisterExtension
     @Order(1)
@@ -69,7 +66,7 @@ class IEventBlockImplTest {
             try {
                 db.close();
             } catch (SQLException ex) {
-                log.debug("Exception on detach", ex);
+                log.log(System.Logger.Level.DEBUG, "Exception on detach", ex);
             }
         }
     }

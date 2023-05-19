@@ -27,8 +27,6 @@ package org.firebirdsql.gds.impl;
 import org.firebirdsql.gds.*;
 import org.firebirdsql.gds.ng.*;
 import org.firebirdsql.jaybird.fb.constants.BpbItems;
-import org.firebirdsql.jaybird.props.PropertyConstants;
-import org.firebirdsql.logging.LoggerFactory;
 
 import java.sql.SQLException;
 import java.util.TimeZone;

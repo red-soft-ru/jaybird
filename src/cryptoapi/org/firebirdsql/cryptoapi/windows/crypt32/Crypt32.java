@@ -10,8 +10,6 @@ import org.firebirdsql.cryptoapi.windows.JnaUtils;
 import org.firebirdsql.cryptoapi.windows.Win32Api;
 import org.firebirdsql.cryptoapi.windows.Wincrypt;
 import org.firebirdsql.cryptoapi.windows.advapi.Advapi;
-import org.firebirdsql.logging.Logger;
-import org.firebirdsql.logging.LoggerFactory;
 
 import java.util.Arrays;
 
@@ -29,7 +27,7 @@ import static org.firebirdsql.cryptoapi.windows.Wincrypt.X509_ASN_ENCODING;
 @SuppressWarnings("UnusedDeclaration")
 public class Crypt32 {
 
-  private static Logger LOG = LoggerFactory.getLogger(Crypt32.class);
+  private static final System.Logger log = System.getLogger(Crypt32.class.getName());
   private static final boolean LOGGING = false;
 
   private static final String CRYPT_LIB_NAME = Platform.isWindows() ? "Crypt32" : "capi20";
@@ -51,13 +49,13 @@ public class Crypt32 {
       LOG.fatal(e);
     }
     */
-    LOG.debug("Initializing Crypt32 API library");
+    log.log(System.Logger.Level.DEBUG, "Initializing Crypt32 API library");
     JnaUtils.init();
     try {
       lib = Native.load(CRYPT_LIB_NAME, Crypt32Lib.class);
-      LOG.debug(lib.toString());
+      log.log(System.Logger.Level.DEBUG, lib.toString());
     } catch (Throwable e) {
-      LOG.error("Crypt32 API Initialization failed", e);
+      log.log(System.Logger.Level.ERROR, "Crypt32 API Initialization failed", e);
       throw new RuntimeException(e);
     }
   }
@@ -65,24 +63,24 @@ public class Crypt32 {
   public static Pointer certOpenSystemStore(Pointer provHandle, String subsystemProtocol)
       throws CryptoException {
     if (LOGGING)
-      LOG.debug("certOpenSystemStore " + provHandle + " " + subsystemProtocol);
+      log.log(System.Logger.Level.DEBUG, "certOpenSystemStore " + provHandle + " " + subsystemProtocol);
     Pointer res = isWindows() ? lib.CertOpenSystemStoreA(provHandle, subsystemProtocol) : lib.CertOpenSystemStore(provHandle, subsystemProtocol);
     if (res == Pointer.NULL)
       throw new CryptoException("Unable to open system store " + subsystemProtocol + ".", Advapi.getLastError());
     if (LOGGING)
-      LOG.debug("certOpenSystemStore " + res);
+      log.log(System.Logger.Level.DEBUG, "certOpenSystemStore " + res);
     return res;
   }
 
   public static Pointer certOpenStore(int storeProvider, int msgAndCertEncodingType, Pointer provider, int flags, String params)
       throws CryptoException {
     if (LOGGING)
-      LOG.debug("certOpenStore " + storeProvider + " " + msgAndCertEncodingType + " " + flags + " " + params);
+      log.log(System.Logger.Level.DEBUG, "certOpenStore " + storeProvider + " " + msgAndCertEncodingType + " " + flags + " " + params);
     Pointer res = lib.CertOpenStore(storeProvider, msgAndCertEncodingType, provider, flags, params);
     if (res == Pointer.NULL)
       throw new CryptoException("Unable to open store.", Advapi.getLastError());
     if (LOGGING)
-      LOG.debug("certOpenStore " + res);
+      log.log(System.Logger.Level.DEBUG, "certOpenStore " + res);
     return res;
   }
 
@@ -94,10 +92,10 @@ public class Crypt32 {
 
   public static boolean certCloseStore(Pointer certStoreHandle) {
     if (LOGGING)
-      LOG.debug("certCloseStore " + certStoreHandle);
+      log.log(System.Logger.Level.DEBUG, "certCloseStore " + certStoreHandle);
     boolean res = lib.CertCloseStore(certStoreHandle, 0);
     if (LOGGING)
-      LOG.debug("certCloseStore " + res);
+      log.log(System.Logger.Level.DEBUG, "certCloseStore " + res);
     return res;
   }
 
@@ -108,21 +106,21 @@ public class Crypt32 {
   public static Pointer certFindCertificateInStore(Pointer certStoreHandle, int encodingType, int findFlags,
                                                    int findType, byte[] findPara, Pointer prevCertContext) {
     if (LOGGING)
-      LOG.debug("certFindCertificateInStore " + certStoreHandle + " " + encodingType + " " + findFlags + " " + findType + " " +
+      log.log(System.Logger.Level.DEBUG, "certFindCertificateInStore " + certStoreHandle + " " + encodingType + " " + findFlags + " " + findType + " " +
           Arrays.toString(findPara) + " " + toString(prevCertContext));
     Pointer res = lib.CertFindCertificateInStore(certStoreHandle, encodingType, findFlags, findType, findPara, prevCertContext);
     if (LOGGING)
-      LOG.debug("certFindCertificateInStore " + toString(res));
+      log.log(System.Logger.Level.DEBUG, "certFindCertificateInStore " + toString(res));
     return res;
   }
 
   public static Pointer certFindCertificateInStore(Pointer certStoreHandle, int encodingType, int findFlags,
                                                    int findType, Pointer findPara, Pointer prevCertContext) {
     if (LOGGING)
-      LOG.debug("certFindCertificateInStore " + certStoreHandle + " " + encodingType + " " + findFlags + " " + findType + " " + findPara + " " + toString(prevCertContext));
+      log.log(System.Logger.Level.DEBUG, "certFindCertificateInStore " + certStoreHandle + " " + encodingType + " " + findFlags + " " + findType + " " + findPara + " " + toString(prevCertContext));
     Pointer res = lib.CertFindCertificateInStore(certStoreHandle, encodingType, findFlags, findType, findPara, prevCertContext);
     if (LOGGING)
-      LOG.debug("certFindCertificateInStore " + toString(res));
+      log.log(System.Logger.Level.DEBUG, "certFindCertificateInStore " + toString(res));
     return res;
   }
 
@@ -130,10 +128,10 @@ public class Crypt32 {
                                                           PointerByReference phCryptProvOrNCryptKey,
                                                           IntByReference pdwKeySpec, IntByReference pfCallerFreeProvOrNCryptKey) {
     if (LOGGING)
-      LOG.debug("cryptAcquireCertificatePrivateKey " + toString(pCert) + " " + dwFlags + " " + phCryptProvOrNCryptKey + " " + pdwKeySpec + " " + pfCallerFreeProvOrNCryptKey);
+      log.log(System.Logger.Level.DEBUG, "cryptAcquireCertificatePrivateKey " + toString(pCert) + " " + dwFlags + " " + phCryptProvOrNCryptKey + " " + pdwKeySpec + " " + pfCallerFreeProvOrNCryptKey);
     boolean res = lib.CryptAcquireCertificatePrivateKey(pCert, dwFlags, null, phCryptProvOrNCryptKey, pdwKeySpec, pfCallerFreeProvOrNCryptKey);
     if (LOGGING)
-      LOG.debug("cryptAcquireCertificatePrivateKey " + res);
+      log.log(System.Logger.Level.DEBUG, "cryptAcquireCertificatePrivateKey " + res);
     return res;
   }
 
@@ -141,35 +139,35 @@ public class Crypt32 {
                                                           PointerByReference phCryptProvOrNCryptKey,
                                                           IntByReference pdwKeySpec, IntByReference pfCallerFreeProvOrNCryptKey) {
     if (LOGGING)
-      LOG.debug("cryptAcquireCertificatePrivateKey " + toString(pCert) + " " + dwFlags + " " + phCryptProvOrNCryptKey + " " + pdwKeySpec + " " + pfCallerFreeProvOrNCryptKey);
+      log.log(System.Logger.Level.DEBUG, "cryptAcquireCertificatePrivateKey " + toString(pCert) + " " + dwFlags + " " + phCryptProvOrNCryptKey + " " + pdwKeySpec + " " + pfCallerFreeProvOrNCryptKey);
     boolean res = lib.CryptAcquireCertificatePrivateKey(pCert, dwFlags, null, phCryptProvOrNCryptKey, pdwKeySpec, pfCallerFreeProvOrNCryptKey);
     if (LOGGING)
-      LOG.debug("cryptAcquireCertificatePrivateKey " + res);
+      log.log(System.Logger.Level.DEBUG, "cryptAcquireCertificatePrivateKey " + res);
     return res;
   }
 
   public static void certFreeCertificateChain(Pointer chainContext) {
     if (LOGGING)
-      LOG.debug("certFreeCertificateChain " + toString(chainContext));
+      log.log(System.Logger.Level.DEBUG, "certFreeCertificateChain " + toString(chainContext));
     lib.CertFreeCertificateChain(chainContext);
     if (LOGGING)
-      LOG.debug("certFreeCertificateChain (void)");
+      log.log(System.Logger.Level.DEBUG, "certFreeCertificateChain (void)");
   }
 
   public static _CERT_CONTEXT.PCCERT_CONTEXT certCreateCertificateContext(int certEncodingType, byte[] certEncoded) throws CryptoException {
     if (LOGGING)
-      LOG.debug("certCreateCertificateContext " + certEncodingType + " " + Arrays.toString(certEncoded));
+      log.log(System.Logger.Level.DEBUG, "certCreateCertificateContext " + certEncodingType + " " + Arrays.toString(certEncoded));
     _CERT_CONTEXT.PCCERT_CONTEXT res = lib.CertCreateCertificateContext(certEncodingType, certEncoded, certEncoded.length);
     if (res == null)
       throw new CryptoException("Can't decode certificate from byte buffer.", Advapi.getLastError());
     if (LOGGING)
-      LOG.debug("certCreateCertificateContext " + toString(res));
+      log.log(System.Logger.Level.DEBUG, "certCreateCertificateContext " + toString(res));
     return res;
   }
 
   public static boolean certFreeCertificateContext(Pointer certContext) {
     if (!lib.CertFreeCertificateContext(certContext)) {
-      LOG.error("Error releasing certificate context", new CryptoException("Error releasing certificate context"));
+      log.log(System.Logger.Level.ERROR, "Error releasing certificate context", new CryptoException("Error releasing certificate context"));
       return false;
     }
     return true;
@@ -201,11 +199,11 @@ public class Crypt32 {
 
   public static Pointer cryptImportPublicKeyInfo(Pointer provHandle, int certEncodingType, _CERT_PUBLIC_KEY_INFO.PCERT_PUBLIC_KEY_INFO info) {
     if (LOGGING)
-      LOG.debug("cryptImportPublicKeyInfo " + provHandle + " " + certEncodingType + " " + toString(info));
+      log.log(System.Logger.Level.DEBUG, "cryptImportPublicKeyInfo " + provHandle + " " + certEncodingType + " " + toString(info));
     final PointerByReference keyHandle = new PointerByReference();
     Pointer res = lib.CryptImportPublicKeyInfo(provHandle, certEncodingType, info, keyHandle) ? keyHandle.getValue() : null;
     if (LOGGING)
-      LOG.debug("cryptImportPublicKeyInfo " + res);
+      log.log(System.Logger.Level.DEBUG, "cryptImportPublicKeyInfo " + res);
     return res;
   }
 
@@ -239,7 +237,7 @@ public class Crypt32 {
 
   public static _CRYPT_OID_INFO.PCCRYPT_OID_INFO cryptFindOIDInfo(int type, int methodID, int kind) throws CryptoException {
     if (LOGGING)
-      LOG.debug("cryptFindOIDInfo " + type + " " + methodID + " " + kind);
+      log.log(System.Logger.Level.DEBUG, "cryptFindOIDInfo " + type + " " + methodID + " " + kind);
     final IntByReference refID = new IntByReference(methodID);
     _CRYPT_OID_INFO.PCCRYPT_OID_INFO methodInfo = lib.CryptFindOIDInfo(type, refID.getPointer(), kind);
 

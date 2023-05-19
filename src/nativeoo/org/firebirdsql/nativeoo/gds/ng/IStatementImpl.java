@@ -20,8 +20,6 @@ import org.firebirdsql.gds.ng.StatementType;
 import org.firebirdsql.gds.ng.fields.*;
 import org.firebirdsql.gds.impl.BatchParameterBufferImp;
 import org.firebirdsql.jna.fbclient.XSQLVAR;
-import org.firebirdsql.logging.Logger;
-import org.firebirdsql.logging.LoggerFactory;
 import org.firebirdsql.nativeoo.gds.ng.FbInterface.IBatch;
 import org.firebirdsql.nativeoo.gds.ng.FbInterface.IMaster;
 import org.firebirdsql.nativeoo.gds.ng.FbInterface.IMessageMetadata;
@@ -47,7 +45,7 @@ import static org.firebirdsql.gds.ng.TransactionHelper.checkTransactionActive;
  */
 public class IStatementImpl extends AbstractFbStatement {
 
-    private static final Logger log = LoggerFactory.getLogger(IStatementImpl.class);
+    private static final System.Logger log = System.getLogger(IStatementImpl.class.getName());
 
     private final IDatabaseImpl database;
     private final IStatus status;
@@ -323,7 +321,7 @@ public class IStatementImpl extends AbstractFbStatement {
                     // Note: we are not explicitly 'closing' the cursor here
                 } else {
                     final String errorMessage = "Unexpected fetch status (expected 0 or 100): " + fetchStatus;
-                    log.error(errorMessage);
+                    log.log(System.Logger.Level.DEBUG, errorMessage);
                     throw new SQLException(errorMessage);
                 }
             }

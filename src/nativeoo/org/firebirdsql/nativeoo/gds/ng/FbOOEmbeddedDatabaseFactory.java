@@ -4,8 +4,6 @@ import com.sun.jna.Native;
 import org.firebirdsql.gds.JaybirdSystemProperties;
 import org.firebirdsql.gds.ng.IAttachProperties;
 import org.firebirdsql.jna.fbclient.FbClientLibrary;
-import org.firebirdsql.logging.Logger;
-import org.firebirdsql.logging.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -20,7 +18,7 @@ import java.util.List;
  */
 public class FbOOEmbeddedDatabaseFactory extends AbstractNativeOODatabaseFactory {
 
-    private static final Logger log = LoggerFactory.getLogger(FbOOEmbeddedDatabaseFactory.class);
+    private static final System.Logger log = System.getLogger(FbOOEmbeddedDatabaseFactory.class.getName());
     private static final FbOOEmbeddedDatabaseFactory INSTANCE = new FbOOEmbeddedDatabaseFactory();
 
     @Override
@@ -59,14 +57,14 @@ public class FbOOEmbeddedDatabaseFactory extends AbstractNativeOODatabaseFactory
                     return Native.load(libraryName, FbInterface.class);
                 } catch (UnsatisfiedLinkError e) {
                     throwables.add(e);
-                    log.debug("Attempt to load " + libraryName + " failed", e);
+                    log.log(System.Logger.Level.DEBUG, "Attempt to load " + libraryName + " failed", e);
                     // continue with next
                 }
             }
             assert throwables.size() == librariesToTry.size();
-            log.error("Could not load any of the libraries in " + librariesToTry + ":");
+            log.log(System.Logger.Level.ERROR, "Could not load any of the libraries in " + librariesToTry + ":");
             for (int idx = 0; idx < librariesToTry.size(); idx++) {
-                log.error("Loading " + librariesToTry.get(idx) + " failed", throwables.get(idx));
+                log.log(System.Logger.Level.ERROR, "Loading " + librariesToTry.get(idx) + " failed", throwables.get(idx));
             }
             throw new ExceptionInInitializerError(throwables.get(0));
         }

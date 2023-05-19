@@ -3,11 +3,8 @@ package org.firebirdsql.nativeoo.gds.ng;
 import org.firebirdsql.gds.ng.AbstractFbTransaction;
 import org.firebirdsql.gds.ng.LockCloseable;
 import org.firebirdsql.gds.ng.TransactionState;
-import org.firebirdsql.jna.fbclient.FbClientLibrary;
 import org.firebirdsql.nativeoo.gds.ng.FbInterface.IStatus;
 import org.firebirdsql.nativeoo.gds.ng.FbInterface.ITransaction;
-import org.firebirdsql.logging.Logger;
-import org.firebirdsql.logging.LoggerFactory;
 
 import java.sql.SQLException;
 
@@ -19,7 +16,7 @@ import java.sql.SQLException;
  */
 public class ITransactionImpl extends AbstractFbTransaction {
 
-    private static final Logger log = LoggerFactory.getLogger(ITransactionImpl.class);
+    private static final System.Logger log = System.getLogger(ITransactionImpl.class.getName());
 
     private final ITransaction transaction;
     private final IStatus status;
@@ -59,7 +56,7 @@ public class ITransactionImpl extends AbstractFbTransaction {
         } finally {
             final TransactionState transactionState = getState();
             if (transactionState != TransactionState.COMMITTED) {
-                log.warn("Commit not completed, state was " + transactionState,
+                log.log(System.Logger.Level.WARNING, "Commit not completed, state was " + transactionState,
                         new RuntimeException("Commit not completed"));
             }
         }
@@ -80,7 +77,7 @@ public class ITransactionImpl extends AbstractFbTransaction {
         } finally {
             final TransactionState transactionState = getState();
             if (transactionState != TransactionState.ROLLED_BACK) {
-                log.warn("Rollback not completed, state was " + transactionState,
+                log.log(System.Logger.Level.WARNING, "Rollback not completed, state was " + transactionState,
                         new RuntimeException("Rollback not completed"));
             }
         }
@@ -108,7 +105,7 @@ public class ITransactionImpl extends AbstractFbTransaction {
             throw e;
         } finally {
             if (getState() != TransactionState.PREPARED) {
-                log.warn("Prepare not completed", new RuntimeException("Prepare not completed"));
+                log.log(System.Logger.Level.WARNING, "Prepare not completed", new RuntimeException("Prepare not completed"));
             }
         }
     }

@@ -17,13 +17,11 @@ import com.sun.jna.ptr.IntByReference;
 import com.sun.jna.ptr.PointerByReference;
 import org.firebirdsql.cryptoapi.windows.ErrorMessages;
 import org.firebirdsql.cryptoapi.windows.Wincrypt;
-import org.firebirdsql.logging.Logger;
-import org.firebirdsql.logging.LoggerFactory;
 
 import static org.firebirdsql.cryptoapi.windows.Wincrypt.CRYPT_FIRST;
 
 public class Advapi {
-  private static Logger LOG = LoggerFactory.getLogger(Advapi.class);
+  private static final System.Logger log = System.getLogger(Advapi.class.getName());
 
   private static final String ADVAPI_LIB_NAME = Platform.isWindows() ?"advapi32" : "capi20";
   private final static AdvapiLib lib;
@@ -32,16 +30,16 @@ public class Advapi {
   static {
     JnaUtils.init();
     if (LOGGING)
-      LOG.debug("static");
+      log.log(System.Logger.Level.DEBUG, "static");
     try {
       lib = Native.load(ADVAPI_LIB_NAME, AdvapiLib.class);
     } catch (Exception e) {
-      LOG.error("Advapi Initialization failed", e);
+      log.log(System.Logger.Level.ERROR, "Advapi Initialization failed", e);
       throw new RuntimeException(e);
     }
     //Native.setProtected(true);
     if (LOGGING)
-      LOG.debug("static " + lib);
+      log.log(System.Logger.Level.DEBUG, "static " + lib);
   }
 
   /**
@@ -53,45 +51,45 @@ public class Advapi {
   public synchronized static Pointer cryptAcquireContext(String keyContainer, String provider, int provType, int flags)
       throws CryptoException {
     if (LOGGING)
-      LOG.debug("cryptAcquireContext " + keyContainer + " " + provider + " " + provType + " " + flags);
+      log.log(System.Logger.Level.DEBUG, "cryptAcquireContext " + keyContainer + " " + provider + " " + provType + " " + flags);
     final PointerByReference phProv = new PointerByReference();
     if (!lib.CryptAcquireContextA(phProv, keyContainer, provider, provType, flags))
       throw CryptoUtil.raiseCryptoError("cryptAcquireContext - init", getLastError());
     if (LOGGING)
-      LOG.debug("cryptAcquireContext " + phProv.getValue());
+      log.log(System.Logger.Level.DEBUG, "cryptAcquireContext " + phProv.getValue());
     return phProv.getValue();
   }
 
   public static boolean cryptReleaseContext(Pointer provHandle) {
     if (LOGGING)
-      LOG.debug("cryptReleaseContext " + provHandle);
+      log.log(System.Logger.Level.DEBUG, "cryptReleaseContext " + provHandle);
     boolean res = lib.CryptReleaseContext(provHandle, 0);
     if (LOGGING)
-      LOG.debug("cryptReleaseContext " + res);
+      log.log(System.Logger.Level.DEBUG, "cryptReleaseContext " + res);
     return res;
   }
 
   public static Pointer cryptCreateHash(Pointer provHandle, int algId) {
     if (LOGGING)
-      LOG.debug("cryptCreateHash " + provHandle + " " + algId);
+      log.log(System.Logger.Level.DEBUG, "cryptCreateHash " + provHandle + " " + algId);
     final PointerByReference hash = new PointerByReference();
     Pointer res = lib.CryptCreateHash(provHandle, algId, null, 0, hash) ? hash.getValue() : null;
     if (LOGGING)
-      LOG.debug("cryptCreateHash " + res);
+      log.log(System.Logger.Level.DEBUG, "cryptCreateHash " + res);
     return res;
   }
 
   public static boolean cryptDestroyHash(Pointer hashHandle) {
     if (LOGGING)
-      LOG.debug("cryptDestroyHash " + hashHandle);
+      log.log(System.Logger.Level.DEBUG, "cryptDestroyHash " + hashHandle);
     boolean res = lib.CryptDestroyHash(hashHandle);
     if (!res) {
       final int lastError = getLastError();
       final String message = ErrorMessages.getMessage(lastError);
-      LOG.error("Advapi::cryptDestroyHash>>Error destroying handle: " + message, new Exception("Advapi::cryptDestroyHash (" + message + ")"));
+      log.log(System.Logger.Level.ERROR, "Advapi::cryptDestroyHash>>Error destroying handle: " + message, new Exception("Advapi::cryptDestroyHash (" + message + ")"));
     }
     if (LOGGING)
-      LOG.debug("cryptDestroyHash " + res);
+      log.log(System.Logger.Level.DEBUG, "cryptDestroyHash " + res);
     return res;
   }
 
@@ -107,20 +105,20 @@ public class Advapi {
    */
   public static int cryptGetHashParam(Pointer hashHandle, int paramCode, byte[] data) {
     if (LOGGING)
-      LOG.debug("cryptGetHashParam " + hashHandle + " " + paramCode + " (data)");
+      log.log(System.Logger.Level.DEBUG, "cryptGetHashParam " + hashHandle + " " + paramCode + " (data)");
     final IntByReference dataLen = new IntByReference(data == null ? 0 : data.length);
     int res = lib.CryptGetHashParam(hashHandle, paramCode, data, dataLen, 0) ? dataLen.getValue() : -1;
     if (LOGGING)
-      LOG.debug("cryptGetHashParam " + res);
+      log.log(System.Logger.Level.DEBUG, "cryptGetHashParam " + res);
     return res;
   }
 
   public static boolean cryptSetHashParam(Pointer hashHandle, int paramCode, byte[] data, int flags) {
     if (LOGGING)
-      LOG.debug("cryptSetHashParam " + hashHandle + " " + paramCode + " (data) " + flags);
+      log.log(System.Logger.Level.DEBUG, "cryptSetHashParam " + hashHandle + " " + paramCode + " (data) " + flags);
     boolean res = lib.CryptSetHashParam(hashHandle, paramCode, data, flags);
     if (LOGGING)
-      LOG.debug("cryptSetHashParam " + res);
+      log.log(System.Logger.Level.DEBUG, "cryptSetHashParam " + res);
     return res;
   }
 
@@ -131,16 +129,16 @@ public class Advapi {
 
   public static boolean cryptHashData(Pointer hashHandle, byte[] data, int cData, int flags) {
     if (LOGGING)
-      LOG.debug("cryptHashData " + hashHandle + " (data) " + cData + " " + flags);
+      log.log(System.Logger.Level.DEBUG, "cryptHashData " + hashHandle + " (data) " + cData + " " + flags);
     boolean res = lib.CryptHashData(hashHandle, data, cData, flags);
     if (LOGGING)
-      LOG.debug("cryptHashData " + res);
+      log.log(System.Logger.Level.DEBUG, "cryptHashData " + res);
     return res;
   }
 
   public static byte[] cryptSignHash(Pointer hashHandle, int keySpec, int flags) throws CryptoException {
     if (LOGGING)
-      LOG.debug("cryptSignHash " + hashHandle + " " + keySpec + " " + flags);
+      log.log(System.Logger.Level.DEBUG, "cryptSignHash " + hashHandle + " " + keySpec + " " + flags);
     final IntByReference len = new IntByReference();
     if (!lib.CryptSignHashA(hashHandle, keySpec, null, flags, null, len))
       throw CryptoUtil.raiseCryptoError("CryptSignHash", getLastError());
@@ -148,22 +146,22 @@ public class Advapi {
     if (!lib.CryptSignHashA(hashHandle, keySpec, null, flags, sign, len))
       throw CryptoUtil.raiseCryptoError("CryptSignHash", getLastError());
     if (LOGGING)
-      LOG.debug("cryptSignHash " + Arrays.toString(sign));
+      log.log(System.Logger.Level.DEBUG, "cryptSignHash " + Arrays.toString(sign));
     return Win32Api.getActualData(sign, len.getValue());
   }
 
   public static boolean cryptVerifySignature(Pointer hashHandle, byte[] signature, Pointer pubKeyHandle, int flags) {
     if (LOGGING)
-      LOG.debug("cryptVerifySignature " + hashHandle + " " + Arrays.toString(signature) + " " + pubKeyHandle + " " + flags);
+      log.log(System.Logger.Level.DEBUG, "cryptVerifySignature " + hashHandle + " " + Arrays.toString(signature) + " " + pubKeyHandle + " " + flags);
     boolean res = lib.CryptVerifySignatureA(hashHandle, signature, signature.length, pubKeyHandle, null, flags);
     if (LOGGING)
-      LOG.debug("cryptVerifySignature " + res);
+      log.log(System.Logger.Level.DEBUG, "cryptVerifySignature " + res);
     return res;
   }
 
   public static byte[] cryptGetKeyParam(Pointer keyHandle, int paramCode) throws CryptoException {
     if (LOGGING)
-      LOG.debug("cryptGetKeyParam " + keyHandle + " " + paramCode);
+      log.log(System.Logger.Level.DEBUG, "cryptGetKeyParam " + keyHandle + " " + paramCode);
     final IntByReference len = new IntByReference();
     if (!lib.CryptGetKeyParam(keyHandle, paramCode, null, len, 0))
       throw CryptoUtil.raiseCryptoError("CryptGetKeyParam", getLastError());
@@ -172,13 +170,13 @@ public class Advapi {
       throw CryptoUtil.raiseCryptoError("CryptGetKeyParam", getLastError());
     byte[] res = Win32Api.getActualData(data, len.getValue());
     if (LOGGING)
-      LOG.debug("cryptGetKeyParam " + Arrays.toString(res));
+      log.log(System.Logger.Level.DEBUG, "cryptGetKeyParam " + Arrays.toString(res));
     return res;
   }
 
   public static String getContainerName(Pointer providerHandle) throws CryptoException {
     if (LOGGING)
-      LOG.debug("getContainerName (!!) " + providerHandle);
+      log.log(System.Logger.Level.DEBUG, "getContainerName (!!) " + providerHandle);
     final IntByReference len = new IntByReference();
     if (!lib.CryptGetProvParam(providerHandle, Wincrypt.PP_CONTAINER, null, len, 0))
       throw CryptoUtil.raiseCryptoError("CryptGetProvParam", getLastError());
@@ -186,53 +184,53 @@ public class Advapi {
     if (!lib.CryptGetProvParam(providerHandle, Wincrypt.PP_CONTAINER, data, len, 0))
       throw CryptoUtil.raiseCryptoError("CryptGetProvParam", getLastError());
     if (LOGGING)
-      LOG.debug("getContainerName " + Native.toString(data));
+      log.log(System.Logger.Level.DEBUG, "getContainerName " + Native.toString(data));
     return Native.toString(data).trim();
   }
 
   public static Pointer cryptGetUserKey(Pointer provHandle, int keySpec) throws CryptoException {
     if (LOGGING)
-      LOG.debug("cryptGetUserKey " + provHandle + " " + keySpec);
+      log.log(System.Logger.Level.DEBUG, "cryptGetUserKey " + provHandle + " " + keySpec);
     final PointerByReference phUserKey = new PointerByReference();
     if (!lib.CryptGetUserKey(provHandle, keySpec, phUserKey))
       throw CryptoUtil.raiseCryptoError("CryptGetUserKey", getLastError());
     final Pointer res = phUserKey.getValue();
     if (LOGGING)
-      LOG.debug("cryptGetUserKey " + res);
+      log.log(System.Logger.Level.DEBUG, "cryptGetUserKey " + res);
     return res;
   }
 
   public static boolean cryptSetKeyParam(Pointer keyHandle, int paramCode, byte[] data, int flags) {
     if (LOGGING)
-      LOG.debug("cryptSetKeyParam " + keyHandle + " " + paramCode + " (data) " + flags);
+      log.log(System.Logger.Level.DEBUG, "cryptSetKeyParam " + keyHandle + " " + paramCode + " (data) " + flags);
     boolean res = lib.CryptSetKeyParam(keyHandle, paramCode, data, flags);
     if (LOGGING)
-      LOG.debug("cryptSetKeyParam " + res);
+      log.log(System.Logger.Level.DEBUG, "cryptSetKeyParam " + res);
     return res;
   }
 
   public static boolean cryptSetKeyParam(Pointer keyHandle, int paramCode, Pointer data, int flags) {
     if (LOGGING)
-      LOG.debug("cryptSetKeyParam " + keyHandle + " " + paramCode + " (data) " + flags);
+      log.log(System.Logger.Level.DEBUG, "cryptSetKeyParam " + keyHandle + " " + paramCode + " (data) " + flags);
     boolean res = lib.CryptSetKeyParam(keyHandle, paramCode, data, flags);
     if (LOGGING)
-      LOG.debug("cryptSetKeyParam " + res);
+      log.log(System.Logger.Level.DEBUG, "cryptSetKeyParam " + res);
     return res;
   }
 
   public static Pointer cryptImportKey(Pointer provHandle, byte[] data, Pointer pubKeyHandle, int flags) {
     if (LOGGING)
-      LOG.debug("cryptImportKey " + provHandle + " (data) " + pubKeyHandle + " " + flags);
+      log.log(System.Logger.Level.DEBUG, "cryptImportKey " + provHandle + " (data) " + pubKeyHandle + " " + flags);
     final PointerByReference keyHandle = new PointerByReference();
     final Pointer res = lib.CryptImportKey(provHandle, data, data.length, pubKeyHandle, flags, keyHandle) ? keyHandle.getValue() : null;
     if (LOGGING)
-      LOG.debug("cryptImportKey " + res);
+      log.log(System.Logger.Level.DEBUG, "cryptImportKey " + res);
     return res;
   }
 
   public static byte[] cryptGetProvParam(Pointer provHandle, int paramCode, int flags) throws CryptoException {
     if (LOGGING)
-      LOG.debug("cryptGetProvParam " + paramCode + " " + paramCode + " " + flags);
+      log.log(System.Logger.Level.DEBUG, "cryptGetProvParam " + paramCode + " " + paramCode + " " + flags);
     final IntByReference len = new IntByReference();
     if (!lib.CryptGetProvParam(provHandle, paramCode, null, len, flags))
       throw CryptoUtil.raiseCryptoError("CryptGetProvParam", getLastError());
@@ -240,19 +238,19 @@ public class Advapi {
     if (!lib.CryptGetProvParam(provHandle, paramCode, data, len, flags))
       throw CryptoUtil.raiseCryptoError("CryptGetProvParam", getLastError());
     if (LOGGING)
-      LOG.debug("cryptGetProvParam " + Arrays.toString(data));
+      log.log(System.Logger.Level.DEBUG, "cryptGetProvParam " + Arrays.toString(data));
     return Win32Api.getActualData(data, len.getValue());
   }
 
   public static byte[] cryptGetProvParam(Pointer provHandle, int paramCode, int flags, int bufferSize) throws CryptoException {
     if (LOGGING)
-      LOG.debug("cryptGetProvParam " + paramCode + " " + paramCode + " " + flags + " " + bufferSize);
+      log.log(System.Logger.Level.DEBUG, "cryptGetProvParam " + paramCode + " " + paramCode + " " + flags + " " + bufferSize);
     final IntByReference len = new IntByReference(bufferSize);
     final byte data[] = new byte[len.getValue()];
     if (!lib.CryptGetProvParam(provHandle, paramCode, data, len, flags))
       throw CryptoUtil.raiseCryptoError("CryptGetProvParam", getLastError());
     if (LOGGING)
-      LOG.debug("cryptGetProvParam " + Arrays.toString(data));
+      log.log(System.Logger.Level.DEBUG, "cryptGetProvParam " + Arrays.toString(data));
     return Win32Api.getActualData(data, len.getValue());
   }
 
@@ -282,7 +280,7 @@ public class Advapi {
       final byte[] strData = Win32Api.getActualData(bytes, bufLen.getValue());
       final String containerName = Native.toString(strData);
       containers.add(containerName);
-      LOG.debug("Found container: " + containerName);
+      log.log(System.Logger.Level.DEBUG, "Found container: " + containerName);
       flag = Wincrypt.CRYPT_NEXT;
     }
     return containers;
@@ -290,24 +288,24 @@ public class Advapi {
 
   public static boolean cryptDestroyKey(Pointer keyHandle) {
     if (LOGGING)
-      LOG.debug("cryptDestroyKey " + keyHandle);
+      log.log(System.Logger.Level.DEBUG, "cryptDestroyKey " + keyHandle);
     final boolean res = lib.CryptDestroyKey(keyHandle);
     if (!res) {
       final int lastError = getLastError();
       final String message = ErrorMessages.getMessage(lastError);
-      LOG.error("Advapi::cryptDestroyKey>>Error destroying key handle: " + message, new Exception("Advapi::cryptDestroyKey (" + message + ")"));
+      log.log(System.Logger.Level.ERROR, "Advapi::cryptDestroyKey>>Error destroying key handle: " + message, new Exception("Advapi::cryptDestroyKey (" + message + ")"));
     }
     if (LOGGING)
-      LOG.debug("cryptDestroyKey " + res);
+      log.log(System.Logger.Level.DEBUG, "cryptDestroyKey " + res);
     return res;
   }
 
   public static boolean cryptSetProvParam(Pointer provHandle, int paramCode, byte[] data, int flags) {
     if (LOGGING)
-      LOG.debug("cryptSetProvParam " + provHandle + " " + paramCode + " (data) " + flags);
+      log.log(System.Logger.Level.DEBUG, "cryptSetProvParam " + provHandle + " " + paramCode + " (data) " + flags);
     boolean res = lib.CryptSetProvParam(provHandle, paramCode, data, flags);
     if (LOGGING)
-      LOG.debug("cryptSetProvParam " + res);
+      log.log(System.Logger.Level.DEBUG, "cryptSetProvParam " + res);
     return res;
   }
 

@@ -17,8 +17,6 @@ import org.firebirdsql.cryptoapi.windows.crypt32._CERT_CONTEXT.PCCERT_CONTEXT;
 import org.firebirdsql.cryptoapi.windows.crypt32._CERT_CONTEXT.PCERT_CONTEXT;
 import org.firebirdsql.cryptoapi.windows.crypt32._CRYPT_KEY_PROV_INFO.PCRYPT_KEY_PROV_INFO;
 import org.firebirdsql.cryptoapi.windows.crypt32._CRYPT_OID_INFO;
-import org.firebirdsql.logging.Logger;
-import org.firebirdsql.logging.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -42,7 +40,7 @@ import static org.firebirdsql.cryptoapi.windows.Winerror.ERROR_NO_MORE_ITEMS;
  */
 @SuppressWarnings("UnusedDeclaration")
 public class CertUtils {
-  public final static Logger LOGGER = LoggerFactory.getLogger(CertUtils.class);
+  private static final System.Logger log = System.getLogger(CertUtils.class.getName());
   public static final String CA_STORE = "CA";
   public static final String ROOT_STORE = "ROOT";
 
@@ -243,9 +241,9 @@ public class CertUtils {
           if (!res.containsKey(ci.containerName))
             res.put(ci.containerName, ci);
         } else
-          LOGGER.warn("Skipping container w/o certificate: " + container);
+          log.log(System.Logger.Level.WARNING, "Skipping container w/o certificate: " + container);
       } catch (CryptoException e) {
-        LOGGER.warn("Skipping container: " + container, e);
+        log.log(System.Logger.Level.WARNING, "Skipping container: " + container, e);
       }
     }
   }
@@ -283,7 +281,7 @@ public class CertUtils {
                 Advapi.cryptReleaseContext(provHandle.getValue());
             }
           else
-            LOGGER.warn("Skipping certificate w/o private key: " + encodeAlias(generateCertificate(certEncoded)));
+            log.log(System.Logger.Level.WARNING, "Skipping certificate w/o private key: " + encodeAlias(generateCertificate(certEncoded)));
         }
       } while (certContext != null);
     } finally {

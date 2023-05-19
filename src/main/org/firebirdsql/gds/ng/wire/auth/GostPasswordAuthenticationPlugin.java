@@ -3,8 +3,6 @@ package org.firebirdsql.gds.ng.wire.auth;
 import org.firebirdsql.gds.impl.wire.ByteBuffer;
 import org.firebirdsql.gds.impl.wire.auth.*;
 import org.firebirdsql.gds.ng.wire.auth.legacy.LegacyHash;
-import org.firebirdsql.logging.Logger;
-import org.firebirdsql.logging.LoggerFactory;
 
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -14,7 +12,7 @@ import java.util.Arrays;
  */
 public class GostPasswordAuthenticationPlugin implements AuthenticationPlugin {
 
-    private static final Logger log = LoggerFactory.getLogger(GostPasswordAuthenticationPlugin.class);
+    private static final System.Logger log = System.getLogger(GostPasswordAuthenticationPlugin.class.getName());
 
     public static final String GOST_PASSWORD_AUTH_NAME = "GostPassword";
 
@@ -30,7 +28,7 @@ public class GostPasswordAuthenticationPlugin implements AuthenticationPlugin {
     @Override
     public AuthStatus authenticate(ClientAuthBlock clientAuthBlock) throws SQLException {
         if (authSspi == null) {
-            log.debug("GostPassword phase 1");
+            log.log(System.Logger.Level.DEBUG, "GostPassword phase 1");
             authSspi = AuthSspiFactory.createAuthSspi(AuthSspiFactory.Type.TYPE4);
 
             ByteBuffer data = new ByteBuffer(0);
@@ -58,7 +56,7 @@ public class GostPasswordAuthenticationPlugin implements AuthenticationPlugin {
             return AuthStatus.AUTH_MORE_DATA;
         }
 
-        log.debug("GostPassword phase 2");
+        log.log(System.Logger.Level.DEBUG, "GostPassword phase 2");
         ByteBuffer data = new ByteBuffer(0);
         if (serverData != null)
             data.add(serverData);
