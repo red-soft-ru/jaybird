@@ -33,20 +33,20 @@ public class WireWinCryptEncryptionPlugin implements EncryptionPlugin {
     }
 
     @Override
-    public EncryptionIdentifier getEncryptionIdentifier() {
+    public EncryptionIdentifier encryptionIdentifier() {
         return WireWinCryptEncryptionPluginSpi.WIRE_WINCRYPT_ID;
     }
 
     @Override
     public EncryptionInitInfo initializeEncryption() {
         SQLExceptionChainBuilder<SQLException> chainBuilder = new SQLExceptionChainBuilder<>();
-        Cipher encryptionCipher = createEncryptionCipher(cryptSessionConfig.getEncryptKey(), chainBuilder);
-        Cipher decryptionCipher = createDecryptionCipher(cryptSessionConfig.getDecryptKey(), chainBuilder);
+        Cipher encryptionCipher = createEncryptionCipher(cryptSessionConfig.encryptKey(), chainBuilder);
+        Cipher decryptionCipher = createDecryptionCipher(cryptSessionConfig.decryptKey(), chainBuilder);
 
         if (chainBuilder.hasException()) {
-            return EncryptionInitInfo.failure(getEncryptionIdentifier(), chainBuilder.getException());
+            return EncryptionInitInfo.failure(encryptionIdentifier(), chainBuilder.getException());
         }
-        return EncryptionInitInfo.success(getEncryptionIdentifier(), encryptionCipher, decryptionCipher);
+        return EncryptionInitInfo.success(encryptionIdentifier(), encryptionCipher, decryptionCipher);
     }
 
     private Cipher createEncryptionCipher(byte[] key, SQLExceptionChainBuilder<SQLException> chainBuilder) {
@@ -83,11 +83,11 @@ public class WireWinCryptEncryptionPlugin implements EncryptionPlugin {
             return instance;
         } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
             throw new FbExceptionBuilder().nonTransientException(jb_cryptAlgorithmNotAvailable)
-                    .messageParameter(getEncryptionIdentifier().toString())
+                    .messageParameter(encryptionIdentifier().toString())
                     .cause(e).toFlatSQLException();
         } catch (InvalidKeyException | IllegalArgumentException e) {
             throw new FbExceptionBuilder().nonTransientException(jb_cryptInvalidKey)
-                    .messageParameter(getEncryptionIdentifier().toString())
+                    .messageParameter(encryptionIdentifier().toString())
                     .cause(e).toFlatSQLException();
         }
     }

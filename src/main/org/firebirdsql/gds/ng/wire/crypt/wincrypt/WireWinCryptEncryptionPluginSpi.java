@@ -17,7 +17,7 @@ public class WireWinCryptEncryptionPluginSpi implements EncryptionPluginSpi {
     static final EncryptionIdentifier WIRE_WINCRYPT_ID = new EncryptionIdentifier("Symmetric", "Wire_WinCrypt");
 
     @Override
-    public EncryptionIdentifier getEncryptionIdentifier() {
+    public EncryptionIdentifier encryptionIdentifier() {
         return WIRE_WINCRYPT_ID;
     }
 

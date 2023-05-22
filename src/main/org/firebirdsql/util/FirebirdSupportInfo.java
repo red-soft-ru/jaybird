@@ -20,6 +20,9 @@ package org.firebirdsql.util;
 
 import org.firebirdsql.gds.impl.GDSServerVersion;
 import org.firebirdsql.gds.ng.FbAttachment;
+import org.firebirdsql.gds.ng.wire.auth.CertificateAuthenticationPluginSpi;
+import org.firebirdsql.gds.ng.wire.auth.GostPasswordAuthenticationPluginSpi;
+import org.firebirdsql.gds.ng.wire.auth.MultifactorAuthenticationPluginSpi;
 import org.firebirdsql.gds.ng.wire.auth.legacy.LegacyAuthenticationPluginSpi;
 import org.firebirdsql.gds.ng.wire.auth.srp.Srp224AuthenticationPluginSpi;
 import org.firebirdsql.gds.ng.wire.auth.srp.Srp256AuthenticationPluginSpi;
@@ -461,6 +464,10 @@ public final class FirebirdSupportInfo {
         return isVersionEqualOrAbove(4);
     }
 
+    public boolean supportsWireCryptChaCha64() {
+        return isVersionEqualOrAbove(4, 0, 1);
+    }
+
     /**
      * @return {@code true} when zlib wire compression is supported
      */
@@ -505,6 +512,9 @@ public final class FirebirdSupportInfo {
         case Srp256AuthenticationPluginSpi.SRP_256_AUTH_NAME:
         case Srp384AuthenticationPluginSpi.SRP_384_AUTH_NAME:
         case Srp512AuthenticationPluginSpi.SRP_512_AUTH_NAME:
+        case MultifactorAuthenticationPluginSpi.MULTIFACTOR_AUTH_NAME:
+        case CertificateAuthenticationPluginSpi.CERTIFICATE_AUTH_NAME:
+        case GostPasswordAuthenticationPluginSpi.GOST_PASSWORD_AUTH_NAME:
             return isVersionEqualOrAbove(3, 0, 4);
         default:
             return false;
