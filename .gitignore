@@ -20,3 +20,6 @@ classes/
 
 # Ignore Gradle build output directory
 build
+
+# Ignore Maven build output directory
+target/
