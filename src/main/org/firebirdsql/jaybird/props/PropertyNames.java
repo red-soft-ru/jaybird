@@ -61,6 +61,8 @@ public final class PropertyNames {
     public static final String wireCompression = "wireCompression";
     public static final String enableProtocol = "enableProtocol";
     public static final String parallelWorkers = "parallelWorkers";
+    // NOTE: Only used/works for first native or embedded connection
+    public static final String nativeLibraryPath = "nativeLibraryPath";
     public static final String certificate = "certificate";
     public static final String certificateBase64 = "certificateBase64";
     public static final String effectiveLogin = "effectiveLogin";
