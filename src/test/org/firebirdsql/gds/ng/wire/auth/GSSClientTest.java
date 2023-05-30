@@ -3,7 +3,7 @@ package org.firebirdsql.gds.ng.wire.auth;
 import org.firebirdsql.common.extension.GdsTypeExtension;
 import org.firebirdsql.common.extension.UsesDatabaseExtension;
 import org.firebirdsql.gds.impl.jni.EmbeddedGDSFactoryPlugin;
-import org.firebirdsql.gds.impl.nativeoo.FbOOEmbeddedGDSFactoryPlugin;
+import org.firebirdsql.gds.impl.jni.FbOOEmbeddedGDSFactoryPlugin;
 import org.firebirdsql.jdbc.FBConnection;
 import org.ietf.jgss.GSSContext;
 import org.ietf.jgss.GSSManager;

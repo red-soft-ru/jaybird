@@ -37,16 +37,11 @@ allprojects {
 java {
     withJavadocJar()
     withSourcesJar()
-    registerFeature('native') {
-        usingSourceSet(sourceSets.main)
-    }
 }
 
 dependencies {
-    nativeImplementation libs.jna
-    nativeImplementation libs.jna.platform
-
-    compileOnly libs.bundles.servlet.api
+    implementation libs.jna
+    implementation libs.jna.platform
 
     // Use JUnit Jupiter API for testing.
     testImplementation platform(testLibs.junit.bom)
@@ -59,6 +54,8 @@ dependencies {
     testImplementation testLibs.bundles.mockito
 
     testImplementation testLibs.awaitility
+    // A lot (if not all) tests for jaybird-native are in the main project given dependencies on test infrastructure
+    testImplementation project('jaybird-native')
     if (findProperty('test.chacha64') != 'disabled') {
         testRuntimeOnly project('chacha64-plugin')
     }
@@ -67,7 +64,7 @@ dependencies {
 sourceSets {
     main {
         java {
-            srcDirs = ['src/main', 'src/extern', 'src/jna-client', 'src/nativeoo']
+            srcDirs = ['src/main', 'src/extern']
         }
         resources {
             srcDirs = ['src/resources']
@@ -89,7 +86,7 @@ sourceSets {
     }
     test {
         java {
-            srcDirs = ['src/test', 'src/jna-test', 'src/nativeoo-test']
+            srcDirs = ['src/test', 'src/jna-test']
         }
         resources {
             srcDirs = ['src/test_resources']
@@ -161,6 +158,8 @@ task cryptoapi_sec_sourcesJar(type: Jar, dependsOn: classes) {
 }
 
 tasks.register('dist', Zip) {
+    duplicatesStrategy(DuplicatesStrategy.EXCLUDE)
+
     dependsOn assemble, asciidoctor
     destinationDirectory = file("$buildDir/dist")
 
@@ -193,6 +192,14 @@ tasks.register('dist', Zip) {
     from chacha64.javadocJar.outputs
     from chacha64.sourcesJar.outputs
     from(chacha64.configurations.runtimeClasspath) {
+        exclude 'jaybird-*'
+        into 'lib'
+    }
+    def jaybirdNative = project('jaybird-native')
+    from jaybirdNative.jar.outputs
+    from jaybirdNative.javadocJar.outputs
+    from jaybirdNative.sourcesJar.outputs
+    from(jaybirdNative.configurations.runtimeClasspath) {
         exclude 'jaybird-*'
         into 'lib'
     }

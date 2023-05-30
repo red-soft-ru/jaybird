@@ -103,7 +103,7 @@
 		<test.db.dir>/tmp/db</test.db.dir>
 		<test.db.lc_ctype>NONE</test.db.lc_ctype>
 		<test.report.dir>${basedir}/../../reports</test.report.dir>
-		<test.java.jvm>/usr/java17/bin/java</test.java.jvm>
+		<test.java.jvm>/usr/lib/jvm/java-17-openjdk-amd64/bin/java</test.java.jvm>
 		<test.use.firebird.autocommit>false</test.use.firebird.autocommit>
 		<report_name>jdk${jdk.version}</report_name>
 	</properties>
@@ -150,9 +150,7 @@
 							<sources>
 								<source>../../src/extern</source>
 								<source>../../src/main</source>
-								<source>../../src/jna-client</source>
 								<source>../../src/openoffice</source>
-								<source>../../src/nativeoo</source>
 							</sources>
 						</configuration>
 					</execution>
@@ -164,11 +162,26 @@
 						</goals>
 						<configuration>
 							<sources>
+								<source>../../jaybird-native/src/main/java/</source>
 								<source>../../src/cryptoapi/</source>
 								<source>../../src/test/</source>
 								<source>../../src/jna-test/</source>
 								<source>../../src/nativeoo-test/</source>
 							</sources>
+						</configuration>
+					</execution>
+					<execution>
+						<id>add-test-resource</id>
+						<phase>generate-test-resources</phase>
+						<goals>
+							<goal>add-test-resource</goal>
+						</goals>
+						<configuration>
+							<resources>
+								<resource>
+									<directory>../../jaybird-native/src/main/resources/</directory>
+								</resource>
+							</resources>
 						</configuration>
 					</execution>
 				</executions>
@@ -217,9 +230,7 @@
 					<sourcepath>
 						../../src/main:
 						../../src/extern:
-						../../src/jna-client:
 						../../src/openoffice:
-						../../src/nativeoo:
 					</sourcepath>
 					<excludePackageNames>${excludedPackages}</excludePackageNames>
 					<detectJavaApiLink>false</detectJavaApiLink>
