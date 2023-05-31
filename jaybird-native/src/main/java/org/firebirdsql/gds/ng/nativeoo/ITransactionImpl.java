@@ -3,8 +3,8 @@ package org.firebirdsql.gds.ng.nativeoo;
 import org.firebirdsql.gds.ng.AbstractFbTransaction;
 import org.firebirdsql.gds.ng.LockCloseable;
 import org.firebirdsql.gds.ng.TransactionState;
-import org.firebirdsql.gds.ng.nativeoo.FbInterface.IStatus;
-import org.firebirdsql.gds.ng.nativeoo.FbInterface.ITransaction;
+import org.firebirdsql.jna.fbclient.FbInterface.IStatus;
+import org.firebirdsql.jna.fbclient.FbInterface.ITransaction;
 
 import java.sql.SQLException;
 

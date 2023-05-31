@@ -12,7 +12,7 @@ import org.firebirdsql.gds.ng.WarningMessageCallback;
 import org.firebirdsql.gds.ng.jna.BigEndianDatatypeCoder;
 import org.firebirdsql.gds.ng.jna.LittleEndianDatatypeCoder;
 import org.firebirdsql.jna.fbclient.FbClientLibrary;
-import org.firebirdsql.gds.ng.nativeoo.FbInterface.IStatus;
+import org.firebirdsql.jna.fbclient.FbInterface.IStatus;
 
 import java.nio.ByteOrder;
 import java.sql.SQLException;

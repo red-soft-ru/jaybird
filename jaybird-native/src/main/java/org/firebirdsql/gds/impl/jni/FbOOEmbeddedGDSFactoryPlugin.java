@@ -7,6 +7,11 @@ import java.sql.SQLException;
 import java.sql.SQLNonTransientConnectionException;
 import java.util.List;
 
+/**
+ * GDS factory plugin implementation for embedded OO API
+ *
+ * @since 4.0
+ */
 public class FbOOEmbeddedGDSFactoryPlugin extends BaseGDSFactoryPlugin {
 
     public static final String EMBEDDED_TYPE_NAME = "FBOOEMBEDDED";

@@ -4,6 +4,7 @@ import com.sun.jna.Native;
 import org.firebirdsql.gds.JaybirdSystemProperties;
 import org.firebirdsql.gds.ng.IAttachProperties;
 import org.firebirdsql.jna.fbclient.FbClientLibrary;
+import org.firebirdsql.jna.fbclient.FbInterface;
 
 import java.util.ArrayList;
 import java.util.Arrays;

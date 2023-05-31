@@ -17,12 +17,13 @@ import java.util.Map;
  * @author <a href="mailto:vasiliy.yashkov@red-soft.ru">Vasiliy Yashkov</a>
  * @since 4.0
  */
-public class IParameterConverterImpl extends AbstractParameterConverter<NativeDatabaseConnection, IServiceConnectionImpl> {
+public class IParameterConverterImpl extends AbstractParameterConverter<NativeDatabaseConnection,
+        IServiceConnectionImpl> {
 
     @Override
-    protected void populateAuthenticationProperties(final AbstractConnection connection,
+    protected void populateAuthenticationProperties(final AbstractConnection<?, ?> connection,
                                                     final ConnectionParameterBuffer pb) throws SQLException {
-        IAttachProperties props = connection.getAttachProperties();
+        IAttachProperties<?> props = connection.getAttachProperties();
         ParameterTagMapping tagMapping = pb.getTagMapping();
         if (props.getUser() != null) {
             pb.addArgument(tagMapping.getUserNameTag(), props.getUser());

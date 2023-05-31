@@ -6,8 +6,9 @@ import org.firebirdsql.encodings.Encoding;
 import org.firebirdsql.gds.EventHandler;
 import org.firebirdsql.gds.ng.AbstractEventHandle;
 import org.firebirdsql.gds.ng.jna.JnaEventHandle;
-import org.firebirdsql.gds.ng.nativeoo.FbInterface.IEventCallback;
-import org.firebirdsql.gds.ng.nativeoo.FbInterface.IEventCallbackIntf;
+import org.firebirdsql.jna.fbclient.CloseableMemory;
+import org.firebirdsql.jna.fbclient.FbInterface.IEventCallback;
+import org.firebirdsql.jna.fbclient.FbInterface.IEventCallbackIntf;
 
 /**
  * Event handle for the native OO API.

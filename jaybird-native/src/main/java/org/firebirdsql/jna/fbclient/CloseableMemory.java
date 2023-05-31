@@ -1,4 +1,4 @@
-package org.firebirdsql.gds.ng.nativeoo;
+package org.firebirdsql.jna.fbclient;
 
 import com.sun.jna.Memory;
 

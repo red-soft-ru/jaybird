@@ -2,9 +2,9 @@ package org.firebirdsql.gds.ng.nativeoo;
 
 import org.firebirdsql.gds.ng.FbMessageMetadata;
 import org.firebirdsql.gds.ng.FbMetadataBuilder;
-import org.firebirdsql.gds.ng.nativeoo.FbInterface.IMessageMetadata;
-import org.firebirdsql.gds.ng.nativeoo.FbInterface.IMetadataBuilder;
-import org.firebirdsql.gds.ng.nativeoo.FbInterface.IStatus;
+import org.firebirdsql.jna.fbclient.FbInterface.IMessageMetadata;
+import org.firebirdsql.jna.fbclient.FbInterface.IMetadataBuilder;
+import org.firebirdsql.jna.fbclient.FbInterface.IStatus;
 
 import java.sql.SQLException;
 

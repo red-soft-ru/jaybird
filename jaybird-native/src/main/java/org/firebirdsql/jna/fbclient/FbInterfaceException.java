@@ -1,4 +1,4 @@
-package org.firebirdsql.gds.ng.nativeoo;
+package org.firebirdsql.jna.fbclient;
 
 /**
  * Class with for wrapping an exception thrown by the native interface.

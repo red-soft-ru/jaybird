@@ -3,6 +3,7 @@ package org.firebirdsql.gds.ng.nativeoo;
 import com.sun.jna.Native;
 import org.firebirdsql.gds.JaybirdSystemProperties;
 import org.firebirdsql.jna.fbclient.FbClientLibrary;
+import org.firebirdsql.jna.fbclient.FbInterface;
 
 /**
  * Implementation of {@link org.firebirdsql.gds.ng.nativeoo.AbstractNativeOODatabaseFactory} to connect with native

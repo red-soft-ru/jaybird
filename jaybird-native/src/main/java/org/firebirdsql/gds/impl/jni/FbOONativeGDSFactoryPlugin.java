@@ -7,6 +7,11 @@ import java.sql.SQLException;
 import java.sql.SQLNonTransientConnectionException;
 import java.util.List;
 
+/**
+ * GDS factory plugin implementation for native OO API
+ *
+ * @since 4.0
+ */
 public class FbOONativeGDSFactoryPlugin extends BaseGDSFactoryPlugin {
 
     public static final String NATIVE_TYPE_NAME = "FBOONATIVE";

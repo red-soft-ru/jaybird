@@ -20,14 +20,14 @@ import org.firebirdsql.gds.ng.StatementType;
 import org.firebirdsql.gds.ng.fields.*;
 import org.firebirdsql.gds.impl.BatchParameterBufferImp;
 import org.firebirdsql.jna.fbclient.XSQLVAR;
-import org.firebirdsql.gds.ng.nativeoo.FbInterface.IBatch;
-import org.firebirdsql.gds.ng.nativeoo.FbInterface.IMaster;
-import org.firebirdsql.gds.ng.nativeoo.FbInterface.IMessageMetadata;
-import org.firebirdsql.gds.ng.nativeoo.FbInterface.IMetadataBuilder;
-import org.firebirdsql.gds.ng.nativeoo.FbInterface.IResultSet;
-import org.firebirdsql.gds.ng.nativeoo.FbInterface.IStatement;
-import org.firebirdsql.gds.ng.nativeoo.FbInterface.IStatementIntf;
-import org.firebirdsql.gds.ng.nativeoo.FbInterface.IStatus;
+import org.firebirdsql.jna.fbclient.FbInterface.IBatch;
+import org.firebirdsql.jna.fbclient.FbInterface.IMaster;
+import org.firebirdsql.jna.fbclient.FbInterface.IMessageMetadata;
+import org.firebirdsql.jna.fbclient.FbInterface.IMetadataBuilder;
+import org.firebirdsql.jna.fbclient.FbInterface.IResultSet;
+import org.firebirdsql.jna.fbclient.FbInterface.IStatement;
+import org.firebirdsql.jna.fbclient.FbInterface.IStatementIntf;
+import org.firebirdsql.jna.fbclient.FbInterface.IStatus;
 
 import java.nio.ByteBuffer;
 import java.sql.SQLException;
@@ -165,7 +165,7 @@ public class IStatementImpl extends AbstractFbStatement {
             reset(false);
 
             switchState(StatementState.EXECUTING);
-            if (this.statement.vTable.version >= IStatementIntf.VERSION)
+            if (this.statement.getVTable().version >= IStatementIntf.VERSION)
                 updateStatementTimeout();
 
             setMetaData(getParameterDescriptor(), parameters);

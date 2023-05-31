@@ -2,13 +2,13 @@ package org.firebirdsql.gds.ng.nativeoo;
 
 import org.firebirdsql.gds.ng.BatchCompletion;
 import org.firebirdsql.gds.ng.FbBatchCompletionState;
-import org.firebirdsql.gds.ng.nativeoo.FbInterface.IBatchCompletionState;
-import org.firebirdsql.gds.ng.nativeoo.FbInterface.IStatus;
-import org.firebirdsql.gds.ng.nativeoo.FbInterface.IUtil;
+import org.firebirdsql.jna.fbclient.CloseableMemory;
+import org.firebirdsql.jna.fbclient.FbInterface.IBatchCompletionState;
+import org.firebirdsql.jna.fbclient.FbInterface.IStatus;
+import org.firebirdsql.jna.fbclient.FbInterface.IUtil;
 
 import java.sql.SQLException;
 import java.util.*;
-import java.util.stream.IntStream;
 
 /**
  * Implementation of {@link org.firebirdsql.gds.ng.FbBatchCompletionState} for native batch execution.

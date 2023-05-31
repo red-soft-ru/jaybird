@@ -8,9 +8,10 @@ import org.firebirdsql.gds.ng.FbBlob;
 import org.firebirdsql.gds.ng.FbExceptionBuilder;
 import org.firebirdsql.gds.ng.LockCloseable;
 import org.firebirdsql.gds.ng.listeners.DatabaseListener;
-import org.firebirdsql.gds.ng.nativeoo.FbInterface.IAttachment;
-import org.firebirdsql.gds.ng.nativeoo.FbInterface.IBlob;
-import org.firebirdsql.gds.ng.nativeoo.FbInterface.IStatus;
+import org.firebirdsql.jna.fbclient.CloseableMemory;
+import org.firebirdsql.jna.fbclient.FbInterface.IAttachment;
+import org.firebirdsql.jna.fbclient.FbInterface.IBlob;
+import org.firebirdsql.jna.fbclient.FbInterface.IStatus;
 
 import java.nio.ByteBuffer;
 import java.sql.SQLException;

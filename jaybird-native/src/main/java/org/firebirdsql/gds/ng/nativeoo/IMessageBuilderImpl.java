@@ -12,7 +12,7 @@ import java.sql.SQLException;
  * @author <a href="mailto:vasiliy.yashkov@red-soft.ru">Vasiliy Yashkov</a>
  * @since 4.0
  */
-public class IMessageBuilderImpl extends AbstractFbMessageBuilder {
+public class IMessageBuilderImpl extends AbstractFbMessageBuilder<FbBatch> {
 
     public IMessageBuilderImpl(FbBatch batch) throws SQLException {
         super(batch);

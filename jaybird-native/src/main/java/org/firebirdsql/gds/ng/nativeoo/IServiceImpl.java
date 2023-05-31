@@ -14,10 +14,11 @@ import org.firebirdsql.gds.ng.ParameterConverter;
 import org.firebirdsql.gds.ng.WarningMessageCallback;
 import org.firebirdsql.jdbc.FBDriverNotCapableException;
 import org.firebirdsql.jna.fbclient.FbClientLibrary;
-import org.firebirdsql.gds.ng.nativeoo.FbInterface.IMaster;
-import org.firebirdsql.gds.ng.nativeoo.FbInterface.IProvider;
-import org.firebirdsql.gds.ng.nativeoo.FbInterface.IService;
-import org.firebirdsql.gds.ng.nativeoo.FbInterface.IStatus;
+import org.firebirdsql.jna.fbclient.FbInterface;
+import org.firebirdsql.jna.fbclient.FbInterface.IMaster;
+import org.firebirdsql.jna.fbclient.FbInterface.IProvider;
+import org.firebirdsql.jna.fbclient.FbInterface.IService;
+import org.firebirdsql.jna.fbclient.FbInterface.IStatus;
 
 import java.sql.SQLException;
 

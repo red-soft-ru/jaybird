@@ -35,7 +35,7 @@ public class NativeDatabaseConnection extends AbstractNativeConnection<IConnecti
      *
      * @param clientLibrary    Client library to use
      * @param attachProperties Attach properties
-     * @param encodingFactory Factory for encoding definitions
+     * @param encodingFactory  Factory for encoding definitions
      */
     protected NativeDatabaseConnection(FbClientLibrary clientLibrary, IConnectionProperties attachProperties,
                                        IEncodingFactory encodingFactory) throws SQLException {

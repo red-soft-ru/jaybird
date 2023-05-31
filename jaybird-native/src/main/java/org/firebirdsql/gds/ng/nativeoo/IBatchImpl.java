@@ -14,10 +14,11 @@ import org.firebirdsql.gds.ng.FbTransaction;
 import org.firebirdsql.gds.ng.LockCloseable;
 import org.firebirdsql.gds.ng.fields.RowValue;
 import org.firebirdsql.jdbc.FBBlob;
-import org.firebirdsql.gds.ng.nativeoo.FbInterface.IAttachment;
-import org.firebirdsql.gds.ng.nativeoo.FbInterface.IBatch;
-import org.firebirdsql.gds.ng.nativeoo.FbInterface.IBatchCompletionState;
-import org.firebirdsql.gds.ng.nativeoo.FbInterface.IStatus;
+import org.firebirdsql.jna.fbclient.CloseableMemory;
+import org.firebirdsql.jna.fbclient.FbInterface.IAttachment;
+import org.firebirdsql.jna.fbclient.FbInterface.IBatch;
+import org.firebirdsql.jna.fbclient.FbInterface.IBatchCompletionState;
+import org.firebirdsql.jna.fbclient.FbInterface.IStatus;
 
 import java.io.IOException;
 import java.sql.SQLException;
