@@ -27,9 +27,6 @@ import java.util.List;
  * @since 4.0
  */
 public abstract class AbstractFbBatch implements FbBatch {
-
-    public static final String METHOD_NOT_SUPPORTED =
-            "This method is only supported on Statement and not supported on PreparedStatement and CallableStatement";
     private static final String UNICODE_STREAM_NOT_SUPPORTED = "Unicode stream not supported.";
 
     protected final ExceptionListenerDispatcher exceptionListenerDispatcher = new ExceptionListenerDispatcher(this);
@@ -225,7 +222,8 @@ public abstract class AbstractFbBatch implements FbBatch {
      */
     protected FBField getField(int columnIndex) throws SQLException {
         if (columnIndex > fields.length) {
-            throw new SQLException("Invalid column index: " + columnIndex, SQLStateConstants.SQL_STATE_INVALID_COLUMN);
+            throw new SQLException("Invalid column index: " + columnIndex,
+                    SQLStateConstants.SQL_STATE_INVALID_DESC_FIELD_ID);
         }
 
         return fields[columnIndex - 1];
