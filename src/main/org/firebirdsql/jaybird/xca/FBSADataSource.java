@@ -214,10 +214,6 @@ public class FBSADataSource implements DataSource, Serializable, Referenceable, 
         return mcf.getType();
     }
 
-    public boolean isTimestampUsesLocalTimezone() {
-        return mcf.isTimestampUsesLocalTimezone();
-    }
-
     public boolean isUseStreamBlobs() {
         return mcf.isUseStreamBlobs();
     }
@@ -252,10 +248,6 @@ public class FBSADataSource implements DataSource, Serializable, Referenceable, 
 
     public void setSqlDialect(int sqlDialect) {
         mcf.setSqlDialect(sqlDialect);
-    }
-
-    public void setTimestampUsesLocalTimezone(boolean timestampUsesLocalTimezone) {
-        mcf.setTimestampUsesLocalTimezone(timestampUsesLocalTimezone);
     }
 
     public void setTransactionParameters(int isolation, TransactionParameterBuffer tpb) {
