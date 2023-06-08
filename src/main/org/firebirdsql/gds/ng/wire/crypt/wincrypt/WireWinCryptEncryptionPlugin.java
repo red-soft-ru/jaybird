@@ -82,11 +82,11 @@ public class WireWinCryptEncryptionPlugin implements EncryptionPlugin {
             instance.init(mode, wireWinCryptKey);
             return instance;
         } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
-            throw new FbExceptionBuilder().nonTransientException(jb_cryptAlgorithmNotAvailable)
+            throw FbExceptionBuilder.forNonTransientException(jb_cryptAlgorithmNotAvailable)
                     .messageParameter(encryptionIdentifier().toString())
                     .cause(e).toFlatSQLException();
         } catch (InvalidKeyException | IllegalArgumentException e) {
-            throw new FbExceptionBuilder().nonTransientException(jb_cryptInvalidKey)
+            throw FbExceptionBuilder.forNonTransientException(jb_cryptInvalidKey)
                     .messageParameter(encryptionIdentifier().toString())
                     .cause(e).toFlatSQLException();
         }

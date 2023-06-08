@@ -49,7 +49,7 @@ public class AuthFactorCertificate extends AuthFactor {
       if (data.getLength() != 1)
         throw new SQLException("Error processing " + getFactorName() + " factor");
       if (data.get(0) == 0)
-        throw new FbExceptionBuilder().exception(ISCConstants.isc_login).cause(
+        throw FbExceptionBuilder.forException(ISCConstants.isc_login).cause(
               new Throwable("Bad " + getFactorName() + " factor")).toSQLException();
       return true;
     }

@@ -16,7 +16,7 @@ public abstract class AuthCryptoPlugin {
 
   public static AuthCryptoPlugin getPlugin() throws SQLException {
     if (_plugin == null)
-      throw new FbExceptionBuilder().exception(ISCConstants.isc_login).cause(
+      throw FbExceptionBuilder.forException(ISCConstants.isc_login).cause(
               new Throwable("Crypto plugin is not installed. Please, register with AuthCryptoPlugin#register(AuthCryptoPlugin).")).toSQLException();
     return _plugin;
   }

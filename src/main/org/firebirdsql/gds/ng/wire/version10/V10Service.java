@@ -18,7 +18,9 @@
  */
 package org.firebirdsql.gds.ng.wire.version10;
 
-import org.firebirdsql.gds.*;
+import org.firebirdsql.gds.ClumpletReader;
+import org.firebirdsql.gds.ServiceParameterBuffer;
+import org.firebirdsql.gds.ServiceRequestBuffer;
 import org.firebirdsql.gds.impl.wire.XdrOutputStream;
 import org.firebirdsql.gds.impl.wire.auth.AuthSspi;
 import org.firebirdsql.gds.ng.FbExceptionBuilder;
@@ -59,14 +61,12 @@ public class V10Service extends AbstractFbWireService implements FbWireService {
                         sendAttachToBuffer(spb);
                         getXdrOut().flush();
                     } catch (IOException e) {
-                        throw new FbExceptionBuilder().exception(ISCConstants.isc_net_write_err).cause(e)
-                                .toSQLException();
+                        throw FbExceptionBuilder.ioWriteError(e);
                     }
                     try {
                         authReceiveResponse(null);
                     } catch (IOException e) {
-                        throw new FbExceptionBuilder().exception(ISCConstants.isc_net_read_err).cause(e)
-                                .toSQLException();
+                        throw FbExceptionBuilder.ioReadError(e);
                     }
                 } catch (SQLException e) {
                     safelyDetach();
@@ -123,19 +123,15 @@ public class V10Service extends AbstractFbWireService implements FbWireService {
                 if (!spb.hasArgument(DpbItems.isc_dpb_password) && connection.getAttachProperties().getPassword() != null)
                     spb.addArgument(DpbItems.isc_dpb_password, connection.getAttachProperties().getPassword());
                 sspi = new AuthSspi();
-                try {
-                    sspi.setClumpletReaderType(ClumpletReader.Kind.Tagged);
-                    sspi.setSkipWireKeyTag(true);
-                    if (spb.hasArgument(DpbItems.isc_dpb_repository_pin))
-                        sspi.setRepositoryPin(connection.getAttachProperties().getRepositoryPin());
-                    if (spb.hasArgument(SpbItems.isc_spb_provider_id)) {
-                        sspi.setProviderID(spb.getArgumentAsInt(SpbItems.isc_spb_provider_id));
-                        spb.removeArgument(SpbItems.isc_spb_provider_id);
-                    }
-                    sspi.fillFactors(spb);
-                } catch (GDSException e) {
-                    throw new SQLException(e.getMessage());
+                sspi.setClumpletReaderType(ClumpletReader.Kind.Tagged);
+                sspi.setSkipWireKeyTag(true);
+                if (spb.hasArgument(DpbItems.isc_dpb_repository_pin))
+                    sspi.setRepositoryPin(connection.getAttachProperties().getRepositoryPin());
+                if (spb.hasArgument(SpbItems.isc_spb_provider_id)) {
+                    sspi.setProviderID(spb.getArgumentAsInt(SpbItems.isc_spb_provider_id));
+                    spb.removeArgument(SpbItems.isc_spb_provider_id);
                 }
+                sspi.fillFactors(spb);
             } else sspi = null;
 
             connection.setSspi(sspi);
@@ -163,21 +159,21 @@ public class V10Service extends AbstractFbWireService implements FbWireService {
                     }
                     xdrOut.writeInt(op_disconnect);
                     xdrOut.flush();
-                } catch (IOException ex) {
-                    throw new FbExceptionBuilder().exception(ISCConstants.isc_net_write_err).cause(ex).toSQLException();
+                } catch (IOException e) {
+                    throw FbExceptionBuilder.ioWriteError(e);
                 }
                 if (isAttached()) {
                     try {
                         // Consume op_detach response
                         wireOperations.readResponse(null);
-                    } catch (IOException ex) {
-                        throw new FbExceptionBuilder().exception(ISCConstants.isc_net_read_err).cause(ex).toSQLException();
+                    } catch (IOException e) {
+                        throw FbExceptionBuilder.ioReadError(e);
                     }
                 }
                 try {
                     closeConnection();
-                } catch (IOException ex) {
-                    throw new FbExceptionBuilder().exception(ISCConstants.isc_net_write_err).cause(ex).toSQLException();
+                } catch (IOException e) {
+                    throw FbExceptionBuilder.ioWriteError(e);
                 }
             } catch (SQLException ex) {
                 try {
@@ -207,14 +203,14 @@ public class V10Service extends AbstractFbWireService implements FbWireService {
                 xdrOut.writeInt(maxBufferLength);
 
                 xdrOut.flush();
-            } catch (IOException ex) {
-                throw new FbExceptionBuilder().exception(ISCConstants.isc_net_write_err).cause(ex).toSQLException();
+            } catch (IOException e) {
+                throw FbExceptionBuilder.ioWriteError(e);
             }
             try {
                 GenericResponse genericResponse = readGenericResponse(null);
                 return genericResponse.getData();
-            } catch (IOException ex) {
-                throw new FbExceptionBuilder().exception(ISCConstants.isc_net_read_err).cause(ex).toSQLException();
+            } catch (IOException e) {
+                throw FbExceptionBuilder.ioReadError(e);
             }
         } catch (SQLException e) {
             exceptionListenerDispatcher.errorOccurred(e);
@@ -234,13 +230,13 @@ public class V10Service extends AbstractFbWireService implements FbWireService {
                 xdrOut.writeBuffer(serviceRequestBuffer.toBytes());
 
                 xdrOut.flush();
-            } catch (IOException ex) {
-                throw new FbExceptionBuilder().exception(ISCConstants.isc_net_write_err).cause(ex).toSQLException();
+            } catch (IOException e) {
+                throw FbExceptionBuilder.ioWriteError(e);
             }
             try {
                 readGenericResponse(null);
-            } catch (IOException ex) {
-                throw new FbExceptionBuilder().exception(ISCConstants.isc_net_read_err).cause(ex).toSQLException();
+            } catch (IOException e) {
+                throw FbExceptionBuilder.ioReadError(e);
             }
         } catch (SQLException e) {
             exceptionListenerDispatcher.errorOccurred(e);

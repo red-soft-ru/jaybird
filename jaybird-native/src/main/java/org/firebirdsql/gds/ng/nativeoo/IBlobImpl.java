@@ -86,7 +86,7 @@ public class IBlobImpl extends AbstractFbBlob implements FbBlob, DatabaseListene
     public void open() throws SQLException {
         try {
             if (isOutput() && getBlobId() != NO_BLOB_ID) {
-                throw new FbExceptionBuilder().nonTransientException(ISCConstants.isc_segstr_no_op).toSQLException();
+                throw FbExceptionBuilder.forNonTransientException(ISCConstants.isc_segstr_no_op).toSQLException();
             }
 
             final BlobParameterBuffer blobParameterBuffer = getBlobParameterBuffer();
@@ -128,7 +128,7 @@ public class IBlobImpl extends AbstractFbBlob implements FbBlob, DatabaseListene
     public byte[] getSegment(int sizeRequested) throws SQLException {
         try {
             if (sizeRequested <= 0) {
-                throw new FbExceptionBuilder().exception(jb_blobGetSegmentNegative)
+                throw FbExceptionBuilder.forException(jb_blobGetSegmentNegative)
                         .messageParameter(sizeRequested)
                         .toSQLException();
             }
@@ -168,10 +168,10 @@ public class IBlobImpl extends AbstractFbBlob implements FbBlob, DatabaseListene
     public void putSegment(byte[] segment) throws SQLException {
         try {
             if (segment.length == 0) {
-                throw new FbExceptionBuilder().exception(jb_blobPutSegmentEmpty).toSQLException();
+                throw FbExceptionBuilder.forException(jb_blobPutSegmentEmpty).toSQLException();
             }
             if (segment.length > getMaximumSegmentSize()) {
-                throw new FbExceptionBuilder().exception(jb_blobPutSegmentTooLong).toSQLException();
+                throw FbExceptionBuilder.forException(jb_blobPutSegmentTooLong).toSQLException();
             }
             try (LockCloseable ignored = withLock()) {
                 checkDatabaseAttached();

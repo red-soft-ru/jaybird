@@ -304,12 +304,11 @@ public class IDatabaseImpl extends AbstractFbDatabase<NativeDatabaseConnection>
     }
 
     protected IEventImpl validateEventHandle(EventHandle eventHandle) throws SQLException {
-        if (!(eventHandle instanceof IEventImpl)) {
+        if (!(eventHandle instanceof IEventImpl event)) {
             // TODO SQLState and/or Firebird specific error
             throw new SQLNonTransientException(String.format("Invalid event handle type: %s, expected: %s",
                     eventHandle.getClass(), IEventImpl.class));
         }
-        IEventImpl event = (IEventImpl) eventHandle;
         if (event.getSize() == -1) {
             // TODO SQLState and/or Firebird specific error
             throw new SQLTransientException("Event handle hasn't been initialized");

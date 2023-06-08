@@ -19,7 +19,6 @@
 package org.firebirdsql.gds.ng.wire;
 
 import org.firebirdsql.encodings.Encoding;
-import org.firebirdsql.gds.GDSException;
 import org.firebirdsql.gds.ISCConstants;
 import org.firebirdsql.gds.JaybirdErrorCodes;
 import org.firebirdsql.gds.impl.wire.ByteBuffer;
@@ -142,8 +141,8 @@ public abstract class AbstractWireOperations implements FbWireOperations {
                 default -> builder.messageParameter(xdrIn.readInt());
                 }
             }
-        } catch (IOException ioe) {
-            throw new FbExceptionBuilder().exception(ISCConstants.isc_net_read_err).cause(ioe).toSQLException();
+        } catch (IOException e) {
+            throw FbExceptionBuilder.ioReadError(e);
         }
     }
 
@@ -157,21 +156,17 @@ public abstract class AbstractWireOperations implements FbWireOperations {
                 while (operation == op_trusted_auth) {
                     receiveAuthResponse(authData);
                     if (!sspi.request(authData)) {
-                        throw new FbExceptionBuilder()
-                            .nonTransientConnectionException(ISCConstants.isc_unavailable).toFlatSQLException();
+                        throw FbExceptionBuilder
+                            .forNonTransientConnectionException(ISCConstants.isc_unavailable).toFlatSQLException();
                     }
                     writeAuthData(authData);
                     operation = readNextOperation();
                 }
-            } catch (GDSException | IOException e) {
+            } catch (IOException e) {
                 throw new SQLException(e);
             } finally {
-                try {
-                    sspi.free();
-                    connection.setSspi(null);
-                } catch (GDSAuthException e) {
-                    throw new SQLException(e);
-                }
+                sspi.free();
+                connection.setSspi(null);
             }
         }
 
@@ -221,7 +216,7 @@ public abstract class AbstractWireOperations implements FbWireOperations {
             case op_batch_cs -> readBatchCompletionResponse(xdrIn);
             case op_crypt -> new SqlResponse(xdrIn.readInt());
             default ->
-                    throw new FbExceptionBuilder().nonTransientException(JaybirdErrorCodes.jb_unexpectedOperationCode)
+                    throw FbExceptionBuilder.forNonTransientException(JaybirdErrorCodes.jb_unexpectedOperationCode)
                             .messageParameter(operation)
                             .messageParameter("processOperation")
                             .toSQLException();
@@ -264,7 +259,7 @@ public abstract class AbstractWireOperations implements FbWireOperations {
         }
     }
 
-    private void receiveAuthResponse(ByteBuffer data) throws GDSException, SQLException {
+    private void receiveAuthResponse(ByteBuffer data) throws SQLException {
         final XdrInputStream xdrIn = getXdrIn();
         try {
             log.log(System.Logger.Level.DEBUG, "op_auth_response ");

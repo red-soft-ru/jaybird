@@ -288,7 +288,7 @@ public abstract class AbstractFbBlob implements FbBlob, TransactionListener, Dat
     protected void checkDatabaseAttached() throws SQLException {
         FbDatabase database = this.database;
         if (database == null || !database.isAttached()) {
-            throw new FbExceptionBuilder().nonTransientException(ISCConstants.isc_segstr_wrong_db).toSQLException();
+            throw FbExceptionBuilder.forNonTransientException(ISCConstants.isc_segstr_wrong_db).toSQLException();
         }
     }
 
@@ -299,7 +299,7 @@ public abstract class AbstractFbBlob implements FbBlob, TransactionListener, Dat
     protected void checkBlobOpen() throws SQLException {
         if (!isOpen()) {
             // TODO Use more specific exception message?
-            throw new FbExceptionBuilder().nonTransientException(ISCConstants.isc_bad_segstr_handle).toSQLException();
+            throw FbExceptionBuilder.forNonTransientException(ISCConstants.isc_bad_segstr_handle).toSQLException();
         }
     }
 
@@ -309,7 +309,7 @@ public abstract class AbstractFbBlob implements FbBlob, TransactionListener, Dat
      */
     protected void checkBlobClosed() throws SQLException {
         if (isOpen()) {
-            throw new FbExceptionBuilder().nonTransientException(ISCConstants.isc_no_segstr_close).toSQLException();
+            throw FbExceptionBuilder.forNonTransientException(ISCConstants.isc_no_segstr_close).toSQLException();
         }
     }
 

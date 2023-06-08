@@ -45,7 +45,6 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
-import java.sql.SQLNonTransientConnectionException;
 
 import static org.firebirdsql.gds.impl.wire.WireProtocolConstants.*;
 import static org.firebirdsql.gds.ng.TransactionHelper.checkTransactionActive;
@@ -119,14 +118,14 @@ public class V10Database extends AbstractFbWireDatabase implements FbWireDatabas
                     sendAttachOrCreateToBuffer(dpb, create);
                     getXdrOut().flush();
                 } catch (IOException e) {
-                    throw new FbExceptionBuilder().exception(ISCConstants.isc_net_write_err).cause(e).toSQLException();
+                    throw FbExceptionBuilder.ioWriteError(e);
                 }
                 try {
                     if (dpb.hasArgument(DpbItems.isc_dpb_gss))
                         gssReceiveResponse();
                     authReceiveResponse(null);
                 } catch (IOException e) {
-                    throw new FbExceptionBuilder().exception(ISCConstants.isc_net_read_err).cause(e).toSQLException();
+                    throw FbExceptionBuilder.ioReadError(e);
                 }
             } catch (SQLException e) {
                 safelyDetach();
@@ -256,21 +255,21 @@ public class V10Database extends AbstractFbWireDatabase implements FbWireDatabas
                     }
                     xdrOut.writeInt(op_disconnect);
                     xdrOut.flush();
-                } catch (IOException ex) {
-                    throw new FbExceptionBuilder().exception(ISCConstants.isc_net_write_err).cause(ex).toSQLException();
+                } catch (IOException e) {
+                    throw FbExceptionBuilder.ioWriteError(e);
                 }
                 if (isAttached()) {
                     try {
                         // Consume op_detach response
                         wireOperations.readResponse(null);
-                    } catch (IOException ex) {
-                        throw new FbExceptionBuilder().exception(ISCConstants.isc_net_read_err).cause(ex).toSQLException();
+                    } catch (IOException e) {
+                        throw FbExceptionBuilder.ioReadError(e);
                     }
                 }
                 try {
                     closeConnection();
-                } catch (IOException ex) {
-                    throw new FbExceptionBuilder().exception(ISCConstants.isc_net_write_err).cause(ex).toSQLException();
+                } catch (IOException e) {
+                    throw FbExceptionBuilder.ioWriteError(e);
                 }
             } catch (SQLException ex) {
                 try {
@@ -306,15 +305,13 @@ public class V10Database extends AbstractFbWireDatabase implements FbWireDatabas
                     xdrOut.writeInt(op_drop_database);
                     xdrOut.writeInt(0);
                     xdrOut.flush();
-                } catch (IOException ioex) {
-                    throw new FbExceptionBuilder().exception(ISCConstants.isc_net_write_err).cause(ioex)
-                            .toSQLException();
+                } catch (IOException e) {
+                    throw FbExceptionBuilder.ioWriteError(e);
                 }
                 try {
                     readResponse(null);
-                } catch (IOException ioex) {
-                    throw new FbExceptionBuilder().exception(ISCConstants.isc_net_read_err).cause(ioex)
-                            .toSQLException();
+                } catch (IOException e) {
+                    throw FbExceptionBuilder.ioReadError(e);
                 }
             } finally {
                 try {
@@ -340,8 +337,8 @@ public class V10Database extends AbstractFbWireDatabase implements FbWireDatabas
                 xdrOut.writeInt(0);
                 xdrOut.writeTyped(tpb);
                 xdrOut.flush();
-            } catch (IOException ioex) {
-                throw new FbExceptionBuilder().exception(ISCConstants.isc_net_write_err).cause(ioex).toSQLException();
+            } catch (IOException e) {
+                throw FbExceptionBuilder.ioWriteError(e);
             }
             try {
                 final GenericResponse response = readGenericResponse(null);
@@ -349,8 +346,8 @@ public class V10Database extends AbstractFbWireDatabase implements FbWireDatabas
                         response.getObjectHandle(), TransactionState.ACTIVE);
                 transactionAdded(transaction);
                 return transaction;
-            } catch (IOException ioex) {
-                throw new FbExceptionBuilder().exception(ISCConstants.isc_net_read_err).cause(ioex).toSQLException();
+            } catch (IOException e) {
+                throw FbExceptionBuilder.ioReadError(e);
             }
         } catch (SQLException ex) {
             exceptionListenerDispatcher.errorOccurred(ex);
@@ -369,8 +366,8 @@ public class V10Database extends AbstractFbWireDatabase implements FbWireDatabas
                 final byte[] transactionIdBuffer = getTransactionIdBuffer(transactionId);
                 xdrOut.writeBuffer(transactionIdBuffer);
                 xdrOut.flush();
-            } catch (IOException ioex) {
-                throw new FbExceptionBuilder().exception(ISCConstants.isc_net_write_err).cause(ioex).toSQLException();
+            } catch (IOException e) {
+                throw FbExceptionBuilder.ioWriteError(e);
             }
 
             try {
@@ -379,8 +376,8 @@ public class V10Database extends AbstractFbWireDatabase implements FbWireDatabas
                         response.getObjectHandle(), TransactionState.PREPARED);
                 transactionAdded(transaction);
                 return transaction;
-            } catch (IOException ioex) {
-                throw new FbExceptionBuilder().exception(ISCConstants.isc_net_read_err).cause(ioex).toSQLException();
+            } catch (IOException e) {
+                throw FbExceptionBuilder.ioReadError(e);
             }
         } catch (SQLException ex) {
             exceptionListenerDispatcher.errorOccurred(ex);
@@ -450,16 +447,16 @@ public class V10Database extends AbstractFbWireDatabase implements FbWireDatabas
                     xdrOut.writeBuffer(null);
                     xdrOut.writeInt(0);
                     getXdrOut().flush();
-                } catch (IOException ex) {
-                    throw new FbExceptionBuilder().exception(ISCConstants.isc_net_write_err).cause(ex).toSQLException();
+                } catch (IOException e) {
+                    throw FbExceptionBuilder.ioWriteError(e);
                 }
                 try {
                     if (!isAttached()) {
                         processAttachOrCreateResponse(readGenericResponse(null));
                     }
                     readGenericResponse(null);
-                } catch (IOException ex) {
-                    throw new FbExceptionBuilder().exception(ISCConstants.isc_net_read_err).cause(ex).toSQLException();
+                } catch (IOException e) {
+                    throw FbExceptionBuilder.ioReadError(e);
                 }
             }
         } catch (SQLException e) {
@@ -475,13 +472,13 @@ public class V10Database extends AbstractFbWireDatabase implements FbWireDatabas
             try {
                 doReleaseObjectPacket(operation, objectId);
                 getXdrOut().flush();
-            } catch (IOException ex) {
-                throw new FbExceptionBuilder().exception(ISCConstants.isc_net_write_err).cause(ex).toSQLException();
+            } catch (IOException e) {
+                throw FbExceptionBuilder.ioWriteError(e);
             }
             try {
                 processReleaseObjectResponse(readResponse(null));
-            } catch (IOException ex) {
-                throw new FbExceptionBuilder().exception(ISCConstants.isc_net_read_err).cause(ex).toSQLException();
+            } catch (IOException e) {
+                throw FbExceptionBuilder.ioReadError(e);
             }
         }
     }
@@ -499,8 +496,8 @@ public class V10Database extends AbstractFbWireDatabase implements FbWireDatabas
                 xdrOut.writeInt(0); // p_req_object
                 xdrOut.writeInt(0); // p_req_partner
                 xdrOut.flush();
-            } catch (IOException ex) {
-                throw new FbExceptionBuilder().exception(ISCConstants.isc_net_write_err).cause(ex).toSQLException();
+            } catch (IOException e) {
+                throw FbExceptionBuilder.ioWriteError(e);
             }
             try {
                 final GenericResponse response = readGenericResponse(null);
@@ -510,8 +507,8 @@ public class V10Database extends AbstractFbWireDatabase implements FbWireDatabas
                 // bytes 2 - 3: sin port (port to connect to)
                 port = ((data[2] & 0xFF) << 8) + (data[3] & 0xFF);
                 // remaining bytes: IP address + other info(?) (ignore, can't be trusted, and invalid in FB3 and higher; always use original hostname)
-            } catch (IOException ex) {
-                throw new FbExceptionBuilder().exception(ISCConstants.isc_net_read_err).cause(ex).toSQLException();
+            } catch (IOException e) {
+                throw FbExceptionBuilder.ioReadError(e);
             }
         }
         final FbWireAsynchronousChannel channel = protocolDescriptor.createAsynchronousChannel(this);
@@ -589,7 +586,7 @@ public class V10Database extends AbstractFbWireDatabase implements FbWireDatabas
             if (exception != null) {
                 throw exception;
             } else {
-                throw new FbExceptionBuilder().exception(ISCConstants.isc_login).toSQLException();
+                throw FbExceptionBuilder.forException(ISCConstants.isc_login).toSQLException();
             }
         }
     }
