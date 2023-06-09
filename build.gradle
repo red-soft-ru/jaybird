@@ -94,13 +94,6 @@ sourceSets {
         test.compileClasspath += cryptoapi.output
         test.runtimeClasspath += cryptoapi.output
     }
-    tools {
-        java {
-            srcDirs = ['src/messages']
-            compileClasspath += main.output
-            runtimeClasspath += main.output
-        }
-    }
 }
 
 processResources {
