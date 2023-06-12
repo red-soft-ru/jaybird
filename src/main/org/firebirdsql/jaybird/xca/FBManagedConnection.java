@@ -1223,6 +1223,13 @@ public final class FBManagedConnection implements ExceptionListener {
             }
             notifyWarning(warning);
         }
+
+        @Override
+        public void detached(FbDatabase database) {
+            if (database != FBManagedConnection.this.database) return;
+            FBManagedConnection.this.gdsHelper = null;
+            forceDisassociateConnections();
+        }
     }
 
     /**

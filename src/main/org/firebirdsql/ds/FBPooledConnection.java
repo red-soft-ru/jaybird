@@ -20,6 +20,7 @@ package org.firebirdsql.ds;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.SQLNonTransientConnectionException;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.locks.Lock;
@@ -31,8 +32,9 @@ import javax.sql.PooledConnection;
 import javax.sql.StatementEventListener;
 
 import org.firebirdsql.gds.ng.LockCloseable;
-import org.firebirdsql.jdbc.FBSQLException;
+import org.firebirdsql.jaybird.xca.FatalErrorHelper;
 import org.firebirdsql.jdbc.SQLStateConstants;
+import org.firebirdsql.util.SQLExceptionChainBuilder;
 
 /**
  * PooledConnection implementation for {@link FBConnectionPoolDataSource}
@@ -62,7 +64,7 @@ public class FBPooledConnection implements PooledConnection {
     public Connection getConnection() throws SQLException {
         try (LockCloseable ignored = withLock()) {
             if (connection == null) {
-                FBSQLException ex = new FBSQLException("The PooledConnection has been closed",
+                var ex = new SQLNonTransientConnectionException("The PooledConnection has been closed",
                         SQLStateConstants.SQL_STATE_CONNECTION_CLOSED);
                 fireFatalConnectionError(ex);
                 throw ex;
@@ -102,42 +104,38 @@ public class FBPooledConnection implements PooledConnection {
     @Override
     public void close() throws SQLException {
         try (LockCloseable ignored = withLock()) {
-            SQLException receivedException = null;
+            var chain = new SQLExceptionChainBuilder<>();
             if (handler != null) {
                 try {
                     handler.close();
                 } catch (SQLException se) {
-                    receivedException = se;
+                    chain.append(se);
                 }
             }
             if (connection != null) {
                 try {
                     connection.close();
                 } catch (SQLException se) {
-                    // We want the exception of closing the physical connection to be the first
-                    if (receivedException != null) {
-                        se.setNextException(receivedException);
-                    }
-                    receivedException = se;
+                    // We want the exception from closing the physical connection to be the first
+                    chain.addFirst(se);
                 } finally {
                     connection = null;
                 }
             }
-            if (receivedException != null) {
-                throw receivedException;
+            if (chain.hasException()) {
+                throw chain.getException();
             }
         }
     }
 
     /**
-     * Helper method to fire the connectionErrorOccurred event. To be used with
-     * fatal (connection) errors only.
-     * 
+     * Helper method to fire the connectionErrorOccurred event. To be used with fatal (connection) errors only.
+     *
      * @param ex
-     *            The exception
+     *         The exception
      */
     protected void fireFatalConnectionError(SQLException ex) {
-        ConnectionEvent evt = new ConnectionEvent(this, ex);
+        var evt = new ConnectionEvent(this, ex);
         for (ConnectionEventListener listener : connectionEventListeners) {
             listener.connectionErrorOccurred(evt);
         }
@@ -146,75 +144,41 @@ public class FBPooledConnection implements PooledConnection {
     /**
      * Helper method to fire the connectionErrorOccurred event.
      * <p>
-     * This method will decide which errors warrant a connectionErrorOccurred
-     * event to be reported or not.
+     * This method will decide which errors warrant a connectionErrorOccurred event to be reported or not.
      * </p>
-     * 
+     *
      * @param ex
-     *            The exception
+     *         The exception
      */
     protected void fireConnectionError(SQLException ex) {
         SQLException currentException = ex;
         while (currentException != null) {
-            String sqlState = currentException.getSQLState();
-            if (isFatalState(sqlState)) {
+            if (FatalErrorHelper.isFatal(currentException)) {
                 fireFatalConnectionError(ex);
+                return;
             }
             currentException = ex.getNextException();
         }
     }
 
     /**
-     * Decides if the given SQL state is a fatal connection error.
-     * 
-     * @param sqlState
-     *            SQL State value
-     * @return <code>true</code> if the SQL state is considered fatal
-     */
-    private boolean isFatalState(String sqlState) {
-        if (sqlState == null || sqlState.length() < 2) {
-            // No SQL State or no class specified, assume it's fatal
-            return true;
-        }
-        for (String fatalSqlStateClass : FATAL_SQL_STATE_CLASSES) {
-            if (sqlState.startsWith(fatalSqlStateClass)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private static final String[] FATAL_SQL_STATE_CLASSES = {
-            // TODO double check firebird and Jaybird implementation for other states
-            "08", // Connection errors
-            "XX", // Internal errors
-            "01002", // Disconnect error
-            "01S00", // Invalid connection string attribute
-            "2D000", // Invalid transaction termination
-            "2E000", // Invalid connection name
-            "HY000", // General error (TODO: maybe too general?)
-            "HY001", // Memory allocation error
-            "HYT00", // Timeout expired
-            "HYT01", // Connection timeout expired
-    };
-
-    /**
      * Helper method to fire the connectionClosed event.
      */
     protected void fireConnectionClosed() {
-        ConnectionEvent evt = new ConnectionEvent(this);
+        var evt = new ConnectionEvent(this);
         for (ConnectionEventListener listener : connectionEventListeners) {
             listener.connectionClosed(evt);
         }
     }
-    
+
     /**
-     * Releases the current handler if it is equal to the handler passed in <code>pch</code>.
+     * Releases the current handler if it is equal to the handler passed in {@code pch}.
      * <p>
      * To be called by the PooledConnectionHandler when it has been closed.
      * </p>
-     * 
-     * @param pch PooledConnectionHandler to release.
+     *
+     * @param pch
+     *         PooledConnectionHandler to release.
      */
     protected void releaseConnectionHandler(PooledConnectionHandler pch) {
         try (LockCloseable ignored = withLock()) {
@@ -232,11 +196,23 @@ public class FBPooledConnection implements PooledConnection {
         connectionEventListeners.remove(listener);
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * The current implementation does nothing.
+     * </p>
+     */
     public void addStatementEventListener(StatementEventListener listener) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        // TODO Implement statement events
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * The current implementation does nothing.
+     * </p>
+     */
     public void removeStatementEventListener(StatementEventListener listener) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        // TODO Implement statement events
     }
 }
