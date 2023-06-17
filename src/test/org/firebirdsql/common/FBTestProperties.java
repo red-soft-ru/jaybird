@@ -41,6 +41,7 @@ import org.firebirdsql.management.ServiceManager;
 import org.firebirdsql.util.FirebirdSupportInfo;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.*;
@@ -232,7 +233,7 @@ public final class FBTestProperties {
 
     /**
      * @param dbPath  Absolute path of the database
-     * @return JDBC URL (without parameters) for this testrun
+     * @return JDBC URL (without parameters) for this test run
      */
     public static String getUrl(String dbPath) {
         if (isEmbeddedType().matches(GDS_TYPE)) {
@@ -240,6 +241,17 @@ public final class FBTestProperties {
         } else {
             return getProtocolPrefix() + DB_SERVER_URL + "/" + DB_SERVER_PORT + ":" + dbPath;
         }
+    }
+
+    /**
+     * Convenience method equivalent to {@code getUrl(dbPath.toAbsolutePath().toString())}.
+     *
+     * @param dbPath
+     *         path of the database
+     * @return JDBC URL (without parameters) for this test run
+     */
+    public static String getUrl(Path dbPath) {
+        return getUrl(dbPath.toAbsolutePath().toString());
     }
 
     // FACTORY METHODS
@@ -273,7 +285,7 @@ public final class FBTestProperties {
                 getDefaultPropertiesForConnection());
     }
 
-    public static void configureFBManager(FBManager fbManager) throws Exception {
+    public static <T extends FBManager> T configureFBManager(T fbManager) throws Exception {
         final GDSType gdsType = getGdsType();
         if (gdsType == GDSType.getType("PURE_JAVA")
                 || gdsType == GDSType.getType("NATIVE")
@@ -286,6 +298,7 @@ public final class FBTestProperties {
         fbManager.setForceCreate(true);
         // disable force write for minor increase in test throughput
         fbManager.setForceWrite(false);
+        return fbManager;
     }
 
     /**

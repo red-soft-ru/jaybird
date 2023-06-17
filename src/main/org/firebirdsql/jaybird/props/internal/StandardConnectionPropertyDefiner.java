@@ -62,7 +62,8 @@ class StandardConnectionPropertyDefiner implements ConnectionPropertyDefinerSpi 
                         .dpbItem(isc_dpb_sql_role_name).spbItem(isc_spb_sql_role_name),
                 builder(processId).type(INT).aliases("process_id", "isc_dpb_process_id")
                         .dpbItem(isc_dpb_process_id).spbItem(isc_spb_process_id),
-                builder(processName).aliases("process_name", "isc_dpb_process_name")
+                builder(processName)
+                        .aliases("process_name", "isc_dpb_process_name", "ApplicationName", "applicationName")
                         .dpbItem(isc_dpb_process_name).spbItem(isc_spb_process_name),
                 builder(certificate).aliases("certificate", "isc_dpb_certificate")
                         .dpbItem(isc_dpb_certificate).spbItem(isc_spb_certificate),
