@@ -14,6 +14,7 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +33,79 @@ public class FBSADataSourceTest {
     @RegisterExtension
     @Order(2)
     static final UsesDatabaseExtension.UsesDatabaseForAll usesDatabase = UsesDatabaseExtension.usesDatabaseForAll();
+
+    private String blockQuery =
+    // @formatter:off
+            "execute block\n" +
+            "returns (v_out bigint)" +
+            "as\n" +
+            "  declare id integer = 1;\n" +
+            "begin\n" +
+            "  while (id <= 1000) do\n" +
+            "  begin\n" +
+            "    v_out = id;\n" +
+            "    suspend;\n" +
+            "    id = id + 1;\n" +
+            "  end\n" +
+            "end";
+    // @formatter:on
+
+    private class ReadThread extends Thread {
+
+        private Object hash;
+        private final String threadName;
+        private final Connection connection;
+
+        public ReadThread(final int n, final Connection connection) {
+            this.threadName = "Thread " + n;
+            this.connection = connection;
+        }
+
+        public void run(){
+            this.setName(threadName);
+            System.out.println(threadName + " is running");
+            try {
+                PreparedStatement ps = connection.prepareStatement(blockQuery);
+                try (final ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        System.out.println(threadName + ", Value: " + rs.getInt(1));
+                    }
+                }
+                ps.close();
+                connection.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @Test
+    void testFBSADataSourceMultithread() throws Exception {
+
+        final FBSADataSource dataSource = new FBSADataSource();
+
+        // Set the standard properties
+        dataSource.setDatabase("localhost:employee");
+        dataSource.setDescription("An example database of employees");
+        dataSource.setUserName(DB_USER);
+        dataSource.setPassword(DB_PASSWORD);
+        dataSource.setEncoding(DB_LC_CTYPE);
+        try {
+            final int size = 3;
+            final Thread[] readThreads = new Thread[size];
+            for (int i = 0; i < size; i++) {
+                readThreads[i] = new Thread(new ReadThread(i + 1, dataSource.getConnection()));
+                readThreads[i].setName("Thread " + i + 1);
+                readThreads[i].start();
+            }
+            for (int j = 0; j < size; j++) {
+                readThreads[j].join();
+            }
+
+        } finally {
+            dataSource.close();
+        }
+    }
 
     @Test
     void testFBSADataSource() throws Exception {
