@@ -85,7 +85,7 @@ public class FBSADataSourceTest {
         final FBSADataSource dataSource = new FBSADataSource();
 
         // Set the standard properties
-        dataSource.setDatabase("localhost:employee");
+        dataSource.setDatabaseName("localhost:employee");
         dataSource.setDescription("An example database of employees");
         dataSource.setUserName(DB_USER);
         dataSource.setPassword(DB_PASSWORD);
