@@ -675,6 +675,37 @@ In the future, Jaybird may be changed to also perform this reset in `Connection.
 
 See also https://github.com/FirebirdSQL/jaybird/blob/master/devdoc/jdp/jdp-2023-11-new-design-client-info-properties.adoc[jdp-2023-11: New design client info properties^]
 
+[#async-fetch]
+=== Asynchronous fetching
+
+For pure Java connections, forward-only result sets now support asynchronous fetches.
+Asynchronous fetches are implemented for protocol implementation version 11 and higher (i.e. Firebird 2.1 or higher), but are formally only supported for protocol version 13 and higher (i.e. Firebird 3.0 or higher).
+
+In normal usage of a result set, the first fetch will be a normal synchronous fetch.
+If certain conditions are met, subsequent fetches will be performed asynchronously.
+
+The conditions for using asynchronous fetch are considered an implementation detail and may change in point releases.
+In Jaybird 6.0.0, the condition to enable asynchronous fetching are:
+
+. The result set has type `FORWARD_ONLY`.
+. The result set does not have cursor name set.
+. Any synchronous fetch on the statement cursor retrieved at least 15 rows.
+Be aware that the server may return fewer rows than the configured fetch size (default is 400), depending on Firebird version, row size and other factors.
+
+When the asynchronous fetch is triggered is also an implementation detail and may change in point releases.
+In Jaybird 6.0.0, the condition to perform an asynchronous fetch is:
+
+* Size of the row buffer is equal to the "`low-water mark`".
++
+This "`low-water mark`" is calculated as 30% of the maximum number of rows returned by previous fetches, with a minimum of 10 rows.
++
+As a consequence of this condition, reducing the fetch size equal to or less than the "`low-water mark`" may cause asynchronous fetches to stop being triggered, as the buffer size may remain smaller than the "`low-water mark`" (this effect may be reduced if there is other activity on the connection after the asynchronous fetch was performed).
+In that case a synchronous fetch is triggered when the buffer is empty.
+* Fetch size at time of async fetch is larger than 1.
+This may be the configured fetch size, or the fetch size derived taking into account the configured maximum row count.
+
+Native connections do not support this type of asynchronous fetching, but `fbclient` itself provides a different form of internal asynchronous fetching for native connections.
+
 // TODO add major changes
 
 [#potentially-breaking-changes]
@@ -793,6 +824,24 @@ To get the value from `USER_TRANSACTION`, use `<name>@USER_TRANSACTION`.
 Jaybird 5 and earlier reported `null` without falling back.
 
 See also <<client-info>>.
+
+[#operation-aware-type-compat]
+=== New Operation.Type value for async fetch
+
+With the introduction of async fetch, the `org.firebirdsql.gds.ng.monitor.Operation.Type` enum has two new values added:
+
+[horizontal]
+`STATEMENT_ASYNC_FETCH_START`::
+Start of async fetch.
+Covers sending of the fetch request.
+This operation is cancellable.
+`STATEMENT_ASYNC_FETCH_COMPLETE`::
+Completion of async fetch.
+Covers processing the responses of the fetch request.
+This operation is not cancellable.
+Attempts to cancel this operation will throw an exception.
+
+If you're currently using the `OperationAware` interface to monitor and/or cancel fetches, make sure to also process `STATEMENT_ASYNC_FETCH_START` and/or `STATEMENT_ASYNC_FETCH_COMPLETE` as appropriate.
 
 // TODO Document compatibility issues
 
@@ -986,7 +1035,25 @@ This means there may be undocumented changes to internal API.
 If you are confronted with such a change, let us know on https://groups.google.com/g/firebird-java[firebird-java], so we can take this into account when documenting future changes.
 ====
 
-* `AbstractFbWireStatement.close()` is now final
+* `FbWireDatabase`
+** `enqueueDeferredAction(DeferredAction)` now throws `SQLException` to be able to handle exceptions for sync actions if there are a lot of deferred packets
+* `FbWireOperations`
+** `enqueueDeferredAction(DeferredAction)` now throws `SQLException` (see also `FbWireDatabase` above)
+* `AbstractFbStatement`
+** `setCursorName(String)` is now final;
+subclasses need to implement `setCursorNameImpl(String)` to provide the actual implementation.
+These implementations do not need to take out the lock, nor notify the exception listener dispatcher, as that is already handled in the final `setCursorName(String)` method.
+** The most recent cursor name is now accessible with `protected String getCursorName()`.
+Its value is reset to `null` on each prepare.
+* `AbstractFbWireStatement`
+** `close()` is now final
+** `wrapDeferredResponse` received an extra parameter, `boolean requiresSync`.
+This parameter signals if the deferred response requires some form of synchronization action to instruct the server to send the response.
+When in doubt, use `false` to communicate that no such synchronization is required.
+* `DeferredAction`
+** `wrapDeferredResponse` received an extra parameter, `boolean requiresSync`.
+This parameter signals if the deferred response requires some form of synchronization action to instruct the server to send the response.
+When in doubt, use `false` to communicate that no such synchronization is required.
 * `AsynchronousChannelListener.Event` was converted to a record, so it is now final, and its getters (`getEventId()` and `getEventCount()`) have been replaced by accessor methods (`eventId()` and `eventCount()`)
 * `DbAttachInfo` was converted to a record, so its getters (`getServerName()`, `getPortNumber()` and `getAttachObjectName()`) have been replaced by accessor methods (`serverName()`, `portNumber()`, `attachObjectName()`)
 * `XdrInputStream`
@@ -1027,10 +1094,6 @@ use `encodeInt(int)`
 * `StringArgument`
 ** constructor `StringArgument(int, ArgumentType, String)`;
 use `StringArgument(int, ArgumentType, String, Encoding)`
-* `FbWireDatabase`
-** `enqueueDeferredAction(DeferredAction)` now throws `SQLException` to be able to handle exceptions for sync actions if there are a lot of deferred packets
-* `FbWireOperations`
-** `enqueueDeferredAction(DeferredAction)` now throws `SQLException` (see also `FbWireDatabase` above)
 * `FBConnection`
 ** `checkClientInfoSupport()` was removed;
 there is no replacement
