@@ -1,10 +1,8 @@
 package org.firebirdsql.cryptoapi;
 
-import org.firebirdsql.cryptoapi.cryptopro.exception.CryptoException;
 import org.firebirdsql.gds.impl.wire.auth.AuthCryptoException;
 import org.firebirdsql.gds.impl.wire.auth.AuthCryptoPlugin;
 import org.firebirdsql.gds.impl.wire.auth.AuthPrivateKeyContext;
-import org.firebirdsql.gds.impl.wire.auth.GDSAuthException;
 import org.firebirdsql.jdbc.FBDriver;
 import org.junit.jupiter.api.Test;
 
@@ -25,9 +23,13 @@ class AuthCryptoPluginImplTest {
             throw new ExceptionInInitializerError("No suitable driver.");
         }
         try {
-            AuthCryptoPlugin.register(new AuthCryptoPluginImpl());
-        } catch (CryptoException e) {
-            throw new ExceptionInInitializerError("Cannot register crypto plugin");
+            Class<?> clazz = Class.forName("org.firebirdsql.cryptoapi.AuthCryptoPluginImpl");
+
+            AuthCryptoPlugin plugin = (AuthCryptoPlugin) clazz.getDeclaredConstructor().newInstance();
+            AuthCryptoPlugin.register(plugin);
+        } catch (Throwable e) {
+            e.printStackTrace();
+            throw new ExceptionInInitializerError("Cannot register crypto plugin: " + e.getMessage());
         }
     }
 
@@ -101,7 +103,10 @@ class AuthCryptoPluginImplTest {
 
     @Test
     void testAuthCryptoPlugin_register() throws Exception {
-        AuthCryptoPlugin.register(new AuthCryptoPluginImpl());
+        Class<?> clazz = Class.forName("org.firebirdsql.cryptoapi.AuthCryptoPluginImpl");
+
+        AuthCryptoPlugin plugin = (AuthCryptoPlugin) clazz.getDeclaredConstructor().newInstance();
+        AuthCryptoPlugin.register(plugin);
     }
 
     @Test

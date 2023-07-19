@@ -20,6 +20,10 @@ module org.firebirdsql.jaybird {
     requires transitive java.sql;
     requires transitive java.transaction.xa;
     requires transitive java.naming;
+    requires transitive java.security.jgss;
+    requires transitive java.desktop;
+    requires transitive java.rmi;
+    requires transitive java.sql.rowset;
 
     exports org.firebirdsql.ds;
     exports org.firebirdsql.encodings;

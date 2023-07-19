@@ -149,7 +149,7 @@
 						<configuration>
 							<sources>
 								<source>../../src/extern</source>
-								<source>../../src/main</source>
+								<source>../../src/main/</source>
 								<source>../../src/openoffice</source>
 							</sources>
 						</configuration>
@@ -162,8 +162,8 @@
 						</goals>
 						<configuration>
 							<sources>
-								<source>../../jaybird-native/src/main/java/</source>
-								<source>../../src/cryptoapi/</source>
+								<source>../../jaybird-native/src/main/java/org/firebirdsql</source>
+								<source>../../src/cryptoapi/org/firebirdsql</source>
 								<source>../../src/test/</source>
 								<source>../../src/jna-test/</source>
 								<source>../../src/nativeoo-test/</source>
@@ -263,7 +263,15 @@
 					<reuseForks>false</reuseForks>
 					<trimStackTrace>false</trimStackTrace>
 					<rerunFailingTestsCount>3</rerunFailingTestsCount>
-					<argLine>-Xmx16G --add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.util=ALL-UNNAMED --add-opens java.base/javax.crypto=ALL-UNNAMED -Djdk.attach.allowAttachSelf=true -XX:+StartAttachListener</argLine>
+					<argLine>
+						-Xmx16G
+						--add-opens java.base/java.lang=ALL-UNNAMED
+						--add-opens java.base/java.util=ALL-UNNAMED
+						--add-opens java.base/javax.crypto=ALL-UNNAMED
+						-Djdk.attach.allowAttachSelf=true
+						-XX:+StartAttachListener
+						--add-exports org.firebirdsql.jaybird/org.firebirdsql.cryptoapi.windows.crypt32=ALL-UNNAMED
+					</argLine>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -294,6 +302,7 @@
 				</executions>
 			</plugin>
 			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-deploy-plugin</artifactId>
 			</plugin>
 		</plugins>

@@ -51,8 +51,8 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>${maven-compiler-plugin.version}</version>
 				<configuration>
-					<source>1.9</source>
-					<target>1.9</target>
+					<source>${jdk.version}</source>
+					<target>${jdk.version}</target>
 					<compilerArgs>
 						<arg>-Xpkginfo:always</arg>
 					</compilerArgs>

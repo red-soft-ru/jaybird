@@ -387,7 +387,7 @@ public class IStatementImpl extends AbstractFbStatement {
     }
 
     @Override
-    public void setCursorName(String cursorName) throws SQLException {
+    public void setCursorNameImpl(String cursorName) throws SQLException {
         try (LockCloseable ignored = withLock()) {
             checkStatementValid();
             statement.setCursorName(getStatus(), cursorName + '\0');
