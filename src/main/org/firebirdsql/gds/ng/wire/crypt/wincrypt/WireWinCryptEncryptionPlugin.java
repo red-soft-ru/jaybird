@@ -1,12 +1,11 @@
 package org.firebirdsql.gds.ng.wire.crypt.wincrypt;
 
 import org.firebirdsql.gds.ng.FbExceptionBuilder;
-import org.firebirdsql.gds.ng.wire.auth.ClientAuthBlock;
 import org.firebirdsql.gds.ng.wire.crypt.CryptSessionConfig;
 import org.firebirdsql.gds.ng.wire.crypt.EncryptionIdentifier;
 import org.firebirdsql.gds.ng.wire.crypt.EncryptionInitInfo;
 import org.firebirdsql.gds.ng.wire.crypt.EncryptionPlugin;
-import org.firebirdsql.util.SQLExceptionChainBuilder;
+import org.firebirdsql.jaybird.util.SQLExceptionChainBuilder;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
