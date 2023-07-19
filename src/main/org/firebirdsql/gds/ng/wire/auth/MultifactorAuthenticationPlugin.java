@@ -1,11 +1,9 @@
 package org.firebirdsql.gds.ng.wire.auth;
 
-import org.firebirdsql.gds.GDSException;
 import org.firebirdsql.gds.impl.wire.ByteBuffer;
 import org.firebirdsql.gds.impl.wire.auth.*;
 import org.firebirdsql.gds.ng.wire.auth.legacy.LegacyHash;
 import org.firebirdsql.jaybird.fb.constants.DpbItems;
-import org.firebirdsql.util.ByteArrayHelper;
 
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -40,7 +38,7 @@ public class MultifactorAuthenticationPlugin implements AuthenticationPlugin {
             if(repositoryPin != null && !repositoryPin.isEmpty()) {
                 try {
                     authSspi.setRepositoryPin(repositoryPin);
-                } catch (GDSAuthException e) {
+                } catch (SQLException e) {
                     throw new SQLException("Can not set the pin-code for the container", e);
                 }
             }
@@ -48,11 +46,7 @@ public class MultifactorAuthenticationPlugin implements AuthenticationPlugin {
             int providerID = clientAuthBlock.getProviderID();
 
             if (providerID != 0) {
-                try {
-                    authSspi.setProviderID(providerID);
-                } catch (GDSException e) {
-                    throw new SQLException(e.getMessage(), e);
-                }
+                authSspi.setProviderID(providerID);
             }
 
             ByteBuffer data = new ByteBuffer(0);
@@ -76,14 +70,12 @@ public class MultifactorAuthenticationPlugin implements AuthenticationPlugin {
                     (certificateBase64 != null && !certificateBase64.isEmpty())) {
                 AuthFactorCertificate authFactorCertificate = new AuthFactorCertificate(authSspi);
                 authFactorCertificate.setSdRandomNumber(DpbItems.isc_dpb_certificate_body);
-                try {
-                    if (certificate != null && !certificate.isEmpty())
-                        authFactorCertificate.loadFromFile(certificate);
-                    else
-                        authFactorCertificate.setCertBase64(certificateBase64);
-                } catch (GDSException e) {
-                    throw new SQLException(e.getMessage(), e);
-                }
+
+                if (certificate != null && !certificate.isEmpty())
+                    authFactorCertificate.loadFromFile(certificate);
+                else
+                    authFactorCertificate.setCertBase64(certificateBase64);
+
                 authSspi.addFactor(authFactorCertificate);
                 data.add((byte) AuthFactor.TYPE_CERT_X509);
             }
@@ -106,11 +98,8 @@ public class MultifactorAuthenticationPlugin implements AuthenticationPlugin {
         ByteBuffer data = new ByteBuffer(0);
         if (serverData != null)
             data.add(serverData);
-        try {
-            authSspi.request(data);
-        } catch (GDSAuthException e) {
-            throw new SQLException(e.getMessage(), e);
-        }
+
+        authSspi.request(data);
 
         if (authSspi.getWireKeyData() != null) {
             if (firstKey) {
@@ -149,7 +138,7 @@ public class MultifactorAuthenticationPlugin implements AuthenticationPlugin {
             return authSspi.getWireKeyData();
         try {
             return AuthMethods.generateRandom(null, 20);
-        } catch (GDSAuthException e) {
+        } catch (SQLException e) {
             throw new SQLException("Can't generate session key", e);
         }
     }
@@ -157,9 +146,5 @@ public class MultifactorAuthenticationPlugin implements AuthenticationPlugin {
     @Override
     public String toString() {
         return getClass().getSimpleName() + " : " + getName();
-    }
-
-    private static String toHex(byte[] bytes) {
-        return ByteArrayHelper.toHexString(bytes);
     }
 }
