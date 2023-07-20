@@ -167,14 +167,14 @@ deploy:internal:
   <<: *deploy_template
   stage: deploy
   script:
-    - mvn $MAVEN_CLI_OPTS deploy -Pdeploy-internal -Dmaven.test.skip.exec -DreleaseHubBuildVersion=$VERSION
+    - mvn $MAVEN_CLI_OPTS deploy -Pdeploy-internal -DskipTests -DreleaseHubBuildVersion=$VERSION
     - mvn $MAVEN_CLI_OPTS --non-recursive releasehub-build:publish -Pdeploy-internal -DreleaseHubBuildVersion=$VERSION
 
 deploy:nexus_snapshots:
   <<: *deploy_template
   stage: deploy
   script:
-    - mvn $MAVEN_CLI_OPTS deploy -Pdeploy-nexus-snapshots -Dmaven.test.skip.exec
+    - mvn $MAVEN_CLI_OPTS deploy -Pdeploy-nexus-snapshots -DskipTests
   except:
     - tags
 
@@ -182,6 +182,6 @@ deploy:nexus_releases:
   <<: *deploy_template
   stage: deploy
   script:
-    - mvn $MAVEN_CLI_OPTS deploy -Pdeploy-nexus-releases -Dmaven.test.skip.exec
+    - mvn $MAVEN_CLI_OPTS deploy -Pdeploy-nexus-releases -DskipTests
   only:
     - tags
