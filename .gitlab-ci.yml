@@ -118,7 +118,9 @@ build_and_test:
       priority=1
       EOF
     - echo proxy=$http_proxy >> /etc/yum.conf
-    - yum install -y maven krb5-server krb5-workstation expect git $EXTRA_DEPENDENCIES
+    - yum install -y krb5-server krb5-workstation expect git $EXTRA_DEPENDENCIES
+    - wget https://dlcdn.apache.org/maven/maven-3/3.9.3/binaries/apache-maven-3.9.3-bin.tar.gz && tar -xvf apache-maven-3.9.3-bin.tar.gz && mv apache-maven-3.9.3 /opt/
+    - ln -s /opt/apache-maven-3.9.3/bin/mvn /usr/bin/mvn
     - wget https://download.oracle.com/java/17/latest/jdk-17_linux-x64_bin.rpm && rpm -Uvh jdk-17_linux-x64_bin.rpm
     - yum install -y https://dl.min.io/client/mc/release/linux-amd64/archive/mcli-20210613174822.0.0.x86_64.rpm
     - /opt/cprocsp/sbin/amd64/cpconfig -license -set $LICENSE_CRYPTOPRO4
