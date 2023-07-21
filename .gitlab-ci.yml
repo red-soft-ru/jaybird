@@ -85,6 +85,7 @@ prepare:release:
     - M2_HOME='/opt/apache-maven-$MAVEN_VERSION'
     - PATH="$M2_HOME/bin:$PATH"
     - export PATH
+    - ln -s /opt/apache-maven-$MAVEN_VERSION/bin/mvn /usr/bin/mvn
 
 build_and_test:
   tags:
