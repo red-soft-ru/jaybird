@@ -86,6 +86,7 @@ prepare:release:
     - PATH="$M2_HOME/bin:$PATH"
     - export PATH
     - ln -s /opt/apache-maven-$MAVEN_VERSION/bin/mvn /usr/bin/mvn
+    - mkdir -p /usr/lib/jvm/ && ln -s /usr/local/openjdk-17/ /usr/lib/jvm/java-17-openjdk-amd64
 
 build_and_test:
   tags:
