@@ -271,13 +271,13 @@ class IBatchImplTest extends AbstractBatchTest {
                 0);
         fieldData = fieldValues.getFieldData(15);
         assertEquals(testDate,
-                statement.getRowDescriptor().getFieldDescriptor(15).getDatatypeCoder().decodeDateCalendar(fieldData, Calendar.getInstance()));
+                statement.getRowDescriptor().getFieldDescriptor(15).getDatatypeCoder().decodeLocalDate(fieldData));
         fieldData = fieldValues.getFieldData(16);
         assertEquals(testTime,
-                statement.getRowDescriptor().getFieldDescriptor(16).getDatatypeCoder().decodeTimeCalendar(fieldData, Calendar.getInstance()));
+                statement.getRowDescriptor().getFieldDescriptor(16).getDatatypeCoder().decodeLocalTime(fieldData));
         fieldData = fieldValues.getFieldData(17);
         assertEquals(testTimestamp,
-                statement.getRowDescriptor().getFieldDescriptor(17).getDatatypeCoder().decodeTimestampCalendar(fieldData, Calendar.getInstance()));
+                statement.getRowDescriptor().getFieldDescriptor(17).getDatatypeCoder().decodeLocalDateTime(fieldData));
 
     }
 
@@ -432,13 +432,13 @@ class IBatchImplTest extends AbstractBatchTest {
                 0);
         fieldData = fieldValues.getFieldData(15);
         assertEquals(testDate,
-                statement.getRowDescriptor().getFieldDescriptor(15).getDatatypeCoder().decodeDateCalendar(fieldData, Calendar.getInstance()));
+                statement.getRowDescriptor().getFieldDescriptor(15).getDatatypeCoder().decodeLocalDate(fieldData));
         fieldData = fieldValues.getFieldData(16);
         assertEquals(testTime,
-                statement.getRowDescriptor().getFieldDescriptor(16).getDatatypeCoder().decodeTimeCalendar(fieldData, Calendar.getInstance()));
+                statement.getRowDescriptor().getFieldDescriptor(16).getDatatypeCoder().decodeLocalTime(fieldData));
         fieldData = fieldValues.getFieldData(17);
         assertEquals(testTimestamp,
-                statement.getRowDescriptor().getFieldDescriptor(17).getDatatypeCoder().decodeTimestampCalendar(fieldData, Calendar.getInstance()));
+                statement.getRowDescriptor().getFieldDescriptor(17).getDatatypeCoder().decodeLocalDateTime(fieldData));
         fieldData = fieldValues.getFieldData(18);
         blobID = statement.getRowDescriptor().getFieldDescriptor(18).getDatatypeCoder().decodeLong(fieldData);
         checkBlob(blobID, INSERT_QUERY_WITH_BLOBS.getBytes());
@@ -631,13 +631,13 @@ class IBatchImplTest extends AbstractBatchTest {
                 0);
         fieldData = fieldValues.getFieldData(15);
         assertEquals(testDate,
-                statement.getRowDescriptor().getFieldDescriptor(15).getDatatypeCoder().decodeDateCalendar(fieldData, Calendar.getInstance()));
+                statement.getRowDescriptor().getFieldDescriptor(15).getDatatypeCoder().decodeLocalDate(fieldData));
         fieldData = fieldValues.getFieldData(16);
         assertEquals(testTime,
-                statement.getRowDescriptor().getFieldDescriptor(16).getDatatypeCoder().decodeTimeCalendar(fieldData, Calendar.getInstance()));
+                statement.getRowDescriptor().getFieldDescriptor(16).getDatatypeCoder().decodeLocalTime(fieldData));
         fieldData = fieldValues.getFieldData(17);
         assertEquals(testTimestamp,
-                statement.getRowDescriptor().getFieldDescriptor(17).getDatatypeCoder().decodeTimestampCalendar(fieldData, Calendar.getInstance()));
+                statement.getRowDescriptor().getFieldDescriptor(17).getDatatypeCoder().decodeLocalDateTime(fieldData));
     }
 
     @Test
@@ -841,13 +841,13 @@ class IBatchImplTest extends AbstractBatchTest {
                 0);
         fieldData = fieldValues.getFieldData(15);
         assertEquals(testDate,
-                statement.getRowDescriptor().getFieldDescriptor(15).getDatatypeCoder().decodeDateCalendar(fieldData, Calendar.getInstance()));
+                statement.getRowDescriptor().getFieldDescriptor(15).getDatatypeCoder().decodeLocalDate(fieldData));
         fieldData = fieldValues.getFieldData(16);
         assertEquals(testTime,
-                statement.getRowDescriptor().getFieldDescriptor(16).getDatatypeCoder().decodeTimeCalendar(fieldData, Calendar.getInstance()));
+                statement.getRowDescriptor().getFieldDescriptor(16).getDatatypeCoder().decodeLocalTime(fieldData));
         fieldData = fieldValues.getFieldData(17);
         assertEquals(testTimestamp,
-                statement.getRowDescriptor().getFieldDescriptor(17).getDatatypeCoder().decodeTimestampCalendar(fieldData, Calendar.getInstance()));
+                statement.getRowDescriptor().getFieldDescriptor(17).getDatatypeCoder().decodeLocalDateTime(fieldData));
         fieldData = fieldValues.getFieldData(18);
         blobID = statement.getRowDescriptor().getFieldDescriptor(18).getDatatypeCoder().decodeLong(fieldData);
         checkBlob(blobID, testBytes);
