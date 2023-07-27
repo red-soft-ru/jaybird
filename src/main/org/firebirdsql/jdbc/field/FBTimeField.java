@@ -27,6 +27,7 @@ import java.util.Calendar;
 
 import org.firebirdsql.gds.ng.DatatypeCoder;
 import org.firebirdsql.gds.ng.fields.FieldDescriptor;
+import org.firebirdsql.jaybird.util.FbDatetimeConversion;
 
 import java.sql.Time;
 
@@ -52,8 +53,7 @@ final class FBTimeField extends AbstractWithoutTimeZoneField {
 
     @Override
     public String getString() throws SQLException {
-        Time time = getTime();
-        return time != null ? time.toString() : null;
+        return convertForGet(getLocalTime(), FbDatetimeConversion::formatSqlTime, String.class);
     }
 
     @Override
@@ -95,7 +95,7 @@ final class FBTimeField extends AbstractWithoutTimeZoneField {
 
     @Override
     public void setString(String value) throws SQLException {
-        setTime(fromString(value, Time::valueOf));
+        setLocalTime(fromString(value, FbDatetimeConversion::parseSqlTime));
     }
 
     @Override
@@ -118,14 +118,22 @@ final class FBTimeField extends AbstractWithoutTimeZoneField {
         setFieldData(getDatatypeCoder().encodeLocalTime(value));
     }
 
+    @SuppressWarnings("removal")
     @Override
     public DatatypeCoder.RawDateTimeStruct getRawDateTimeStruct() throws SQLException {
-        return getDatatypeCoder().decodeTimeRaw(getFieldData());
+        return convertForGet(getLocalTime(),
+                v -> {
+                    var raw = new DatatypeCoder.RawDateTimeStruct();
+                    raw.updateTime(v);
+                    return raw;
+                }, DatatypeCoder.RawDateTimeStruct.class);
     }
 
+    @SuppressWarnings("removal")
     @Override
     public void setRawDateTimeStruct(DatatypeCoder.RawDateTimeStruct raw) throws SQLException {
-        setFieldData(getDatatypeCoder().encodeTimeRaw(raw));
+        setLocalTime(convertForSet(raw, DatatypeCoder.RawDateTimeStruct::toLocalTime,
+                DatatypeCoder.RawDateTimeStruct.class));
     }
 
     public void setInteger(int value) throws SQLException {

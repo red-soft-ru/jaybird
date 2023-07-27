@@ -881,6 +881,19 @@ Attempts to cancel this operation will throw an exception.
 
 If you're currently using the `OperationAware` interface to monitor and/or cancel fetches, make sure to also process `STATEMENT_ASYNC_FETCH_START` and/or `STATEMENT_ASYNC_FETCH_COMPLETE` as appropriate.
 
+[#datetime-conversion-changes]
+=== Changes in datetime conversions
+
+The conversions of datetime values were overhauled to use the `java.time` types wherever possible.
+
+This results in some minor differences:
+
+* `getString(...)` on a `TIME` field will now render fractional seconds if available
+* `setString(...)` on a `TIME` field now has seconds optional and accepts fractional seconds
+* `getString(...)` on a `TIMESTAMP` field will now render without `.0` at the end if the value does not have fractional seconds (e.g. `2023-07-22 12:43:45` instead of `2023-07-22 12:43:45.0`)
+* `setString(...)` on a `TIMESTAMP` field now has seconds optional
+* `setString(...)` on a `TIMESTAMP` field now also accepts ISO 8601 datetime strings (that is, with a `T` as a separator instead of a space, for example, `2023-07-22 12:43:45` and `2023-07-22T12:43:45` are now both accepted)
+
 // TODO Document compatibility issues
 
 [#removal-of-classes-packages-and-methods-without-deprecation]
@@ -941,15 +954,6 @@ there is no replacement
 there is no replacement
 ** `getLoggerImplementation()`;
 there is no replacement
-* `DatatypeCoder`
-** `encodeTimestamp(Timestamp, Calendar, boolean)`;
-use `encodeTimestamp(Timestamp, Calendar)`
-** `decodeTimestamp(Timestamp, Calendar, boolean)`
-use `decodeTimestamp(Timestamp, Calendar)`
-** `encodeTime(Time, Calendar, boolean)`;
-use `encodeTime(Time, Calendar)`
-** `decodeTime(Time, Calendar, boolean)`;
-use `decodeTime(Time, Calendar)`
 
 The following methods had their visibility reduced:
 
@@ -1202,6 +1206,27 @@ The new package is not exported from the module.
 ** `SQLExceptionChainBuilder`
 ** `StringUtils`
 * `DbMetadataMediator` was moved to package `org.firebirdsql.jdbc` for module accessibility reasons.
+* `DatatypeCoder`
+** `encodeTimestamp(Timestamp, Calendar, boolean)` was removed;
+use `encodeTimestamp(Timestamp, Calendar)`
+** `decodeTimestamp(Timestamp, Calendar, boolean)` was removed;
+use `decodeTimestamp(Timestamp, Calendar)`
+** `encodeTime(Time, Calendar, boolean)` was removed;
+use `encodeTime(Time, Calendar)`
+** `decodeTime(Time, Calendar, boolean)` was removed;
+use `decodeTime(Time, Calendar)`
+** `encodeTimestampRaw(DatatypeCoder.RawDateTimeStruct)` was removed;
+use `encodeLocalDateTime(LocalDateTime)`
+** `decodeTimestampRaw(byte[])` was removed;
+use `decodeLocalDateTime(byte[])`
+** `encodeTimeRaw(DatatypeCoder.RawDateTimeStruct)` was removed;
+use `encodeLocalTime(LocalTime)`
+** `decodeTimeRaw(byte[])` was removed;
+use `decodeLocalTime(byte[])`
+** `encodeDateRaw(DatatypeCoder.RawDateTimeStruct)` was removed;
+use `encodeLocalDate(LocalDate)`
+** `decodeDateRaw(byte[])` was removed;
+use `decodeLocalDate(byte[])`
 
 [#breaking-changes-unlikely]
 === Unlikely breaking changes
@@ -1237,16 +1262,24 @@ With Jaybird 7 the following breaking changes will be introduced.
 [#removal-of-deprecated-classes-packages-and-methods-7]
 ==== Removal of deprecated classes, packages and methods
 
+[WARNING]
+====
+Some deprecations currently listed for removal -- especially of internal API -- may be removed without deprecation later during Jaybird 6 development.
+====
+
 [#removal-of-deprecated-methods-7]
 ===== Removal of deprecated methods
 
 The following methods will be removed in Jaybird 7:
 
-* `GDSFactoryPlugin`
+* `GDSFactoryPlugin` (semi-internal API)
 ** `getTypeAliases()` -- use `getTypeAliasList()`.
 It may get removed in Jaybird 7 or later.
 ** `getSupportedProtocols` -- use `getSupportedProtocolList()`.
 It may get removed in Jaybird 7 or later.
+* `FBField` (internal API)
+** `getRawDateTimeStruct()` -- use `getLocalDateTime()`/`getLocalDate()`/`getLocalTime()`
+** `setRawDateTimeStruct(DatatypeCoder.RawDateTimeStruct)` ` -- use `setLocalDateTime(LocalDateTime)`/`setLocalDate(LocalDate)`/`setLocalTime(LocalTime)`
 
 [#removal-of-deprecated-classes-7]
 ===== Removal of deprecated classes
@@ -1257,6 +1290,8 @@ The following classes have been deprecated and will be removed in Jaybird 7:
 Previous versions of `GDSFactoryPlugin` declared `throws GDSException` for some methods, but now `throws SQLException`.
 To retain some semblance of backwards-compatibility, this class was retrofitted to extend `SQLException`.
 It may get removed in Jaybird 7 or later.
+* `DatatypeCoder.RawDateTimeStruct` -- use one of the `java.time` types (`LocalDateTime`, `LocalDate` or `LocalTime`).
+Though this class is publicly accessible through `ResultSet.getObject/updateObject` and `PreparedStatement.setObject`, it is internal API, and we expect it is unlikely to be actually used in user code.
 
 [#removal-of-deprecated-constants-7]
 ==== Removal of deprecated constants

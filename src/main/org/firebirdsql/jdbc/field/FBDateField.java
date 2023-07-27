@@ -20,6 +20,7 @@ package org.firebirdsql.jdbc.field;
 
 import org.firebirdsql.gds.ng.DatatypeCoder;
 import org.firebirdsql.gds.ng.fields.FieldDescriptor;
+import org.firebirdsql.jaybird.util.FbDatetimeConversion;
 
 import java.sql.Date;
 import java.sql.SQLException;
@@ -69,8 +70,7 @@ final class FBDateField extends AbstractWithoutTimeZoneField {
     }
 
     public String getString() throws SQLException {
-        LocalDate localDate = getLocalDate();
-        return localDate != null ? localDate.toString() : null;
+        return FbDatetimeConversion.formatSqlDate(getLocalDate());
     }
 
     public int getInt() throws SQLException {
@@ -89,7 +89,7 @@ final class FBDateField extends AbstractWithoutTimeZoneField {
 
     @Override
     public void setString(String value) throws SQLException {
-        setDate(fromString(value, Date::valueOf));
+        setLocalDate(fromString(value, FbDatetimeConversion::parseSqlDate));
     }
 
     @Override
@@ -112,14 +112,23 @@ final class FBDateField extends AbstractWithoutTimeZoneField {
         setFieldData(getDatatypeCoder().encodeLocalDate(value));
     }
 
+    @SuppressWarnings("removal")
     @Override
     public DatatypeCoder.RawDateTimeStruct getRawDateTimeStruct() throws SQLException {
-        return getDatatypeCoder().decodeDateRaw(getFieldData());
+        return convertForGet(getLocalDate(),
+                v -> {
+                    var raw = new DatatypeCoder.RawDateTimeStruct();
+                    raw.updateDate(v);
+                    return raw;
+                },
+                DatatypeCoder.RawDateTimeStruct.class);
     }
 
+    @SuppressWarnings("removal")
     @Override
     public void setRawDateTimeStruct(DatatypeCoder.RawDateTimeStruct raw) throws SQLException {
-        setFieldData(getDatatypeCoder().encodeDateRaw(raw));
+        setLocalDate(convertForSet(raw, DatatypeCoder.RawDateTimeStruct::toLocalDate,
+                DatatypeCoder.RawDateTimeStruct.class));
     }
 
     public void setInteger(int value) throws SQLException {

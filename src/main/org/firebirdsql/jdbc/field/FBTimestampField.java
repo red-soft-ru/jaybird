@@ -20,6 +20,7 @@ package org.firebirdsql.jdbc.field;
 
 import org.firebirdsql.gds.ng.DatatypeCoder;
 import org.firebirdsql.gds.ng.fields.FieldDescriptor;
+import org.firebirdsql.jaybird.util.FbDatetimeConversion;
 
 import java.sql.Date;
 import java.sql.SQLException;
@@ -51,8 +52,7 @@ class FBTimestampField extends AbstractWithoutTimeZoneField {
 
     @Override
     public String getString() throws SQLException {
-        Timestamp timestamp = getTimestamp();
-        return timestamp != null ? timestamp.toString() : null;
+        return convertForGet(getLocalDateTime(), FbDatetimeConversion::formatSqlTimestamp, String.class);
     }
 
     @Override
@@ -107,7 +107,7 @@ class FBTimestampField extends AbstractWithoutTimeZoneField {
 
     @Override
     public void setString(String value) throws SQLException {
-        setTimestamp(fromString(value, Timestamp::valueOf));
+        setLocalDateTime(fromString(value, FbDatetimeConversion::parseIsoOrSqlTimestamp));
     }
 
     @Override
@@ -130,14 +130,23 @@ class FBTimestampField extends AbstractWithoutTimeZoneField {
         setFieldData(getDatatypeCoder().encodeLocalDateTime(value));
     }
 
+    @SuppressWarnings("removal")
     @Override
     public DatatypeCoder.RawDateTimeStruct getRawDateTimeStruct() throws SQLException {
-        return getDatatypeCoder().decodeTimestampRaw(getFieldData());
+        return convertForGet(getLocalDateTime(),
+                v -> {
+                    var raw = new DatatypeCoder.RawDateTimeStruct();
+                    raw.updateDateTime(v);
+                    return raw;
+                },
+                DatatypeCoder.RawDateTimeStruct.class);
     }
 
+    @SuppressWarnings("removal")
     @Override
     public void setRawDateTimeStruct(DatatypeCoder.RawDateTimeStruct raw) throws SQLException {
-        setFieldData(getDatatypeCoder().encodeTimestampRaw(raw));
+        setLocalDateTime(convertForSet(raw, DatatypeCoder.RawDateTimeStruct::toLocalDateTime,
+                DatatypeCoder.RawDateTimeStruct.class));
     }
 
     public void setInteger(int value) throws SQLException {
