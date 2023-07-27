@@ -103,10 +103,7 @@ class FBBlobField extends FBField implements FBCloseableField, FBFlushableField,
 
     @Override
     public Object getObject() throws SQLException {
-        if (requiredType == Types.BLOB) {
-            return getBlob();
-        }
-        return getBytes();
+        return requiredType != Types.BLOB ? getBytes() : getBlob();
     }
 
     @Override
@@ -119,16 +116,13 @@ class FBBlobField extends FBField implements FBCloseableField, FBFlushableField,
     @Override
     public Clob getClob() throws SQLException {
         FBBlob blob = (FBBlob) getBlob();
-        if (blob == null) return null;
-        return new FBClob(blob);
+        return blob != null ? new FBClob(blob) : null;
     }
 
     @Override
     public InputStream getBinaryStream() throws SQLException {
         Blob blob = getBlobInternal();
-        if (blob == null) return null;
-
-        return blob.getBinaryStream();
+        return blob != null ? blob.getBinaryStream() : null;
     }
 
     @Override
@@ -174,8 +168,9 @@ class FBBlobField extends FBField implements FBCloseableField, FBFlushableField,
 
     @Override
     public FBFlushableField.CachedObject getCachedObject() throws SQLException {
-        if (isNull())
-            return new FBFlushableField.CachedObject(bytes, binaryStream, characterStream, length);
+        if (isNull()) {
+            return new CachedObject(bytes, binaryStream, characterStream, length);
+        }
         final byte[] bytes = getBytesInternal();
         return new CachedObject(bytes, null, null, bytes.length);
     }
@@ -197,11 +192,7 @@ class FBBlobField extends FBField implements FBCloseableField, FBFlushableField,
         if (fieldDescriptor.getSubType() < 0) {
             throw invalidGetConversion(String.class, String.format("BLOB SUB_TYPE %d", fieldDescriptor.getSubType()));
         }
-
-        Blob blob = getBlobInternal();
-
-        if (blob == null) return null;
-
+        
         return getDatatypeCoder().decodeString(getBytes());
     }
 
@@ -281,11 +272,6 @@ class FBBlobField extends FBField implements FBCloseableField, FBFlushableField,
 
     @Override
     public void setString(String value) throws SQLException {
-        if (value == null) {
-            setNull();
-            return;
-        }
-
         setBytes(getDatatypeCoder().encodeString(value));
     }
 
@@ -302,9 +288,7 @@ class FBBlobField extends FBField implements FBCloseableField, FBFlushableField,
 
     @Override
     public void setBlob(Blob blob) throws SQLException {
-        if (blob == null) {
-            setNull();
-        } else if (blob instanceof FBBlob) {
+        if (blob instanceof FBBlob || blob == null) {
             setBlob((FBBlob) blob);
         } else {
             FBBlob fbb = createBlob();
@@ -325,9 +309,7 @@ class FBBlobField extends FBField implements FBCloseableField, FBFlushableField,
 
     @Override
     public void setClob(Clob clob) throws SQLException {
-        if (clob == null) {
-            setNull();
-        } else if (clob instanceof FBClob) {
+        if (clob instanceof FBClob || clob == null) {
             setClob((FBClob) clob);
         } else {
             FBClob fbc = createClob();
@@ -362,4 +344,5 @@ class FBBlobField extends FBField implements FBCloseableField, FBFlushableField,
         }
         return blob;
     }
+    
 }
