@@ -96,7 +96,6 @@
 	<properties>
 		<project.doc.name>Jaybird</project.doc.name>
 		<excludedPackages>org.firebirdsql.jdbc.oo.*</excludedPackages>
-		<module.thirdparty>../../src/lib</module.thirdparty>
 		<maven.build.timestamp.format>yyyy</maven.build.timestamp.format>
 		<test.db.host>localhost</test.db.host>
 		<test.db.port>3050</test.db.port>
@@ -213,10 +212,6 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
 				<configuration>
-					<source>1.8</source>
-					<links>
-						<link>http://docs.oracle.com/javase/8/docs/api/</link>
-					</links>
 					<failOnError>false</failOnError>
 					<notimestamp>true</notimestamp>
 					<stylesheet>java</stylesheet>
@@ -225,7 +220,6 @@
 					<version>true</version>
 					<windowtitle>${project.doc.name} API</windowtitle>
 					<doctitle>${project.doc.name}</doctitle>
-					<extdirs>${module.thirdparty}</extdirs>
 					<bottom>Copyright &amp;copy; 2001-${maven.build.timestamp} Jaybird (Firebird JDBC/JCA) team. All rights reserved.</bottom>
 					<sourcepath>
 						../../src/main:
