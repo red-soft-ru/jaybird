@@ -1,3 +1,65 @@
+# v5.0.9
+
+## Fixed
+
+* Fix working with time zone set in GMT format for 18 protocol version. See RS-145943
+
+
+# v5.0.8
+
+## Fixed
+
+* Fix working with time zone set in GMT format. See RS-94039 RS-145787
+
+
+# v5.0.7
+
+## Improvements
+
+* Add parallel workers option in statistics manager. See RS-98332
+
+
+## Ported from Jaybird
+
+* Add connection property parallelWorkers for isc_dpb_parallel_workers. GH-737
+* Fix DatabaseConnectionProperties.setServerBatchBufferSize ignores serverBatchBufferSize parameter. GH-741
+* Support Firebird 5.0 gfix ODS Upgrade option. GH-738
+* Add Firebird 5.0 parallel support to BackupManager. GH-739
+* Add Firebird 5.0 parallel sweep to MaintenanceManager. GH-740
+* Support Firebird 3.0 gfix fix ICU option. GH-744
+* Ensure option is only set when parallel workers are supported. GH-739
+* Truncation handling of FBStatisticsManager. GH-747
+* Mark classes/methods/constants removed in Jaybird 6 as deprecated. GH-759
+
+
+# v5.0.6
+
+## Fixed
+
+* Do not duplicate connection properties when connecting using protocol v12 (RDB 2.6). See RS-98277
+
+
+# v5.0.5
+
+## Fixed
+
+* Multifactor authentication with protocol below 13 (RDB 2.6). See RS-98277
+
+
+# v5.0.4
+
+## Improvements
+
+* Use JDK 8 to build JDK 8 artifacts. See RS-96160
+
+
+# v5.0.3
+
+## Fixed
+
+* Fix condition to continue authentication in `GostPasswordAuthenticationPlugin`. See RS-95205
+
+
 # v5.0.2
 
 ## Fixed
@@ -5,6 +67,7 @@
 * Frontported multithreaded backup/restore and sweep via services. See RS-95035
 * Add ability to set property for non-encrypted password passing. See RS-95205
 * Skip authentication in `GostPassword` plugin if no username and password are set. See RS-95205
+
 
 # v5.0.1
 
