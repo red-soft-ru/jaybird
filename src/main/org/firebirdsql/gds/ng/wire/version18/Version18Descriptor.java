@@ -107,7 +107,7 @@ public final class Version18Descriptor extends AbstractProtocolDescriptor implem
 
     @Override
     protected ParameterConverter<WireDatabaseConnection, WireServiceConnection> getParameterConverter() {
-        return new V13ParameterConverter();
+        return new V18ParameterConverter();
     }
 
     @Override
