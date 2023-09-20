@@ -58,6 +58,8 @@ class StandardConnectionPropertyDefiner implements ConnectionPropertyDefinerSpi 
                 builder(user).aliases("userName", "user_name", "isc_dpb_user_name"),
                 // NOTE: Intentionally not mapped to DPB/SPB item, that is handled during authentication
                 builder(password).aliases("isc_dpb_password"),
+                builder(passwordEnc).aliases("isc_dpb_password_enc").dpbItem(isc_dpb_password_enc)
+                        .spbItem(isc_spb_password_enc),
                 builder(roleName).aliases("sqlRole", "role_name", "sql_role_name", "isc_dpb_sql_role_name")
                         .dpbItem(isc_dpb_sql_role_name).spbItem(isc_spb_sql_role_name),
                 builder(processId).type(INT).aliases("process_id", "isc_dpb_process_id")

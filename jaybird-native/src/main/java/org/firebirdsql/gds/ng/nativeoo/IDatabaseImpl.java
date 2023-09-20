@@ -57,14 +57,23 @@ public class IDatabaseImpl extends AbstractFbDatabase<NativeDatabaseConnection>
 
     private static final ParameterConverter<NativeDatabaseConnection, ?> PARAMETER_CONVERTER = new IParameterConverterImpl();
 
-    private FbClientLibrary clientLibrary;
-    private IMaster master;
-    private final IProvider provider;
-    private final IUtil util;
+    protected FbClientLibrary clientLibrary;
+    protected IMaster master;
+    protected IProvider provider;
+    protected IUtil util;
     protected IAttachment attachment;
     private final Map<EventHandle, IEvents> events = new HashMap<>();
     protected IStatus status;
 
+
+    public IDatabaseImpl(NativeDatabaseConnection connection, IMaster master) {
+        super(connection, connection.createDatatypeCoder());
+        this.master = master;
+        provider = this.master.getDispatcher();
+        util = this.master.getUtilInterface();
+        attachment = null;
+        status = this.master.getStatus();
+    }
 
     public IDatabaseImpl(NativeDatabaseConnection connection) {
         super(connection, connection.createDatatypeCoder());
@@ -99,6 +108,8 @@ public class IDatabaseImpl extends AbstractFbDatabase<NativeDatabaseConnection>
         try (LockCloseable ignored = withLock()) {
             attachment.detach(getStatus());
             processStatus();
+            status.dispose();
+            status = null;
         } catch (SQLException e) {
             throw e;
         } finally {

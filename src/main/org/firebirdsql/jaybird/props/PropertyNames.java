@@ -47,6 +47,7 @@ public final class PropertyNames {
     public static final String type = "type";
     public static final String user = "user";
     public static final String password = "password";
+    public static final String passwordEnc = "passwordEnc";
     public static final String roleName = "roleName";
     public static final String processId = "processId";
     public static final String processName = "processName";
