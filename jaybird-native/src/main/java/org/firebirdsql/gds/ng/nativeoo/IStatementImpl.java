@@ -179,14 +179,16 @@ public class IStatementImpl extends AbstractFbStatement {
             final boolean hasSingletonResult = hasSingletonResult();
             ITransactionImpl transaction = (ITransactionImpl) getTransaction();
 
-            Pointer inPtr = null;
+            Memory inPtr = null;
+            int inLength = inMessage.position();
             // Actually the message size may be smaller than previously declared,
             // so we take pointer position as message size
-            if (inMessage.position() > 0) {
-                inPtr = new Memory(inMessage.position());
+            if (inLength > 0) {
+                inPtr = new Memory(inLength);
                 inPtr.write(0, inMessage.array(), 0, inMessage.position());
             }
-            Pointer outPtr = null;
+            Memory outPtr = null;
+            int outLength = 0;
 
             try (OperationCloseHandle operationCloseHandle = signalExecute()) {
                 if (operationCloseHandle.isCancelled()) {
@@ -198,7 +200,8 @@ public class IStatementImpl extends AbstractFbStatement {
                             outMetadata, 0);
                 } else {
                     ByteBuffer outMessage = ByteBuffer.allocate(getMaxSqlInfoSize());
-                    outPtr = new Memory(outMessage.array().length);
+                    outLength = outMessage.array().length;
+                    outPtr = new Memory(outLength);
                     outPtr.write(0, outMessage.array(), 0, outMessage.array().length);
                     statement.execute(getStatus(), transaction.getTransaction(), inMetadata, inPtr, outMetadata,
                             outPtr);
@@ -216,6 +219,15 @@ public class IStatementImpl extends AbstractFbStatement {
                     // A normal execute is never a singleton result (even if it only produces a single result)
                     statementListenerDispatcher.statementExecuted(this, hasFields(), false);
                     processStatus();
+                }
+            } finally {
+                if (inPtr != null) {
+                    inPtr.close();
+                    inPtr = null;
+                }
+                if (outPtr != null) {
+                    outPtr.close();
+                    outPtr = null;
                 }
             }
 
@@ -310,19 +322,26 @@ public class IStatementImpl extends AbstractFbStatement {
                 }
 
                 ByteBuffer message = ByteBuffer.allocate(outMetadata.getMessageLength(getStatus()) + 1);
+                int messageLength = message.array().length;
                 processStatus();
-                Pointer ptr = new Memory(message.array().length);
-                int fetchStatus = cursor.fetchNext(getStatus(), ptr);
-                processStatus();
-                if (fetchStatus == IStatus.RESULT_OK) {
-                    queueRowData(toRowValue(getRowDescriptor(), outMetadata, ptr));
-                } else if (fetchStatus == IStatus.RESULT_NO_DATA) {
-                    setAfterLast();
-                    // Note: we are not explicitly 'closing' the cursor here
-                } else {
-                    final String errorMessage = "Unexpected fetch status (expected 0 or 100): " + fetchStatus;
-                    log.log(System.Logger.Level.DEBUG, errorMessage);
-                    throw new SQLException(errorMessage);
+
+                Memory ptr = new Memory(messageLength);
+                try {
+                    int fetchStatus = cursor.fetchNext(getStatus(), ptr);
+                    processStatus();
+                    if (fetchStatus == IStatus.RESULT_OK) {
+                        queueRowData(toRowValue(getRowDescriptor(), outMetadata, ptr));
+                    } else if (fetchStatus == IStatus.RESULT_NO_DATA) {
+                        setAfterLast();
+                        // Note: we are not explicitly 'closing' the cursor here
+                    } else {
+                        final String errorMessage = "Unexpected fetch status (expected 0 or 100): " + fetchStatus;
+                        log.log(System.Logger.Level.DEBUG, errorMessage);
+                        throw new SQLException(errorMessage);
+                    }
+                } finally {
+                    ptr.close();
+                    ptr = null;
                 }
             }
         } catch (SQLException e) {

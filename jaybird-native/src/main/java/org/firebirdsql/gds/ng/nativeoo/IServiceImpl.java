@@ -36,7 +36,7 @@ public class IServiceImpl extends AbstractFbService<IServiceConnectionImpl> impl
     private final FbClientLibrary clientLibrary;
     private final IMaster master;
     private final IProvider provider;
-    private final IStatus status;
+    private IStatus status;
     private IService service;
 
     public IServiceImpl(IServiceConnectionImpl connection) {
@@ -186,6 +186,10 @@ public class IServiceImpl extends AbstractFbService<IServiceConnectionImpl> impl
                         .cause(ex)
                         .toSQLException();
             } finally {
+                if (status != null) {
+                    status.dispose();
+                    status = null;
+                }
                 setDetached();
             }
         }
