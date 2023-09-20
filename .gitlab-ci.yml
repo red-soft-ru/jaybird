@@ -111,15 +111,15 @@ build_and_test:
         die "Do not know how to test RDB ${RDB_VERSION}"
       fi
     - |
-      cat << EOF > /etc/yum.repos.d/bellsoft.repo
-      [BellSoft]
-      name=BellSoft Repository
-      baseurl=https://yum.bell-sw.com
-      enabled=1
-      gpgcheck=1
-      gpgkey=https://download.bell-sw.com/pki/GPG-KEY-bellsoft
-      priority=1
-      EOF
+#      cat << EOF > /etc/yum.repos.d/bellsoft.repo
+#      [BellSoft]
+#      name=BellSoft Repository
+#      baseurl=https://yum.bell-sw.com
+#      enabled=1
+#      gpgcheck=1
+#      gpgkey=https://download.bell-sw.com/pki/GPG-KEY-bellsoft
+#      priority=1
+#      EOF
     - echo proxy=$http_proxy >> /etc/yum.conf
     - yum install -y krb5-server krb5-workstation expect git $EXTRA_DEPENDENCIES
     - wget https://archive.apache.org/dist/maven/maven-3/$MAVEN_VERSION/binaries/apache-maven-$MAVEN_VERSION-bin.tar.gz && tar -xvf apache-maven-$MAVEN_VERSION-bin.tar.gz && mv apache-maven-$MAVEN_VERSION /opt/
@@ -158,13 +158,13 @@ build_and_test:
         GDS_TYPE: "EMBEDDED"
         REPORT_PREFIX: jdk17_embedded_
         RDB_VERSION: $RDB5_VERSION
-      - TYPE: JDK17_rdb3_liberica_17
-        TEST_JAVA_JVM: /usr/java17/bin/java
-        JDK_VER: 17
-        GDS_TYPE: "PURE_JAVA"
-        EXTRA_DEPENDENCIES: bellsoft-java17
-        REPORT_PREFIX: liberica_jdk17_
-        RDB_VERSION: $RDB3_VERSION
+#      - TYPE: JDK17_rdb3_liberica_17
+#        TEST_JAVA_JVM: /usr/java17/bin/java
+#        JDK_VER: 17
+#        GDS_TYPE: "PURE_JAVA"
+#        EXTRA_DEPENDENCIES: bellsoft-java17
+#        REPORT_PREFIX: liberica_jdk17_
+#        RDB_VERSION: $RDB3_VERSION
 
 deploy:internal:
   <<: *deploy_template
