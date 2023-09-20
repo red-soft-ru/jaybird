@@ -1,3 +1,10 @@
+# v5.0.10
+
+## Improvements
+
+* Add alias for encrypted password property. See RS-148217
+
+
 # v5.0.9
 
 ## Fixed
