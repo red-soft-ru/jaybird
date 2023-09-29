@@ -353,7 +353,10 @@ public abstract class AbstractFbBlob implements FbBlob, TransactionListener, Dat
     public long length() throws SQLException {
         try (LockCloseable ignored = withLock()) {
             checkDatabaseAttached();
-            final BlobLengthProcessor blobLengthProcessor = createBlobLengthProcessor();
+            if (isOutput() && getBlobId() == FbBlob.NO_BLOB_ID) {
+                throw FbExceptionBuilder.forException(ISCConstants.isc_bad_segstr_id).toSQLException();
+            }
+            BlobLengthProcessor blobLengthProcessor = createBlobLengthProcessor();
             return getBlobInfo(blobLengthProcessor.getBlobLengthItems(), 20, blobLengthProcessor);
         } catch (SQLException e) {
             exceptionListenerDispatcher.errorOccurred(e);
