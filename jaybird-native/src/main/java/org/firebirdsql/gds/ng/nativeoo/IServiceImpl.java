@@ -33,9 +33,9 @@ public class IServiceImpl extends AbstractFbService<IServiceConnectionImpl> impl
     // TODO Find out if there are any exception from JNA that we need to be prepared to handle.
 
     private static final ParameterConverter<?, IServiceConnectionImpl> PARAMETER_CONVERTER = new IParameterConverterImpl();
-    private final FbClientLibrary clientLibrary;
-    private final IMaster master;
-    private final IProvider provider;
+    private FbClientLibrary clientLibrary;
+    private IMaster master;
+    private IProvider provider;
     private IStatus status;
     private IService service;
 
@@ -176,6 +176,9 @@ public class IServiceImpl extends AbstractFbService<IServiceConnectionImpl> impl
             try {
                 service.detach(getStatus());
                 processStatus();
+                clientLibrary = null;
+                provider.release();
+                provider = null;
             } catch (SQLException ex) {
                 throw ex;
             } catch (Exception ex) {

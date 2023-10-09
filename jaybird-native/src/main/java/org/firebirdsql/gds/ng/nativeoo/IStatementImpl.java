@@ -76,6 +76,8 @@ public class IStatementImpl extends AbstractFbStatement {
                 statement.free(getStatus());
                 statement = null;
                 processStatus();
+                inMetadata.release();
+                outMetadata.release();
             }
             // Reset statement information
             reset(option == ISCConstants.DSQL_drop);
@@ -245,8 +247,7 @@ public class IStatementImpl extends AbstractFbStatement {
 
     protected void setMetaData(final RowDescriptor rowDescriptor, final RowValue parameters) throws SQLException {
 
-        IMaster master = database.getMaster();
-        IMetadataBuilder metadataBuilder = master.getMetadataBuilder(getStatus(), parameters.getCount());
+        IMetadataBuilder metadataBuilder = inMetadata.getBuilder(getStatus());
         processStatus();
         for (int idx = 0; idx < parameters.getCount(); idx++) {
             byte[] fieldData = parameters.getFieldData(idx);
@@ -269,6 +270,7 @@ public class IStatementImpl extends AbstractFbStatement {
                 }
             }
         }
+        inMetadata.release();
         inMetadata = metadataBuilder.getMetadata(getStatus());
         processStatus();
         metadataBuilder.release();

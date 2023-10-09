@@ -110,6 +110,8 @@ public class IDatabaseImpl extends AbstractFbDatabase<NativeDatabaseConnection>
             processStatus();
             status.dispose();
             status = null;
+            provider.release();
+            provider = null;
         } catch (SQLException e) {
             throw e;
         } finally {

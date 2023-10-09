@@ -52,6 +52,7 @@ public class IBlobImpl extends AbstractFbBlob implements FbBlob, DatabaseListene
         try (LockCloseable ignored = withLock()) {
             blob.close(getStatus());
             processStatus();
+            blob = null;
         } finally {
             byteBuffer = null;
         }
@@ -157,6 +158,7 @@ public class IBlobImpl extends AbstractFbBlob implements FbBlob, DatabaseListene
             actualLength.close();
             final byte[] segment = new byte[actualLengthInt];
             responseBuffer.get(segment);
+            responseBuffer.clear();
             return segment;
         } catch (SQLException e) {
             exceptionListenerDispatcher.errorOccurred(e);
