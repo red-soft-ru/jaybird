@@ -155,10 +155,11 @@ public final class FBBlob implements FirebirdBlob, TransactionListener {
      */
     FbBlob createBlob() throws SQLException {
         try (LockCloseable ignored = withLock()) {
+            boolean useStreamBlobs = this.gdsHelper.getConnectionProperties().isUseStreamBlobs();
             checkClosed();
             // For historic reasons we allow creating an output blob even if this is not a new blob. This may need to
             // be reconsidered in the future
-            return gdsHelper.createBlob(config);
+            return gdsHelper.createBlob(!useStreamBlobs, isTemporary());
         }
     }
 
