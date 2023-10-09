@@ -683,7 +683,7 @@ public final class FirebirdSupportInfo {
      * @return {@code true} when this Firebird version supports parallel workers
      */
     public boolean supportsParallelWorkers() {
-        return isVersionEqualOrAbove(5);
+        return isVersionEqualOrAbove(3);
     }
 
     /**
