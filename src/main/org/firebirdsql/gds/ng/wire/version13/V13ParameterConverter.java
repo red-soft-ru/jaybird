@@ -24,6 +24,7 @@ import org.firebirdsql.gds.impl.DatabaseParameterBufferImp;
 import org.firebirdsql.gds.impl.ServiceParameterBufferImp;
 import org.firebirdsql.gds.ng.AbstractConnection;
 import org.firebirdsql.gds.ng.IAttachProperties;
+import org.firebirdsql.gds.ng.IConnectionProperties;
 import org.firebirdsql.gds.ng.wire.WireConnection;
 import org.firebirdsql.gds.ng.wire.WireDatabaseConnection;
 import org.firebirdsql.gds.ng.wire.WireServiceConnection;
@@ -34,6 +35,11 @@ import org.firebirdsql.jaybird.fb.constants.DpbItems;
 import org.firebirdsql.jaybird.fb.constants.SpbItems;
 
 import java.sql.SQLException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import static org.firebirdsql.jaybird.fb.constants.DpbItems.isc_dpb_session_time_zone;
+import static org.firebirdsql.jaybird.props.PropertyConstants.SESSION_TIME_ZONE_SERVER;
 
 /**
  * Implementation of {@link org.firebirdsql.gds.ng.ParameterConverter} for the version 13 protocol.
@@ -45,6 +51,8 @@ import java.sql.SQLException;
  * @since 3.0
  */
 public class V13ParameterConverter extends V12ParameterConverter {
+
+    private static final Pattern GMT_WITH_OFFSET = Pattern.compile("^([+-]\\d{2}:\\d{2})$");
 
     protected DatabaseParameterBuffer createDatabaseParameterBuffer(WireDatabaseConnection connection) {
         final Encoding stringEncoding = connection.getEncodingFactory().getEncodingForFirebirdName("UTF8");
@@ -66,6 +74,22 @@ public class V13ParameterConverter extends V12ParameterConverter {
     protected void populateDefaultProperties(final WireDatabaseConnection connection,
             final DatabaseParameterBuffer dpb) throws SQLException {
         super.populateDefaultProperties(connection, dpb);
+
+        if (dpb.hasArgument(DpbItems.isc_dpb_session_time_zone)) {
+            dpb.removeArgument(isc_dpb_session_time_zone);
+            IConnectionProperties props = connection.getAttachProperties();
+            String sessionTimeZone = props.getSessionTimeZone();
+            if (sessionTimeZone.startsWith("+") || sessionTimeZone.startsWith("-")) {
+                Matcher matcher = GMT_WITH_OFFSET.matcher(sessionTimeZone);
+                if (matcher.matches()) {
+                    sessionTimeZone = matcher.group(1);
+                    sessionTimeZone = "GMT" + sessionTimeZone;
+                }
+            }
+            if (sessionTimeZone != null && !SESSION_TIME_ZONE_SERVER.equalsIgnoreCase(sessionTimeZone)) {
+                dpb.addArgument(isc_dpb_session_time_zone, sessionTimeZone);
+            }
+        }
 
         dpb.addArgument(DpbItems.isc_dpb_client_version, Version.JAYBIRD_DISPLAY_VERSION);
     }
