@@ -23,6 +23,7 @@
 		<maven-release-plugin.version>2.5.3</maven-release-plugin.version>
 		<maven-jar-plugin.version>3.2.0</maven-jar-plugin.version>
 		<maven-assembly-plugin.version>3.2.0</maven-assembly-plugin.version>
+		<asciidoctor-maven-plugin.version>2.2.4</asciidoctor-maven-plugin.version>
 
 		<antlr4.runtime.version>4.7.2</antlr4.runtime.version>
 		<asm.version>9.1</asm.version>
@@ -37,6 +38,7 @@
 		<releasehub.plugin.version>1.1</releasehub.plugin.version>
 		<junit.jupiter.version>5.10.0</junit.jupiter.version>
 		<awaitility.version>4.2.0</awaitility.version>
+		<asciidoctorj.version>2.5.10</asciidoctorj.version>
 	</properties>
 	<modules>
 		<module>modules/cryptoapi-security-jdk17</module>
@@ -170,6 +172,11 @@
 				<groupId>net.java.dev.jna</groupId>
 				<artifactId>jna-platform</artifactId>
 				<version>${jna.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.asciidoctor</groupId>
+				<artifactId>asciidoctorj</artifactId>
+				<version>${asciidoctorj.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.ow2.asm</groupId>
@@ -323,6 +330,11 @@
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-jar-plugin</artifactId>
 					<version>${maven-jar-plugin.version}</version>
+				</plugin>
+				<plugin>
+					<groupId>org.asciidoctor</groupId>
+					<artifactId>asciidoctor-maven-plugin</artifactId>
+					<version>${asciidoctor-maven-plugin.version}</version>
 				</plugin>
 				<plugin>
 					<artifactId>maven-assembly-plugin</artifactId>

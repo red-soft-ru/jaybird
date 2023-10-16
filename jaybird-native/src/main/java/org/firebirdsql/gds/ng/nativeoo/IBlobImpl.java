@@ -1,6 +1,7 @@
 package org.firebirdsql.gds.ng.nativeoo;
 
 import com.sun.jna.ptr.LongByReference;
+import com.sun.jna.ptr.ShortByReference;
 import org.firebirdsql.gds.BlobParameterBuffer;
 import org.firebirdsql.gds.ISCConstants;
 import org.firebirdsql.gds.ng.AbstractFbBlob;
@@ -166,6 +167,60 @@ public class IBlobImpl extends AbstractFbBlob implements FbBlob, DatabaseListene
         }
     }
 
+    private ByteBuffer getSegment0(int sizeRequested, ShortByReference actualLength) throws SQLException {
+        sizeRequested = Math.min(sizeRequested, getMaximumSegmentSize());
+        ByteBuffer responseBuffer = getByteBuffer(sizeRequested);
+        try (LockCloseable ignored = withLock()) {
+            checkDatabaseAttached();
+            checkTransactionActive();
+            checkBlobOpen();
+            try (CloseableMemory memory = new CloseableMemory(sizeRequested)) {
+                int result = blob.getSegment(getStatus(), sizeRequested, memory, actualLength.getPointer());
+                processStatus();
+                // result 0 means: more to come, isc_segment means: buffer was too small,
+                // rest will be returned on next call
+                if (!(IStatus.RESULT_OK == result || result == IStatus.RESULT_SEGMENT)) {
+                    if (result == IStatus.RESULT_NO_DATA) {
+                        setEof();
+                    }
+                }
+                memory.read(0, responseBuffer.array(), 0, sizeRequested);
+            }
+            processStatus();
+        }
+        return responseBuffer;
+    }
+
+    @Override
+    public int get(byte[] b, int off, int len) throws SQLException {
+        try (LockCloseable ignored = withLock())  {
+            validateBufferLength(b, off, len);
+            if (len == 0) return 0;
+            checkDatabaseAttached();
+            checkTransactionActive();
+            checkBlobOpen();
+            ShortByReference actualLength = new ShortByReference();
+            int count = 0;
+            while (count < len && !isEof()) {
+                // We honor the configured buffer size unless we somehow already allocated a bigger buffer earlier
+                ByteBuffer segmentBuffer = getSegment0(
+                        Math.min(len - count, Math.max(getBlobBufferSize(), currentBufferCapacity())),
+                        actualLength);
+                int dataLength = actualLength.getValue() & 0xFFFF;
+                segmentBuffer.get(b, off + count, dataLength);
+                count += dataLength;
+            }
+            return count;
+        } catch (SQLException e) {
+            exceptionListenerDispatcher.errorOccurred(e);
+            throw e;
+        }
+    }
+
+    private int getBlobBufferSize() throws SQLException {
+        return getDatabase().getConnectionProperties().getBlobBufferSize();
+    }
+
     @Override
     public void putSegment(byte[] segment) throws SQLException {
         try {
@@ -185,6 +240,50 @@ public class IBlobImpl extends AbstractFbBlob implements FbBlob, DatabaseListene
                     blob.putSegment(getStatus(), segment.length, memory);
                     processStatus();
                 }
+            }
+        } catch (SQLException e) {
+            exceptionListenerDispatcher.errorOccurred(e);
+            throw e;
+        }
+    }
+
+    @Override
+    public void put(byte[] b, int off, int len) throws SQLException {
+        try (LockCloseable ignored = withLock()) {
+            validateBufferLength(b, off, len);
+            if (len == 0) {
+                throw FbExceptionBuilder.forException(jb_blobPutSegmentEmpty).toSQLException();
+            }
+            checkDatabaseAttached();
+            checkTransactionActive();
+            checkBlobOpen();
+
+            int count = 0;
+            if (off == 0) {
+                // no additional buffer allocation needed, so we can send with max segment size
+                count = Math.min(len, getMaximumSegmentSize());
+                try (CloseableMemory memory = new CloseableMemory(b.length)) {
+                    memory.write(0, b, 0, b.length);
+                    blob.putSegment(getStatus(), b.length, memory);
+                    processStatus();
+                }
+                if (count == len) {
+                    // put complete
+                    return;
+                }
+            }
+
+            byte[] segmentBuffer =
+                    new byte[Math.min(len - count, Math.min(getBlobBufferSize(), getMaximumSegmentSize()))];
+            while (count < len) {
+                int segmentLength = Math.min(len - count, segmentBuffer.length);
+                System.arraycopy(b, off + count, segmentBuffer, 0, segmentLength);
+                try (CloseableMemory memory = new CloseableMemory(segmentLength)) {
+                    memory.write(0, segmentBuffer, 0, segmentLength);
+                    blob.putSegment(getStatus(), segmentLength, memory);
+                    processStatus();
+                }
+                count += segmentLength;
             }
         } catch (SQLException e) {
             exceptionListenerDispatcher.errorOccurred(e);
@@ -231,6 +330,11 @@ public class IBlobImpl extends AbstractFbBlob implements FbBlob, DatabaseListene
             byteBuffer.clear();
         }
         return byteBuffer;
+    }
+
+    private int currentBufferCapacity() {
+        ByteBuffer byteBuffer = this.byteBuffer;
+        return byteBuffer != null ? byteBuffer.capacity() : 0;
     }
 
     private IStatus getStatus() {

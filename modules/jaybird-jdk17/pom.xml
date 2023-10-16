@@ -38,6 +38,10 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
+			<groupId>org.asciidoctor</groupId>
+			<artifactId>asciidoctorj</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>org.hamcrest</groupId>
 			<artifactId>hamcrest-core</artifactId>
 			<scope>test</scope>
@@ -275,6 +279,30 @@
 						<goals>
 							<goal>test-jar</goal>
 						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.asciidoctor</groupId>
+				<artifactId>asciidoctor-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>convert-to-html</id>
+						<phase>generate-resources</phase>
+						<goals>
+							<goal>process-asciidoc</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${project.build.directory}/html</outputDirectory>
+							<sourceDirectory>../../src</sourceDirectory>
+							<attributes>
+								<version_simple>${project.version}</version_simple>
+								<stylesdir>./docs/theme/jaybird-html</stylesdir>
+								<stylesheet>firebird.css</stylesheet>
+								<docinfo>shared</docinfo>
+								<docinfodir>./docs/theme/jaybird-html/docinfo</docinfodir>
+							</attributes>
+						</configuration>
 					</execution>
 				</executions>
 			</plugin>
