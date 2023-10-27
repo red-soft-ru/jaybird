@@ -179,8 +179,8 @@ public class FBCallableStatement extends FBPreparedStatement implements Callable
         for (FBProcedureParam param : procedureCall.getOutputParams()) {
             if (param == null) continue;
 
-            FBField field = resultSet.getField(procedureCall.mapOutParamIndexToPosition(param.getIndex()), false);
-            field.setRequiredType(param.getType());
+            resultSet.getField(mapOutParamIndexToPosition(param.getIndex()), false)
+                    .setRequiredType(param.getType());
         }
     }
 
@@ -332,12 +332,12 @@ public class FBCallableStatement extends FBPreparedStatement implements Callable
     }
 
     private void setField(FBField field, WrapperWithLong value) throws SQLException {
-        Object obj = value.getValue();
+        Object obj = value.value();
 
         if (obj == null) {
             field.setNull();
         } else {
-            long longValue = value.getLongValue();
+            long longValue = value.longValue();
 
             if (obj instanceof InputStream) {
                 field.setBinaryStream((InputStream) obj, longValue);
@@ -350,12 +350,12 @@ public class FBCallableStatement extends FBPreparedStatement implements Callable
     }
 
     private void setField(FBField field, WrapperWithCalendar value) throws SQLException {
-        Object obj = value.getValue();
+        Object obj = value.value();
 
         if (obj == null) {
             field.setNull();
         } else {
-            Calendar cal = value.getCalendar();
+            Calendar cal = value.calendar();
 
             if (obj instanceof Timestamp)
                 field.setTimestamp((Timestamp) obj, cal);
@@ -425,83 +425,74 @@ public class FBCallableStatement extends FBPreparedStatement implements Callable
         return getAndAssertSingletonResultSet().wasNull();
     }
 
+    private int mapOutParamIndexToPosition(int parameterIndex) throws SQLException {
+        return procedureCall.mapOutParamIndexToPosition(parameterIndex);
+    }
+
     @Override
     public String getString(int parameterIndex) throws SQLException {
-        parameterIndex = procedureCall.mapOutParamIndexToPosition(parameterIndex);
-        return getAndAssertSingletonResultSet().getString(parameterIndex);
+        return getAndAssertSingletonResultSet().getString(mapOutParamIndexToPosition(parameterIndex));
     }
 
     @Override
     public boolean getBoolean(int parameterIndex) throws SQLException {
-        parameterIndex = procedureCall.mapOutParamIndexToPosition(parameterIndex);
-        return getAndAssertSingletonResultSet().getBoolean(parameterIndex);
+        return getAndAssertSingletonResultSet().getBoolean(mapOutParamIndexToPosition(parameterIndex));
     }
 
     @Override
     public byte getByte(int parameterIndex) throws SQLException {
-        parameterIndex = procedureCall.mapOutParamIndexToPosition(parameterIndex);
-        return getAndAssertSingletonResultSet().getByte(parameterIndex);
+        return getAndAssertSingletonResultSet().getByte(mapOutParamIndexToPosition(parameterIndex));
     }
 
     @Override
     public short getShort(int parameterIndex) throws SQLException {
-        parameterIndex = procedureCall.mapOutParamIndexToPosition(parameterIndex);
-        return getAndAssertSingletonResultSet().getShort(parameterIndex);
+        return getAndAssertSingletonResultSet().getShort(mapOutParamIndexToPosition(parameterIndex));
     }
 
     @Override
     public int getInt(int parameterIndex) throws SQLException {
-        parameterIndex = procedureCall.mapOutParamIndexToPosition(parameterIndex);
-        return getAndAssertSingletonResultSet().getInt(parameterIndex);
+        return getAndAssertSingletonResultSet().getInt(mapOutParamIndexToPosition(parameterIndex));
     }
 
     @Override
     public long getLong(int parameterIndex) throws SQLException {
-        parameterIndex = procedureCall.mapOutParamIndexToPosition(parameterIndex);
-        return getAndAssertSingletonResultSet().getLong(parameterIndex);
+        return getAndAssertSingletonResultSet().getLong(mapOutParamIndexToPosition(parameterIndex));
     }
 
     @Override
     public float getFloat(int parameterIndex) throws SQLException {
-        parameterIndex = procedureCall.mapOutParamIndexToPosition(parameterIndex);
-        return getAndAssertSingletonResultSet().getFloat(parameterIndex);
+        return getAndAssertSingletonResultSet().getFloat(mapOutParamIndexToPosition(parameterIndex));
     }
 
     @Override
     public double getDouble(int parameterIndex) throws SQLException {
-        parameterIndex = procedureCall.mapOutParamIndexToPosition(parameterIndex);
-        return getAndAssertSingletonResultSet().getDouble(parameterIndex);
+        return getAndAssertSingletonResultSet().getDouble(mapOutParamIndexToPosition(parameterIndex));
     }
 
     @Deprecated
     @Override
     public BigDecimal getBigDecimal(int parameterIndex, int scale) throws SQLException {
-        parameterIndex = procedureCall.mapOutParamIndexToPosition(parameterIndex);
-        return getAndAssertSingletonResultSet().getBigDecimal(parameterIndex, scale);
+        return getAndAssertSingletonResultSet().getBigDecimal(mapOutParamIndexToPosition(parameterIndex), scale);
     }
 
     @Override
     public byte[] getBytes(int parameterIndex) throws SQLException {
-        parameterIndex = procedureCall.mapOutParamIndexToPosition(parameterIndex);
-        return getAndAssertSingletonResultSet().getBytes(parameterIndex);
+        return getAndAssertSingletonResultSet().getBytes(mapOutParamIndexToPosition(parameterIndex));
     }
 
     @Override
     public java.sql.Date getDate(int parameterIndex) throws SQLException {
-        parameterIndex = procedureCall.mapOutParamIndexToPosition(parameterIndex);
-        return getAndAssertSingletonResultSet().getDate(parameterIndex);
+        return getAndAssertSingletonResultSet().getDate(mapOutParamIndexToPosition(parameterIndex));
     }
 
     @Override
     public Time getTime(int parameterIndex) throws SQLException {
-        parameterIndex = procedureCall.mapOutParamIndexToPosition(parameterIndex);
-        return getAndAssertSingletonResultSet().getTime(parameterIndex);
+        return getAndAssertSingletonResultSet().getTime(mapOutParamIndexToPosition(parameterIndex));
     }
 
     @Override
     public Timestamp getTimestamp(int parameterIndex) throws SQLException {
-        parameterIndex = procedureCall.mapOutParamIndexToPosition(parameterIndex);
-        return getAndAssertSingletonResultSet().getTimestamp(parameterIndex);
+        return getAndAssertSingletonResultSet().getTimestamp(mapOutParamIndexToPosition(parameterIndex));
     }
 
     /**
@@ -512,19 +503,12 @@ public class FBCallableStatement extends FBPreparedStatement implements Callable
      */
     @Override
     public Object getObject(int parameterIndex) throws SQLException {
-        parameterIndex = procedureCall.mapOutParamIndexToPosition(parameterIndex);
-        return getAndAssertSingletonResultSet().getObject(parameterIndex);
+        return getAndAssertSingletonResultSet().getObject(mapOutParamIndexToPosition(parameterIndex));
     }
 
-    /**
-     * {@inheritDoc}
-     * <p>
-     * Implementation note: the registered type is ignored, and the type derived from the actual datatype will be used.
-     * </p>
-     */
     @Override
     public Object getObject(String colName) throws SQLException {
-        return getObject(findOutParameter(colName));
+        return getAndAssertSingletonResultSet().getObject(colName);
     }
 
     /**
@@ -535,8 +519,7 @@ public class FBCallableStatement extends FBPreparedStatement implements Callable
      */
     @Override
     public Object getObject(int parameterIndex, Map<String, Class<?>> map) throws SQLException {
-        parameterIndex = procedureCall.mapOutParamIndexToPosition(parameterIndex);
-        return getAndAssertSingletonResultSet().getObject(parameterIndex, map);
+        return getAndAssertSingletonResultSet().getObject(mapOutParamIndexToPosition(parameterIndex), map);
     }
 
     /**
@@ -547,188 +530,177 @@ public class FBCallableStatement extends FBPreparedStatement implements Callable
      */
     @Override
     public Object getObject(String colName, Map<String, Class<?>> map) throws SQLException {
-        return getObject(findOutParameter(colName), map);
+        return getAndAssertSingletonResultSet().getObject(colName, map);
     }
 
     @Override
     public <T> T getObject(int parameterIndex, Class<T> type) throws SQLException {
-        parameterIndex = procedureCall.mapOutParamIndexToPosition(parameterIndex);
-        return getAndAssertSingletonResultSet().getObject(parameterIndex, type);
+        return getAndAssertSingletonResultSet().getObject(mapOutParamIndexToPosition(parameterIndex), type);
     }
 
     @Override
     public <T> T getObject(String parameterName, Class<T> type) throws SQLException {
-        return getObject(findOutParameter(parameterName), type);
+        return getAndAssertSingletonResultSet().getObject(parameterName, type);
     }
 
     @Override
     public BigDecimal getBigDecimal(int parameterIndex) throws SQLException {
-        parameterIndex = procedureCall.mapOutParamIndexToPosition(parameterIndex);
-        return getAndAssertSingletonResultSet().getBigDecimal(parameterIndex);
+        return getAndAssertSingletonResultSet().getBigDecimal(mapOutParamIndexToPosition(parameterIndex));
     }
 
     @Override
     public Ref getRef(int parameterIndex) throws SQLException {
-        parameterIndex = procedureCall.mapOutParamIndexToPosition(parameterIndex);
-        return getAndAssertSingletonResultSet().getRef(parameterIndex);
+        return getAndAssertSingletonResultSet().getRef(mapOutParamIndexToPosition(parameterIndex));
     }
 
     @Override
     public Blob getBlob(int parameterIndex) throws SQLException {
-        parameterIndex = procedureCall.mapOutParamIndexToPosition(parameterIndex);
-        return getAndAssertSingletonResultSet().getBlob(parameterIndex);
+        return getAndAssertSingletonResultSet().getBlob(mapOutParamIndexToPosition(parameterIndex));
     }
 
     @Override
     public Clob getClob(int parameterIndex) throws SQLException {
-        parameterIndex = procedureCall.mapOutParamIndexToPosition(parameterIndex);
-        return getAndAssertSingletonResultSet().getClob(parameterIndex);
+        return getAndAssertSingletonResultSet().getClob(mapOutParamIndexToPosition(parameterIndex));
     }
 
     @Override
     public Array getArray(int parameterIndex) throws SQLException {
-        parameterIndex = procedureCall.mapOutParamIndexToPosition(parameterIndex);
-        return getAndAssertSingletonResultSet().getArray(parameterIndex);
+        return getAndAssertSingletonResultSet().getArray(mapOutParamIndexToPosition(parameterIndex));
     }
 
     @Override
     public java.sql.Date getDate(int parameterIndex, Calendar cal) throws SQLException {
-        parameterIndex = procedureCall.mapOutParamIndexToPosition(parameterIndex);
-        return getAndAssertSingletonResultSet().getDate(parameterIndex, cal);
+        return getAndAssertSingletonResultSet().getDate(mapOutParamIndexToPosition(parameterIndex), cal);
     }
 
     @Override
     public Time getTime(int parameterIndex, Calendar cal) throws SQLException {
-        parameterIndex = procedureCall.mapOutParamIndexToPosition(parameterIndex);
-        return getAndAssertSingletonResultSet().getTime(parameterIndex, cal);
+        return getAndAssertSingletonResultSet().getTime(mapOutParamIndexToPosition(parameterIndex), cal);
     }
 
     @Override
     public Timestamp getTimestamp(int parameterIndex, Calendar cal) throws SQLException {
-        parameterIndex = procedureCall.mapOutParamIndexToPosition(parameterIndex);
-        return getAndAssertSingletonResultSet().getTimestamp(parameterIndex, cal);
+        return getAndAssertSingletonResultSet().getTimestamp(mapOutParamIndexToPosition(parameterIndex), cal);
     }
 
     @Override
     public URL getURL(int parameterIndex) throws SQLException {
-        parameterIndex = procedureCall.mapOutParamIndexToPosition(parameterIndex);
-        return getAndAssertSingletonResultSet().getURL(parameterIndex);
+        return getAndAssertSingletonResultSet().getURL(mapOutParamIndexToPosition(parameterIndex));
     }
 
     @Override
     public String getString(String colName) throws SQLException {
-        return getString(findOutParameter(colName));
+        return getAndAssertSingletonResultSet().getString(colName);
     }
 
     @Override
     public boolean getBoolean(String colName) throws SQLException {
-        return getBoolean(findOutParameter(colName));
+        return getAndAssertSingletonResultSet().getBoolean(colName);
     }
 
     @Override
     public byte getByte(String colName) throws SQLException {
-        return getByte(findOutParameter(colName));
+        return getAndAssertSingletonResultSet().getByte(colName);
     }
 
     @Override
     public short getShort(String colName) throws SQLException {
-        return getShort(findOutParameter(colName));
+        return getAndAssertSingletonResultSet().getShort(colName);
     }
 
     @Override
     public int getInt(String colName) throws SQLException {
-        return getInt(findOutParameter(colName));
+        return getAndAssertSingletonResultSet().getInt(colName);
     }
 
     @Override
     public long getLong(String colName) throws SQLException {
-        return getLong(findOutParameter(colName));
+        return getAndAssertSingletonResultSet().getLong(colName);
     }
 
     @Override
     public float getFloat(String colName) throws SQLException {
-        return getFloat(findOutParameter(colName));
+        return getAndAssertSingletonResultSet().getFloat(colName);
     }
 
     @Override
     public double getDouble(String colName) throws SQLException {
-        return getDouble(findOutParameter(colName));
+        return getAndAssertSingletonResultSet().getDouble(colName);
     }
 
     @Override
     public byte[] getBytes(String colName) throws SQLException {
-        return getBytes(findOutParameter(colName));
+        return getAndAssertSingletonResultSet().getBytes(colName);
     }
 
     @Override
     public Date getDate(String colName) throws SQLException {
-        return getDate(findOutParameter(colName));
+        return getAndAssertSingletonResultSet().getDate(colName);
     }
 
     @Override
     public Time getTime(String colName) throws SQLException {
-        return getTime(findOutParameter(colName));
+        return getAndAssertSingletonResultSet().getTime(colName);
     }
 
     @Override
     public Timestamp getTimestamp(String colName) throws SQLException {
-        return getTimestamp(findOutParameter(colName));
+        return getAndAssertSingletonResultSet().getTimestamp(colName);
     }
 
     @Override
     public BigDecimal getBigDecimal(String colName) throws SQLException {
-        return getBigDecimal(findOutParameter(colName));
+        return getAndAssertSingletonResultSet().getBigDecimal(colName);
     }
 
     @Override
     public Ref getRef(String colName) throws SQLException {
-        return getRef(findOutParameter(colName));
+        return getAndAssertSingletonResultSet().getRef(colName);
     }
 
     @Override
     public Blob getBlob(String colName) throws SQLException {
-        return getBlob(findOutParameter(colName));
+        return getAndAssertSingletonResultSet().getBlob(colName);
     }
 
     @Override
     public Clob getClob(String colName) throws SQLException {
-        return getClob(findOutParameter(colName));
+        return getAndAssertSingletonResultSet().getClob(colName);
     }
 
     @Override
     public Array getArray(String colName) throws SQLException {
-        return getArray(findOutParameter(colName));
+        return getAndAssertSingletonResultSet().getArray(colName);
     }
 
     @Override
     public Date getDate(String colName, Calendar cal) throws SQLException {
-        return getDate(findOutParameter(colName), cal);
+        return getAndAssertSingletonResultSet().getDate(colName, cal);
     }
 
     @Override
     public Time getTime(String colName, Calendar cal) throws SQLException {
-        return getTime(findOutParameter(colName), cal);
+        return getAndAssertSingletonResultSet().getTime(colName, cal);
     }
 
     @Override
     public Timestamp getTimestamp(String colName, Calendar cal) throws SQLException {
-        return getTimestamp(findOutParameter(colName), cal);
+        return getAndAssertSingletonResultSet().getTimestamp(colName, cal);
     }
 
     @Override
     public URL getURL(String colName) throws SQLException {
-        return getURL(findOutParameter(colName));
+        return getAndAssertSingletonResultSet().getURL(colName);
     }
 
     @Override
     public Reader getCharacterStream(int parameterIndex) throws SQLException {
-        parameterIndex = procedureCall.mapOutParamIndexToPosition(parameterIndex);
-        return getAndAssertSingletonResultSet().getCharacterStream(parameterIndex);
+        return getAndAssertSingletonResultSet().getCharacterStream(mapOutParamIndexToPosition(parameterIndex));
     }
 
     @Override
     public Reader getCharacterStream(String parameterName) throws SQLException {
-        return getCharacterStream(findOutParameter(parameterName));
+        return getAndAssertSingletonResultSet().getCharacterStream(parameterName);
     }
 
     /**
@@ -739,8 +711,7 @@ public class FBCallableStatement extends FBPreparedStatement implements Callable
      */
     @Override
     public Reader getNCharacterStream(int parameterIndex) throws SQLException {
-        parameterIndex = procedureCall.mapOutParamIndexToPosition(parameterIndex);
-        return getAndAssertSingletonResultSet().getNCharacterStream(parameterIndex);
+        return getAndAssertSingletonResultSet().getNCharacterStream(mapOutParamIndexToPosition(parameterIndex));
     }
 
     /**
@@ -751,7 +722,7 @@ public class FBCallableStatement extends FBPreparedStatement implements Callable
      */
     @Override
     public Reader getNCharacterStream(String parameterName) throws SQLException {
-        return getNCharacterStream(findOutParameter(parameterName));
+        return getAndAssertSingletonResultSet().getNCharacterStream(parameterName);
     }
 
     /**
@@ -762,8 +733,7 @@ public class FBCallableStatement extends FBPreparedStatement implements Callable
      */
     @Override
     public String getNString(int parameterIndex) throws SQLException {
-        parameterIndex = procedureCall.mapOutParamIndexToPosition(parameterIndex);
-        return getAndAssertSingletonResultSet().getNString(parameterIndex);
+        return getAndAssertSingletonResultSet().getNString(mapOutParamIndexToPosition(parameterIndex));
     }
 
     /**
@@ -774,7 +744,7 @@ public class FBCallableStatement extends FBPreparedStatement implements Callable
      */
     @Override
     public String getNString(String parameterName) throws SQLException {
-        return getNString(findOutParameter(parameterName));
+        return getAndAssertSingletonResultSet().getNString(parameterName);
     }
 
     @Override
@@ -1120,169 +1090,173 @@ public class FBCallableStatement extends FBPreparedStatement implements Callable
         return rs;
     }
 
+    private void setInputParam(int parameterIndex, Object value) throws SQLException {
+        procedureCall.getInputParam(parameterIndex).setValue(value);
+    }
+
     @Override
     public void setBigDecimal(int parameterIndex, BigDecimal x) throws SQLException {
-        procedureCall.getInputParam(parameterIndex).setValue(x);
+        setInputParam(parameterIndex, x);
     }
 
     @Override
     public void setBinaryStream(int parameterIndex, InputStream inputStream, int length) throws SQLException {
-        procedureCall.getInputParam(parameterIndex).setValue(new WrapperWithLong(inputStream, length));
+        setInputParam(parameterIndex, new WrapperWithLong(inputStream, length));
     }
 
     @Override
     public void setBinaryStream(int parameterIndex, InputStream inputStream, long length) throws SQLException {
-        procedureCall.getInputParam(parameterIndex).setValue(new WrapperWithLong(inputStream, length));
+        setInputParam(parameterIndex, new WrapperWithLong(inputStream, length));
     }
 
     @Override
     public void setBinaryStream(int parameterIndex, InputStream inputStream) throws SQLException {
-        procedureCall.getInputParam(parameterIndex).setValue(inputStream);
+        setInputParam(parameterIndex, inputStream);
     }
 
     @Override
     public void setBlob(int parameterIndex, Blob blob) throws SQLException {
-        procedureCall.getInputParam(parameterIndex).setValue(blob);
+        setInputParam(parameterIndex, blob);
     }
 
     @Override
     public void setBlob(int parameterIndex, InputStream inputStream, long length) throws SQLException {
-        procedureCall.getInputParam(parameterIndex).setValue(new WrapperWithLong(inputStream, length));
+        setInputParam(parameterIndex, new WrapperWithLong(inputStream, length));
     }
 
     @Override
     public void setBlob(int parameterIndex, InputStream inputStream) throws SQLException {
-        procedureCall.getInputParam(parameterIndex).setValue(inputStream);
+        setInputParam(parameterIndex, inputStream);
     }
 
     @Override
     public void setBoolean(int parameterIndex, boolean x) throws SQLException {
-        procedureCall.getInputParam(parameterIndex).setValue(x);
+        setInputParam(parameterIndex, x);
     }
 
     @Override
     public void setByte(int parameterIndex, byte x) throws SQLException {
-        procedureCall.getInputParam(parameterIndex).setValue(x);
+        setInputParam(parameterIndex, x);
     }
 
     @Override
     public void setBytes(int parameterIndex, byte[] x) throws SQLException {
-        procedureCall.getInputParam(parameterIndex).setValue(x);
+        setInputParam(parameterIndex, x);
     }
 
     @Override
     public void setCharacterStream(int parameterIndex, Reader reader, int length) throws SQLException {
-        procedureCall.getInputParam(parameterIndex).setValue(new WrapperWithLong(reader, length));
+        setInputParam(parameterIndex, new WrapperWithLong(reader, length));
     }
 
     @Override
     public void setCharacterStream(int parameterIndex, Reader reader, long length) throws SQLException {
-        procedureCall.getInputParam(parameterIndex).setValue(new WrapperWithLong(reader, length));
+        setInputParam(parameterIndex, new WrapperWithLong(reader, length));
     }
 
     @Override
     public void setCharacterStream(int parameterIndex, Reader reader) throws SQLException {
-        procedureCall.getInputParam(parameterIndex).setValue(reader);
+        setInputParam(parameterIndex, reader);
     }
 
     @Override
     public void setClob(int parameterIndex, Clob x) throws SQLException {
-        procedureCall.getInputParam(parameterIndex).setValue(x);
+        setInputParam(parameterIndex, x);
     }
 
     @Override
     public void setClob(int parameterIndex, Reader reader, long length) throws SQLException {
-        procedureCall.getInputParam(parameterIndex).setValue(new WrapperWithLong(reader, length));
+        setInputParam(parameterIndex, new WrapperWithLong(reader, length));
     }
 
     @Override
     public void setClob(int parameterIndex, Reader reader) throws SQLException {
-        procedureCall.getInputParam(parameterIndex).setValue(reader);
+        setInputParam(parameterIndex, reader);
     }
 
     @Override
     public void setDate(int parameterIndex, java.sql.Date x, Calendar cal) throws SQLException {
-        procedureCall.getInputParam(parameterIndex).setValue(new WrapperWithCalendar(x, cal));
+        setInputParam(parameterIndex, new WrapperWithCalendar(x, cal));
     }
 
     @Override
     public void setDate(int parameterIndex, java.sql.Date x) throws SQLException {
-        procedureCall.getInputParam(parameterIndex).setValue(x);
+        setInputParam(parameterIndex, x);
     }
 
     @Override
     public void setDouble(int parameterIndex, double x) throws SQLException {
-        procedureCall.getInputParam(parameterIndex).setValue(x);
+        setInputParam(parameterIndex, x);
     }
 
     @Override
     public void setFloat(int parameterIndex, float x) throws SQLException {
-        procedureCall.getInputParam(parameterIndex).setValue(x);
+        setInputParam(parameterIndex, x);
     }
 
     @Override
     public void setInt(int parameterIndex, int x) throws SQLException {
-        procedureCall.getInputParam(parameterIndex).setValue(x);
+        setInputParam(parameterIndex, x);
     }
 
     @Override
     public void setLong(int parameterIndex, long x) throws SQLException {
-        procedureCall.getInputParam(parameterIndex).setValue(x);
+        setInputParam(parameterIndex, x);
     }
 
     @Override
     public void setNull(int parameterIndex, int sqlType, String typeName) throws SQLException {
-        procedureCall.getInputParam(parameterIndex).setValue(null);
+        setInputParam(parameterIndex, null);
     }
 
     @Override
     public void setNull(int parameterIndex, int sqlType) throws SQLException {
-        procedureCall.getInputParam(parameterIndex).setValue(null);
+        setInputParam(parameterIndex, null);
     }
 
     @Override
     public void setObject(int parameterIndex, Object x, int targetSqlType, int scale) throws SQLException {
-        procedureCall.getInputParam(parameterIndex).setValue(x);
+        setInputParam(parameterIndex, x);
     }
 
     @Override
     public void setObject(int parameterIndex, Object x, int targetSqlType) throws SQLException {
-        procedureCall.getInputParam(parameterIndex).setValue(x);
+        setInputParam(parameterIndex, x);
     }
 
     @Override
     public void setObject(int parameterIndex, Object x) throws SQLException {
-        procedureCall.getInputParam(parameterIndex).setValue(x);
+        setInputParam(parameterIndex, x);
     }
 
     @Override
     public void setShort(int parameterIndex, short x) throws SQLException {
-        procedureCall.getInputParam(parameterIndex).setValue(x);
+        setInputParam(parameterIndex, x);
     }
 
     @Override
     public void setString(int parameterIndex, String x) throws SQLException {
-        procedureCall.getInputParam(parameterIndex).setValue(x);
+        setInputParam(parameterIndex, x);
     }
 
     @Override
     public void setTime(int parameterIndex, Time x, Calendar cal) throws SQLException {
-        procedureCall.getInputParam(parameterIndex).setValue(new WrapperWithCalendar(x, cal));
+        setInputParam(parameterIndex, new WrapperWithCalendar(x, cal));
     }
 
     @Override
     public void setTime(int parameterIndex, Time x) throws SQLException {
-        procedureCall.getInputParam(parameterIndex).setValue(x);
+        setInputParam(parameterIndex, x);
     }
 
     @Override
     public void setTimestamp(int parameterIndex, Timestamp x, Calendar cal) throws SQLException {
-        procedureCall.getInputParam(parameterIndex).setValue(new WrapperWithCalendar(x, cal));
+        setInputParam(parameterIndex, new WrapperWithCalendar(x, cal));
     }
 
     @Override
     public void setTimestamp(int parameterIndex, Timestamp x) throws SQLException {
-        procedureCall.getInputParam(parameterIndex).setValue(x);
+        setInputParam(parameterIndex, x);
     }
 
     /**
@@ -1295,16 +1269,6 @@ public class FBCallableStatement extends FBPreparedStatement implements Callable
     }
     
     /**
-     * Helper method to identify the right result set column for the give OUT parameter name.
-     * 
-     * @param paramName
-     *            Name of the OUT parameter
-     */
-    protected int findOutParameter(String paramName) throws SQLException {
-        return getAndAssertSingletonResultSet().findColumn(paramName);
-    }
-
-    /**
      * {@inheritDoc}
      * <p>
      * Implementation note: This method behaves exactly the same as {@link #getClob(int)}.
@@ -1312,8 +1276,7 @@ public class FBCallableStatement extends FBPreparedStatement implements Callable
      */
     @Override
     public NClob getNClob(int parameterIndex) throws SQLException {
-        parameterIndex = procedureCall.mapOutParamIndexToPosition(parameterIndex);
-        return getAndAssertSingletonResultSet().getNClob(parameterIndex);
+        return getAndAssertSingletonResultSet().getNClob(mapOutParamIndexToPosition(parameterIndex));
     }
 
     /**
@@ -1324,29 +1287,27 @@ public class FBCallableStatement extends FBPreparedStatement implements Callable
      */
     @Override
     public NClob getNClob(String parameterName) throws SQLException {
-        return getNClob(findOutParameter(parameterName));
+        return getAndAssertSingletonResultSet().getNClob(parameterName);
     }
 
     @Override
     public RowId getRowId(int parameterIndex) throws SQLException {
-        parameterIndex = procedureCall.mapOutParamIndexToPosition(parameterIndex);
-        return getAndAssertSingletonResultSet().getRowId(parameterIndex);
+        return getAndAssertSingletonResultSet().getRowId(mapOutParamIndexToPosition(parameterIndex));
     }
 
     @Override
     public RowId getRowId(String parameterName) throws SQLException {
-        return getRowId(findOutParameter(parameterName));
+        return getAndAssertSingletonResultSet().getRowId(parameterName);
     }
 
     @Override
     public SQLXML getSQLXML(int parameterIndex) throws SQLException {
-        parameterIndex = procedureCall.mapOutParamIndexToPosition(parameterIndex);
-        return getAndAssertSingletonResultSet().getSQLXML(parameterIndex);
+        return getAndAssertSingletonResultSet().getSQLXML(mapOutParamIndexToPosition(parameterIndex));
     }
 
     @Override
     public SQLXML getSQLXML(String parameterName) throws SQLException {
-        return getSQLXML(findOutParameter(parameterName));
+        return getAndAssertSingletonResultSet().getSQLXML(parameterName);
     }
 
     /**
@@ -1370,40 +1331,10 @@ public class FBCallableStatement extends FBPreparedStatement implements Callable
         throw new FBDriverNotCapableException("Type SQLXML not supported");
     }
 
-    private static class WrapperWithCalendar {
-        private final Object value;
-        private final Calendar c;
-
-        private WrapperWithCalendar(Object value, Calendar c) {
-            this.value = value;
-            this.c = c;
-        }
-
-        private Object getValue() {
-            return value;
-        }
-
-        private Calendar getCalendar() {
-            return c;
-        }
+    private record WrapperWithCalendar(Object value, Calendar calendar) {
     }
 
-    private static class WrapperWithLong {
-        private final Object value;
-        private final long longValue;
-
-        private WrapperWithLong(Object value, long longValue) {
-            this.value = value;
-            this.longValue = longValue;
-        }
-
-        private Object getValue() {
-            return value;
-        }
-
-        private long getLongValue() {
-            return longValue;
-        }
+    private record WrapperWithLong(Object value, long longValue) {
     }
 
 }
