@@ -174,7 +174,6 @@ public final class ClientAuthBlock {
 
     public void setServerData(byte[] serverData) {
         if (currentPlugin == null) {
-            // TODO Check if this is valid to ignore
             log.log(DEBUG, "Received server data without current plugin");
         } else {
             currentPlugin.setServerData(serverData);
