@@ -1,9 +1,13 @@
 package org.firebirdsql.management;
 
 import org.firebirdsql.common.FBTestProperties;
+import org.firebirdsql.common.extension.GdsTypeExtension;
 import org.firebirdsql.common.extension.UsesDatabaseExtension;
 import org.firebirdsql.gds.impl.GDSType;
+import org.firebirdsql.gds.impl.jni.EmbeddedGDSFactoryPlugin;
+import org.firebirdsql.gds.impl.nativeoo.FbOOEmbeddedGDSFactoryPlugin;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -30,6 +34,11 @@ import static org.firebirdsql.common.FBTestProperties.getGdsType;
  * @since 5.0
  */
 public class FBTraceManagerTest {
+
+    @RegisterExtension
+    @Order(1)
+    static final GdsTypeExtension gdsType = GdsTypeExtension.excludes(EmbeddedGDSFactoryPlugin.EMBEDDED_TYPE_NAME,
+            FbOOEmbeddedGDSFactoryPlugin.EMBEDDED_TYPE_NAME);
 
     @RegisterExtension
     final UsesDatabaseExtension.UsesDatabaseForEach usesDatabase = UsesDatabaseExtension.usesDatabase();
