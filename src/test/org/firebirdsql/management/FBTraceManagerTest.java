@@ -110,7 +110,6 @@ public class FBTraceManagerTest {
 
         insertTestTable();
 
-        Thread.sleep(5000);
         final Integer sessionId = traceManager.getSessionId(traceSessionName);
         assert sessionId != null;
         traceManager.stopTraceSession(sessionId);
