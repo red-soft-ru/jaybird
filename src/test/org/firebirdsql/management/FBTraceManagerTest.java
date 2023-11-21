@@ -106,14 +106,14 @@ public class FBTraceManagerTest {
         createTestTable();
         final String traceSessionName = "testStatementStart";
         traceManager.startTraceSession(traceSessionName, defaultConfiguration);
-        Thread.sleep(2000);
+        Thread.sleep(5000);
 
         insertTestTable();
 
         final Integer sessionId = traceManager.getSessionId(traceSessionName);
         assert sessionId != null;
         traceManager.stopTraceSession(sessionId);
-        Thread.sleep(2000);
+        Thread.sleep(5000);
 
         final String trace = loggingStream.toString();
         assertThat(trace)
