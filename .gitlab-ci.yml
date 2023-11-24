@@ -17,6 +17,7 @@ variables:
   MAVEN_OPTS: "-Dmaven.repo.local=.m2/repository"
   RDB3_VERSION: "3.0.14-rc.1"
   RDB5_VERSION: "5.0.0-SNAPSHOT.1635"
+  RDB6_VERSION: "6.0.0-SNAPSHOT.147"
   MAVEN_VERSION: "3.9.3"
   http_proxy: http://git.red-soft.biz:3128
   https_proxy: http://git.red-soft.biz:3128
@@ -137,7 +138,7 @@ build_and_test:
       - TYPE: JDK17
         TEST_JAVA_JVM: /usr/java17/bin/java
         GDS_TYPE: "PURE_JAVA"
-        RDB_VERSION: [ $RDB3_VERSION, $RDB5_VERSION ]
+        RDB_VERSION: [ $RDB3_VERSION, $RDB5_VERSION, $RDB6_VERSION ]
       - TYPE: JDK17_fboonative_only
         TEST_JAVA_JVM: /usr/java17/bin/java
         GDS_TYPE: "FBOONATIVE"
