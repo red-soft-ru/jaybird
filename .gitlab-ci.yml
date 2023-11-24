@@ -101,7 +101,10 @@ build_and_test:
     name: registry.red-soft.biz:5000/docker-images/rdbbuildenv:rdb5-8
   before_script:
     - |
-      if [[ "${RDB_VERSION:0:1}" -eq "5" ]]; then
+      if [[ "${RDB_VERSION:0:1}" -eq "6" ]]; then
+        export RDB_MAJOR_VERSION="6"
+        export REPORT_PREFIX=rdb6_${REPORT_PREFIX}
+      elif [[ "${RDB_VERSION:0:1}" -eq "5" ]]; then
         export RDB_MAJOR_VERSION="5"
         export REPORT_PREFIX=rdb5_${REPORT_PREFIX}
       elif [[ "${RDB_VERSION:0:1}" -eq "3" ]]; then
