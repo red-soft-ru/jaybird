@@ -1,3 +1,38 @@
+# v5.0.14
+
+## Improvements
+
+* Remove printing to `System.out` from trace manager. See RS-154172
+
+## Ported from Jaybird
+
+Fix FBStringField.fixPadding to work with codepoints instead of char. GH-770
+Fixed: CallableStatement.getXXX(String) may return value from wrong column. GH-772
+Update error messages from FB 5.0.0.1272
+jaybird-fbclient 4.0.4.0
+
+# v5.0.13
+
+## Fixed
+
+* Map time zone with GMT offset for V13 protocol only. See RS-150549
+
+
+# v5.0.12
+
+## Fixed
+
+* Allow the use of parallel workers, starting with Red Database 3.0. See RS-150245
+
+
+# v5.0.11
+
+## Fixed
+
+* Fix creation of temporary blobs. See RS-150077
+* Fix memory release in native OO API implementation of database, statement and service. See RS-150127
+
+
 # v5.0.10
 
 ## Improvements
