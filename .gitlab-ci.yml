@@ -15,8 +15,8 @@ variables:
   TAG_BRANCH: branch_4_0
   MAVEN_CLI_OPTS: "-s .m2/settings.xml --batch-mode -U"
   MAVEN_OPTS: "-Dmaven.repo.local=.m2/repository"
-  RDB3_VERSION: "3.0.10"
-  RDB5_VERSION: "5.0.0-Beta1"
+  RDB3_VERSION: "3.0.14-rc.2"
+  RDB5_VERSION: "5.0.0-Beta5"
   http_proxy: http://git.red-soft.biz:3128
   https_proxy: http://git.red-soft.biz:3128
   no_proxy: localhost,172.0.0.0/8,127.0.0.0/8,.red-soft.biz
@@ -95,24 +95,9 @@ build_and_test:
       elif [[ "${RDB_VERSION:0:1}" -eq "3" ]]; then
         export RDB_MAJOR_VERSION="3"
         export REPORT_PREFIX=${TYPE}_RDB3_${GDS_TYPE}_
-        if [[ "${TEST_JAVA8_JVM}" == *"bellsoft-java8"* ]]; then
-          export REPORT_PREFIX=${TYPE}_8_RDB3_${GDS_TYPE}_
-        elif [[ "${TEST_JAVA8_JVM}" == *"bellsoft-java11"* ]]; then
-          export REPORT_PREFIX=${TYPE}_11_RDB3_${GDS_TYPE}_
-        fi
       else
         die "Do not know how to test RDB ${RDB_VERSION}"
       fi
-    - |
-      cat << EOF > /etc/yum.repos.d/bellsoft.repo
-      [BellSoft]
-      name=BellSoft Repository
-      baseurl=https://yum.bell-sw.com
-      enabled=1
-      gpgcheck=1
-      gpgkey=https://download.bell-sw.com/pki/GPG-KEY-bellsoft
-      priority=1
-      EOF
     - echo proxy=$http_proxy >> /etc/yum.conf
     - yum install -y git maven krb5-server krb5-workstation expect $EXTRA_DEPENDENCIES
     - yum install -y https://dl.min.io/client/mc/release/linux-amd64/archive/mcli-20210613174822.0.0.x86_64.rpm
@@ -148,13 +133,6 @@ build_and_test:
         GDS_TYPE: "PURE_JAVA"
         TEST_JAVA8_JVM: /usr/java11/bin/java
         EXTRA_DEPENDENCIES: java-11-openjdk
-        RDB_VERSION: $RDB3_VERSION
-      - TYPE: Liberica
-        JAVA_HOME: /usr/lib/jvm/jre-1.8.0
-        TEST_LIST: "**"
-        GDS_TYPE: "PURE_JAVA"
-        TEST_JAVA8_JVM: [ "/usr/lib/jvm/bellsoft-java8-runtime.x86_64/bin/java", "/usr/lib/jvm/bellsoft-java11-runtime.x86_64/bin/java" ]
-        EXTRA_DEPENDENCIES: bellsoft-java8-runtime bellsoft-java11-runtime
         RDB_VERSION: $RDB3_VERSION
 
 deploy:internal:
