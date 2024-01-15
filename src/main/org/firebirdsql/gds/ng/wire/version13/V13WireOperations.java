@@ -120,7 +120,7 @@ public class V13WireOperations extends V11WireOperations {
                     boolean wasAuthComplete = clientAuthBlock.isAuthComplete();
                     clientAuthBlock.setAuthComplete(true);
                     processAttachCallback.processAttachResponse(response);
-                    addServerKeys(response.getData());
+                    addServerKeys(response.data());
 
                     WireCrypt wireCrypt = getAttachProperties().getWireCryptAsEnum();
 

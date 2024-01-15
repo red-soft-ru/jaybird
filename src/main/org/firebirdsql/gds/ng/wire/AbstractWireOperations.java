@@ -246,7 +246,7 @@ public abstract class AbstractWireOperations implements FbWireOperations {
         if (response == null)
             return;
         if (response instanceof GenericResponse genericResponse) {
-            SQLException exception = genericResponse.getException();
+            SQLException exception = genericResponse.exception();
             if (exception != null && !(exception instanceof SQLWarning)) {
                 throw exception;
             }
@@ -287,7 +287,7 @@ public abstract class AbstractWireOperations implements FbWireOperations {
      */
     public final void processResponseWarnings(final Response response, WarningMessageCallback warningCallback) {
         if (response instanceof GenericResponse genericResponse
-            && genericResponse.getException() instanceof SQLWarning warning) {
+                && genericResponse.exception() instanceof SQLWarning warning) {
             requireNonNullElse(warningCallback, defaultWarningMessageCallback).processWarning(warning);
         }
     }
