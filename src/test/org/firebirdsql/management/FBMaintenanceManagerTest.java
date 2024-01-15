@@ -276,7 +276,7 @@ class FBMaintenanceManagerTest {
     }
 
     @Test
-    public void testSetDefaultCacheBufferTooLow() {
+    void testSetDefaultCacheBufferTooLow() {
         assertThrows(IllegalArgumentException.class, () -> maintenanceManager.setDefaultCacheBuffer(49));
     }
 
@@ -478,7 +478,7 @@ class FBMaintenanceManagerTest {
     }
 
     @Test
-    public void testGetLimboTransactions() throws Exception {
+    void testGetLimboTransactions() throws Exception {
         final int COUNT_LIMBO = 5;
         createLimboTransaction(COUNT_LIMBO);
         long[] limboTransactions = maintenanceManager.getLimboTransactions();

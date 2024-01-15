@@ -61,7 +61,7 @@ import static org.firebirdsql.util.FirebirdSupportInfo.supportInfoFor;
  */
 public class FBStatisticsManager extends FBServiceManager implements StatisticsManager {
 
-    private static final int possibleStatistics =
+    private static final int POSSIBLE_STATISTICS =
             DATA_TABLE_STATISTICS | SYSTEM_TABLE_STATISTICS | INDEX_STATISTICS |
                     RECORD_VERSION_STATISTICS;
 
@@ -151,7 +151,7 @@ public class FBStatisticsManager extends FBServiceManager implements StatisticsM
     }
 
     public void getDatabaseStatistics(int options) throws SQLException {
-        if (options != 0 && (options | possibleStatistics) != possibleStatistics) {
+        if (options != 0 && (options | POSSIBLE_STATISTICS) != POSSIBLE_STATISTICS) {
             throw new IllegalArgumentException("options must be 0 or a "
                     + "combination of DATA_TABLE_STATISTICS, "
                     + "SYSTEM_TABLE_STATISTICS, INDEX_STATISTICS, or 0");
