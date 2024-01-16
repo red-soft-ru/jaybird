@@ -28,6 +28,7 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.sql.Types;
 import java.util.Calendar;
+import java.util.TimeZone;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -374,6 +375,7 @@ public class TestFBDateField extends BaseJUnit4TestFBField<FBDateField, java.sql
         calendar.set(Calendar.DAY_OF_MONTH, 11);
         calendar.set(Calendar.MONTH, Calendar.MARCH);
         calendar.set(Calendar.YEAR, 2012);
+        calendar.setTimeZone(TimeZone.getDefault());
         
         Timestamp timestamp = new java.sql.Timestamp(calendar.getTimeInMillis());
         
