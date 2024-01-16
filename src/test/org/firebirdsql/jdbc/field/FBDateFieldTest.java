@@ -28,6 +28,7 @@ import java.sql.Timestamp;
 import java.sql.Types;
 import java.time.LocalDate;
 import java.util.Calendar;
+import java.util.TimeZone;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -361,6 +362,7 @@ class FBDateFieldTest extends BaseJUnit5TestFBField<FBDateField, java.sql.Date> 
         calendar.set(Calendar.DAY_OF_MONTH, 11);
         calendar.set(Calendar.MONTH, Calendar.MARCH);
         calendar.set(Calendar.YEAR, 2012);
+        calendar.setTimeZone(TimeZone.getDefault());
 
         Timestamp timestamp = new java.sql.Timestamp(calendar.getTimeInMillis());
 
