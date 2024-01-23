@@ -136,6 +136,7 @@ public final class FBManagedConnection implements ExceptionListener {
         this.tpb = new FBTpb(mc.tpb);
         this.transactionIsolation = mc.transactionIsolation;
         this.database = mc.database;
+        this.database.addExceptionListener(this);
 
         this.gdsHelper = new GDSHelper(database);
     }
@@ -147,6 +148,10 @@ public final class FBManagedConnection implements ExceptionListener {
     @Override
     public void errorOccurred(Object source, SQLException ex) {
         log.log(TRACE, "Error occurred", ex);
+
+        if (ex.getErrorCode() == ISCConstants.isc_att_shutdown)
+            xidMap.clear();
+        
         if (FatalErrorHelper.isFatal(ex)) {
             notify(connectionErrorOccurredNotifier,
                     new XcaConnectionEvent(this, XcaConnectionEvent.EventType.CONNECTION_ERROR_OCCURRED, ex));
