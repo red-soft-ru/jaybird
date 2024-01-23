@@ -1,3 +1,17 @@
+# v5.0.16
+
+## Fixed
+
+* Clear transaction map associated with managed connection if attachment has been shutdown. See RS-63070
+
+
+# v5.0.15
+
+## Fixed
+
+* Red Database 5.0 system table count. See RS-158806
+
+
 # v5.0.14
 
 ## Improvements
@@ -10,6 +24,7 @@ Fix FBStringField.fixPadding to work with codepoints instead of char. GH-770
 Fixed: CallableStatement.getXXX(String) may return value from wrong column. GH-772
 Update error messages from FB 5.0.0.1272
 jaybird-fbclient 4.0.4.0
+
 
 # v5.0.13
 
