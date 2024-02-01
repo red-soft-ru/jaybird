@@ -278,6 +278,9 @@ public final class GDSHelper {
         if (sessionTimeZoneName == null || SESSION_TIME_ZONE_SERVER.equalsIgnoreCase(sessionTimeZoneName)) {
             return sessionTimeZone = TimeZone.getDefault();
         }
+        if (sessionTimeZoneName.startsWith("+") || sessionTimeZoneName.startsWith("-")) {
+            sessionTimeZoneName = "GMT" + sessionTimeZoneName;
+        }
         TimeZone timeZone = TimeZone.getTimeZone(sessionTimeZoneName);
         if ("GMT".equals(timeZone.getID()) && !"GMT".equalsIgnoreCase(sessionTimeZoneName)) {
             System.getLogger(getClass().getName()).log(System.Logger.Level.WARNING,
