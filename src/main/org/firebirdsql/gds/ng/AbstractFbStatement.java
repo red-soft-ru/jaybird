@@ -925,6 +925,7 @@ public abstract class AbstractFbStatement implements FbStatement {
      */
     private final class StatementCancelledListener implements ExceptionListener {
 
+        @SuppressWarnings("java:S1301")
         @Override
         public void errorOccurred(Object source, SQLException ex) {
             if (source != AbstractFbStatement.this) {
@@ -939,6 +940,9 @@ public abstract class AbstractFbStatement implements FbStatement {
                 } catch (SQLException e) {
                     log.log(System.Logger.Level.ERROR, "Unable to close cursor after statement timeout", e);
                 }
+            }
+            default -> {
+                // do nothing
             }
             }
         }

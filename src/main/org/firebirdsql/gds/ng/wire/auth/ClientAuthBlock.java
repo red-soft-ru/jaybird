@@ -115,6 +115,7 @@ public final class ClientAuthBlock {
         return firstTime;
     }
 
+    @SuppressWarnings("java:S1301")
     public void authenticateStep0() throws SQLException {
         Iterator<AuthenticationPluginSpi> providerIterator = pluginProviders.iterator();
         while (providerIterator.hasNext()) {
@@ -270,6 +271,7 @@ public final class ClientAuthBlock {
         return currentPlugin.authenticate(this);
     }
 
+    @SuppressWarnings("java:S1301")
     public void authFillParametersBlock(ConnectionParameterBuffer pb) throws SQLException {
         Iterator<AuthenticationPluginSpi> providerIterator = pluginProviders.iterator();
         while (providerIterator.hasNext()) {
