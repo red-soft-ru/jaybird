@@ -30,6 +30,8 @@ import org.firebirdsql.jaybird.fb.constants.BpbItems;
 
 import java.sql.SQLException;
 import java.util.TimeZone;
+import java.util.function.Predicate;
+import java.util.regex.Pattern;
 
 import static java.util.Objects.requireNonNull;
 import static org.firebirdsql.jaybird.props.PropertyConstants.SESSION_TIME_ZONE_SERVER;
@@ -38,6 +40,9 @@ import static org.firebirdsql.jaybird.props.PropertyConstants.SESSION_TIME_ZONE_
  * Helper class for all GDS-related operations.
  */
 public final class GDSHelper {
+
+    private static final Predicate<String> OFFSET_ZONE_NAME_PREDICATE =
+            Pattern.compile("[+-]\\d{2}:\\d{2}").asMatchPredicate();
 
     private final FbDatabase database;
     private FbTransaction transaction;
@@ -289,15 +294,13 @@ public final class GDSHelper {
         return sessionTimeZone;
     }
 
+    @SuppressWarnings("java:S1121")
     private TimeZone initSessionTimeZone() {
         String sessionTimeZoneName = database.getConnectionProperties().getSessionTimeZone();
         if (sessionTimeZoneName == null || SESSION_TIME_ZONE_SERVER.equalsIgnoreCase(sessionTimeZoneName)) {
             return sessionTimeZone = TimeZone.getDefault();
         }
-        if (sessionTimeZoneName.startsWith("+") || sessionTimeZoneName.startsWith("-")) {
-            sessionTimeZoneName = "GMT" + sessionTimeZoneName;
-        }
-        TimeZone timeZone = TimeZone.getTimeZone(sessionTimeZoneName);
+        TimeZone timeZone = getTimeZone(sessionTimeZoneName);
         if ("GMT".equals(timeZone.getID()) && !"GMT".equalsIgnoreCase(sessionTimeZoneName)) {
             System.getLogger(getClass().getName()).log(System.Logger.Level.WARNING,
                     "TimeZone fallback to GMT from {0}; possible cause: value of sessionTimeZone unknown in Java. Time "
@@ -305,6 +308,13 @@ public final class GDSHelper {
                     + "sessionTimeZone", sessionTimeZoneName);
         }
         return sessionTimeZone = timeZone;
+    }
+
+    private static TimeZone getTimeZone(String timeZoneName) {
+        if (OFFSET_ZONE_NAME_PREDICATE.test(timeZoneName)) {
+            timeZoneName = "GMT" + timeZoneName;
+        }
+        return TimeZone.getTimeZone(timeZoneName);
     }
 
     /**

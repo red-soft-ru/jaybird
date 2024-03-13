@@ -190,7 +190,9 @@ public interface DatabaseConnectionProperties extends AttachmentProperties {
      *
      * @param sessionTimeZone
      *         Firebird 4+ session time zone name (we strongly suggest to use Java compatible names only),
-     *         use {@code "server"} to use server default time zone (note: conversion will use JVM default time zone)
+     *         use {@code "server"} to use server default time zone (note: conversion will use JVM default time zone).
+     *         For offset-based names, the value will be normalized to the Firebird name (e.g. GMT+05:00 is stored as
+     *         +05:00).
      * @since 4.0
      */
     default void setSessionTimeZone(String sessionTimeZone) {
