@@ -191,7 +191,7 @@ public class V13WireOperations extends V11WireOperations {
     }
 
     private void tryKnownServerKeys() throws IOException, SQLException {
-        var chainBuilder = new SQLExceptionChainBuilder<>();
+        var chainBuilder = new SQLExceptionChainBuilder();
 
         EncryptionIdentifier selectedEncryption = null;
         for (KnownServerKey.PluginSpecificData pluginSpecificData : getPluginSpecificData()) {
@@ -210,7 +210,7 @@ public class V13WireOperations extends V11WireOperations {
     }
 
     private Optional<EncryptionIdentifier> tryKnownServerKey(KnownServerKey.PluginSpecificData pluginSpecificData,
-            SQLExceptionChainBuilder<SQLException> chainBuilder) throws IOException {
+            SQLExceptionChainBuilder chainBuilder) throws IOException {
         EncryptionIdentifier encryptionIdentifier = pluginSpecificData.encryptionIdentifier();
         EncryptionPluginSpi currentEncryptionSpi =
                 EncryptionPluginRegistry.getEncryptionPluginSpi(encryptionIdentifier);
@@ -251,7 +251,7 @@ public class V13WireOperations extends V11WireOperations {
         }
     }
 
-    private static void logWireCryptPluginFailures(SQLExceptionChainBuilder<SQLException> chainBuilder,
+    private static void logWireCryptPluginFailures(SQLExceptionChainBuilder chainBuilder,
             EncryptionIdentifier selectedEncryption) {
         if (chainBuilder.hasException() && log.isLoggable(WARNING)) {
             if (selectedEncryption == null) {
