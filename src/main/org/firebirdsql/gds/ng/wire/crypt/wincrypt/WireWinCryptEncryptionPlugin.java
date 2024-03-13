@@ -38,7 +38,7 @@ public class WireWinCryptEncryptionPlugin implements EncryptionPlugin {
 
     @Override
     public EncryptionInitInfo initializeEncryption() {
-        SQLExceptionChainBuilder<SQLException> chainBuilder = new SQLExceptionChainBuilder<>();
+        SQLExceptionChainBuilder chainBuilder = new SQLExceptionChainBuilder();
         Cipher encryptionCipher = createEncryptionCipher(cryptSessionConfig.encryptKey(), chainBuilder);
         Cipher decryptionCipher = createDecryptionCipher(cryptSessionConfig.decryptKey(), chainBuilder);
 
@@ -48,15 +48,15 @@ public class WireWinCryptEncryptionPlugin implements EncryptionPlugin {
         return EncryptionInitInfo.success(encryptionIdentifier(), encryptionCipher, decryptionCipher);
     }
 
-    private Cipher createEncryptionCipher(byte[] key, SQLExceptionChainBuilder<SQLException> chainBuilder) {
+    private Cipher createEncryptionCipher(byte[] key, SQLExceptionChainBuilder chainBuilder) {
         return createCipher(Cipher.ENCRYPT_MODE, key, chainBuilder);
     }
 
-    private Cipher createDecryptionCipher(byte[] key, SQLExceptionChainBuilder<SQLException> chainBuilder) {
+    private Cipher createDecryptionCipher(byte[] key, SQLExceptionChainBuilder chainBuilder) {
         return createCipher(Cipher.DECRYPT_MODE, key, chainBuilder);
     }
 
-    private Cipher createCipher(int mode, byte[] key, SQLExceptionChainBuilder<SQLException> chainBuilder) {
+    private Cipher createCipher(int mode, byte[] key, SQLExceptionChainBuilder chainBuilder) {
         try {
             return createCipher(mode, key);
         } catch (SQLException e) {
