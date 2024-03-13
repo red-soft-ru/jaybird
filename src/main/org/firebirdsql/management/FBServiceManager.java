@@ -404,7 +404,6 @@ public class FBServiceManager implements ServiceManager {
                     }
                     else if (buffer[3] != isc_info_end)
                         throw new SQLException("Unexpected end of stream reached.");
-                    }
                     processing = false;
                 } else if (currentLogger != null) {
                     currentLogger.write(buffer, 3, dataLength);
