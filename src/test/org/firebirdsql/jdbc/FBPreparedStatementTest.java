@@ -723,7 +723,7 @@ class FBPreparedStatementTest {
                     Thread.sleep(5000);
                     stmt.cancel();
                     cancelFailed.set(false);
-                } catch (SQLException ignored) {
+                } catch (SQLException | InterruptedException ignored) {
                 }
             }, 10, TimeUnit.MILLISECONDS);
             executor.shutdown();
