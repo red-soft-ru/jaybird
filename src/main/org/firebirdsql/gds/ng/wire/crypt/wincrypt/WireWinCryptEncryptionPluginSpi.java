@@ -1,6 +1,7 @@
 package org.firebirdsql.gds.ng.wire.crypt.wincrypt;
 
 import org.firebirdsql.gds.ng.wire.WireConnection;
+import org.firebirdsql.gds.ng.wire.crypt.CryptConnectionInfo;
 import org.firebirdsql.gds.ng.wire.crypt.CryptSessionConfig;
 import org.firebirdsql.gds.ng.wire.crypt.EncryptionIdentifier;
 import org.firebirdsql.gds.ng.wire.crypt.EncryptionPlugin;
@@ -24,5 +25,10 @@ public class WireWinCryptEncryptionPluginSpi implements EncryptionPluginSpi {
     @Override
     public EncryptionPlugin createEncryptionPlugin(CryptSessionConfig cryptSessionConfig) {
         return new WireWinCryptEncryptionPlugin(cryptSessionConfig);
+    }
+
+    @Override
+    public boolean isSupported(CryptConnectionInfo cryptConnectionInfo) {
+        return true;
     }
 }
