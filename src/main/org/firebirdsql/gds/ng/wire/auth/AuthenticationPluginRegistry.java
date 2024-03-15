@@ -56,7 +56,8 @@ public final class AuthenticationPluginRegistry {
                         "org.firebirdsql.gds.ng.wire.auth.srp.Srp512AuthenticationPluginSpi",
                         "org.firebirdsql.gds.ng.wire.auth.CertificateAuthenticationPluginSpi",
                         "org.firebirdsql.gds.ng.wire.auth.GostPasswordAuthenticationPluginSpi",
-                        "org.firebirdsql.gds.ng.wire.auth.GssAuthenticationPluginSpi"));
+                        "org.firebirdsql.gds.ng.wire.auth.GssAuthenticationPluginSpi",
+                        "org.firebirdsql.gds.ng.wire.auth.MultifactorAuthenticationPluginSpi"));
         var pluginSpiMap = new HashMap<String, AuthenticationPluginSpi>();
         for (AuthenticationPluginSpi pluginSpi : pluginSpis) {
             if (pluginSpiMap.putIfAbsent(pluginSpi.getPluginName(), pluginSpi) != null) {

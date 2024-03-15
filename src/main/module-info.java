@@ -70,7 +70,11 @@ module org.firebirdsql.jaybird {
                     org.firebirdsql.gds.ng.wire.auth.srp.Srp224AuthenticationPluginSpi,
                     org.firebirdsql.gds.ng.wire.auth.srp.Srp256AuthenticationPluginSpi,
                     org.firebirdsql.gds.ng.wire.auth.srp.Srp384AuthenticationPluginSpi,
-                    org.firebirdsql.gds.ng.wire.auth.srp.Srp512AuthenticationPluginSpi;
+                    org.firebirdsql.gds.ng.wire.auth.srp.Srp512AuthenticationPluginSpi,
+                    org.firebirdsql.gds.ng.wire.auth.CertificateAuthenticationPluginSpi,
+                    org.firebirdsql.gds.ng.wire.auth.GostPasswordAuthenticationPluginSpi,
+                    org.firebirdsql.gds.ng.wire.auth.GssAuthenticationPluginSpi,
+                    org.firebirdsql.gds.ng.wire.auth.MultifactorAuthenticationPluginSpi;
 
     uses org.firebirdsql.gds.ng.wire.crypt.EncryptionPluginSpi;
     provides org.firebirdsql.gds.ng.wire.crypt.EncryptionPluginSpi
