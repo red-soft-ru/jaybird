@@ -31,7 +31,9 @@ module org.firebirdsql.jna {
 
     provides org.firebirdsql.gds.impl.GDSFactoryPlugin
             with org.firebirdsql.gds.impl.jni.NativeGDSFactoryPlugin,
-                    org.firebirdsql.gds.impl.jni.EmbeddedGDSFactoryPlugin;
+                    org.firebirdsql.gds.impl.jni.EmbeddedGDSFactoryPlugin,
+                    org.firebirdsql.gds.impl.jni.FbOONativeGDSFactoryPlugin,
+                    org.firebirdsql.gds.impl.jni.FbOOEmbeddedGDSFactoryPlugin;
 
     provides org.firebirdsql.jaybird.props.spi.ConnectionPropertyDefinerSpi
             with org.firebirdsql.gds.ng.jna.NativeConnectionPropertyDefiner;

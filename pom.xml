@@ -45,6 +45,7 @@
 		<module>modules/cryptoapi-jdk17</module>
 		<module>modules/jaybird-jdk17</module>
 		<module>jaybird-native</module>
+		<module>modules/jaybird-test-jdk17</module>
 	</modules>
 	<profiles>
 		<profile>
