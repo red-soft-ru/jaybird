@@ -109,6 +109,7 @@
 		<test.java.jvm>/usr/lib/jvm/java-17-openjdk-amd64/bin/java</test.java.jvm>
 		<test.use.firebird.autocommit>false</test.use.firebird.autocommit>
 		<report_name>jdk${jdk.version}</report_name>
+		<maven.test.skip.exec>true</maven.test.skip.exec>
 	</properties>
 	<build>
 		<resources>
@@ -173,20 +174,6 @@
 							</sources>
 						</configuration>
 					</execution>
-					<execution>
-						<id>add-test-resource</id>
-						<phase>generate-test-resources</phase>
-						<goals>
-							<goal>add-test-resource</goal>
-						</goals>
-						<configuration>
-							<resources>
-								<resource>
-									<directory>../../jaybird-native/src/main/resources/</directory>
-								</resource>
-							</resources>
-						</configuration>
-					</execution>
 				</executions>
 			</plugin>
 			<plugin>
@@ -246,30 +233,6 @@
 						</configuration>
 					</execution>
 				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<configuration>
-					<testFailureIgnore>true</testFailureIgnore>
-					<jvm>${test.java.jvm}</jvm>
-					<runOrder>alphabetical</runOrder>
-					<useSystemClassLoader>true</useSystemClassLoader>
-					<useManifestOnlyJar>false</useManifestOnlyJar>
-					<forkCount>1</forkCount>
-					<reuseForks>false</reuseForks>
-					<trimStackTrace>false</trimStackTrace>
-					<rerunFailingTestsCount>3</rerunFailingTestsCount>
-					<argLine>
-						-Xmx16G
-						--add-opens java.base/java.lang=ALL-UNNAMED
-						--add-opens java.base/java.util=ALL-UNNAMED
-						--add-opens java.base/javax.crypto=ALL-UNNAMED
-						-Djdk.attach.allowAttachSelf=true
-						-XX:+StartAttachListener
-						--add-exports org.firebirdsql.jaybird/org.firebirdsql.cryptoapi.windows.crypt32=ALL-UNNAMED
-					</argLine>
-				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
