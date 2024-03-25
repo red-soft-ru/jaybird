@@ -34,6 +34,7 @@ import org.firebirdsql.jaybird.props.AttachmentProperties;
 import org.firebirdsql.jaybird.props.DatabaseConnectionProperties;
 import org.firebirdsql.jaybird.props.ServiceConnectionProperties;
 import org.firebirdsql.jaybird.xca.FBManagedConnectionFactory;
+import org.firebirdsql.jdbc.FBDriver;
 import org.firebirdsql.jdbc.FirebirdConnection;
 import org.firebirdsql.management.FBManager;
 import org.firebirdsql.management.FBServiceManager;
