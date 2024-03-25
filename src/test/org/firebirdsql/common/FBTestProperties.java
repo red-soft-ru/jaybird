@@ -55,7 +55,16 @@ import static org.firebirdsql.jaybird.util.StringUtils.trimToNull;
 public final class FBTestProperties {
 
     private static FirebirdSupportInfo firebirdSupportInfo;
-
+    
+    static {
+        // Needed for supporting tests that don't reference DriverManager
+        try {
+            Class.forName(FBDriver.class.getName());
+        } catch (ClassNotFoundException ex) {
+            throw new ExceptionInInitializerError("Could not load FBDriver class");
+        }
+    }
+    
     private static final ResourceBundle testDefaults = ResourceBundle.getBundle("unit_test_defaults");
 
     public static String getProperty(String property) {
