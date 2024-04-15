@@ -975,6 +975,9 @@ We do not plan to remove this API at this time, but we recommend that you switch
 * Fixed: Use of offset timezone names (e.g. `+05:00`) for `sessionTimeZone` would result in a warning being logged, and an incorrect conversion applied (in UTC instead of the offset) when using the legacy time types (https://github.com/FirebirdSQL/jaybird/issues/786[#786])
 +
 This change was also backported to Jaybird 5.0.4.
+* New feature: Added column `JB_PK_INDEX_NAME` to the result set of `DatabaseMetaData.getPrimaryKeys` with the name of the index backing the primary key (https://github.com/FirebirdSQL/jaybird/issues/791[#791])
++
+Given this is a non-standard extension, it is advisable to retrieve this column by name, not by position.
 * Improvement: `sessionTimeZone` now also accepts the Java offset names (`GMT[{plus}-]HH:MM`), which will be automatically converted to the Firebird compatible name (`[{plus}-]HH:MM`).
 * New feature: `ResultSetMetaData.isAutoIncrement(int)` reports `true` for identity columns *if* Jaybird can identify the underlying table and column (https://github.com/FirebirdSQL/jaybird/issues/793[#793])
 +
@@ -984,9 +987,12 @@ This feature was backported to Jaybird 5.0.5.
 Disabling extended metadata may improve performance of these `ResultSetMetaData` methods in exchange for estimated precision information of `NUMERIC` and `DECIMAL` columns, and not being able to determine the auto-increment status of `INTEGER`, `BIGINT` or `SMALLINT` columns.
 +
 This feature was backported to Jaybird 5.0.5.
-* New feature: Added column `JB_INDEX_NAME` to the result set of `DatabaseMetaData.getPrimaryKeys` with the name of the index backing the primary key (https://github.com/FirebirdSQL/jaybird/issues/791[#791])
+* Improvement: The `FILTER_CONDITION` of `DatabaseMetaData.getIndexInfo` is populated for Firebird 5.0 partial indices (https://github.com/FirebirdSQL/jaybird/issues/797[#797])
 +
-Given this is a non-standard extension, it is advisable to retrieve this column by name, not by position.
+This improvement was backported to Jaybird 5.0.5.
+* Improvement: Added column `JB_PK_INDEX_NAME` and `JB_FK_INDEX_NAME` to the result set of to `getImportedKeys`, `getExportedKeys` and `getCrossReference` of `DatabaseMetaData` with the names of the index backing the primary key and foreign key (https://github.com/FirebirdSQL/jaybird/issues/798[#798])
++
+Given this is a non-standard extension, it is advisable to retrieve these columns by name, not by position.
 
 [#potentially-breaking-changes]
 === Potentially breaking changes
@@ -1429,7 +1435,10 @@ When in doubt, use `false` to communicate that no such synchronization is requir
 ** `skipFully` was removed, use standard Java `InputStream.skipNBytes` instead
 ** `readShort` was removed as it was unused
 * The no-arg constructor of `FBXAException` was removed
-* `FBResultSet.close(boolean)` was removed;
+* `FBResultSet`
+** The constructors are now all marked as internal API, as they effectively already were due to arguments of internal API classes
+** The constructor `FBResultSet(FBConnection, FBStatement, FbStatement, FBObjectListener.ResultSetListener, boolean, int, int, int, boolean)` was replaced by `FBResultSet(FBStatement, FBObjectListener.ResultSetListener, boolean, int, int, int)`
+** `close(boolean)` was removed;
 use `close(boolean, CompletionReason)`
 * `UnixCrypt` was replaced by `LegacyHash`, which only performs the password hash specific to Firebird legacy authentication
 * `GDSFactoryPlugin.getDatabasePath(String, Integer, String)` and `getDatabasePath(String)` no longer throw `GDSException`, but instead throw `SQLException`

@@ -1400,7 +1400,7 @@ public class FBDatabaseMetaData implements FirebirdDatabaseMetaData {
      * <p>
      * Jaybird defines these additional columns:
      * <ol start="7">
-     * <li><b>JB_INDEX_NAME</b> String  =&gt; Index backing the primary key</li>
+     * <li><b>JB_PK_INDEX_NAME</b> String  =&gt; Index backing the primary key</li>
      * </ol>
      * </p>
      */
@@ -1409,16 +1409,46 @@ public class FBDatabaseMetaData implements FirebirdDatabaseMetaData {
         return GetPrimaryKeys.create(getDbMetadataMediator()).getPrimaryKeys(table);
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Jaybird defines these additional columns:
+     * <ol start="15">
+     * <li><b>JB_FK_INDEX_NAME</b> String  =&gt; Index backing the foreign key</li>
+     * <li><b>JB_PK_INDEX_NAME</b> String  =&gt; Index backing the primary key</li>
+     * </ol>
+     * </p>
+     */
     @Override
     public ResultSet getImportedKeys(String catalog, String schema, String table) throws SQLException {
         return GetImportedKeys.create(getDbMetadataMediator()).getImportedKeys(table);
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Jaybird defines these additional columns:
+     * <ol start="15">
+     * <li><b>JB_FK_INDEX_NAME</b> String  =&gt; Index backing the foreign key</li>
+     * <li><b>JB_PK_INDEX_NAME</b> String  =&gt; Index backing the primary key</li>
+     * </ol>
+     * </p>
+     */
     @Override
     public ResultSet getExportedKeys(String catalog, String schema, String table) throws SQLException {
         return GetExportedKeys.create(getDbMetadataMediator()).getExportedKeys(table);
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Jaybird defines these additional columns:
+     * <ol start="15">
+     * <li><b>JB_FK_INDEX_NAME</b> String  =&gt; Index backing the foreign key</li>
+     * <li><b>JB_PK_INDEX_NAME</b> String  =&gt; Index backing the primary key</li>
+     * </ol>
+     * </p>
+     */
     @Override
     public ResultSet getCrossReference(
             String primaryCatalog, String primarySchema, String primaryTable,
@@ -1431,6 +1461,16 @@ public class FBDatabaseMetaData implements FirebirdDatabaseMetaData {
         return GetTypeInfo.create(getDbMetadataMediator()).getTypeInfo();
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * <b>Implementation note:</b> The value of {@code FILTER_CONDITION} is populated with the value of
+     * {@code RDB$INDICES.RDB$CONDITION_SOURCE}, which includes the {@code WHERE} keyword and comments before
+     * the {@code WHERE} keyword. This is an implementation detail which may change in the future. That is, Jaybird may
+     * change in the future to only include the condition itself, not the {@code WHERE} keyword, and/or may remove some
+     * or all comments.
+     * </p>
+     */
     @Override
     public ResultSet getIndexInfo(String catalog, String schema, String table, boolean unique, boolean approximate)
             throws SQLException {

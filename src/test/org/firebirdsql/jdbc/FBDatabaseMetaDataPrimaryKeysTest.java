@@ -29,10 +29,12 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 
+import static java.util.Collections.unmodifiableMap;
 import static org.firebirdsql.common.FBTestProperties.getConnectionViaDriverManager;
 import static org.firebirdsql.common.assertions.ResultSetAssertions.assertNextRow;
 import static org.firebirdsql.common.assertions.ResultSetAssertions.assertNoNextRow;
@@ -44,8 +46,8 @@ import static org.firebirdsql.common.assertions.ResultSetAssertions.assertNoNext
  */
 class FBDatabaseMetaDataPrimaryKeysTest {
 
-    private static final String UNNAMED_PK_PREFIX = "INTEG_";
-    private static final String UNNAMED_INDEX_PREFIX = "RDB$PRIMARY";
+    private static final String UNNAMED_CONSTRAINT_PREFIX = "INTEG_";
+    private static final String UNNAMED_PK_INDEX_PREFIX = "RDB$PRIMARY";
 
     //@formatter:off
     @RegisterExtension
@@ -116,20 +118,24 @@ class FBDatabaseMetaDataPrimaryKeysTest {
     @Test
     void unnamedSingleColumnPk() throws Exception {
         validateExpectedPrimaryKeys("UNNAMED_SINGLE_COLUMN_PK", List.of(
-                createPrimaryKeysRow("UNNAMED_SINGLE_COLUMN_PK", "ID", 1, UNNAMED_PK_PREFIX, UNNAMED_INDEX_PREFIX)));
+                createPrimaryKeysRow("UNNAMED_SINGLE_COLUMN_PK", "ID", 1, UNNAMED_CONSTRAINT_PREFIX,
+                        UNNAMED_PK_INDEX_PREFIX)));
     }
 
     @Test
     void unnamedMultiColumnPk() throws Exception {
         validateExpectedPrimaryKeys("UNNAMED_MULTI_COLUMN_PK", List.of(
-                createPrimaryKeysRow("UNNAMED_MULTI_COLUMN_PK", "ID1", 1, UNNAMED_PK_PREFIX, UNNAMED_INDEX_PREFIX),
-                createPrimaryKeysRow("UNNAMED_MULTI_COLUMN_PK", "ID2", 2, UNNAMED_PK_PREFIX, UNNAMED_INDEX_PREFIX)));
+                createPrimaryKeysRow("UNNAMED_MULTI_COLUMN_PK", "ID1", 1, UNNAMED_CONSTRAINT_PREFIX,
+                        UNNAMED_PK_INDEX_PREFIX),
+                createPrimaryKeysRow("UNNAMED_MULTI_COLUMN_PK", "ID2", 2, UNNAMED_CONSTRAINT_PREFIX,
+                        UNNAMED_PK_INDEX_PREFIX)));
     }
 
     @Test
     void unnamedPkNamedIndex() throws Exception {
         validateExpectedPrimaryKeys("UNNAMED_PK_NAMED_INDEX", List.of(
-                createPrimaryKeysRow("UNNAMED_PK_NAMED_INDEX", "ID", 1, UNNAMED_PK_PREFIX, "ALT_NAMED_INDEX_3")));
+                createPrimaryKeysRow("UNNAMED_PK_NAMED_INDEX", "ID", 1, UNNAMED_CONSTRAINT_PREFIX,
+                        "ALT_NAMED_INDEX_3")));
     }
 
     @Test
@@ -157,10 +163,10 @@ class FBDatabaseMetaDataPrimaryKeysTest {
         rules.put(PrimaryKeysMetaData.TABLE_NAME, tableName);
         rules.put(PrimaryKeysMetaData.COLUMN_NAME, columnName);
         rules.put(PrimaryKeysMetaData.KEY_SEQ, (short) keySeq);
-        rules.put(PrimaryKeysMetaData.PK_NAME,
-                UNNAMED_PK_PREFIX.equals(pkName) ? Matchers.startsWith(UNNAMED_PK_PREFIX) : pkName);
-        rules.put(PrimaryKeysMetaData.JB_INDEX_NAME,
-                UNNAMED_INDEX_PREFIX.equals(jbIndexName) ? Matchers.startsWith(UNNAMED_INDEX_PREFIX) : jbIndexName);
+        rules.put(PrimaryKeysMetaData.PK_NAME, UNNAMED_CONSTRAINT_PREFIX.equals(pkName)
+                ? Matchers.startsWith(UNNAMED_CONSTRAINT_PREFIX) : pkName);
+        rules.put(PrimaryKeysMetaData.JB_PK_INDEX_NAME, UNNAMED_PK_INDEX_PREFIX.equals(jbIndexName)
+                ? Matchers.startsWith(UNNAMED_PK_INDEX_PREFIX) : jbIndexName);
         return rules;
     }
 
@@ -175,8 +181,16 @@ class FBDatabaseMetaDataPrimaryKeysTest {
         }
     }
 
+    private static final Map<PrimaryKeysMetaData, Object> DEFAULT_COLUMN_VALUES;
+
+    static {
+        var defaults = new EnumMap<>(PrimaryKeysMetaData.class);
+        Arrays.stream(PrimaryKeysMetaData.values()).forEach(key -> defaults.put(key, null));
+        DEFAULT_COLUMN_VALUES = unmodifiableMap(defaults);
+    }
+
     private static Map<PrimaryKeysMetaData, Object> getDefaultValidationRules() {
-        return new EnumMap<>(PrimaryKeysMetaData.class);
+        return new EnumMap<>(DEFAULT_COLUMN_VALUES);
     }
 
     private enum PrimaryKeysMetaData implements MetaDataInfo {
@@ -186,7 +200,7 @@ class FBDatabaseMetaDataPrimaryKeysTest {
         COLUMN_NAME(4, String.class),
         KEY_SEQ(5, Short.class),
         PK_NAME(6, String.class),
-        JB_INDEX_NAME(7, String.class);
+        JB_PK_INDEX_NAME(7, String.class);
 
         private final int position;
         private final Class<?> columnClass;
