@@ -188,6 +188,30 @@ public class IDatabaseImpl extends AbstractFbDatabase<NativeDatabaseConnection>
     }
 
     @Override
+    public FbTransaction startTransaction(String statementText) throws SQLException {
+        try {
+            checkConnected();
+            byte[] statementArray = getEncoding().encodeToCharset(statementText);
+            try (LockCloseable ignored = withLock()) {
+                ITransaction transaction =  attachment.startTransaction(getStatus(), 0, null);
+                attachment.execute(getStatus(),
+                        transaction,
+                        statementArray.length,
+                        statementArray, getConnectionDialect(), null, null,
+                        null, null);
+                processStatus();
+                final ITransactionImpl transactionImpl = new ITransactionImpl(this, transaction,
+                        TransactionState.ACTIVE);
+                transactionAdded(transactionImpl);
+                return transactionImpl;
+            }
+        } catch (SQLException e) {
+            exceptionListenerDispatcher.errorOccurred(e);
+            throw e;
+        }
+    }
+
+    @Override
     public FbTransaction reconnectTransaction(long transactionId) throws SQLException {
         try {
             checkConnected();
