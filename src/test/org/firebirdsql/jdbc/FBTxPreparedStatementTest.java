@@ -37,6 +37,13 @@ import java.io.Reader;
 import java.sql.*;
 import java.util.stream.Stream;
 
+import static java.sql.ResultSet.CLOSE_CURSORS_AT_COMMIT;
+import static java.sql.ResultSet.CONCUR_READ_ONLY;
+import static java.sql.ResultSet.CONCUR_UPDATABLE;
+import static java.sql.ResultSet.HOLD_CURSORS_OVER_COMMIT;
+import static java.sql.ResultSet.TYPE_FORWARD_ONLY;
+import static java.sql.ResultSet.TYPE_SCROLL_INSENSITIVE;
+import static java.sql.ResultSet.TYPE_SCROLL_SENSITIVE;
 import static org.firebirdsql.common.FBTestProperties.getConnectionViaDriverManager;
 import static org.firebirdsql.common.JdbcResourceHelper.closeQuietly;
 import static org.firebirdsql.common.matchers.SQLExceptionMatchers.errorCodeEquals;
@@ -208,12 +215,27 @@ class FBTxPreparedStatementTest {
 
     @ParameterizedTest
     @MethodSource
-    void resultSetTypeConcurrencyHoldability(int type, int concurrency, int holdability) throws SQLException {
+    void resultSetTypeConcurrencyHoldability(int type, int concurrency, int holdability, int expectedType)
+            throws SQLException {
         try (var pstmt = connection.prepareStatement("commit", type, concurrency, holdability)) {
-            assertEquals(type, pstmt.getResultSetType(), "result set type");
+            assertEquals(expectedType, pstmt.getResultSetType(), "result set type");
             assertEquals(concurrency, pstmt.getResultSetConcurrency(), "result set concurrency");
             assertEquals(holdability, pstmt.getResultSetHoldability(), "result set holdability");
         }
+    }
+
+    private static Stream<Arguments> resultSetTypeConcurrencyHoldability() {
+        return Stream.of(
+                Arguments.of(TYPE_FORWARD_ONLY, CONCUR_READ_ONLY, CLOSE_CURSORS_AT_COMMIT, TYPE_FORWARD_ONLY),
+                Arguments.of(TYPE_FORWARD_ONLY, CONCUR_READ_ONLY, HOLD_CURSORS_OVER_COMMIT, TYPE_SCROLL_INSENSITIVE),
+                Arguments.of(TYPE_SCROLL_INSENSITIVE, CONCUR_UPDATABLE, CLOSE_CURSORS_AT_COMMIT,
+                        TYPE_SCROLL_INSENSITIVE),
+                Arguments.of(TYPE_SCROLL_INSENSITIVE, CONCUR_UPDATABLE, HOLD_CURSORS_OVER_COMMIT,
+                        TYPE_SCROLL_INSENSITIVE),
+                Arguments.of(TYPE_SCROLL_SENSITIVE, CONCUR_READ_ONLY, CLOSE_CURSORS_AT_COMMIT,
+                        TYPE_SCROLL_INSENSITIVE),
+                Arguments.of(TYPE_SCROLL_SENSITIVE, CONCUR_UPDATABLE, HOLD_CURSORS_OVER_COMMIT,
+                        TYPE_SCROLL_INSENSITIVE));
     }
 
     @Test
@@ -230,14 +252,6 @@ class FBTxPreparedStatementTest {
             assertDoesNotThrow(() -> pstmt.setPoolable(true));
             assertTrue(pstmt.isPoolable(), "Expected statement poolable");
         }
-    }
-
-    private static Stream<Arguments> resultSetTypeConcurrencyHoldability() {
-        return Stream.of(
-                Arguments.of(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY,
-                        ResultSet.CLOSE_CURSORS_AT_COMMIT),
-                Arguments.of(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE,
-                        ResultSet.HOLD_CURSORS_OVER_COMMIT));
     }
 
     @ParameterizedTest(name = "{0}")
