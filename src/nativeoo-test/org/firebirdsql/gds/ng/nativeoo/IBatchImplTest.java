@@ -270,13 +270,13 @@ class IBatchImplTest extends AbstractBatchTest {
                 doubleValue,
                 0);
         fieldData = fieldValues.getFieldData(15);
-        assertEquals(testDate,
+        assertEquals(testDate.toLocalDate(),
                 statement.getRowDescriptor().getFieldDescriptor(15).getDatatypeCoder().decodeLocalDate(fieldData));
         fieldData = fieldValues.getFieldData(16);
-        assertEquals(testTime,
+        assertEquals(testTime.toLocalTime(),
                 statement.getRowDescriptor().getFieldDescriptor(16).getDatatypeCoder().decodeLocalTime(fieldData));
         fieldData = fieldValues.getFieldData(17);
-        assertEquals(testTimestamp,
+        assertEquals(testTimestamp.toLocalDateTime(),
                 statement.getRowDescriptor().getFieldDescriptor(17).getDatatypeCoder().decodeLocalDateTime(fieldData));
 
     }
@@ -431,13 +431,13 @@ class IBatchImplTest extends AbstractBatchTest {
                 doubleValue,
                 0);
         fieldData = fieldValues.getFieldData(15);
-        assertEquals(testDate,
+        assertEquals(testDate.toLocalDate(),
                 statement.getRowDescriptor().getFieldDescriptor(15).getDatatypeCoder().decodeLocalDate(fieldData));
         fieldData = fieldValues.getFieldData(16);
-        assertEquals(testTime,
+        assertEquals(testTime.toLocalTime(),
                 statement.getRowDescriptor().getFieldDescriptor(16).getDatatypeCoder().decodeLocalTime(fieldData));
         fieldData = fieldValues.getFieldData(17);
-        assertEquals(testTimestamp,
+        assertEquals(testTimestamp.toLocalDateTime(),
                 statement.getRowDescriptor().getFieldDescriptor(17).getDatatypeCoder().decodeLocalDateTime(fieldData));
         fieldData = fieldValues.getFieldData(18);
         blobID = statement.getRowDescriptor().getFieldDescriptor(18).getDatatypeCoder().decodeLong(fieldData);
@@ -630,13 +630,13 @@ class IBatchImplTest extends AbstractBatchTest {
                 doubleValue,
                 0);
         fieldData = fieldValues.getFieldData(15);
-        assertEquals(testDate,
+        assertEquals(testDate.toLocalDate(),
                 statement.getRowDescriptor().getFieldDescriptor(15).getDatatypeCoder().decodeLocalDate(fieldData));
         fieldData = fieldValues.getFieldData(16);
-        assertEquals(testTime,
+        assertEquals(testTime.toLocalTime(),
                 statement.getRowDescriptor().getFieldDescriptor(16).getDatatypeCoder().decodeLocalTime(fieldData));
         fieldData = fieldValues.getFieldData(17);
-        assertEquals(testTimestamp,
+        assertEquals(testTimestamp.toLocalDateTime(),
                 statement.getRowDescriptor().getFieldDescriptor(17).getDatatypeCoder().decodeLocalDateTime(fieldData));
     }
 
@@ -840,13 +840,13 @@ class IBatchImplTest extends AbstractBatchTest {
                 doubleValue,
                 0);
         fieldData = fieldValues.getFieldData(15);
-        assertEquals(testDate,
+        assertEquals(testDate.toLocalDate(),
                 statement.getRowDescriptor().getFieldDescriptor(15).getDatatypeCoder().decodeLocalDate(fieldData));
         fieldData = fieldValues.getFieldData(16);
-        assertEquals(testTime,
+        assertEquals(testTime.toLocalTime(),
                 statement.getRowDescriptor().getFieldDescriptor(16).getDatatypeCoder().decodeLocalTime(fieldData));
         fieldData = fieldValues.getFieldData(17);
-        assertEquals(testTimestamp,
+        assertEquals(testTimestamp.toLocalDateTime(),
                 statement.getRowDescriptor().getFieldDescriptor(17).getDatatypeCoder().decodeLocalDateTime(fieldData));
         fieldData = fieldValues.getFieldData(18);
         blobID = statement.getRowDescriptor().getFieldDescriptor(18).getDatatypeCoder().decodeLong(fieldData);
