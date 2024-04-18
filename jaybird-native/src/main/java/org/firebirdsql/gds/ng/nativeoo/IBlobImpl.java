@@ -229,32 +229,6 @@ public class IBlobImpl extends AbstractFbBlob implements FbBlob, DatabaseListene
     }
 
     @Override
-    public void putSegment(byte[] segment) throws SQLException {
-        try {
-            if (segment.length == 0) {
-                throw FbExceptionBuilder.forException(jb_blobPutSegmentEmpty).toSQLException();
-            }
-            if (segment.length > getMaximumSegmentSize()) {
-                throw FbExceptionBuilder.forException(jb_blobPutSegmentTooLong).toSQLException();
-            }
-            try (LockCloseable ignored = withLock()) {
-                checkDatabaseAttached();
-                checkTransactionActive();
-                checkBlobOpen();
-
-                try (CloseableMemory memory = new CloseableMemory(segment.length)) {
-                    memory.write(0, segment, 0, segment.length);
-                    blob.putSegment(getStatus(), segment.length, memory);
-                    processStatus();
-                }
-            }
-        } catch (SQLException e) {
-            exceptionListenerDispatcher.errorOccurred(e);
-            throw e;
-        }
-    }
-
-    @Override
     public void put(byte[] b, int off, int len) throws SQLException {
         try (LockCloseable ignored = withLock()) {
             validateBufferLength(b, off, len);
@@ -269,9 +243,9 @@ public class IBlobImpl extends AbstractFbBlob implements FbBlob, DatabaseListene
             if (off == 0) {
                 // no additional buffer allocation needed, so we can send with max segment size
                 count = Math.min(len, getMaximumSegmentSize());
-                try (CloseableMemory memory = new CloseableMemory(b.length)) {
-                    memory.write(0, b, 0, b.length);
-                    blob.putSegment(getStatus(), b.length, memory);
+                try (CloseableMemory memory = new CloseableMemory(count)) {
+                    memory.write(0, b, 0, count);
+                    blob.putSegment(getStatus(), count, memory);
                     processStatus();
                 }
                 if (count == len) {
