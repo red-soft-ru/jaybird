@@ -466,9 +466,9 @@ public class IDatabaseImpl extends AbstractFbDatabase<NativeDatabaseConnection>
         try (LockCloseable ignored = withLock()) {
             try {
                 if (create) {
-                    attachment = provider.createDatabase(getStatus(), dbName, (short) dpbArray.length, dpbArray);
+                    attachment = provider.createDatabase(getStatus(), dbName.getBytes(), (short) dpbArray.length, dpbArray);
                 } else {
-                    attachment = provider.attachDatabase(getStatus(), dbName, (short) dpbArray.length, dpbArray);
+                    attachment = provider.attachDatabase(getStatus(), dbName.getBytes(), (short) dpbArray.length, dpbArray);
                 }
                 processStatus();
             } catch (SQLException e) {

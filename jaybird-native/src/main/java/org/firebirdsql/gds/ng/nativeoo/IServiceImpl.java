@@ -122,7 +122,7 @@ public class IServiceImpl extends AbstractFbService<IServiceConnectionImpl> impl
 
             try (LockCloseable ignored = withLock()) {
                 try {
-                    service = provider.attachServiceManager(getStatus(), connection.getAttachUrl(), spbArray.length, spbArray);
+                    service = provider.attachServiceManager(getStatus(), connection.getAttachUrl().getBytes(), spbArray.length, spbArray);
                     processStatus();
                 } catch (SQLException ex) {
                     safelyDetach();

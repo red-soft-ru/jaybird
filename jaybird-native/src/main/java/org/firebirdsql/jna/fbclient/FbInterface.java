@@ -507,9 +507,9 @@ public interface FbInterface extends FbClientLibrary
 	{
 		public int VERSION = 4;
 
-		public IAttachment attachDatabase(IStatus status, String fileName, int dpbLength, byte[] dpb);
-		public IAttachment createDatabase(IStatus status, String fileName, int dpbLength, byte[] dpb);
-		public IService attachServiceManager(IStatus status, String service, int spbLength, byte[] spb);
+		public IAttachment attachDatabase(IStatus status, byte[] fileName, int dpbLength, byte[] dpb);
+		public IAttachment createDatabase(IStatus status, byte[] fileName, int dpbLength, byte[] dpb);
+		public IService attachServiceManager(IStatus status, byte[] service, int spbLength, byte[] spb);
 		public void shutdown(IStatus status, int timeout, int reason);
 		public void setDbCryptCallback(IStatus status, ICryptKeyCallback cryptCallback);
 	}
@@ -9741,17 +9741,17 @@ public interface FbInterface extends FbClientLibrary
 		{
 			public static interface Callback_attachDatabase extends com.sun.jna.Callback
 			{
-				public IAttachment invoke(IProvider self, IStatus status, String fileName, int dpbLength, byte[] dpb);
+				public IAttachment invoke(IProvider self, IStatus status, byte[] fileName, int dpbLength, byte[] dpb);
 			}
 
 			public static interface Callback_createDatabase extends com.sun.jna.Callback
 			{
-				public IAttachment invoke(IProvider self, IStatus status, String fileName, int dpbLength, byte[] dpb);
+				public IAttachment invoke(IProvider self, IStatus status, byte[] fileName, int dpbLength, byte[] dpb);
 			}
 
 			public static interface Callback_attachServiceManager extends com.sun.jna.Callback
 			{
-				public IService invoke(IProvider self, IStatus status, String service, int spbLength, byte[] spb);
+				public IService invoke(IProvider self, IStatus status, byte[] service, int spbLength, byte[] spb);
 			}
 
 			public static interface Callback_shutdown extends com.sun.jna.Callback
@@ -9777,7 +9777,7 @@ public interface FbInterface extends FbClientLibrary
 
 				attachDatabase = new Callback_attachDatabase() {
 					@Override
-					public IAttachment invoke(IProvider self, IStatus status, String fileName, int dpbLength, byte[] dpb)
+					public IAttachment invoke(IProvider self, IStatus status, byte[] fileName, int dpbLength, byte[] dpb)
 					{
 						try
 						{
@@ -9793,7 +9793,7 @@ public interface FbInterface extends FbClientLibrary
 
 				createDatabase = new Callback_createDatabase() {
 					@Override
-					public IAttachment invoke(IProvider self, IStatus status, String fileName, int dpbLength, byte[] dpb)
+					public IAttachment invoke(IProvider self, IStatus status, byte[] fileName, int dpbLength, byte[] dpb)
 					{
 						try
 						{
@@ -9809,7 +9809,7 @@ public interface FbInterface extends FbClientLibrary
 
 				attachServiceManager = new Callback_attachServiceManager() {
 					@Override
-					public IService invoke(IProvider self, IStatus status, String service, int spbLength, byte[] spb)
+					public IService invoke(IProvider self, IStatus status, byte[] service, int spbLength, byte[] spb)
 					{
 						try
 						{
@@ -9891,7 +9891,7 @@ public interface FbInterface extends FbClientLibrary
 			return new VTable(cloopVTable);
 		}
 
-		public IAttachment attachDatabase(IStatus status, String fileName, int dpbLength, byte[] dpb)
+		public IAttachment attachDatabase(IStatus status, byte[] fileName, int dpbLength, byte[] dpb)
 		{
 			VTable vTable = getVTable();
 			if (vTable.attachDatabase == null) {
@@ -9902,7 +9902,7 @@ public interface FbInterface extends FbClientLibrary
 			return result;
 		}
 
-		public IAttachment createDatabase(IStatus status, String fileName, int dpbLength, byte[] dpb)
+		public IAttachment createDatabase(IStatus status, byte[] fileName, int dpbLength, byte[] dpb)
 		{
 			VTable vTable = getVTable();
 			if (vTable.createDatabase == null) {
@@ -9913,7 +9913,7 @@ public interface FbInterface extends FbClientLibrary
 			return result;
 		}
 
-		public IService attachServiceManager(IStatus status, String service, int spbLength, byte[] spb)
+		public IService attachServiceManager(IStatus status, byte[] service, int spbLength, byte[] spb)
 		{
 			VTable vTable = getVTable();
 			if (vTable.attachServiceManager == null) {
