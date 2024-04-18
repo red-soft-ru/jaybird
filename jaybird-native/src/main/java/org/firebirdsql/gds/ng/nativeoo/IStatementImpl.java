@@ -13,6 +13,7 @@ import org.firebirdsql.gds.ng.FbBatchCompletionState;
 import org.firebirdsql.gds.ng.FbExceptionBuilder;
 import org.firebirdsql.gds.ng.FbMessageMetadata;
 import org.firebirdsql.gds.ng.FbTransaction;
+import org.firebirdsql.gds.ng.FetchDirection;
 import org.firebirdsql.gds.ng.LockCloseable;
 import org.firebirdsql.gds.ng.OperationCloseHandle;
 import org.firebirdsql.gds.ng.StatementState;
@@ -315,6 +316,7 @@ public class IStatementImpl extends AbstractFbStatement {
             if (!getState().isCursorOpen()) {
                 throw FbExceptionBuilder.forException(ISCConstants.isc_cursor_not_open).toSQLException();
             }
+            checkFetchSize(fetchSize);
             if (isAfterLast()) return;
 
             try (OperationCloseHandle operationCloseHandle = signalFetch()) {
@@ -333,7 +335,9 @@ public class IStatementImpl extends AbstractFbStatement {
                     processStatus();
                     if (fetchStatus == IStatus.RESULT_OK) {
                         queueRowData(toRowValue(getRowDescriptor(), outMetadata, ptr));
+                        statementListenerDispatcher.fetchComplete(this, FetchDirection.FORWARD, 1);
                     } else if (fetchStatus == IStatus.RESULT_NO_DATA) {
+                        statementListenerDispatcher.fetchComplete(this, FetchDirection.FORWARD, 0);
                         setAfterLast();
                         // Note: we are not explicitly 'closing' the cursor here
                     } else {
