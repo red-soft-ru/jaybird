@@ -117,12 +117,12 @@ public class IServiceImpl extends AbstractFbService<IServiceConnectionImpl> impl
                 throw new SQLException("Already attached to a service");
             }
             final ServiceParameterBuffer spb = PARAMETER_CONVERTER.toServiceParameterBuffer(connection);
-            final byte[] serviceName = getEncoding().encodeToCharset(connection.getAttachUrl());
+            final byte[] serviceName = getEncoding().encodeToCharset(connection.getAttachUrl().concat("\0"));
             final byte[] spbArray = spb.toBytesWithType();
 
             try (LockCloseable ignored = withLock()) {
                 try {
-                    service = provider.attachServiceManager(getStatus(), connection.getAttachUrl().getBytes(), spbArray.length, spbArray);
+                    service = provider.attachServiceManager(getStatus(), serviceName, spbArray.length, spbArray);
                     processStatus();
                 } catch (SQLException ex) {
                     safelyDetach();

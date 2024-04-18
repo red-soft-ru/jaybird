@@ -193,9 +193,8 @@ public class IDatabaseImpl extends AbstractFbDatabase<NativeDatabaseConnection>
             checkConnected();
             byte[] statementArray = getEncoding().encodeToCharset(statementText);
             try (LockCloseable ignored = withLock()) {
-                ITransaction transaction =  attachment.startTransaction(getStatus(), 0, null);
-                attachment.execute(getStatus(),
-                        transaction,
+                final ITransaction transaction = attachment.execute(getStatus(),
+                        null,
                         statementArray.length,
                         statementArray, getConnectionDialect(), null, null,
                         null, null);
@@ -313,7 +312,7 @@ public class IDatabaseImpl extends AbstractFbDatabase<NativeDatabaseConnection>
                 } else {
                     attachment.execute(getStatus(),
                             transaction != null ? ((ITransactionImpl) transaction).getTransaction() :
-                                    attachment.startTransaction(getStatus(), 0, null),
+                                    null,
                             statementArray.length,
                             statementArray, getConnectionDialect(), null, null,
                             null, null);
@@ -460,15 +459,15 @@ public class IDatabaseImpl extends AbstractFbDatabase<NativeDatabaseConnection>
         if (isAttached()) {
             throw new SQLException("Already attached to a database");
         }
-        final String dbName = connection.getAttachUrl();
+        final byte[] dbName = getEncoding().encodeToCharset(connection.getAttachUrl().concat("\0"));
         final byte[] dpbArray = dpb.toBytesWithType();
 
         try (LockCloseable ignored = withLock()) {
             try {
                 if (create) {
-                    attachment = provider.createDatabase(getStatus(), dbName.getBytes(), (short) dpbArray.length, dpbArray);
+                    attachment = provider.createDatabase(getStatus(), dbName, (short) dpbArray.length, dpbArray);
                 } else {
-                    attachment = provider.attachDatabase(getStatus(), dbName.getBytes(), (short) dpbArray.length, dpbArray);
+                    attachment = provider.attachDatabase(getStatus(), dbName, (short) dpbArray.length, dpbArray);
                 }
                 processStatus();
             } catch (SQLException e) {
