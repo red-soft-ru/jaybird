@@ -297,18 +297,16 @@ public class IBlobImpl extends AbstractFbBlob implements FbBlob, DatabaseListene
     @Override
     public byte[] getBlobInfo(byte[] requestItems, int bufferLength) throws SQLException {
         try {
-            byte[] responseArr = new byte[bufferLength];
             try (LockCloseable ignored = withLock();
                  CloseableMemory memRequestItems = new CloseableMemory(requestItems.length);
-                 CloseableMemory memResponseArr = new CloseableMemory(responseArr.length)) {
+                 CloseableMemory memResponseArr = new CloseableMemory(bufferLength)) {
                 memRequestItems.write(0, requestItems, 0, requestItems.length);
-                memResponseArr.write(0, responseArr, 0, responseArr.length);
                 checkDatabaseAttached();
                 checkBlobOpen();
                 blob.getInfo(getStatus(), requestItems.length, memRequestItems, bufferLength, memResponseArr);
                 processStatus();
+                return memResponseArr.getByteArray(0, bufferLength);
             }
-            return responseArr;
         } catch (SQLException e) {
             exceptionListenerDispatcher.errorOccurred(e);
             throw e;
