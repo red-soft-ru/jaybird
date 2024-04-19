@@ -91,7 +91,10 @@ public class IBatchImpl extends AbstractFbBatch {
      * @throws SQLException For errors when initializing batch
      */
     private void init() throws SQLException {
-        try (LockCloseable ignored = withLock()) {
+        final byte[] statementArray = getDatabase().getEncoding().encodeToCharset(statementText);
+        try (LockCloseable ignored = withLock();
+             CloseableMemory memStatementArray = new CloseableMemory(statementArray.length)) {
+            memStatementArray.write(0, statementArray, 0, statementArray.length);
             if (metadata == null) {
                 if (statement == null) {
                     statement = new IStatementImpl(getDatabase());
@@ -100,15 +103,18 @@ public class IBatchImpl extends AbstractFbBatch {
                 }
                 metadata = (IMessageMetadataImpl) statement.getInputMetadata();
             }
-            final byte[] statementArray = getDatabase().getEncoding().encodeToCharset(statementText);
             if (parameterBuffer == null) {
                 batch = attachment.createBatch(getStatus(), ((ITransactionImpl) transaction).getTransaction(),
-                        statementArray.length, statementArray, getDatabase().getDatabaseDialect(),
+                        statementArray.length, memStatementArray, getDatabase().getDatabaseDialect(),
                         metadata.getMetadata(), 0, null);
             } else {
-                batch = attachment.createBatch(getStatus(), ((ITransactionImpl) transaction).getTransaction(),
-                        statementArray.length, statementArray, getDatabase().getDatabaseDialect(), metadata.getMetadata(),
-                        parameterBuffer.toBytesWithType().length, parameterBuffer.toBytesWithType());
+                final byte[] BPBArray = parameterBuffer.toBytesWithType();
+                try (CloseableMemory memBPBArray = new CloseableMemory(BPBArray.length)) {
+                    memBPBArray.write(0, BPBArray, 0, BPBArray.length);
+                    batch = attachment.createBatch(getStatus(), ((ITransactionImpl) transaction).getTransaction(),
+                            statementArray.length, memStatementArray, getDatabase().getDatabaseDialect(), metadata.getMetadata(),
+                            BPBArray.length, memBPBArray);
+                }
             }
             processStatus();
         }
@@ -201,11 +207,16 @@ public class IBatchImpl extends AbstractFbBatch {
             LongByReference longByReference = new LongByReference(blobId);
 
             try (LockCloseable ignored = withLock()) {
-                if (buffer == null)
+                if (buffer == null) {
                     batch.addBlob(getStatus(), inBuffer.length, memory, longByReference, 0, null);
-                else
-                    batch.addBlob(getStatus(), inBuffer.length, memory, longByReference,
-                            buffer.toBytesWithType().length, buffer.toBytesWithType());
+                } else {
+                    byte[] bufferArray = buffer.toBytesWithType();
+                    try (CloseableMemory memBufferArray = new CloseableMemory(bufferArray.length)) {
+                        memBufferArray.write(0, bufferArray, 0, bufferArray.length);
+                        batch.addBlob(getStatus(), inBuffer.length, memory, longByReference,
+                                bufferArray.length, memBufferArray);
+                    }
+                }
                 processStatus();
             }
             IBlobImpl blob = new IBlobImpl(getDatabase(), (ITransactionImpl) transaction, buffer,
@@ -306,8 +317,10 @@ public class IBatchImpl extends AbstractFbBatch {
 
     @Override
     public void setDefaultBpb(int parLength, byte[] par) throws SQLException {
-        try (LockCloseable ignored = withLock()) {
-            batch.setDefaultBpb(getStatus(), parLength, par);
+        try (LockCloseable ignored = withLock();
+             CloseableMemory memPar = new CloseableMemory(par.length)) {
+            memPar.write(0, par, 0, parLength);
+            batch.setDefaultBpb(getStatus(), parLength, memPar);
             processStatus();
         }
     }

@@ -3,6 +3,7 @@ package org.firebirdsql.gds.ng.nativeoo;
 import org.firebirdsql.gds.ng.AbstractFbTransaction;
 import org.firebirdsql.gds.ng.LockCloseable;
 import org.firebirdsql.gds.ng.TransactionState;
+import org.firebirdsql.jna.fbclient.CloseableMemory;
 import org.firebirdsql.jna.fbclient.FbInterface.IStatus;
 import org.firebirdsql.jna.fbclient.FbInterface.ITransaction;
 
@@ -87,6 +88,11 @@ public class ITransactionImpl extends AbstractFbTransaction {
     public void prepare(byte[] recoveryInformation) throws SQLException {
         boolean noRecoveryInfo = recoveryInformation == null || recoveryInformation.length == 0;
         try (LockCloseable ignored = withLock()) {
+            CloseableMemory memRecoveryInformation = null;
+            if (!noRecoveryInfo) {
+                memRecoveryInformation = new CloseableMemory(recoveryInformation.length);
+                memRecoveryInformation.write(0, recoveryInformation, 0, recoveryInformation.length);
+            }
             final IDatabaseImpl db = getDatabase();
             db.checkConnected();
             switchState(TransactionState.PREPARING);
@@ -96,8 +102,10 @@ public class ITransactionImpl extends AbstractFbTransaction {
                         null);
             } else {
                 transaction.prepare(getStatus(), (short) recoveryInformation.length,
-                        recoveryInformation);
+                        memRecoveryInformation);
             }
+            if (memRecoveryInformation != null)
+                memRecoveryInformation.close();
             processStatus();
             switchState(TransactionState.PREPARED);
         } catch (SQLException e) {
@@ -114,11 +122,16 @@ public class ITransactionImpl extends AbstractFbTransaction {
     public byte[] getTransactionInfo(byte[] requestItems, int maxBufferLength) throws SQLException {
         try {
             final byte[] responseArray = new byte[maxBufferLength];
-            try (LockCloseable ignored = withLock()) {
+            try (LockCloseable ignored = withLock();
+                 CloseableMemory memRequestItems = new CloseableMemory(requestItems.length);
+                 CloseableMemory memResponseArray = new CloseableMemory(responseArray.length)
+            ) {
+                memRequestItems.write(0, requestItems, 0, requestItems.length);
+                memResponseArray.write(0, responseArray, 0, responseArray.length);
                 final IDatabaseImpl db = getDatabase();
                 db.checkConnected();
-                transaction.getInfo(getStatus(), (short) requestItems.length, requestItems,
-                        (short) maxBufferLength, responseArray);
+                transaction.getInfo(getStatus(), (short) requestItems.length, memRequestItems,
+                        (short) maxBufferLength, memResponseArray);
                 processStatus();
             }
             return responseArray;

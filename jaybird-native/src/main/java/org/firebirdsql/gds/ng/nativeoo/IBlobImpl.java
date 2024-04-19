@@ -101,6 +101,11 @@ public class IBlobImpl extends AbstractFbBlob implements FbBlob, DatabaseListene
                 bpb = new byte[0];
             }
             try (LockCloseable ignored = withLock()) {
+                CloseableMemory memBPB = null;
+                if (blobParameterBuffer != null) {
+                    memBPB = new CloseableMemory(bpb.length);
+                    memBPB.write(0, bpb, 0, bpb.length);
+                }
                 checkDatabaseAttached();
                 checkTransactionActive();
                 checkBlobClosed();
@@ -108,11 +113,13 @@ public class IBlobImpl extends AbstractFbBlob implements FbBlob, DatabaseListene
                 IAttachment attachment = getDatabase().getAttachment();
                 if (isOutput()) {
                     blob = attachment.createBlob(getStatus(), ((ITransactionImpl)getTransaction()).getTransaction(),
-                            blobId, bpb.length, bpb);
+                            blobId, bpb.length, memBPB);
                 } else {
                     blob = attachment.openBlob(getStatus(), ((ITransactionImpl)getTransaction()).getTransaction(),
-                            blobId, bpb.length, bpb);
+                            blobId, bpb.length, memBPB);
                 }
+                if (memBPB != null)
+                    memBPB.close();
                 processStatus();
                 setOpen(true);
                 resetEof();
@@ -291,10 +298,14 @@ public class IBlobImpl extends AbstractFbBlob implements FbBlob, DatabaseListene
     public byte[] getBlobInfo(byte[] requestItems, int bufferLength) throws SQLException {
         try {
             byte[] responseArr = new byte[bufferLength];
-            try (LockCloseable ignored = withLock()) {
+            try (LockCloseable ignored = withLock();
+                 CloseableMemory memRequestItems = new CloseableMemory(requestItems.length);
+                 CloseableMemory memResponseArr = new CloseableMemory(responseArr.length)) {
+                memRequestItems.write(0, requestItems, 0, requestItems.length);
+                memResponseArr.write(0, responseArr, 0, responseArr.length);
                 checkDatabaseAttached();
                 checkBlobOpen();
-                blob.getInfo(getStatus(), requestItems.length, requestItems, bufferLength, responseArr);
+                blob.getInfo(getStatus(), requestItems.length, memRequestItems, bufferLength, memResponseArr);
                 processStatus();
             }
             return responseArr;

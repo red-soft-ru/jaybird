@@ -62,25 +62,25 @@ public class IMessageMetadataImpl implements FbMessageMetadata {
     }
 
     public String getAlias(int index) throws SQLException {
-        String result = metadata.getAlias(getStatus(), index);
+        String result = metadata.getAlias(getStatus(), index).getString(0);
         processStatus();
         return result;
     }
 
     public String getField(int index) throws SQLException {
-        String result = metadata.getField(getStatus(), index);
+        String result = metadata.getField(getStatus(), index).getString(0);
         processStatus();
         return result;
     }
 
     public String getOwner(int index) throws SQLException {
-        String result = metadata.getOwner(getStatus(), index);
+        String result = metadata.getOwner(getStatus(), index).getString(0);
         processStatus();
         return result;
     }
 
     public String getRelation(int index) throws SQLException {
-        String result = metadata.getRelation(getStatus(), index);
+        String result = metadata.getRelation(getStatus(), index).getString(0);
         processStatus();
         return result;
     }

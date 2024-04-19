@@ -21,6 +21,7 @@ import org.firebirdsql.gds.ng.StatementType;
 import org.firebirdsql.gds.ng.fields.*;
 import org.firebirdsql.gds.impl.BatchParameterBufferImp;
 import org.firebirdsql.jna.fbclient.XSQLVAR;
+import org.firebirdsql.jna.fbclient.CloseableMemory;
 import org.firebirdsql.jna.fbclient.FbInterface.IBatch;
 import org.firebirdsql.jna.fbclient.FbInterface.IMaster;
 import org.firebirdsql.jna.fbclient.FbInterface.IMessageMetadata;
@@ -131,10 +132,11 @@ public class IStatementImpl extends AbstractFbStatement {
                 }
 
                 switchState(StatementState.PREPARING);
-                try {
+                try (CloseableMemory memStatementArray = new CloseableMemory(statementArray.length)) {
+                    memStatementArray.write(0, statementArray, 0, statementArray.length);
                     ITransactionImpl transaction = (ITransactionImpl) getTransaction();
                     statement = getDatabase().getAttachment().prepare(getStatus(), transaction.getTransaction(),
-                            statementArray.length, statementArray, getDatabase().getConnectionDialect(),
+                            statementArray.length, memStatementArray, getDatabase().getConnectionDialect(),
                             IStatement.PREPARE_PREFETCH_METADATA);
                     processStatus();
                     outMetadata = statement.getOutputMetadata(getStatus());
@@ -385,14 +387,16 @@ public class IStatementImpl extends AbstractFbStatement {
     @Override
     public byte[] getSqlInfo(byte[] requestItems, int bufferLength) throws SQLException {
         try {
-            final byte[] responseArr = new byte[bufferLength];
-            try (LockCloseable ignored = withLock()) {
+            try (LockCloseable ignored = withLock();
+                 CloseableMemory memRequestItems = new CloseableMemory(requestItems.length);
+                 CloseableMemory memResponseArr = new CloseableMemory(bufferLength)) {
+                memRequestItems.write(0, requestItems, 0, requestItems.length);
                 checkStatementValid();
-                statement.getInfo(getStatus(), requestItems.length, requestItems,
-                        bufferLength, responseArr);
+                statement.getInfo(getStatus(), requestItems.length, memRequestItems,
+                        bufferLength, memResponseArr);
                 processStatus();
+                return memResponseArr.getByteArray(0, bufferLength);
             }
-            return responseArr;
         } catch (SQLException e) {
             exceptionListenerDispatcher.errorOccurred(e);
             throw e;
@@ -413,9 +417,12 @@ public class IStatementImpl extends AbstractFbStatement {
 
     @Override
     public void setCursorNameImpl(String cursorName) throws SQLException {
-        try (LockCloseable ignored = withLock()) {
+        final byte[] cursorNameBytes = getDatabase().getEncoding().encodeToCharset(cursorName + '\0');
+        try (LockCloseable ignored = withLock();
+             CloseableMemory memCursorNameBytes = new CloseableMemory(cursorNameBytes.length)) {
+            memCursorNameBytes.write(0, cursorNameBytes, 0, cursorNameBytes.length);
             checkStatementValid();
-            statement.setCursorName(getStatus(), cursorName + '\0');
+            statement.setCursorName(getStatus(), memCursorNameBytes);
             processStatus();
         } catch (SQLException e) {
             exceptionListenerDispatcher.errorOccurred(e);
@@ -526,9 +533,13 @@ public class IStatementImpl extends AbstractFbStatement {
 
     @Override
     public FbBatch createBatch(BatchParameterBuffer parameters) throws SQLException {
-        IBatch batch = statement.createBatch(getStatus(),
-                inMetadata, parameters.toBytesWithType().length, parameters.toBytesWithType());
-        return new IBatchImpl(batch, this, parameters);
+        final byte[] BPBArray = parameters.toBytesWithType();
+        try (CloseableMemory memBPBArray = new CloseableMemory(BPBArray.length)) {
+            memBPBArray.write(0, BPBArray, 0, BPBArray.length);
+            IBatch batch = statement.createBatch(getStatus(),
+                    inMetadata, BPBArray.length, memBPBArray);
+            return new IBatchImpl(batch, this, parameters);
+        }
     }
 
     public FbMessageMetadata getInputMetadata() throws SQLException {

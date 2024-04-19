@@ -7,8 +7,12 @@ import org.firebirdsql.gds.EventHandler;
 import org.firebirdsql.gds.ng.AbstractEventHandle;
 import org.firebirdsql.gds.ng.jna.JnaEventHandle;
 import org.firebirdsql.jna.fbclient.CloseableMemory;
+import org.firebirdsql.jna.fbclient.FbInterface;
 import org.firebirdsql.jna.fbclient.FbInterface.IEventCallback;
 import org.firebirdsql.jna.fbclient.FbInterface.IEventCallbackIntf;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Event handle for the native OO API.
@@ -26,6 +30,7 @@ public class IEventImpl extends AbstractEventHandle {
     private final PointerByReference resultBuffer = new PointerByReference();
     private IEventCallback callback = new IEventCallback(new IEventCallbackImpl());
     private volatile int referenceCount = 0;
+    private final List<FbInterface.IEvents> events = new ArrayList<>();
 
     IEventImpl(String eventName, EventHandler eventHandler, Encoding encoding) {
         super(eventName, eventHandler);
@@ -118,6 +123,16 @@ public class IEventImpl extends AbstractEventHandle {
 
     public Memory getEventNameMemory() {
         return this.eventNameMemory;
+    }
+
+    public void addQueuedEvent(FbInterface.IEvents event) {
+        events.add(event);
+    }
+
+    public void releaseQueuedEvents(FbInterface.IStatus status) {
+        for (FbInterface.IEvents event : events) {
+            event.cancel(status);
+        }
     }
 
     private class IEventCallbackImpl implements IEventCallbackIntf {

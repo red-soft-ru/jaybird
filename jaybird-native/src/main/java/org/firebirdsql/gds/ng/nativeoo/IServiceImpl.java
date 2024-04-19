@@ -13,6 +13,7 @@ import org.firebirdsql.gds.ng.LockCloseable;
 import org.firebirdsql.gds.ng.ParameterConverter;
 import org.firebirdsql.gds.ng.WarningMessageCallback;
 import org.firebirdsql.jdbc.FBDriverNotCapableException;
+import org.firebirdsql.jna.fbclient.CloseableMemory;
 import org.firebirdsql.jna.fbclient.FbClientLibrary;
 import org.firebirdsql.jna.fbclient.FbInterface;
 import org.firebirdsql.jna.fbclient.FbInterface.IMaster;
@@ -76,16 +77,31 @@ public class IServiceImpl extends AbstractFbService<IServiceConnectionImpl> impl
                     : serviceParameterBuffer.toBytes();
             final byte[] serviceRequestBufferBytes =
                     serviceRequestBuffer == null ? null : serviceRequestBuffer.toBytes();
-            final byte[] responseBuffer = new byte[maxBufferLength];
-            try (LockCloseable ignored = withLock()) {
+            try (LockCloseable ignored = withLock();
+                 CloseableMemory memResponseBuffer = new CloseableMemory(maxBufferLength)) {
+                CloseableMemory memServiceParameterBufferBytes = null;
+                if (serviceParameterBuffer != null) {
+                    memServiceParameterBufferBytes = new CloseableMemory(serviceParameterBufferBytes.length);
+                    memServiceParameterBufferBytes.write(0, serviceParameterBufferBytes, 0, serviceParameterBufferBytes.length);
+                }
+                CloseableMemory memServiceRequestBufferBytes = null;
+                if (serviceRequestBufferBytes != null){
+                    memServiceRequestBufferBytes = new CloseableMemory(serviceRequestBufferBytes.length);
+                    memServiceRequestBufferBytes.write(0, serviceRequestBufferBytes, 0, serviceRequestBufferBytes.length);
+                }
+
                 service.query(getStatus(), (serviceParameterBufferBytes != null ? serviceParameterBufferBytes.length
-                                : 0), serviceParameterBufferBytes,
+                                : 0), memServiceParameterBufferBytes,
                         (serviceRequestBufferBytes != null ? serviceRequestBufferBytes.length
-                                : 0), serviceRequestBufferBytes,
-                        maxBufferLength, responseBuffer);
+                                : 0), memServiceRequestBufferBytes,
+                        maxBufferLength, memResponseBuffer);
                 processStatus();
+                if (memServiceParameterBufferBytes != null)
+                    memServiceParameterBufferBytes.close();
+                if (memServiceRequestBufferBytes != null)
+                    memServiceRequestBufferBytes.close();
+                return memResponseBuffer.getByteArray(0, maxBufferLength);
             }
-            return responseBuffer;
         } catch (SQLException e) {
             exceptionListenerDispatcher.errorOccurred(e);
             throw e;
@@ -99,9 +115,11 @@ public class IServiceImpl extends AbstractFbService<IServiceConnectionImpl> impl
             final byte[] serviceRequestBufferBytes = serviceRequestBuffer == null
                     ? null
                     : serviceRequestBuffer.toBytes();
-            try (LockCloseable ignored = withLock()) {
+            try (LockCloseable ignored = withLock();
+                 CloseableMemory memServiceRequestBufferBytes = new CloseableMemory(serviceRequestBufferBytes.length)) {
+                memServiceRequestBufferBytes.write(0, serviceRequestBufferBytes, 0, serviceRequestBufferBytes.length);
                 service.start(getStatus(), (serviceRequestBufferBytes != null ? serviceRequestBufferBytes.length : 0),
-                        serviceRequestBufferBytes);
+                        memServiceRequestBufferBytes);
                 processStatus();
             }
         } catch (SQLException e) {
@@ -120,9 +138,13 @@ public class IServiceImpl extends AbstractFbService<IServiceConnectionImpl> impl
             final byte[] serviceName = getEncoding().encodeToCharset(connection.getAttachUrl().concat("\0"));
             final byte[] spbArray = spb.toBytesWithType();
 
-            try (LockCloseable ignored = withLock()) {
+            try (LockCloseable ignored = withLock();
+                 CloseableMemory memServiceName = new CloseableMemory(serviceName.length);
+                 CloseableMemory memSBPArr = new CloseableMemory(spbArray.length)) {
+                memServiceName.write(0, serviceName, 0, serviceName.length);
+                memSBPArr.write(0, spbArray, 0, spbArray.length);
                 try {
-                    service = provider.attachServiceManager(getStatus(), serviceName, spbArray.length, spbArray);
+                    service = provider.attachServiceManager(getStatus(), memServiceName, spbArray.length, memSBPArr);
                     processStatus();
                 } catch (SQLException ex) {
                     safelyDetach();

@@ -93,26 +93,26 @@ public interface FbInterface extends FbClientLibrary
 	{
 		public int VERSION = 3;
 
-		public String getName();
-		public String getModuleName();
+		public com.sun.jna.Pointer getName();
+		public com.sun.jna.Pointer getModuleName();
 		public IPluginBase getPlugin(IStatus status);
 		public void next(IStatus status);
-		public void set(IStatus status, String s);
+		public void set(IStatus status, com.sun.jna.Pointer s);
 	}
 
 	public static interface IListElementCallbackIntf extends IReferenceCountedIntf
 	{
 		public int VERSION = 3;
 
-		public void callback(String text);
+		public void callback(com.sun.jna.Pointer text);
 	}
 
 	public static interface IConfigEntryIntf extends IReferenceCountedIntf
 	{
 		public int VERSION = 4;
 
-		public String getName();
-		public String getValue();
+		public com.sun.jna.Pointer getName();
+		public com.sun.jna.Pointer getValue();
 		public long getIntValue();
 		public boolean getBoolValue();
 		public IConfig getSubConfig(IStatus status);
@@ -123,18 +123,18 @@ public interface FbInterface extends FbClientLibrary
 	{
 		public int VERSION = 3;
 
-		public IConfigEntry find(IStatus status, String name);
-		public IConfigEntry findValue(IStatus status, String name, String value);
-		public IConfigEntry findPos(IStatus status, String name, int pos);
+		public IConfigEntry find(IStatus status, com.sun.jna.Pointer name);
+		public IConfigEntry findValue(IStatus status, com.sun.jna.Pointer name, com.sun.jna.Pointer value);
+		public IConfigEntry findPos(IStatus status, com.sun.jna.Pointer name, int pos);
 	}
 
 	public static interface IFirebirdConfIntf extends IReferenceCountedIntf
 	{
 		public int VERSION = 4;
 
-		public int getKey(String name);
+		public int getKey(com.sun.jna.Pointer name);
 		public long asInteger(int key);
-		public String asString(int key);
+		public com.sun.jna.Pointer asString(int key);
 		public boolean asBoolean(int key);
 		public int getVersion(IStatus status);
 		public void asList(int key, IListElementCallback callback);
@@ -144,7 +144,7 @@ public interface FbInterface extends FbClientLibrary
 	{
 		public int VERSION = 3;
 
-		public String getConfigFileName();
+		public com.sun.jna.Pointer getConfigFileName();
 		public IConfig getDefaultConfig(IStatus status);
 		public IFirebirdConf getFirebirdConf(IStatus status);
 		public void setReleaseDelay(IStatus status, long microSeconds);
@@ -186,11 +186,11 @@ public interface FbInterface extends FbClientLibrary
 		public static int TYPE_LICENSE = 15;
 		public static int TYPE_COUNT = 16;
 
-		public void registerPluginFactory(int pluginType, String defaultName, IPluginFactory factory);
+		public void registerPluginFactory(int pluginType, com.sun.jna.Pointer defaultName, IPluginFactory factory);
 		public void registerModule(IPluginModule cleanup);
 		public void unregisterModule(IPluginModule cleanup);
-		public IPluginSet getPlugins(IStatus status, int pluginType, String namesList, IFirebirdConf firebirdConf);
-		public IConfig getConfig(IStatus status, String filename);
+		public IPluginSet getPlugins(IStatus status, int pluginType, com.sun.jna.Pointer namesList, IFirebirdConf firebirdConf);
+		public IConfig getConfig(IStatus status, com.sun.jna.Pointer filename);
 		public void releasePlugin(IPluginBase plugin);
 	}
 
@@ -198,8 +198,8 @@ public interface FbInterface extends FbClientLibrary
 	{
 		public int VERSION = 2;
 
-		public void setSymmetric(IStatus status, String type, int keyLength, com.sun.jna.Pointer key);
-		public void setAsymmetric(IStatus status, String type, int encryptKeyLength, com.sun.jna.Pointer encryptKey, int decryptKeyLength, com.sun.jna.Pointer decryptKey);
+		public void setSymmetric(IStatus status, com.sun.jna.Pointer type, int keyLength, com.sun.jna.Pointer key);
+		public void setAsymmetric(IStatus status, com.sun.jna.Pointer type, int encryptKeyLength, com.sun.jna.Pointer encryptKey, int decryptKeyLength, com.sun.jna.Pointer decryptKey);
 		public com.sun.jna.Pointer getEncryptKey(com.sun.jna.Pointer length);
 		public com.sun.jna.Pointer getDecryptKey(com.sun.jna.Pointer length);
 	}
@@ -229,13 +229,13 @@ public interface FbInterface extends FbClientLibrary
 		public static int DIR_SCHEDULERDB = 18;
 		public static int DIR_COUNT = 19;
 
-		public String getDirectory(int code);
+		public com.sun.jna.Pointer getDirectory(int code);
 		public IFirebirdConf getFirebirdConf();
-		public IFirebirdConf getDatabaseConf(String dbName);
-		public IConfig getPluginConfig(String configuredPlugin);
-		public String getInstallDirectory();
-		public String getRootDirectory();
-		public String getDefaultSecurityDb();
+		public IFirebirdConf getDatabaseConf(com.sun.jna.Pointer dbName);
+		public IConfig getPluginConfig(com.sun.jna.Pointer configuredPlugin);
+		public com.sun.jna.Pointer getInstallDirectory();
+		public com.sun.jna.Pointer getRootDirectory();
+		public com.sun.jna.Pointer getDefaultSecurityDb();
 	}
 
 	public static interface IEventCallbackIntf extends IReferenceCountedIntf
@@ -249,7 +249,7 @@ public interface FbInterface extends FbClientLibrary
 	{
 		public int VERSION = 4;
 
-		public void getInfo(IStatus status, int itemsLength, byte[] items, int bufferLength, byte[] buffer);
+		public void getInfo(IStatus status, int itemsLength, com.sun.jna.Pointer items, int bufferLength, com.sun.jna.Pointer buffer);
 		public int getSegment(IStatus status, int bufferLength, com.sun.jna.Pointer buffer, com.sun.jna.Pointer segmentLength);
 		public void putSegment(IStatus status, int length, com.sun.jna.Pointer buffer);
 		public void deprecatedCancel(IStatus status);
@@ -263,8 +263,8 @@ public interface FbInterface extends FbClientLibrary
 	{
 		public int VERSION = 4;
 
-		public void getInfo(IStatus status, int itemsLength, byte[] items, int bufferLength, byte[] buffer);
-		public void prepare(IStatus status, int msgLength, byte[] message);
+		public void getInfo(IStatus status, int itemsLength, com.sun.jna.Pointer items, int bufferLength, com.sun.jna.Pointer buffer);
+		public void prepare(IStatus status, int msgLength, com.sun.jna.Pointer message);
 		public void deprecatedCommit(IStatus status);
 		public void commitRetaining(IStatus status);
 		public void deprecatedRollback(IStatus status);
@@ -283,10 +283,10 @@ public interface FbInterface extends FbClientLibrary
 		public int VERSION = 4;
 
 		public int getCount(IStatus status);
-		public String getField(IStatus status, int index);
-		public String getRelation(IStatus status, int index);
-		public String getOwner(IStatus status, int index);
-		public String getAlias(IStatus status, int index);
+		public com.sun.jna.Pointer getField(IStatus status, int index);
+		public com.sun.jna.Pointer getRelation(IStatus status, int index);
+		public com.sun.jna.Pointer getOwner(IStatus status, int index);
+		public com.sun.jna.Pointer getAlias(IStatus status, int index);
 		public int getType(IStatus status, int index);
 		public boolean isNullable(IStatus status, int index);
 		public int getSubType(IStatus status, int index);
@@ -311,14 +311,14 @@ public interface FbInterface extends FbClientLibrary
 		public void setCharSet(IStatus status, int index, int charSet);
 		public void setScale(IStatus status, int index, int scale);
 		public void truncate(IStatus status, int count);
-		public void moveNameToIndex(IStatus status, String name, int index);
+		public void moveNameToIndex(IStatus status, com.sun.jna.Pointer name, int index);
 		public void remove(IStatus status, int index);
 		public int addField(IStatus status);
 		public IMessageMetadata getMetadata(IStatus status);
-		public void setField(IStatus status, int index, String field);
-		public void setRelation(IStatus status, int index, String relation);
-		public void setOwner(IStatus status, int index, String owner);
-		public void setAlias(IStatus status, int index, String alias);
+		public void setField(IStatus status, int index, com.sun.jna.Pointer field);
+		public void setRelation(IStatus status, int index, com.sun.jna.Pointer relation);
+		public void setOwner(IStatus status, int index, com.sun.jna.Pointer owner);
+		public void setAlias(IStatus status, int index, com.sun.jna.Pointer alias);
 	}
 
 	public static interface IResultSetIntf extends IReferenceCountedIntf
@@ -339,7 +339,7 @@ public interface FbInterface extends FbClientLibrary
 		public void deprecatedClose(IStatus status);
 		public void setDelayedOutputFormat(IStatus status, IMessageMetadata format);
 		public void close(IStatus status);
-		public void getInfo(IStatus status, int itemsLength, byte[] items, int bufferLength, byte[] buffer);
+		public void getInfo(IStatus status, int itemsLength, com.sun.jna.Pointer items, int bufferLength, com.sun.jna.Pointer buffer);
 	}
 
 	public static interface IStatementIntf extends IReferenceCountedIntf
@@ -360,20 +360,20 @@ public interface FbInterface extends FbClientLibrary
 		public static int FLAG_REPEAT_EXECUTE = 0x2;
 		public static int CURSOR_TYPE_SCROLLABLE = 0x1;
 
-		public void getInfo(IStatus status, int itemsLength, byte[] items, int bufferLength, byte[] buffer);
+		public void getInfo(IStatus status, int itemsLength, com.sun.jna.Pointer items, int bufferLength, com.sun.jna.Pointer buffer);
 		public int getType(IStatus status);
-		public String getPlan(IStatus status, boolean detailed);
+		public com.sun.jna.Pointer getPlan(IStatus status, boolean detailed);
 		public long getAffectedRecords(IStatus status);
 		public IMessageMetadata getInputMetadata(IStatus status);
 		public IMessageMetadata getOutputMetadata(IStatus status);
 		public ITransaction execute(IStatus status, ITransaction transaction, IMessageMetadata inMetadata, com.sun.jna.Pointer inBuffer, IMessageMetadata outMetadata, com.sun.jna.Pointer outBuffer);
 		public IResultSet openCursor(IStatus status, ITransaction transaction, IMessageMetadata inMetadata, com.sun.jna.Pointer inBuffer, IMessageMetadata outMetadata, int flags);
-		public void setCursorName(IStatus status, String name);
+		public void setCursorName(IStatus status, com.sun.jna.Pointer name);
 		public void deprecatedFree(IStatus status);
 		public int getFlags(IStatus status);
 		public int getTimeout(IStatus status);
 		public void setTimeout(IStatus status, int timeOut);
-		public IBatch createBatch(IStatus status, IMessageMetadata inMetadata, int parLength, byte[] par);
+		public IBatch createBatch(IStatus status, IMessageMetadata inMetadata, int parLength, com.sun.jna.Pointer par);
 		public void free(IStatus status);
 	}
 
@@ -400,7 +400,7 @@ public interface FbInterface extends FbClientLibrary
 		public static int BLOB_SEGHDR_ALIGN = 2;
 
 		public void add(IStatus status, int count, com.sun.jna.Pointer inBuffer);
-		public void addBlob(IStatus status, int length, com.sun.jna.Pointer inBuffer, com.sun.jna.ptr.LongByReference blobId, int parLength, byte[] par);
+		public void addBlob(IStatus status, int length, com.sun.jna.Pointer inBuffer, com.sun.jna.ptr.LongByReference blobId, int parLength, com.sun.jna.Pointer par);
 		public void appendBlobData(IStatus status, int length, com.sun.jna.Pointer inBuffer);
 		public void addBlobStream(IStatus status, int length, com.sun.jna.Pointer inBuffer);
 		public void registerBlob(IStatus status, com.sun.jna.ptr.LongByReference existingBlob, com.sun.jna.ptr.LongByReference blobId);
@@ -408,10 +408,10 @@ public interface FbInterface extends FbClientLibrary
 		public void cancel(IStatus status);
 		public int getBlobAlignment(IStatus status);
 		public IMessageMetadata getMetadata(IStatus status);
-		public void setDefaultBpb(IStatus status, int parLength, byte[] par);
+		public void setDefaultBpb(IStatus status, int parLength, com.sun.jna.Pointer par);
 		public void deprecatedClose(IStatus status);
 		public void close(IStatus status);
-		public void getInfo(IStatus status, int itemsLength, byte[] items, int bufferLength, byte[] buffer);
+		public void getInfo(IStatus status, int itemsLength, com.sun.jna.Pointer items, int bufferLength, com.sun.jna.Pointer buffer);
 	}
 
 	public static interface IBatchCompletionStateIntf extends IDisposableIntf
@@ -432,7 +432,7 @@ public interface FbInterface extends FbClientLibrary
 	{
 		public int VERSION = 4;
 
-		public void process(IStatus status, int length, byte[] data);
+		public void process(IStatus status, int length, com.sun.jna.Pointer data);
 		public void deprecatedClose(IStatus status);
 		public void close(IStatus status);
 	}
@@ -443,7 +443,7 @@ public interface FbInterface extends FbClientLibrary
 
 		public void receive(IStatus status, int level, int msgType, int length, com.sun.jna.Pointer message);
 		public void send(IStatus status, int level, int msgType, int length, com.sun.jna.Pointer message);
-		public void getInfo(IStatus status, int level, int itemsLength, byte[] items, int bufferLength, byte[] buffer);
+		public void getInfo(IStatus status, int level, int itemsLength, com.sun.jna.Pointer items, int bufferLength, com.sun.jna.Pointer buffer);
 		public void start(IStatus status, ITransaction tra, int level);
 		public void startAndSend(IStatus status, ITransaction tra, int level, int msgType, int length, com.sun.jna.Pointer message);
 		public void unwind(IStatus status, int level);
@@ -463,20 +463,20 @@ public interface FbInterface extends FbClientLibrary
 	{
 		public int VERSION = 6;
 
-		public void getInfo(IStatus status, int itemsLength, byte[] items, int bufferLength, byte[] buffer);
-		public ITransaction startTransaction(IStatus status, int tpbLength, byte[] tpb);
-		public ITransaction reconnectTransaction(IStatus status, int length, byte[] id);
-		public IRequest compileRequest(IStatus status, int blrLength, byte[] blr);
-		public void transactRequest(IStatus status, ITransaction transaction, int blrLength, byte[] blr, int inMsgLength, byte[] inMsg, int outMsgLength, byte[] outMsg);
-		public IBlob createBlob(IStatus status, ITransaction transaction, com.sun.jna.ptr.LongByReference id, int bpbLength, byte[] bpb);
-		public IBlob openBlob(IStatus status, ITransaction transaction, com.sun.jna.ptr.LongByReference id, int bpbLength, byte[] bpb);
-		public int getSlice(IStatus status, ITransaction transaction, com.sun.jna.ptr.LongByReference id, int sdlLength, byte[] sdl, int paramLength, byte[] param, int sliceLength, byte[] slice);
-		public void putSlice(IStatus status, ITransaction transaction, com.sun.jna.ptr.LongByReference id, int sdlLength, byte[] sdl, int paramLength, byte[] param, int sliceLength, byte[] slice);
-		public void executeDyn(IStatus status, ITransaction transaction, int length, byte[] dyn);
-		public IStatement prepare(IStatus status, ITransaction tra, int stmtLength, byte[] sqlStmt, int dialect, int flags);
-		public ITransaction execute(IStatus status, ITransaction transaction, int stmtLength, byte[] sqlStmt, int dialect, IMessageMetadata inMetadata, com.sun.jna.Pointer inBuffer, IMessageMetadata outMetadata, com.sun.jna.Pointer outBuffer);
-		public IResultSet openCursor(IStatus status, ITransaction transaction, int stmtLength, byte[] sqlStmt, int dialect, IMessageMetadata inMetadata, com.sun.jna.Pointer inBuffer, IMessageMetadata outMetadata, String cursorName, int cursorFlags);
-		public IEvents queEvents(IStatus status, IEventCallback callback, int length, byte[] events);
+		public void getInfo(IStatus status, int itemsLength, com.sun.jna.Pointer items, int bufferLength, com.sun.jna.Pointer buffer);
+		public ITransaction startTransaction(IStatus status, int tpbLength, com.sun.jna.Pointer tpb);
+		public ITransaction reconnectTransaction(IStatus status, int length, com.sun.jna.Pointer id);
+		public IRequest compileRequest(IStatus status, int blrLength, com.sun.jna.Pointer blr);
+		public void transactRequest(IStatus status, ITransaction transaction, int blrLength, com.sun.jna.Pointer blr, int inMsgLength, com.sun.jna.Pointer inMsg, int outMsgLength, com.sun.jna.Pointer outMsg);
+		public IBlob createBlob(IStatus status, ITransaction transaction, com.sun.jna.ptr.LongByReference id, int bpbLength, com.sun.jna.Pointer bpb);
+		public IBlob openBlob(IStatus status, ITransaction transaction, com.sun.jna.ptr.LongByReference id, int bpbLength, com.sun.jna.Pointer bpb);
+		public int getSlice(IStatus status, ITransaction transaction, com.sun.jna.ptr.LongByReference id, int sdlLength, com.sun.jna.Pointer sdl, int paramLength, com.sun.jna.Pointer param, int sliceLength, com.sun.jna.Pointer slice);
+		public void putSlice(IStatus status, ITransaction transaction, com.sun.jna.ptr.LongByReference id, int sdlLength, com.sun.jna.Pointer sdl, int paramLength, com.sun.jna.Pointer param, int sliceLength, com.sun.jna.Pointer slice);
+		public void executeDyn(IStatus status, ITransaction transaction, int length, com.sun.jna.Pointer dyn);
+		public IStatement prepare(IStatus status, ITransaction tra, int stmtLength, com.sun.jna.Pointer sqlStmt, int dialect, int flags);
+		public ITransaction execute(IStatus status, ITransaction transaction, int stmtLength, com.sun.jna.Pointer sqlStmt, int dialect, IMessageMetadata inMetadata, com.sun.jna.Pointer inBuffer, IMessageMetadata outMetadata, com.sun.jna.Pointer outBuffer);
+		public IResultSet openCursor(IStatus status, ITransaction transaction, int stmtLength, com.sun.jna.Pointer sqlStmt, int dialect, IMessageMetadata inMetadata, com.sun.jna.Pointer inBuffer, IMessageMetadata outMetadata, com.sun.jna.Pointer cursorName, int cursorFlags);
+		public IEvents queEvents(IStatus status, IEventCallback callback, int length, com.sun.jna.Pointer events);
 		public void cancelOperation(IStatus status, int option);
 		public void ping(IStatus status);
 		public void deprecatedDetach(IStatus status);
@@ -485,11 +485,11 @@ public interface FbInterface extends FbClientLibrary
 		public void setIdleTimeout(IStatus status, int timeOut);
 		public int getStatementTimeout(IStatus status);
 		public void setStatementTimeout(IStatus status, int timeOut);
-		public IBatch createBatch(IStatus status, ITransaction transaction, int stmtLength, byte[] sqlStmt, int dialect, IMessageMetadata inMetadata, int parLength, byte[] par);
+		public IBatch createBatch(IStatus status, ITransaction transaction, int stmtLength, com.sun.jna.Pointer sqlStmt, int dialect, IMessageMetadata inMetadata, int parLength, com.sun.jna.Pointer par);
 		public IReplicator createReplicator(IStatus status);
 		public void detach(IStatus status);
 		public void dropDatabase(IStatus status);
-		public void reconnect(IStatus status, String password, String certificate, String pin);
+		public void reconnect(IStatus status, com.sun.jna.Pointer password, com.sun.jna.Pointer certificate, com.sun.jna.Pointer pin);
 	}
 
 	public static interface IServiceIntf extends IReferenceCountedIntf
@@ -497,8 +497,8 @@ public interface FbInterface extends FbClientLibrary
 		public int VERSION = 5;
 
 		public void deprecatedDetach(IStatus status);
-		public void query(IStatus status, int sendLength, byte[] sendItems, int receiveLength, byte[] receiveItems, int bufferLength, byte[] buffer);
-		public void start(IStatus status, int spbLength, byte[] spb);
+		public void query(IStatus status, int sendLength, com.sun.jna.Pointer sendItems, int receiveLength, com.sun.jna.Pointer receiveItems, int bufferLength, com.sun.jna.Pointer buffer);
+		public void start(IStatus status, int spbLength, com.sun.jna.Pointer spb);
 		public void detach(IStatus status);
 		public void cancel(IStatus status);
 	}
@@ -507,9 +507,9 @@ public interface FbInterface extends FbClientLibrary
 	{
 		public int VERSION = 4;
 
-		public IAttachment attachDatabase(IStatus status, byte[] fileName, int dpbLength, byte[] dpb);
-		public IAttachment createDatabase(IStatus status, byte[] fileName, int dpbLength, byte[] dpb);
-		public IService attachServiceManager(IStatus status, byte[] service, int spbLength, byte[] spb);
+		public IAttachment attachDatabase(IStatus status, com.sun.jna.Pointer fileName, int dpbLength, com.sun.jna.Pointer dpb);
+		public IAttachment createDatabase(IStatus status, com.sun.jna.Pointer fileName, int dpbLength, com.sun.jna.Pointer dpb);
+		public IService attachServiceManager(IStatus status, com.sun.jna.Pointer service, int spbLength, com.sun.jna.Pointer spb);
 		public void shutdown(IStatus status, int timeout, int reason);
 		public void setDbCryptCallback(IStatus status, ICryptKeyCallback cryptCallback);
 	}
@@ -519,7 +519,7 @@ public interface FbInterface extends FbClientLibrary
 		public int VERSION = 3;
 
 		public void addAttachment(IStatus status, IAttachment att);
-		public void addWithTpb(IStatus status, IAttachment att, int length, byte[] tpb);
+		public void addWithTpb(IStatus status, IAttachment att, int length, com.sun.jna.Pointer tpb);
 		public ITransaction start(IStatus status);
 	}
 
@@ -547,19 +547,19 @@ public interface FbInterface extends FbClientLibrary
 		public int VERSION = 2;
 
 		public void reset();
-		public void add(IStatus status, String name);
-		public void setType(IStatus status, String value);
-		public void setDb(IStatus status, String value);
+		public void add(IStatus status, com.sun.jna.Pointer name);
+		public void setType(IStatus status, com.sun.jna.Pointer value);
+		public void setDb(IStatus status, com.sun.jna.Pointer value);
 		public void setFromLdap(IStatus status, boolean value);
-		public void setPassword(IStatus status, String password);
-		public void changeLogin(IStatus status, String login);
+		public void setPassword(IStatus status, com.sun.jna.Pointer password);
+		public void changeLogin(IStatus status, com.sun.jna.Pointer login);
 	}
 
 	public static interface IServerBlockIntf extends IVersionedIntf
 	{
 		public int VERSION = 2;
 
-		public String getLogin();
+		public com.sun.jna.Pointer getLogin();
 		public com.sun.jna.Pointer getData(com.sun.jna.Pointer length);
 		public void putData(IStatus status, int length, com.sun.jna.Pointer data);
 		public ICryptKey newKey(IStatus status);
@@ -569,15 +569,15 @@ public interface FbInterface extends FbClientLibrary
 	{
 		public int VERSION = 6;
 
-		public String getLogin();
-		public String getPassword();
+		public com.sun.jna.Pointer getLogin();
+		public com.sun.jna.Pointer getPassword();
 		public com.sun.jna.Pointer getData(com.sun.jna.Pointer length);
 		public void putData(IStatus status, int length, com.sun.jna.Pointer data);
 		public ICryptKey newKey(IStatus status);
 		public IAuthBlock getAuthBlock(IStatus status);
-		public String getEffectiveLogin();
-		public String getCertificate();
-		public String getRepositoryPin();
+		public com.sun.jna.Pointer getEffectiveLogin();
+		public com.sun.jna.Pointer getCertificate();
+		public com.sun.jna.Pointer getRepositoryPin();
 		public boolean getVerifyServer();
 	}
 
@@ -609,8 +609,8 @@ public interface FbInterface extends FbClientLibrary
 	{
 		public int VERSION = 3;
 
-		public String get();
-		public void set(IStatus status, String newValue);
+		public com.sun.jna.Pointer get();
+		public void set(IStatus status, com.sun.jna.Pointer newValue);
 	}
 
 	public static interface IIntUserFieldIntf extends IUserFieldIntf
@@ -657,10 +657,10 @@ public interface FbInterface extends FbClientLibrary
 	{
 		public int VERSION = 3;
 
-		public String name();
-		public String role();
-		public String networkProtocol();
-		public String remoteAddress();
+		public com.sun.jna.Pointer name();
+		public com.sun.jna.Pointer role();
+		public com.sun.jna.Pointer networkProtocol();
+		public com.sun.jna.Pointer remoteAddress();
 		public com.sun.jna.Pointer authBlock(com.sun.jna.Pointer length);
 		public IAttachment attachment(IStatus status);
 		public ITransaction transaction(IStatus status);
@@ -680,11 +680,11 @@ public interface FbInterface extends FbClientLibrary
 	{
 		public int VERSION = 2;
 
-		public String getType();
-		public String getName();
-		public String getPlugin();
-		public String getSecurityDb();
-		public String getOriginalPlugin();
+		public com.sun.jna.Pointer getType();
+		public com.sun.jna.Pointer getName();
+		public com.sun.jna.Pointer getPlugin();
+		public com.sun.jna.Pointer getSecurityDb();
+		public com.sun.jna.Pointer getOriginalPlugin();
 		public boolean next(IStatus status);
 		public boolean first(IStatus status);
 	}
@@ -693,12 +693,12 @@ public interface FbInterface extends FbClientLibrary
 	{
 		public int VERSION = 5;
 
-		public String getKnownTypes(IStatus status);
+		public com.sun.jna.Pointer getKnownTypes(IStatus status);
 		public void setKey(IStatus status, ICryptKey key);
 		public void encrypt(IStatus status, int length, com.sun.jna.Pointer from, com.sun.jna.Pointer to);
 		public void decrypt(IStatus status, int length, com.sun.jna.Pointer from, com.sun.jna.Pointer to);
-		public com.sun.jna.Pointer getSpecificData(IStatus status, String keyType, com.sun.jna.Pointer length);
-		public void setSpecificData(IStatus status, String keyType, int length, byte[] data);
+		public com.sun.jna.Pointer getSpecificData(IStatus status, com.sun.jna.Pointer keyType, com.sun.jna.Pointer length);
+		public void setSpecificData(IStatus status, com.sun.jna.Pointer keyType, int length, com.sun.jna.Pointer data);
 	}
 
 	public static interface ICryptKeyCallbackIntf extends IVersionedIntf
@@ -713,7 +713,7 @@ public interface FbInterface extends FbClientLibrary
 		public int VERSION = 5;
 
 		public int keyCallback(IStatus status, ICryptKeyCallback callback);
-		public ICryptKeyCallback keyHandle(IStatus status, String keyName);
+		public ICryptKeyCallback keyHandle(IStatus status, com.sun.jna.Pointer keyName);
 		public boolean useOnlyOwnKeys(IStatus status);
 		public ICryptKeyCallback chainHandle(IStatus status);
 	}
@@ -722,14 +722,14 @@ public interface FbInterface extends FbClientLibrary
 	{
 		public int VERSION = 3;
 
-		public String getDatabaseFullPath(IStatus status);
+		public com.sun.jna.Pointer getDatabaseFullPath(IStatus status);
 	}
 
 	public static interface IDbCryptPluginIntf extends IPluginBaseIntf
 	{
 		public int VERSION = 5;
 
-		public void setKey(IStatus status, int length, IKeyHolderPlugin[] sources, String keyName);
+		public void setKey(IStatus status, int length, IKeyHolderPlugin[] sources, com.sun.jna.Pointer keyName);
 		public void encrypt(IStatus status, int length, com.sun.jna.Pointer from, com.sun.jna.Pointer to);
 		public void decrypt(IStatus status, int length, com.sun.jna.Pointer from, com.sun.jna.Pointer to);
 		public void setInfo(IStatus status, IDbCryptInfo info);
@@ -743,9 +743,9 @@ public interface FbInterface extends FbClientLibrary
 		public IExternalEngine getEngine(IStatus status);
 		public IAttachment getAttachment(IStatus status);
 		public ITransaction getTransaction(IStatus status);
-		public String getUserName();
-		public String getDatabaseName();
-		public String getClientCharSet();
+		public com.sun.jna.Pointer getUserName();
+		public com.sun.jna.Pointer getDatabaseName();
+		public com.sun.jna.Pointer getClientCharSet();
 		public int obtainInfoCode();
 		public com.sun.jna.Pointer getInfo(int code);
 		public com.sun.jna.Pointer setInfo(int code, com.sun.jna.Pointer value);
@@ -800,14 +800,14 @@ public interface FbInterface extends FbClientLibrary
 	{
 		public int VERSION = 2;
 
-		public String getPackage(IStatus status);
-		public String getName(IStatus status);
-		public String getEntryPoint(IStatus status);
-		public String getBody(IStatus status);
+		public com.sun.jna.Pointer getPackage(IStatus status);
+		public com.sun.jna.Pointer getName(IStatus status);
+		public com.sun.jna.Pointer getEntryPoint(IStatus status);
+		public com.sun.jna.Pointer getBody(IStatus status);
 		public IMessageMetadata getInputMetadata(IStatus status);
 		public IMessageMetadata getOutputMetadata(IStatus status);
 		public IMessageMetadata getTriggerMetadata(IStatus status);
-		public String getTriggerTable(IStatus status);
+		public com.sun.jna.Pointer getTriggerTable(IStatus status);
 		public int getTriggerType(IStatus status);
 	}
 
@@ -842,7 +842,7 @@ public interface FbInterface extends FbClientLibrary
 	{
 		public int VERSION = 2;
 
-		public void callback(IStatus status, String text);
+		public void callback(IStatus status, com.sun.jna.Pointer text);
 	}
 
 	public static interface IUtilIntf extends IVersionedIntf
@@ -850,24 +850,24 @@ public interface FbInterface extends FbClientLibrary
 		public int VERSION = 4;
 
 		public void getFbVersion(IStatus status, IAttachment att, IVersionCallback callback);
-		public void loadBlob(IStatus status, com.sun.jna.ptr.LongByReference blobId, IAttachment att, ITransaction tra, String file, boolean txt);
-		public void dumpBlob(IStatus status, com.sun.jna.ptr.LongByReference blobId, IAttachment att, ITransaction tra, String file, boolean txt);
-		public void getPerfCounters(IStatus status, IAttachment att, String countersSet, long[] counters);
-		public IAttachment executeCreateDatabase(IStatus status, int stmtLength, byte[] creatDBstatement, int dialect, boolean[] stmtIsCreateDb);
+		public void loadBlob(IStatus status, com.sun.jna.ptr.LongByReference blobId, IAttachment att, ITransaction tra, com.sun.jna.Pointer file, boolean txt);
+		public void dumpBlob(IStatus status, com.sun.jna.ptr.LongByReference blobId, IAttachment att, ITransaction tra, com.sun.jna.Pointer file, boolean txt);
+		public void getPerfCounters(IStatus status, IAttachment att, com.sun.jna.Pointer countersSet, com.sun.jna.Pointer counters);
+		public IAttachment executeCreateDatabase(IStatus status, int stmtLength, com.sun.jna.Pointer creatDBstatement, int dialect, com.sun.jna.Pointer stmtIsCreateDb);
 		public void decodeDate(ISC_DATE date, com.sun.jna.Pointer year, com.sun.jna.Pointer month, com.sun.jna.Pointer day);
 		public void decodeTime(ISC_TIME time, com.sun.jna.Pointer hours, com.sun.jna.Pointer minutes, com.sun.jna.Pointer seconds, com.sun.jna.Pointer fractions);
 		public ISC_DATE encodeDate(int year, int month, int day);
 		public ISC_TIME encodeTime(int hours, int minutes, int seconds, int fractions);
 		public int formatStatus(com.sun.jna.Pointer buffer, int bufferSize, IStatus status);
 		public int getClientVersion();
-		public IXpbBuilder getXpbBuilder(IStatus status, int kind, byte[] buf, int len);
+		public IXpbBuilder getXpbBuilder(IStatus status, int kind, com.sun.jna.Pointer buf, int len);
 		public int setOffsets(IStatus status, IMessageMetadata metadata, IOffsetsCallback callback);
 		public IDecFloat16 getDecFloat16(IStatus status);
 		public IDecFloat34 getDecFloat34(IStatus status);
 		public void decodeTimeTz(IStatus status, ISC_TIME_TZ[] timeTz, com.sun.jna.Pointer hours, com.sun.jna.Pointer minutes, com.sun.jna.Pointer seconds, com.sun.jna.Pointer fractions, int timeZoneBufferLength, com.sun.jna.Pointer timeZoneBuffer);
 		public void decodeTimeStampTz(IStatus status, ISC_TIMESTAMP_TZ[] timeStampTz, com.sun.jna.Pointer year, com.sun.jna.Pointer month, com.sun.jna.Pointer day, com.sun.jna.Pointer hours, com.sun.jna.Pointer minutes, com.sun.jna.Pointer seconds, com.sun.jna.Pointer fractions, int timeZoneBufferLength, com.sun.jna.Pointer timeZoneBuffer);
-		public void encodeTimeTz(IStatus status, ISC_TIME_TZ[] timeTz, int hours, int minutes, int seconds, int fractions, String timeZone);
-		public void encodeTimeStampTz(IStatus status, ISC_TIMESTAMP_TZ[] timeStampTz, int year, int month, int day, int hours, int minutes, int seconds, int fractions, String timeZone);
+		public void encodeTimeTz(IStatus status, ISC_TIME_TZ[] timeTz, int hours, int minutes, int seconds, int fractions, com.sun.jna.Pointer timeZone);
+		public void encodeTimeStampTz(IStatus status, ISC_TIMESTAMP_TZ[] timeStampTz, int year, int month, int day, int hours, int minutes, int seconds, int fractions, com.sun.jna.Pointer timeZone);
 		public IInt128 getInt128(IStatus status);
 		public void decodeTimeTzEx(IStatus status, ISC_TIME_TZ_EX[] timeTz, com.sun.jna.Pointer hours, com.sun.jna.Pointer minutes, com.sun.jna.Pointer seconds, com.sun.jna.Pointer fractions, int timeZoneBufferLength, com.sun.jna.Pointer timeZoneBuffer);
 		public void decodeTimeStampTzEx(IStatus status, ISC_TIMESTAMP_TZ_EX[] timeStampTz, com.sun.jna.Pointer year, com.sun.jna.Pointer month, com.sun.jna.Pointer day, com.sun.jna.Pointer hours, com.sun.jna.Pointer minutes, com.sun.jna.Pointer seconds, com.sun.jna.Pointer fractions, int timeZoneBufferLength, com.sun.jna.Pointer timeZoneBuffer);
@@ -901,7 +901,7 @@ public interface FbInterface extends FbClientLibrary
 		public void insertInt(IStatus status, byte tag, int value);
 		public void insertBigInt(IStatus status, byte tag, long value);
 		public void insertBytes(IStatus status, byte tag, com.sun.jna.Pointer bytes, int length);
-		public void insertString(IStatus status, byte tag, String str);
+		public void insertString(IStatus status, byte tag, com.sun.jna.Pointer str);
 		public void insertTag(IStatus status, byte tag);
 		public boolean isEof(IStatus status);
 		public void moveNext(IStatus status);
@@ -912,7 +912,7 @@ public interface FbInterface extends FbClientLibrary
 		public int getLength(IStatus status);
 		public int getInt(IStatus status);
 		public long getBigInt(IStatus status);
-		public String getString(IStatus status);
+		public com.sun.jna.Pointer getString(IStatus status);
 		public com.sun.jna.Pointer getBytes(IStatus status);
 		public int getBufferLength(IStatus status);
 		public com.sun.jna.Pointer getBuffer(IStatus status);
@@ -927,14 +927,14 @@ public interface FbInterface extends FbClientLibrary
 
 		public int getKind();
 		public int getProcessID();
-		public String getUserName();
-		public String getRoleName();
-		public String getCharSet();
-		public String getRemoteProtocol();
-		public String getRemoteAddress();
-		public String getRemoteHwAddress();
+		public com.sun.jna.Pointer getUserName();
+		public com.sun.jna.Pointer getRoleName();
+		public com.sun.jna.Pointer getCharSet();
+		public com.sun.jna.Pointer getRemoteProtocol();
+		public com.sun.jna.Pointer getRemoteAddress();
+		public com.sun.jna.Pointer getRemoteHwAddress();
 		public int getRemoteProcessID();
-		public String getRemoteProcessName();
+		public com.sun.jna.Pointer getRemoteProcessName();
 	}
 
 	public static interface ITraceDatabaseConnectionIntf extends ITraceConnectionIntf
@@ -942,7 +942,7 @@ public interface FbInterface extends FbClientLibrary
 		public int VERSION = 3;
 
 		public long getConnectionID();
-		public String getDatabaseName();
+		public com.sun.jna.Pointer getDatabaseName();
 	}
 
 	public static interface ITraceTransactionIntf extends IVersionedIntf
@@ -970,7 +970,7 @@ public interface FbInterface extends FbClientLibrary
 
 		public int getCount();
 		public com.sun.jna.Pointer getParam(int idx);
-		public String getTextUTF8(IStatus status, int idx);
+		public com.sun.jna.Pointer getTextUTF8(IStatus status, int idx);
 	}
 
 	public static interface ITraceStatementIntf extends IVersionedIntf
@@ -985,11 +985,11 @@ public interface FbInterface extends FbClientLibrary
 	{
 		public int VERSION = 3;
 
-		public String getText();
-		public String getPlan();
+		public com.sun.jna.Pointer getText();
+		public com.sun.jna.Pointer getPlan();
 		public ITraceParams getInputs();
-		public String getTextUTF8();
-		public String getExplainedPlan();
+		public com.sun.jna.Pointer getTextUTF8();
+		public com.sun.jna.Pointer getExplainedPlan();
 	}
 
 	public static interface ITraceBLRStatementIntf extends ITraceStatementIntf
@@ -998,7 +998,7 @@ public interface FbInterface extends FbClientLibrary
 
 		public com.sun.jna.Pointer getData();
 		public int getDataLength();
-		public String getText();
+		public com.sun.jna.Pointer getText();
 	}
 
 	public static interface ITraceDYNRequestIntf extends IVersionedIntf
@@ -1007,23 +1007,23 @@ public interface FbInterface extends FbClientLibrary
 
 		public com.sun.jna.Pointer getData();
 		public int getDataLength();
-		public String getText();
+		public com.sun.jna.Pointer getText();
 	}
 
 	public static interface ITraceContextVariableIntf extends IVersionedIntf
 	{
 		public int VERSION = 2;
 
-		public String getNameSpace();
-		public String getVarName();
-		public String getVarValue();
+		public com.sun.jna.Pointer getNameSpace();
+		public com.sun.jna.Pointer getVarName();
+		public com.sun.jna.Pointer getVarValue();
 	}
 
 	public static interface ITraceProcedureIntf extends IVersionedIntf
 	{
 		public int VERSION = 2;
 
-		public String getProcName();
+		public com.sun.jna.Pointer getProcName();
 		public ITraceParams getInputs();
 		public com.sun.jna.Pointer getPerf();
 	}
@@ -1032,7 +1032,7 @@ public interface FbInterface extends FbClientLibrary
 	{
 		public int VERSION = 2;
 
-		public String getFuncName();
+		public com.sun.jna.Pointer getFuncName();
 		public ITraceParams getInputs();
 		public ITraceParams getResult();
 		public com.sun.jna.Pointer getPerf();
@@ -1046,8 +1046,8 @@ public interface FbInterface extends FbClientLibrary
 		public static int TYPE_BEFORE = 1;
 		public static int TYPE_AFTER = 2;
 
-		public String getTriggerName();
-		public String getRelationName();
+		public com.sun.jna.Pointer getTriggerName();
+		public com.sun.jna.Pointer getRelationName();
 		public int getAction();
 		public int getWhich();
 		public com.sun.jna.Pointer getPerf();
@@ -1058,8 +1058,8 @@ public interface FbInterface extends FbClientLibrary
 		public int VERSION = 3;
 
 		public com.sun.jna.Pointer getServiceID();
-		public String getServiceMgr();
-		public String getServiceName();
+		public com.sun.jna.Pointer getServiceMgr();
+		public com.sun.jna.Pointer getServiceName();
 	}
 
 	public static interface ITraceStatusVectorIntf extends IVersionedIntf
@@ -1069,7 +1069,7 @@ public interface FbInterface extends FbClientLibrary
 		public boolean hasError();
 		public boolean hasWarning();
 		public IStatus getStatus();
-		public String getText();
+		public com.sun.jna.Pointer getText();
 	}
 
 	public static interface ITraceSweepInfoIntf extends IVersionedIntf
@@ -1095,13 +1095,13 @@ public interface FbInterface extends FbClientLibrary
 	{
 		public int VERSION = 2;
 
-		public String getConfigText();
+		public com.sun.jna.Pointer getConfigText();
 		public int getTraceSessionID();
-		public String getTraceSessionName();
+		public com.sun.jna.Pointer getTraceSessionName();
 		public int getTraceSessionFlags();
 		public int getTraceSessionFormat();
-		public String getFirebirdRootDirectory();
-		public String getDatabaseName();
+		public com.sun.jna.Pointer getFirebirdRootDirectory();
+		public com.sun.jna.Pointer getDatabaseName();
 		public ITraceDatabaseConnection getConnection();
 		public ITraceServiceConnection getService();
 		public ITraceLogWriter getLogWriter();
@@ -1119,10 +1119,10 @@ public interface FbInterface extends FbClientLibrary
 		public static int SWEEP_STATE_FAILED = 3;
 		public static int SWEEP_STATE_PROGRESS = 4;
 
-		public String trace_get_error();
-		public boolean trace_attach(ITraceDatabaseConnection connection, boolean create_db, int dpb_length, byte[] dpb, int att_result);
+		public com.sun.jna.Pointer trace_get_error();
+		public boolean trace_attach(ITraceDatabaseConnection connection, boolean create_db, int dpb_length, com.sun.jna.Pointer dpb, int att_result);
 		public boolean trace_detach(ITraceDatabaseConnection connection, boolean drop_db);
-		public boolean trace_transaction_start(ITraceDatabaseConnection connection, ITraceTransaction transaction, int tpb_length, byte[] tpb, int tra_result);
+		public boolean trace_transaction_start(ITraceDatabaseConnection connection, ITraceTransaction transaction, int tpb_length, com.sun.jna.Pointer tpb, int tra_result);
 		public boolean trace_transaction_end(ITraceDatabaseConnection connection, ITraceTransaction transaction, boolean commit, boolean retain_context, int tra_result);
 		public boolean trace_proc_execute(ITraceDatabaseConnection connection, ITraceTransaction transaction, ITraceProcedure procedure, boolean started, int proc_result);
 		public boolean trace_trigger_execute(ITraceDatabaseConnection connection, ITraceTransaction transaction, ITraceTrigger trigger, boolean started, int trig_result);
@@ -1133,14 +1133,14 @@ public interface FbInterface extends FbClientLibrary
 		public boolean trace_blr_compile(ITraceDatabaseConnection connection, ITraceTransaction transaction, ITraceBLRStatement statement, long time_millis, int req_result);
 		public boolean trace_blr_execute(ITraceDatabaseConnection connection, ITraceTransaction transaction, ITraceBLRStatement statement, int req_result);
 		public boolean trace_dyn_execute(ITraceDatabaseConnection connection, ITraceTransaction transaction, ITraceDYNRequest request, long time_millis, int req_result);
-		public boolean trace_service_attach(ITraceServiceConnection service, int spb_length, byte[] spb, int att_result);
-		public boolean trace_service_start(ITraceServiceConnection service, int switches_length, String switches, int start_result);
-		public boolean trace_service_query(ITraceServiceConnection service, int send_item_length, byte[] send_items, int recv_item_length, byte[] recv_items, int query_result);
+		public boolean trace_service_attach(ITraceServiceConnection service, int spb_length, com.sun.jna.Pointer spb, int att_result);
+		public boolean trace_service_start(ITraceServiceConnection service, int switches_length, com.sun.jna.Pointer switches, int start_result);
+		public boolean trace_service_query(ITraceServiceConnection service, int send_item_length, com.sun.jna.Pointer send_items, int recv_item_length, com.sun.jna.Pointer recv_items, int query_result);
 		public boolean trace_service_detach(ITraceServiceConnection service, int detach_result);
-		public boolean trace_event_error(ITraceConnection connection, ITraceStatusVector status, String function);
+		public boolean trace_event_error(ITraceConnection connection, ITraceStatusVector status, com.sun.jna.Pointer function);
 		public boolean trace_event_sweep(ITraceDatabaseConnection connection, ITraceSweepInfo sweep, int sweep_state);
 		public boolean trace_func_execute(ITraceDatabaseConnection connection, ITraceTransaction transaction, ITraceFunction function, boolean started, int func_result);
-		public boolean trace_privilege_change(ITraceDatabaseConnection connection, ITraceTransaction transaction, String executor, String grantor, boolean is_grant, String object_name, String field_name, String user_name, String privileges, int options, int change_result);
+		public boolean trace_privilege_change(ITraceDatabaseConnection connection, ITraceTransaction transaction, com.sun.jna.Pointer executor, com.sun.jna.Pointer grantor, boolean is_grant, com.sun.jna.Pointer object_name, com.sun.jna.Pointer field_name, com.sun.jna.Pointer user_name, com.sun.jna.Pointer privileges, int options, int change_result);
 		public boolean trace_dsql_restart(ITraceDatabaseConnection connection, ITraceTransaction transaction, ITraceSQLStatement statement, int number);
 	}
 
@@ -1204,9 +1204,9 @@ public interface FbInterface extends FbClientLibrary
 		public int VERSION = 2;
 
 		public IMaster getMaster();
-		public void registerFunction(IStatus status, String name, IUdrFunctionFactory factory);
-		public void registerProcedure(IStatus status, String name, IUdrProcedureFactory factory);
-		public void registerTrigger(IStatus status, String name, IUdrTriggerFactory factory);
+		public void registerFunction(IStatus status, com.sun.jna.Pointer name, IUdrFunctionFactory factory);
+		public void registerProcedure(IStatus status, com.sun.jna.Pointer name, IUdrProcedureFactory factory);
+		public void registerTrigger(IStatus status, com.sun.jna.Pointer name, IUdrTriggerFactory factory);
 	}
 
 	public static interface IDecFloat16Intf extends IVersionedIntf
@@ -1216,10 +1216,10 @@ public interface FbInterface extends FbClientLibrary
 		public static int BCD_SIZE = 16;
 		public static int STRING_SIZE = 24;
 
-		public void toBcd(FB_DEC16[] from, com.sun.jna.Pointer sign, byte[] bcd, com.sun.jna.Pointer exp);
+		public void toBcd(FB_DEC16[] from, com.sun.jna.Pointer sign, com.sun.jna.Pointer bcd, com.sun.jna.Pointer exp);
 		public void toString(IStatus status, FB_DEC16[] from, int bufferLength, com.sun.jna.Pointer buffer);
-		public void fromBcd(int sign, byte[] bcd, int exp, FB_DEC16[] to);
-		public void fromString(IStatus status, String from, FB_DEC16[] to);
+		public void fromBcd(int sign, com.sun.jna.Pointer bcd, int exp, FB_DEC16[] to);
+		public void fromString(IStatus status, com.sun.jna.Pointer from, FB_DEC16[] to);
 	}
 
 	public static interface IDecFloat34Intf extends IVersionedIntf
@@ -1229,10 +1229,10 @@ public interface FbInterface extends FbClientLibrary
 		public static int BCD_SIZE = 34;
 		public static int STRING_SIZE = 43;
 
-		public void toBcd(FB_DEC34[] from, com.sun.jna.Pointer sign, byte[] bcd, com.sun.jna.Pointer exp);
+		public void toBcd(FB_DEC34[] from, com.sun.jna.Pointer sign, com.sun.jna.Pointer bcd, com.sun.jna.Pointer exp);
 		public void toString(IStatus status, FB_DEC34[] from, int bufferLength, com.sun.jna.Pointer buffer);
-		public void fromBcd(int sign, byte[] bcd, int exp, FB_DEC34[] to);
-		public void fromString(IStatus status, String from, FB_DEC34[] to);
+		public void fromBcd(int sign, com.sun.jna.Pointer bcd, int exp, FB_DEC34[] to);
+		public void fromString(IStatus status, com.sun.jna.Pointer from, FB_DEC34[] to);
 	}
 
 	public static interface IInt128Intf extends IVersionedIntf
@@ -1242,14 +1242,14 @@ public interface FbInterface extends FbClientLibrary
 		public static int STRING_SIZE = 46;
 
 		public void toString(IStatus status, FB_I128[] from, int scale, int bufferLength, com.sun.jna.Pointer buffer);
-		public void fromString(IStatus status, int scale, String from, FB_I128[] to);
+		public void fromString(IStatus status, int scale, com.sun.jna.Pointer from, FB_I128[] to);
 	}
 
 	public static interface IReplicatedFieldIntf extends IVersionedIntf
 	{
 		public int VERSION = 2;
 
-		public String getName();
+		public com.sun.jna.Pointer getName();
 		public int getType();
 		public int getSubType();
 		public int getScale();
@@ -1278,11 +1278,11 @@ public interface FbInterface extends FbClientLibrary
 		public void startSavepoint(IStatus status);
 		public void releaseSavepoint(IStatus status);
 		public void rollbackSavepoint(IStatus status);
-		public void insertRecord(IStatus status, String name, IReplicatedRecord record);
-		public void updateRecord(IStatus status, String name, IReplicatedRecord orgRecord, IReplicatedRecord newRecord);
-		public void deleteRecord(IStatus status, String name, IReplicatedRecord record);
-		public void executeSql(IStatus status, String sql);
-		public void executeSqlIntl(IStatus status, int charset, String sql);
+		public void insertRecord(IStatus status, com.sun.jna.Pointer name, IReplicatedRecord record);
+		public void updateRecord(IStatus status, com.sun.jna.Pointer name, IReplicatedRecord orgRecord, IReplicatedRecord newRecord);
+		public void deleteRecord(IStatus status, com.sun.jna.Pointer name, IReplicatedRecord record);
+		public void executeSql(IStatus status, com.sun.jna.Pointer sql);
+		public void executeSqlIntl(IStatus status, int charset, com.sun.jna.Pointer sql);
 	}
 
 	public static interface IReplicatedSessionIntf extends IPluginBaseIntf
@@ -1292,7 +1292,7 @@ public interface FbInterface extends FbClientLibrary
 		public boolean init(IStatus status, IAttachment attachment);
 		public IReplicatedTransaction startTransaction(IStatus status, ITransaction transaction, long number);
 		public void cleanupTransaction(IStatus status, long number);
-		public void setSequence(IStatus status, String name, long value);
+		public void setSequence(IStatus status, com.sun.jna.Pointer name, long value);
 	}
 
 	public static interface IProfilerPluginIntf extends IPluginBaseIntf
@@ -1300,7 +1300,7 @@ public interface FbInterface extends FbClientLibrary
 		public int VERSION = 4;
 
 		public void init(IStatus status, IAttachment attachment);
-		public IProfilerSession startSession(IStatus status, String description, String options, ISC_TIMESTAMP_TZ timestamp);
+		public IProfilerSession startSession(IStatus status, com.sun.jna.Pointer description, com.sun.jna.Pointer options, ISC_TIMESTAMP_TZ timestamp);
 		public void flush(IStatus status);
 	}
 
@@ -1315,9 +1315,9 @@ public interface FbInterface extends FbClientLibrary
 		public int getFlags();
 		public void cancel(IStatus status);
 		public void finish(IStatus status, ISC_TIMESTAMP_TZ timestamp);
-		public void defineStatement(IStatus status, long statementId, long parentStatementId, String type, String packageName, String routineName, String sqlText);
-		public void defineCursor(long statementId, int cursorId, String name, int line, int column);
-		public void defineRecordSource(long statementId, int cursorId, int recSourceId, String accessPath, int parentRecSourceId);
+		public void defineStatement(IStatus status, long statementId, long parentStatementId, com.sun.jna.Pointer type, com.sun.jna.Pointer packageName, com.sun.jna.Pointer routineName, com.sun.jna.Pointer sqlText);
+		public void defineCursor(long statementId, int cursorId, com.sun.jna.Pointer name, int line, int column);
+		public void defineRecordSource(long statementId, int cursorId, int recSourceId, com.sun.jna.Pointer accessPath, int parentRecSourceId);
 		public void onRequestStart(IStatus status, long requestId, long statementId, long callerRequestId, ISC_TIMESTAMP_TZ timestamp);
 		public void onRequestFinish(IStatus status, long requestId, ISC_TIMESTAMP_TZ timestamp, IProfilerStats stats);
 		public void beforePsqlLineColumn(long requestId, int line, int column);
@@ -1340,18 +1340,18 @@ public interface FbInterface extends FbClientLibrary
 		public int VERSION = 2;
 
 		public com.sun.jna.Pointer getObjectInfo();
-		public int loadFromFile(String fileName);
+		public int loadFromFile(com.sun.jna.Pointer fileName);
 		public int loadFromBuffer(com.sun.jna.Pointer buffer, int length);
 		public int loadFromCurrentRepository();
-		public int saveToFile(String fileName);
+		public int saveToFile(com.sun.jna.Pointer fileName);
 		public int saveToBuffer(com.sun.jna.Pointer buffer, int length, com.sun.jna.Pointer realLength);
-		public int saveToRepository(ICryptoRepository repository, String name);
+		public int saveToRepository(ICryptoRepository repository, com.sun.jna.Pointer name);
 		public int setAgreeKeyFromRepository(ICryptoRepository repository);
 		public int setExchangeKey(ICryptoKey key);
 		public int generateKey();
-		public int getIV(byte[] iv, int length, com.sun.jna.Pointer realLength);
-		public int setIV(byte[] iv, int length);
-		public int createFromBuffer(byte[] buffer, int length);
+		public int getIV(com.sun.jna.Pointer iv, int length, com.sun.jna.Pointer realLength);
+		public int setIV(com.sun.jna.Pointer iv, int length);
+		public int createFromBuffer(com.sun.jna.Pointer buffer, int length);
 	}
 
 	public static interface ICryptoKeyPairIntf extends IVersionedIntf
@@ -1359,13 +1359,13 @@ public interface FbInterface extends FbClientLibrary
 		public int VERSION = 2;
 
 		public com.sun.jna.Pointer getObjectInfo();
-		public int loadFromFile(String fileName);
+		public int loadFromFile(com.sun.jna.Pointer fileName);
 		public int loadFromBuffer(com.sun.jna.Pointer buffer, int length);
-		public int loadFromRepository(ICryptoRepository repository, String name);
+		public int loadFromRepository(ICryptoRepository repository, com.sun.jna.Pointer name);
 		public int loadFromCurrentRepository();
-		public int saveToFile(String fileName);
+		public int saveToFile(com.sun.jna.Pointer fileName);
 		public int saveToBuffer(com.sun.jna.Pointer buffer, int length, com.sun.jna.Pointer realLength);
-		public int saveToRepository(ICryptoRepository repository, String name);
+		public int saveToRepository(ICryptoRepository repository, com.sun.jna.Pointer name);
 		public int setAgreeKeyFromRepository(ICryptoRepository repository);
 		public int setExchangeKey(ICryptoKey key);
 		public int generateKeyPair();
@@ -1379,7 +1379,7 @@ public interface FbInterface extends FbClientLibrary
 		public int VERSION = 2;
 
 		public com.sun.jna.Pointer getObjectInfo();
-		public int generateRandom(byte[] buffer, int length, ICryptoProvider providerName);
+		public int generateRandom(com.sun.jna.Pointer buffer, int length, ICryptoProvider providerName);
 	}
 
 	public static interface ICryptoHashFactoryIntf extends IVersionedIntf
@@ -1387,7 +1387,7 @@ public interface FbInterface extends FbClientLibrary
 		public int VERSION = 2;
 
 		public com.sun.jna.Pointer getObjectInfo();
-		public int createHash(byte[] buffer, int bufferLength, byte[] hash, int hashLength, com.sun.jna.Pointer realHashLength, boolean asString);
+		public int createHash(com.sun.jna.Pointer buffer, int bufferLength, com.sun.jna.Pointer hash, int hashLength, com.sun.jna.Pointer realHashLength, boolean asString);
 		public int setKeyForHash(ICryptoKey key);
 	}
 
@@ -1396,10 +1396,10 @@ public interface FbInterface extends FbClientLibrary
 		public int VERSION = 2;
 
 		public com.sun.jna.Pointer getObjectInfo();
-		public int encrypt(byte[] data, int dataLength, byte[] cryptData, int cryptDataLength, com.sun.jna.Pointer realCryptDataLength, ICryptoKey key);
-		public int decrypt(byte[] cryptData, int cryptDataLength, byte[] data, int dataLength, com.sun.jna.Pointer realDataLength, ICryptoKey key);
-		public int encryptFinal(byte[] data, int dataLength, byte[] cryptData, int cryptDataLength, com.sun.jna.Pointer realCryptDataLength, ICryptoKey key, boolean finalValue);
-		public int decryptFinal(byte[] cryptData, int cryptDataLength, byte[] data, int dataLength, com.sun.jna.Pointer realDataLength, ICryptoKey key, boolean finalValue);
+		public int encrypt(com.sun.jna.Pointer data, int dataLength, com.sun.jna.Pointer cryptData, int cryptDataLength, com.sun.jna.Pointer realCryptDataLength, ICryptoKey key);
+		public int decrypt(com.sun.jna.Pointer cryptData, int cryptDataLength, com.sun.jna.Pointer data, int dataLength, com.sun.jna.Pointer realDataLength, ICryptoKey key);
+		public int encryptFinal(com.sun.jna.Pointer data, int dataLength, com.sun.jna.Pointer cryptData, int cryptDataLength, com.sun.jna.Pointer realCryptDataLength, ICryptoKey key, boolean finalValue);
+		public int decryptFinal(com.sun.jna.Pointer cryptData, int cryptDataLength, com.sun.jna.Pointer data, int dataLength, com.sun.jna.Pointer realDataLength, ICryptoKey key, boolean finalValue);
 		public int createKey(ICryptoRepository repository, ICryptoKey[] key);
 		public int deleteKey(ICryptoKey key);
 	}
@@ -1411,8 +1411,8 @@ public interface FbInterface extends FbClientLibrary
 		public com.sun.jna.Pointer getObjectInfo();
 		public int createKeyPair(ICryptoRepository repository, ICryptoKeyPair[] key);
 		public int deleteKeyPair(ICryptoKeyPair keyPair);
-		public int sign(byte[] data, int dataLength, ICryptoSignature signature, ICryptoKeyPair privateKey, int keySpec);
-		public int verifySign(byte[] data, int dataLength, ICryptoSignature signature, ICryptoKey publicKey);
+		public int sign(com.sun.jna.Pointer data, int dataLength, ICryptoSignature signature, ICryptoKeyPair privateKey, int keySpec);
+		public int verifySign(com.sun.jna.Pointer data, int dataLength, ICryptoSignature signature, ICryptoKey publicKey);
 		public int createSignature(ICryptoSignature[] signature);
 		public int deleteSignature(ICryptoSignature signature);
 	}
@@ -1422,9 +1422,9 @@ public interface FbInterface extends FbClientLibrary
 		public int VERSION = 2;
 
 		public com.sun.jna.Pointer getObjectInfo();
-		public int saveToFile(String fileName);
+		public int saveToFile(com.sun.jna.Pointer fileName);
 		public int saveToBuffer(com.sun.jna.Pointer buffer, int length, com.sun.jna.Pointer realLength);
-		public int loadFromFile(String fileName);
+		public int loadFromFile(com.sun.jna.Pointer fileName);
 		public int loadFromBuffer(com.sun.jna.Pointer buffer, int length);
 	}
 
@@ -1435,8 +1435,8 @@ public interface FbInterface extends FbClientLibrary
 		public com.sun.jna.Pointer getObjectInfo();
 		public int createCertificate(ICryptoRepository repository, ICryptoCertificate[] certificate);
 		public int deleteCertificate(ICryptoCertificate certificate);
-		public int encrypt(byte[] data, int dataLength, byte[] cryptData, int cryptDataLength, com.sun.jna.Pointer realCryptDataLength, ICryptoCertificate certificate);
-		public int decrypt(byte[] cryptData, int cryptDataLength, byte[] data, int dataLength, com.sun.jna.Pointer realDataLength, ICryptoRepository repository);
+		public int encrypt(com.sun.jna.Pointer data, int dataLength, com.sun.jna.Pointer cryptData, int cryptDataLength, com.sun.jna.Pointer realCryptDataLength, ICryptoCertificate certificate);
+		public int decrypt(com.sun.jna.Pointer cryptData, int cryptDataLength, com.sun.jna.Pointer data, int dataLength, com.sun.jna.Pointer realDataLength, ICryptoRepository repository);
 	}
 
 	public static interface ICryptoCertificateIntf extends IVersionedIntf
@@ -1444,22 +1444,22 @@ public interface FbInterface extends FbClientLibrary
 		public int VERSION = 2;
 
 		public com.sun.jna.Pointer getObjectInfo();
-		public int loadFromFile(String fileName);
+		public int loadFromFile(com.sun.jna.Pointer fileName);
 		public int loadFromBuffer(com.sun.jna.Pointer buffer, int length);
 		public int loadFromBinaryBuffer(com.sun.jna.Pointer buffer, int length);
-		public int loadFromRepository(ICryptoRepository repository, String name);
-		public int saveToFile(String fileName);
+		public int loadFromRepository(ICryptoRepository repository, com.sun.jna.Pointer name);
+		public int saveToFile(com.sun.jna.Pointer fileName);
 		public int saveToBuffer(com.sun.jna.Pointer buffer, int length, com.sun.jna.Pointer realLength);
 		public int saveToBinaryBuffer(com.sun.jna.Pointer buffer, int length, com.sun.jna.Pointer realLength);
 		public int verifyCertificate(ICryptoCertificate certificate);
-		public int getId(byte[] id, com.sun.jna.Pointer length);
-		public int getIssuerName(byte[] issuerName, com.sun.jna.Pointer length);
+		public int getId(com.sun.jna.Pointer id, com.sun.jna.Pointer length);
+		public int getIssuerName(com.sun.jna.Pointer issuerName, com.sun.jna.Pointer length);
 		public int getPublicKey(ICryptoKey key);
 		public int getPublicKeyMethod(com.sun.jna.Pointer method, com.sun.jna.Pointer length);
 		public int createPublicKeyFromCertificate(ICryptoRepository repository, ICryptoKey[] key);
 		public int deleteCertificatePublicKey(ICryptoKey key);
-		public int getSerialNumber(byte[] serialNumber, com.sun.jna.Pointer length);
-		public int getOwnerName(com.sun.jna.Pointer ownerName, com.sun.jna.Pointer length, String user_dn);
+		public int getSerialNumber(com.sun.jna.Pointer serialNumber, com.sun.jna.Pointer length);
+		public int getOwnerName(com.sun.jna.Pointer ownerName, com.sun.jna.Pointer length, com.sun.jna.Pointer user_dn);
 		public int getKeyContainer(com.sun.jna.Pointer container, com.sun.jna.Pointer length);
 	}
 
@@ -1469,7 +1469,7 @@ public interface FbInterface extends FbClientLibrary
 
 		public com.sun.jna.Pointer getObjectInfo();
 		public int getRepositoryName(com.sun.jna.Pointer name, int length, com.sun.jna.Pointer realLength);
-		public int open(String path, int openMode, int repositoryLocation, int providerType);
+		public int open(com.sun.jna.Pointer path, int openMode, int repositoryLocation, int providerType);
 		public int close();
 		public int createPublicKey(int method, ICryptoKey[] key);
 		public int getPublicKey(ICryptoKey key);
@@ -1482,7 +1482,7 @@ public interface FbInterface extends FbClientLibrary
 		public int VERSION = 2;
 
 		public com.sun.jna.Pointer getObjectInfo();
-		public int createRepository(ICryptoRepository[] repository, int type, String pin);
+		public int createRepository(ICryptoRepository[] repository, int type, com.sun.jna.Pointer pin);
 		public int deleteRepository(ICryptoRepository repository);
 	}
 
@@ -1522,23 +1522,23 @@ public interface FbInterface extends FbClientLibrary
 		public void connect();
 		public boolean is_connected();
 		public boolean bind();
-		public boolean bind_as(String user, String password);
-		public boolean find_user(String name, com.sun.jna.Pointer password, com.sun.jna.Pointer gost_password, com.sun.jna.Pointer hash_alg);
-		public boolean find_srp_user(String name, com.sun.jna.Pointer verifier, com.sun.jna.Pointer salt);
-		public int get_certificate(IStatus status, String name, com.sun.jna.Pointer buffer, com.sun.jna.Pointer buffer_length, String attr_name);
-		public boolean get_user_attr(IStatus status, String name, String attr, com.sun.jna.Pointer value);
-		public boolean get_policy(String name, com.sun.jna.Pointer policy, com.sun.jna.Pointer failed_count, ISC_TIMESTAMP[] access_time);
-		public boolean set_policy(String name, String policy, com.sun.jna.Pointer failed_count, ISC_TIMESTAMP[] access_time);
-		public boolean get_password_history(String name, String plugin, com.sun.jna.Pointer buffer, com.sun.jna.Pointer buffer_length);
-		public void get_user_info(com.sun.jna.Pointer userId, boolean[] active);
-		public void get_groups_list(com.sun.jna.Pointer strlist, String userName, String groupFilter);
-		public void get_users_list(com.sun.jna.Pointer strlist, String groupName);
+		public boolean bind_as(com.sun.jna.Pointer user, com.sun.jna.Pointer password);
+		public boolean find_user(com.sun.jna.Pointer name, com.sun.jna.Pointer password, com.sun.jna.Pointer gost_password, com.sun.jna.Pointer hash_alg);
+		public boolean find_srp_user(com.sun.jna.Pointer name, com.sun.jna.Pointer verifier, com.sun.jna.Pointer salt);
+		public int get_certificate(IStatus status, com.sun.jna.Pointer name, com.sun.jna.Pointer buffer, com.sun.jna.Pointer buffer_length, com.sun.jna.Pointer attr_name);
+		public boolean get_user_attr(IStatus status, com.sun.jna.Pointer name, com.sun.jna.Pointer attr, com.sun.jna.Pointer value);
+		public boolean get_policy(com.sun.jna.Pointer name, com.sun.jna.Pointer policy, com.sun.jna.Pointer failed_count, ISC_TIMESTAMP[] access_time);
+		public boolean set_policy(com.sun.jna.Pointer name, com.sun.jna.Pointer policy, com.sun.jna.Pointer failed_count, ISC_TIMESTAMP[] access_time);
+		public boolean get_password_history(com.sun.jna.Pointer name, com.sun.jna.Pointer plugin, com.sun.jna.Pointer buffer, com.sun.jna.Pointer buffer_length);
+		public void get_user_info(com.sun.jna.Pointer userId, com.sun.jna.Pointer active);
+		public void get_groups_list(com.sun.jna.Pointer strlist, com.sun.jna.Pointer userName, com.sun.jna.Pointer groupFilter);
+		public void get_users_list(com.sun.jna.Pointer strlist, com.sun.jna.Pointer groupName);
 		public void find_user_groups(com.sun.jna.Pointer userId);
-		public int change_legacy_password(String name, String password, boolean[] active);
-		public int change_gost_password(String name, String password, com.sun.jna.Pointer hash, boolean[] active);
-		public int change_srp_password(String name, String password, com.sun.jna.Pointer verifier, com.sun.jna.Pointer salt, boolean[] active);
-		public boolean is_password_expired(String name, String plugin, int valid_days);
-		public int change_active_attr(String name, boolean[] active);
+		public int change_legacy_password(com.sun.jna.Pointer name, com.sun.jna.Pointer password, com.sun.jna.Pointer active);
+		public int change_gost_password(com.sun.jna.Pointer name, com.sun.jna.Pointer password, com.sun.jna.Pointer hash, com.sun.jna.Pointer active);
+		public int change_srp_password(com.sun.jna.Pointer name, com.sun.jna.Pointer password, com.sun.jna.Pointer verifier, com.sun.jna.Pointer salt, com.sun.jna.Pointer active);
+		public boolean is_password_expired(com.sun.jna.Pointer name, com.sun.jna.Pointer plugin, int valid_days);
+		public int change_active_attr(com.sun.jna.Pointer name, com.sun.jna.Pointer active);
 		public boolean check_idle();
 	}
 
@@ -1554,7 +1554,7 @@ public interface FbInterface extends FbClientLibrary
 		public int VERSION = 4;
 
 		public int authenticate(IStatus status, IServerBlock sBlock, IWriter writerInterface);
-		public boolean verifyPassword(String secDbName, String user, String password, boolean isNew, String plugin, com.sun.jna.Pointer isEqual);
+		public boolean verifyPassword(com.sun.jna.Pointer secDbName, com.sun.jna.Pointer user, com.sun.jna.Pointer password, boolean isNew, com.sun.jna.Pointer plugin, com.sun.jna.Pointer isEqual);
 	}
 
 	public static interface ILicensePluginIntf extends IPluginBaseIntf
@@ -2518,12 +2518,12 @@ public interface FbInterface extends FbClientLibrary
 		{
 			public static interface Callback_getName extends com.sun.jna.Callback
 			{
-				public String invoke(IPluginSet self);
+				public com.sun.jna.Pointer invoke(IPluginSet self);
 			}
 
 			public static interface Callback_getModuleName extends com.sun.jna.Callback
 			{
-				public String invoke(IPluginSet self);
+				public com.sun.jna.Pointer invoke(IPluginSet self);
 			}
 
 			public static interface Callback_getPlugin extends com.sun.jna.Callback
@@ -2538,7 +2538,7 @@ public interface FbInterface extends FbClientLibrary
 
 			public static interface Callback_set extends com.sun.jna.Callback
 			{
-				public void invoke(IPluginSet self, IStatus status, String s);
+				public void invoke(IPluginSet self, IStatus status, com.sun.jna.Pointer s);
 			}
 
 			public VTable(com.sun.jna.Pointer pointer)
@@ -2554,7 +2554,7 @@ public interface FbInterface extends FbClientLibrary
 
 				getName = new Callback_getName() {
 					@Override
-					public String invoke(IPluginSet self)
+					public com.sun.jna.Pointer invoke(IPluginSet self)
 					{
 						return obj.getName();
 					}
@@ -2562,7 +2562,7 @@ public interface FbInterface extends FbClientLibrary
 
 				getModuleName = new Callback_getModuleName() {
 					@Override
-					public String invoke(IPluginSet self)
+					public com.sun.jna.Pointer invoke(IPluginSet self)
 					{
 						return obj.getModuleName();
 					}
@@ -2601,7 +2601,7 @@ public interface FbInterface extends FbClientLibrary
 
 				set = new Callback_set() {
 					@Override
-					public void invoke(IPluginSet self, IStatus status, String s)
+					public void invoke(IPluginSet self, IStatus status, com.sun.jna.Pointer s)
 					{
 						try
 						{
@@ -2652,23 +2652,23 @@ public interface FbInterface extends FbClientLibrary
 			return new VTable(cloopVTable);
 		}
 
-		public String getName()
+		public com.sun.jna.Pointer getName()
 		{
 			VTable vTable = getVTable();
 			if (vTable.getName == null) {
 				return null;
 			}
-			String result = vTable.getName.invoke(this);
+			com.sun.jna.Pointer result = vTable.getName.invoke(this);
 			return result;
 		}
 
-		public String getModuleName()
+		public com.sun.jna.Pointer getModuleName()
 		{
 			VTable vTable = getVTable();
 			if (vTable.getModuleName == null) {
 				return null;
 			}
-			String result = vTable.getModuleName.invoke(this);
+			com.sun.jna.Pointer result = vTable.getModuleName.invoke(this);
 			return result;
 		}
 
@@ -2693,7 +2693,7 @@ public interface FbInterface extends FbClientLibrary
 			vTable.next.invoke(this, status);
 		}
 
-		public void set(IStatus status, String s)
+		public void set(IStatus status, com.sun.jna.Pointer s)
 		{
 			VTable vTable = getVTable();
 			if (vTable.set == null) {
@@ -2710,7 +2710,7 @@ public interface FbInterface extends FbClientLibrary
 		{
 			public static interface Callback_callback extends com.sun.jna.Callback
 			{
-				public void invoke(IListElementCallback self, String text);
+				public void invoke(IListElementCallback self, com.sun.jna.Pointer text);
 			}
 
 			public VTable(com.sun.jna.Pointer pointer)
@@ -2726,7 +2726,7 @@ public interface FbInterface extends FbClientLibrary
 
 				callback = new Callback_callback() {
 					@Override
-					public void invoke(IListElementCallback self, String text)
+					public void invoke(IListElementCallback self, com.sun.jna.Pointer text)
 					{
 						obj.callback(text);
 					}
@@ -2766,7 +2766,7 @@ public interface FbInterface extends FbClientLibrary
 			return new VTable(cloopVTable);
 		}
 
-		public void callback(String text)
+		public void callback(com.sun.jna.Pointer text)
 		{
 			VTable vTable = getVTable();
 			if (vTable.callback == null) {
@@ -2782,12 +2782,12 @@ public interface FbInterface extends FbClientLibrary
 		{
 			public static interface Callback_getName extends com.sun.jna.Callback
 			{
-				public String invoke(IConfigEntry self);
+				public com.sun.jna.Pointer invoke(IConfigEntry self);
 			}
 
 			public static interface Callback_getValue extends com.sun.jna.Callback
 			{
-				public String invoke(IConfigEntry self);
+				public com.sun.jna.Pointer invoke(IConfigEntry self);
 			}
 
 			public static interface Callback_getIntValue extends com.sun.jna.Callback
@@ -2823,7 +2823,7 @@ public interface FbInterface extends FbClientLibrary
 
 				getName = new Callback_getName() {
 					@Override
-					public String invoke(IConfigEntry self)
+					public com.sun.jna.Pointer invoke(IConfigEntry self)
 					{
 						return obj.getName();
 					}
@@ -2831,7 +2831,7 @@ public interface FbInterface extends FbClientLibrary
 
 				getValue = new Callback_getValue() {
 					@Override
-					public String invoke(IConfigEntry self)
+					public com.sun.jna.Pointer invoke(IConfigEntry self)
 					{
 						return obj.getValue();
 					}
@@ -2916,23 +2916,23 @@ public interface FbInterface extends FbClientLibrary
 			return new VTable(cloopVTable);
 		}
 
-		public String getName()
+		public com.sun.jna.Pointer getName()
 		{
 			VTable vTable = getVTable();
 			if (vTable.getName == null) {
 				return null;
 			}
-			String result = vTable.getName.invoke(this);
+			com.sun.jna.Pointer result = vTable.getName.invoke(this);
 			return result;
 		}
 
-		public String getValue()
+		public com.sun.jna.Pointer getValue()
 		{
 			VTable vTable = getVTable();
 			if (vTable.getValue == null) {
 				return null;
 			}
-			String result = vTable.getValue.invoke(this);
+			com.sun.jna.Pointer result = vTable.getValue.invoke(this);
 			return result;
 		}
 
@@ -2987,17 +2987,17 @@ public interface FbInterface extends FbClientLibrary
 		{
 			public static interface Callback_find extends com.sun.jna.Callback
 			{
-				public IConfigEntry invoke(IConfig self, IStatus status, String name);
+				public IConfigEntry invoke(IConfig self, IStatus status, com.sun.jna.Pointer name);
 			}
 
 			public static interface Callback_findValue extends com.sun.jna.Callback
 			{
-				public IConfigEntry invoke(IConfig self, IStatus status, String name, String value);
+				public IConfigEntry invoke(IConfig self, IStatus status, com.sun.jna.Pointer name, com.sun.jna.Pointer value);
 			}
 
 			public static interface Callback_findPos extends com.sun.jna.Callback
 			{
-				public IConfigEntry invoke(IConfig self, IStatus status, String name, int pos);
+				public IConfigEntry invoke(IConfig self, IStatus status, com.sun.jna.Pointer name, int pos);
 			}
 
 			public VTable(com.sun.jna.Pointer pointer)
@@ -3013,7 +3013,7 @@ public interface FbInterface extends FbClientLibrary
 
 				find = new Callback_find() {
 					@Override
-					public IConfigEntry invoke(IConfig self, IStatus status, String name)
+					public IConfigEntry invoke(IConfig self, IStatus status, com.sun.jna.Pointer name)
 					{
 						try
 						{
@@ -3029,7 +3029,7 @@ public interface FbInterface extends FbClientLibrary
 
 				findValue = new Callback_findValue() {
 					@Override
-					public IConfigEntry invoke(IConfig self, IStatus status, String name, String value)
+					public IConfigEntry invoke(IConfig self, IStatus status, com.sun.jna.Pointer name, com.sun.jna.Pointer value)
 					{
 						try
 						{
@@ -3045,7 +3045,7 @@ public interface FbInterface extends FbClientLibrary
 
 				findPos = new Callback_findPos() {
 					@Override
-					public IConfigEntry invoke(IConfig self, IStatus status, String name, int pos)
+					public IConfigEntry invoke(IConfig self, IStatus status, com.sun.jna.Pointer name, int pos)
 					{
 						try
 						{
@@ -3095,7 +3095,7 @@ public interface FbInterface extends FbClientLibrary
 			return new VTable(cloopVTable);
 		}
 
-		public IConfigEntry find(IStatus status, String name)
+		public IConfigEntry find(IStatus status, com.sun.jna.Pointer name)
 		{
 			VTable vTable = getVTable();
 			if (vTable.find == null) {
@@ -3106,7 +3106,7 @@ public interface FbInterface extends FbClientLibrary
 			return result;
 		}
 
-		public IConfigEntry findValue(IStatus status, String name, String value)
+		public IConfigEntry findValue(IStatus status, com.sun.jna.Pointer name, com.sun.jna.Pointer value)
 		{
 			VTable vTable = getVTable();
 			if (vTable.findValue == null) {
@@ -3117,7 +3117,7 @@ public interface FbInterface extends FbClientLibrary
 			return result;
 		}
 
-		public IConfigEntry findPos(IStatus status, String name, int pos)
+		public IConfigEntry findPos(IStatus status, com.sun.jna.Pointer name, int pos)
 		{
 			VTable vTable = getVTable();
 			if (vTable.findPos == null) {
@@ -3135,7 +3135,7 @@ public interface FbInterface extends FbClientLibrary
 		{
 			public static interface Callback_getKey extends com.sun.jna.Callback
 			{
-				public int invoke(IFirebirdConf self, String name);
+				public int invoke(IFirebirdConf self, com.sun.jna.Pointer name);
 			}
 
 			public static interface Callback_asInteger extends com.sun.jna.Callback
@@ -3145,7 +3145,7 @@ public interface FbInterface extends FbClientLibrary
 
 			public static interface Callback_asString extends com.sun.jna.Callback
 			{
-				public String invoke(IFirebirdConf self, int key);
+				public com.sun.jna.Pointer invoke(IFirebirdConf self, int key);
 			}
 
 			public static interface Callback_asBoolean extends com.sun.jna.Callback
@@ -3176,7 +3176,7 @@ public interface FbInterface extends FbClientLibrary
 
 				getKey = new Callback_getKey() {
 					@Override
-					public int invoke(IFirebirdConf self, String name)
+					public int invoke(IFirebirdConf self, com.sun.jna.Pointer name)
 					{
 						return obj.getKey(name);
 					}
@@ -3192,7 +3192,7 @@ public interface FbInterface extends FbClientLibrary
 
 				asString = new Callback_asString() {
 					@Override
-					public String invoke(IFirebirdConf self, int key)
+					public com.sun.jna.Pointer invoke(IFirebirdConf self, int key)
 					{
 						return obj.asString(key);
 					}
@@ -3269,7 +3269,7 @@ public interface FbInterface extends FbClientLibrary
 			return new VTable(cloopVTable);
 		}
 
-		public int getKey(String name)
+		public int getKey(com.sun.jna.Pointer name)
 		{
 			VTable vTable = getVTable();
 			if (vTable.getKey == null) {
@@ -3289,13 +3289,13 @@ public interface FbInterface extends FbClientLibrary
 			return result;
 		}
 
-		public String asString(int key)
+		public com.sun.jna.Pointer asString(int key)
 		{
 			VTable vTable = getVTable();
 			if (vTable.asString == null) {
 				return null;
 			}
-			String result = vTable.asString.invoke(this, key);
+			com.sun.jna.Pointer result = vTable.asString.invoke(this, key);
 			return result;
 		}
 
@@ -3345,7 +3345,7 @@ public interface FbInterface extends FbClientLibrary
 		{
 			public static interface Callback_getConfigFileName extends com.sun.jna.Callback
 			{
-				public String invoke(IPluginConfig self);
+				public com.sun.jna.Pointer invoke(IPluginConfig self);
 			}
 
 			public static interface Callback_getDefaultConfig extends com.sun.jna.Callback
@@ -3376,7 +3376,7 @@ public interface FbInterface extends FbClientLibrary
 
 				getConfigFileName = new Callback_getConfigFileName() {
 					@Override
-					public String invoke(IPluginConfig self)
+					public com.sun.jna.Pointer invoke(IPluginConfig self)
 					{
 						return obj.getConfigFileName();
 					}
@@ -3466,13 +3466,13 @@ public interface FbInterface extends FbClientLibrary
 			return new VTable(cloopVTable);
 		}
 
-		public String getConfigFileName()
+		public com.sun.jna.Pointer getConfigFileName()
 		{
 			VTable vTable = getVTable();
 			if (vTable.getConfigFileName == null) {
 				return null;
 			}
-			String result = vTable.getConfigFileName.invoke(this);
+			com.sun.jna.Pointer result = vTable.getConfigFileName.invoke(this);
 			return result;
 		}
 
@@ -3696,7 +3696,7 @@ public interface FbInterface extends FbClientLibrary
 		{
 			public static interface Callback_registerPluginFactory extends com.sun.jna.Callback
 			{
-				public void invoke(IPluginManager self, int pluginType, String defaultName, IPluginFactory factory);
+				public void invoke(IPluginManager self, int pluginType, com.sun.jna.Pointer defaultName, IPluginFactory factory);
 			}
 
 			public static interface Callback_registerModule extends com.sun.jna.Callback
@@ -3711,12 +3711,12 @@ public interface FbInterface extends FbClientLibrary
 
 			public static interface Callback_getPlugins extends com.sun.jna.Callback
 			{
-				public IPluginSet invoke(IPluginManager self, IStatus status, int pluginType, String namesList, IFirebirdConf firebirdConf);
+				public IPluginSet invoke(IPluginManager self, IStatus status, int pluginType, com.sun.jna.Pointer namesList, IFirebirdConf firebirdConf);
 			}
 
 			public static interface Callback_getConfig extends com.sun.jna.Callback
 			{
-				public IConfig invoke(IPluginManager self, IStatus status, String filename);
+				public IConfig invoke(IPluginManager self, IStatus status, com.sun.jna.Pointer filename);
 			}
 
 			public static interface Callback_releasePlugin extends com.sun.jna.Callback
@@ -3737,7 +3737,7 @@ public interface FbInterface extends FbClientLibrary
 
 				registerPluginFactory = new Callback_registerPluginFactory() {
 					@Override
-					public void invoke(IPluginManager self, int pluginType, String defaultName, IPluginFactory factory)
+					public void invoke(IPluginManager self, int pluginType, com.sun.jna.Pointer defaultName, IPluginFactory factory)
 					{
 						obj.registerPluginFactory(pluginType, defaultName, factory);
 					}
@@ -3761,7 +3761,7 @@ public interface FbInterface extends FbClientLibrary
 
 				getPlugins = new Callback_getPlugins() {
 					@Override
-					public IPluginSet invoke(IPluginManager self, IStatus status, int pluginType, String namesList, IFirebirdConf firebirdConf)
+					public IPluginSet invoke(IPluginManager self, IStatus status, int pluginType, com.sun.jna.Pointer namesList, IFirebirdConf firebirdConf)
 					{
 						try
 						{
@@ -3777,7 +3777,7 @@ public interface FbInterface extends FbClientLibrary
 
 				getConfig = new Callback_getConfig() {
 					@Override
-					public IConfig invoke(IPluginManager self, IStatus status, String filename)
+					public IConfig invoke(IPluginManager self, IStatus status, com.sun.jna.Pointer filename)
 					{
 						try
 						{
@@ -3838,7 +3838,7 @@ public interface FbInterface extends FbClientLibrary
 			return new VTable(cloopVTable);
 		}
 
-		public void registerPluginFactory(int pluginType, String defaultName, IPluginFactory factory)
+		public void registerPluginFactory(int pluginType, com.sun.jna.Pointer defaultName, IPluginFactory factory)
 		{
 			VTable vTable = getVTable();
 			if (vTable.registerPluginFactory == null) {
@@ -3865,7 +3865,7 @@ public interface FbInterface extends FbClientLibrary
 			vTable.unregisterModule.invoke(this, cleanup);
 		}
 
-		public IPluginSet getPlugins(IStatus status, int pluginType, String namesList, IFirebirdConf firebirdConf)
+		public IPluginSet getPlugins(IStatus status, int pluginType, com.sun.jna.Pointer namesList, IFirebirdConf firebirdConf)
 		{
 			VTable vTable = getVTable();
 			if (vTable.getPlugins == null) {
@@ -3876,7 +3876,7 @@ public interface FbInterface extends FbClientLibrary
 			return result;
 		}
 
-		public IConfig getConfig(IStatus status, String filename)
+		public IConfig getConfig(IStatus status, com.sun.jna.Pointer filename)
 		{
 			VTable vTable = getVTable();
 			if (vTable.getConfig == null) {
@@ -3903,12 +3903,12 @@ public interface FbInterface extends FbClientLibrary
 		{
 			public static interface Callback_setSymmetric extends com.sun.jna.Callback
 			{
-				public void invoke(ICryptKey self, IStatus status, String type, int keyLength, com.sun.jna.Pointer key);
+				public void invoke(ICryptKey self, IStatus status, com.sun.jna.Pointer type, int keyLength, com.sun.jna.Pointer key);
 			}
 
 			public static interface Callback_setAsymmetric extends com.sun.jna.Callback
 			{
-				public void invoke(ICryptKey self, IStatus status, String type, int encryptKeyLength, com.sun.jna.Pointer encryptKey, int decryptKeyLength, com.sun.jna.Pointer decryptKey);
+				public void invoke(ICryptKey self, IStatus status, com.sun.jna.Pointer type, int encryptKeyLength, com.sun.jna.Pointer encryptKey, int decryptKeyLength, com.sun.jna.Pointer decryptKey);
 			}
 
 			public static interface Callback_getEncryptKey extends com.sun.jna.Callback
@@ -3934,7 +3934,7 @@ public interface FbInterface extends FbClientLibrary
 
 				setSymmetric = new Callback_setSymmetric() {
 					@Override
-					public void invoke(ICryptKey self, IStatus status, String type, int keyLength, com.sun.jna.Pointer key)
+					public void invoke(ICryptKey self, IStatus status, com.sun.jna.Pointer type, int keyLength, com.sun.jna.Pointer key)
 					{
 						try
 						{
@@ -3949,7 +3949,7 @@ public interface FbInterface extends FbClientLibrary
 
 				setAsymmetric = new Callback_setAsymmetric() {
 					@Override
-					public void invoke(ICryptKey self, IStatus status, String type, int encryptKeyLength, com.sun.jna.Pointer encryptKey, int decryptKeyLength, com.sun.jna.Pointer decryptKey)
+					public void invoke(ICryptKey self, IStatus status, com.sun.jna.Pointer type, int encryptKeyLength, com.sun.jna.Pointer encryptKey, int decryptKeyLength, com.sun.jna.Pointer decryptKey)
 					{
 						try
 						{
@@ -4015,7 +4015,7 @@ public interface FbInterface extends FbClientLibrary
 			return new VTable(cloopVTable);
 		}
 
-		public void setSymmetric(IStatus status, String type, int keyLength, com.sun.jna.Pointer key)
+		public void setSymmetric(IStatus status, com.sun.jna.Pointer type, int keyLength, com.sun.jna.Pointer key)
 		{
 			VTable vTable = getVTable();
 			if (vTable.setSymmetric == null) {
@@ -4025,7 +4025,7 @@ public interface FbInterface extends FbClientLibrary
 			vTable.setSymmetric.invoke(this, status, type, keyLength, key);
 		}
 
-		public void setAsymmetric(IStatus status, String type, int encryptKeyLength, com.sun.jna.Pointer encryptKey, int decryptKeyLength, com.sun.jna.Pointer decryptKey)
+		public void setAsymmetric(IStatus status, com.sun.jna.Pointer type, int encryptKeyLength, com.sun.jna.Pointer encryptKey, int decryptKeyLength, com.sun.jna.Pointer decryptKey)
 		{
 			VTable vTable = getVTable();
 			if (vTable.setAsymmetric == null) {
@@ -4062,7 +4062,7 @@ public interface FbInterface extends FbClientLibrary
 		{
 			public static interface Callback_getDirectory extends com.sun.jna.Callback
 			{
-				public String invoke(IConfigManager self, int code);
+				public com.sun.jna.Pointer invoke(IConfigManager self, int code);
 			}
 
 			public static interface Callback_getFirebirdConf extends com.sun.jna.Callback
@@ -4072,27 +4072,27 @@ public interface FbInterface extends FbClientLibrary
 
 			public static interface Callback_getDatabaseConf extends com.sun.jna.Callback
 			{
-				public IFirebirdConf invoke(IConfigManager self, String dbName);
+				public IFirebirdConf invoke(IConfigManager self, com.sun.jna.Pointer dbName);
 			}
 
 			public static interface Callback_getPluginConfig extends com.sun.jna.Callback
 			{
-				public IConfig invoke(IConfigManager self, String configuredPlugin);
+				public IConfig invoke(IConfigManager self, com.sun.jna.Pointer configuredPlugin);
 			}
 
 			public static interface Callback_getInstallDirectory extends com.sun.jna.Callback
 			{
-				public String invoke(IConfigManager self);
+				public com.sun.jna.Pointer invoke(IConfigManager self);
 			}
 
 			public static interface Callback_getRootDirectory extends com.sun.jna.Callback
 			{
-				public String invoke(IConfigManager self);
+				public com.sun.jna.Pointer invoke(IConfigManager self);
 			}
 
 			public static interface Callback_getDefaultSecurityDb extends com.sun.jna.Callback
 			{
-				public String invoke(IConfigManager self);
+				public com.sun.jna.Pointer invoke(IConfigManager self);
 			}
 
 			public VTable(com.sun.jna.Pointer pointer)
@@ -4108,7 +4108,7 @@ public interface FbInterface extends FbClientLibrary
 
 				getDirectory = new Callback_getDirectory() {
 					@Override
-					public String invoke(IConfigManager self, int code)
+					public com.sun.jna.Pointer invoke(IConfigManager self, int code)
 					{
 						return obj.getDirectory(code);
 					}
@@ -4124,7 +4124,7 @@ public interface FbInterface extends FbClientLibrary
 
 				getDatabaseConf = new Callback_getDatabaseConf() {
 					@Override
-					public IFirebirdConf invoke(IConfigManager self, String dbName)
+					public IFirebirdConf invoke(IConfigManager self, com.sun.jna.Pointer dbName)
 					{
 						return obj.getDatabaseConf(dbName);
 					}
@@ -4132,7 +4132,7 @@ public interface FbInterface extends FbClientLibrary
 
 				getPluginConfig = new Callback_getPluginConfig() {
 					@Override
-					public IConfig invoke(IConfigManager self, String configuredPlugin)
+					public IConfig invoke(IConfigManager self, com.sun.jna.Pointer configuredPlugin)
 					{
 						return obj.getPluginConfig(configuredPlugin);
 					}
@@ -4140,7 +4140,7 @@ public interface FbInterface extends FbClientLibrary
 
 				getInstallDirectory = new Callback_getInstallDirectory() {
 					@Override
-					public String invoke(IConfigManager self)
+					public com.sun.jna.Pointer invoke(IConfigManager self)
 					{
 						return obj.getInstallDirectory();
 					}
@@ -4148,7 +4148,7 @@ public interface FbInterface extends FbClientLibrary
 
 				getRootDirectory = new Callback_getRootDirectory() {
 					@Override
-					public String invoke(IConfigManager self)
+					public com.sun.jna.Pointer invoke(IConfigManager self)
 					{
 						return obj.getRootDirectory();
 					}
@@ -4156,7 +4156,7 @@ public interface FbInterface extends FbClientLibrary
 
 				getDefaultSecurityDb = new Callback_getDefaultSecurityDb() {
 					@Override
-					public String invoke(IConfigManager self)
+					public com.sun.jna.Pointer invoke(IConfigManager self)
 					{
 						return obj.getDefaultSecurityDb();
 					}
@@ -4202,13 +4202,13 @@ public interface FbInterface extends FbClientLibrary
 			return new VTable(cloopVTable);
 		}
 
-		public String getDirectory(int code)
+		public com.sun.jna.Pointer getDirectory(int code)
 		{
 			VTable vTable = getVTable();
 			if (vTable.getDirectory == null) {
 				return null;
 			}
-			String result = vTable.getDirectory.invoke(this, code);
+			com.sun.jna.Pointer result = vTable.getDirectory.invoke(this, code);
 			return result;
 		}
 
@@ -4222,7 +4222,7 @@ public interface FbInterface extends FbClientLibrary
 			return result;
 		}
 
-		public IFirebirdConf getDatabaseConf(String dbName)
+		public IFirebirdConf getDatabaseConf(com.sun.jna.Pointer dbName)
 		{
 			VTable vTable = getVTable();
 			if (vTable.getDatabaseConf == null) {
@@ -4232,7 +4232,7 @@ public interface FbInterface extends FbClientLibrary
 			return result;
 		}
 
-		public IConfig getPluginConfig(String configuredPlugin)
+		public IConfig getPluginConfig(com.sun.jna.Pointer configuredPlugin)
 		{
 			VTable vTable = getVTable();
 			if (vTable.getPluginConfig == null) {
@@ -4242,27 +4242,27 @@ public interface FbInterface extends FbClientLibrary
 			return result;
 		}
 
-		public String getInstallDirectory()
+		public com.sun.jna.Pointer getInstallDirectory()
 		{
 			VTable vTable = getVTable();
 			if (vTable.getInstallDirectory == null) {
 				return null;
 			}
-			String result = vTable.getInstallDirectory.invoke(this);
+			com.sun.jna.Pointer result = vTable.getInstallDirectory.invoke(this);
 			return result;
 		}
 
-		public String getRootDirectory()
+		public com.sun.jna.Pointer getRootDirectory()
 		{
 			VTable vTable = getVTable();
 			if (vTable.getRootDirectory == null) {
 				return null;
 			}
-			String result = vTable.getRootDirectory.invoke(this);
+			com.sun.jna.Pointer result = vTable.getRootDirectory.invoke(this);
 			return result;
 		}
 
-		public String getDefaultSecurityDb()
+		public com.sun.jna.Pointer getDefaultSecurityDb()
 		{
 			VTable vTable = getVTable();
 			if (vTable.version < 3)
@@ -4272,7 +4272,7 @@ public interface FbInterface extends FbClientLibrary
 			if (vTable.getDefaultSecurityDb == null) {
 				return null;
 			}
-			String result = vTable.getDefaultSecurityDb.invoke(this);
+			com.sun.jna.Pointer result = vTable.getDefaultSecurityDb.invoke(this);
 			return result;
 		}
 	}
@@ -4355,7 +4355,7 @@ public interface FbInterface extends FbClientLibrary
 		{
 			public static interface Callback_getInfo extends com.sun.jna.Callback
 			{
-				public void invoke(IBlob self, IStatus status, int itemsLength, byte[] items, int bufferLength, byte[] buffer);
+				public void invoke(IBlob self, IStatus status, int itemsLength, com.sun.jna.Pointer items, int bufferLength, com.sun.jna.Pointer buffer);
 			}
 
 			public static interface Callback_getSegment extends com.sun.jna.Callback
@@ -4406,7 +4406,7 @@ public interface FbInterface extends FbClientLibrary
 
 				getInfo = new Callback_getInfo() {
 					@Override
-					public void invoke(IBlob self, IStatus status, int itemsLength, byte[] items, int bufferLength, byte[] buffer)
+					public void invoke(IBlob self, IStatus status, int itemsLength, com.sun.jna.Pointer items, int bufferLength, com.sun.jna.Pointer buffer)
 					{
 						try
 						{
@@ -4567,7 +4567,7 @@ public interface FbInterface extends FbClientLibrary
 			return new VTable(cloopVTable);
 		}
 
-		public void getInfo(IStatus status, int itemsLength, byte[] items, int bufferLength, byte[] buffer)
+		public void getInfo(IStatus status, int itemsLength, com.sun.jna.Pointer items, int bufferLength, com.sun.jna.Pointer buffer)
 		{
 			VTable vTable = getVTable();
 			if (vTable.getInfo == null) {
@@ -4674,12 +4674,12 @@ public interface FbInterface extends FbClientLibrary
 		{
 			public static interface Callback_getInfo extends com.sun.jna.Callback
 			{
-				public void invoke(ITransaction self, IStatus status, int itemsLength, byte[] items, int bufferLength, byte[] buffer);
+				public void invoke(ITransaction self, IStatus status, int itemsLength, com.sun.jna.Pointer items, int bufferLength, com.sun.jna.Pointer buffer);
 			}
 
 			public static interface Callback_prepare extends com.sun.jna.Callback
 			{
-				public void invoke(ITransaction self, IStatus status, int msgLength, byte[] message);
+				public void invoke(ITransaction self, IStatus status, int msgLength, com.sun.jna.Pointer message);
 			}
 
 			public static interface Callback_deprecatedCommit extends com.sun.jna.Callback
@@ -4750,7 +4750,7 @@ public interface FbInterface extends FbClientLibrary
 
 				getInfo = new Callback_getInfo() {
 					@Override
-					public void invoke(ITransaction self, IStatus status, int itemsLength, byte[] items, int bufferLength, byte[] buffer)
+					public void invoke(ITransaction self, IStatus status, int itemsLength, com.sun.jna.Pointer items, int bufferLength, com.sun.jna.Pointer buffer)
 					{
 						try
 						{
@@ -4765,7 +4765,7 @@ public interface FbInterface extends FbClientLibrary
 
 				prepare = new Callback_prepare() {
 					@Override
-					public void invoke(ITransaction self, IStatus status, int msgLength, byte[] message)
+					public void invoke(ITransaction self, IStatus status, int msgLength, com.sun.jna.Pointer message)
 					{
 						try
 						{
@@ -4992,7 +4992,7 @@ public interface FbInterface extends FbClientLibrary
 			return new VTable(cloopVTable);
 		}
 
-		public void getInfo(IStatus status, int itemsLength, byte[] items, int bufferLength, byte[] buffer)
+		public void getInfo(IStatus status, int itemsLength, com.sun.jna.Pointer items, int bufferLength, com.sun.jna.Pointer buffer)
 		{
 			VTable vTable = getVTable();
 			if (vTable.getInfo == null) {
@@ -5002,7 +5002,7 @@ public interface FbInterface extends FbClientLibrary
 			vTable.getInfo.invoke(this, status, itemsLength, items, bufferLength, buffer);
 		}
 
-		public void prepare(IStatus status, int msgLength, byte[] message)
+		public void prepare(IStatus status, int msgLength, com.sun.jna.Pointer message)
 		{
 			VTable vTable = getVTable();
 			if (vTable.prepare == null) {
@@ -5164,22 +5164,22 @@ public interface FbInterface extends FbClientLibrary
 
 			public static interface Callback_getField extends com.sun.jna.Callback
 			{
-				public String invoke(IMessageMetadata self, IStatus status, int index);
+				public com.sun.jna.Pointer invoke(IMessageMetadata self, IStatus status, int index);
 			}
 
 			public static interface Callback_getRelation extends com.sun.jna.Callback
 			{
-				public String invoke(IMessageMetadata self, IStatus status, int index);
+				public com.sun.jna.Pointer invoke(IMessageMetadata self, IStatus status, int index);
 			}
 
 			public static interface Callback_getOwner extends com.sun.jna.Callback
 			{
-				public String invoke(IMessageMetadata self, IStatus status, int index);
+				public com.sun.jna.Pointer invoke(IMessageMetadata self, IStatus status, int index);
 			}
 
 			public static interface Callback_getAlias extends com.sun.jna.Callback
 			{
-				public String invoke(IMessageMetadata self, IStatus status, int index);
+				public com.sun.jna.Pointer invoke(IMessageMetadata self, IStatus status, int index);
 			}
 
 			public static interface Callback_getType extends com.sun.jna.Callback
@@ -5271,7 +5271,7 @@ public interface FbInterface extends FbClientLibrary
 
 				getField = new Callback_getField() {
 					@Override
-					public String invoke(IMessageMetadata self, IStatus status, int index)
+					public com.sun.jna.Pointer invoke(IMessageMetadata self, IStatus status, int index)
 					{
 						try
 						{
@@ -5287,7 +5287,7 @@ public interface FbInterface extends FbClientLibrary
 
 				getRelation = new Callback_getRelation() {
 					@Override
-					public String invoke(IMessageMetadata self, IStatus status, int index)
+					public com.sun.jna.Pointer invoke(IMessageMetadata self, IStatus status, int index)
 					{
 						try
 						{
@@ -5303,7 +5303,7 @@ public interface FbInterface extends FbClientLibrary
 
 				getOwner = new Callback_getOwner() {
 					@Override
-					public String invoke(IMessageMetadata self, IStatus status, int index)
+					public com.sun.jna.Pointer invoke(IMessageMetadata self, IStatus status, int index)
 					{
 						try
 						{
@@ -5319,7 +5319,7 @@ public interface FbInterface extends FbClientLibrary
 
 				getAlias = new Callback_getAlias() {
 					@Override
-					public String invoke(IMessageMetadata self, IStatus status, int index)
+					public com.sun.jna.Pointer invoke(IMessageMetadata self, IStatus status, int index)
 					{
 						try
 						{
@@ -5586,47 +5586,47 @@ public interface FbInterface extends FbClientLibrary
 			return result;
 		}
 
-		public String getField(IStatus status, int index)
+		public com.sun.jna.Pointer getField(IStatus status, int index)
 		{
 			VTable vTable = getVTable();
 			if (vTable.getField == null) {
 				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IMessageMetadataIntf.VERSION);
 				return null;
 			}
-			String result = vTable.getField.invoke(this, status, index);
+			com.sun.jna.Pointer result = vTable.getField.invoke(this, status, index);
 			return result;
 		}
 
-		public String getRelation(IStatus status, int index)
+		public com.sun.jna.Pointer getRelation(IStatus status, int index)
 		{
 			VTable vTable = getVTable();
 			if (vTable.getRelation == null) {
 				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IMessageMetadataIntf.VERSION);
 				return null;
 			}
-			String result = vTable.getRelation.invoke(this, status, index);
+			com.sun.jna.Pointer result = vTable.getRelation.invoke(this, status, index);
 			return result;
 		}
 
-		public String getOwner(IStatus status, int index)
+		public com.sun.jna.Pointer getOwner(IStatus status, int index)
 		{
 			VTable vTable = getVTable();
 			if (vTable.getOwner == null) {
 				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IMessageMetadataIntf.VERSION);
 				return null;
 			}
-			String result = vTable.getOwner.invoke(this, status, index);
+			com.sun.jna.Pointer result = vTable.getOwner.invoke(this, status, index);
 			return result;
 		}
 
-		public String getAlias(IStatus status, int index)
+		public com.sun.jna.Pointer getAlias(IStatus status, int index)
 		{
 			VTable vTable = getVTable();
 			if (vTable.getAlias == null) {
 				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IMessageMetadataIntf.VERSION);
 				return null;
 			}
-			String result = vTable.getAlias.invoke(this, status, index);
+			com.sun.jna.Pointer result = vTable.getAlias.invoke(this, status, index);
 			return result;
 		}
 
@@ -5809,7 +5809,7 @@ public interface FbInterface extends FbClientLibrary
 
 			public static interface Callback_moveNameToIndex extends com.sun.jna.Callback
 			{
-				public void invoke(IMetadataBuilder self, IStatus status, String name, int index);
+				public void invoke(IMetadataBuilder self, IStatus status, com.sun.jna.Pointer name, int index);
 			}
 
 			public static interface Callback_remove extends com.sun.jna.Callback
@@ -5829,22 +5829,22 @@ public interface FbInterface extends FbClientLibrary
 
 			public static interface Callback_setField extends com.sun.jna.Callback
 			{
-				public void invoke(IMetadataBuilder self, IStatus status, int index, String field);
+				public void invoke(IMetadataBuilder self, IStatus status, int index, com.sun.jna.Pointer field);
 			}
 
 			public static interface Callback_setRelation extends com.sun.jna.Callback
 			{
-				public void invoke(IMetadataBuilder self, IStatus status, int index, String relation);
+				public void invoke(IMetadataBuilder self, IStatus status, int index, com.sun.jna.Pointer relation);
 			}
 
 			public static interface Callback_setOwner extends com.sun.jna.Callback
 			{
-				public void invoke(IMetadataBuilder self, IStatus status, int index, String owner);
+				public void invoke(IMetadataBuilder self, IStatus status, int index, com.sun.jna.Pointer owner);
 			}
 
 			public static interface Callback_setAlias extends com.sun.jna.Callback
 			{
-				public void invoke(IMetadataBuilder self, IStatus status, int index, String alias);
+				public void invoke(IMetadataBuilder self, IStatus status, int index, com.sun.jna.Pointer alias);
 			}
 
 			public VTable(com.sun.jna.Pointer pointer)
@@ -5950,7 +5950,7 @@ public interface FbInterface extends FbClientLibrary
 
 				moveNameToIndex = new Callback_moveNameToIndex() {
 					@Override
-					public void invoke(IMetadataBuilder self, IStatus status, String name, int index)
+					public void invoke(IMetadataBuilder self, IStatus status, com.sun.jna.Pointer name, int index)
 					{
 						try
 						{
@@ -6012,7 +6012,7 @@ public interface FbInterface extends FbClientLibrary
 
 				setField = new Callback_setField() {
 					@Override
-					public void invoke(IMetadataBuilder self, IStatus status, int index, String field)
+					public void invoke(IMetadataBuilder self, IStatus status, int index, com.sun.jna.Pointer field)
 					{
 						try
 						{
@@ -6027,7 +6027,7 @@ public interface FbInterface extends FbClientLibrary
 
 				setRelation = new Callback_setRelation() {
 					@Override
-					public void invoke(IMetadataBuilder self, IStatus status, int index, String relation)
+					public void invoke(IMetadataBuilder self, IStatus status, int index, com.sun.jna.Pointer relation)
 					{
 						try
 						{
@@ -6042,7 +6042,7 @@ public interface FbInterface extends FbClientLibrary
 
 				setOwner = new Callback_setOwner() {
 					@Override
-					public void invoke(IMetadataBuilder self, IStatus status, int index, String owner)
+					public void invoke(IMetadataBuilder self, IStatus status, int index, com.sun.jna.Pointer owner)
 					{
 						try
 						{
@@ -6057,7 +6057,7 @@ public interface FbInterface extends FbClientLibrary
 
 				setAlias = new Callback_setAlias() {
 					@Override
-					public void invoke(IMetadataBuilder self, IStatus status, int index, String alias)
+					public void invoke(IMetadataBuilder self, IStatus status, int index, com.sun.jna.Pointer alias)
 					{
 						try
 						{
@@ -6177,7 +6177,7 @@ public interface FbInterface extends FbClientLibrary
 			vTable.truncate.invoke(this, status, count);
 		}
 
-		public void moveNameToIndex(IStatus status, String name, int index)
+		public void moveNameToIndex(IStatus status, com.sun.jna.Pointer name, int index)
 		{
 			VTable vTable = getVTable();
 			if (vTable.moveNameToIndex == null) {
@@ -6219,7 +6219,7 @@ public interface FbInterface extends FbClientLibrary
 			return result;
 		}
 
-		public void setField(IStatus status, int index, String field)
+		public void setField(IStatus status, int index, com.sun.jna.Pointer field)
 		{
 			VTable vTable = getVTable();
 			if (vTable.version < 4)
@@ -6234,7 +6234,7 @@ public interface FbInterface extends FbClientLibrary
 			vTable.setField.invoke(this, status, index, field);
 		}
 
-		public void setRelation(IStatus status, int index, String relation)
+		public void setRelation(IStatus status, int index, com.sun.jna.Pointer relation)
 		{
 			VTable vTable = getVTable();
 			if (vTable.version < 4)
@@ -6249,7 +6249,7 @@ public interface FbInterface extends FbClientLibrary
 			vTable.setRelation.invoke(this, status, index, relation);
 		}
 
-		public void setOwner(IStatus status, int index, String owner)
+		public void setOwner(IStatus status, int index, com.sun.jna.Pointer owner)
 		{
 			VTable vTable = getVTable();
 			if (vTable.version < 4)
@@ -6264,7 +6264,7 @@ public interface FbInterface extends FbClientLibrary
 			vTable.setOwner.invoke(this, status, index, owner);
 		}
 
-		public void setAlias(IStatus status, int index, String alias)
+		public void setAlias(IStatus status, int index, com.sun.jna.Pointer alias)
 		{
 			VTable vTable = getVTable();
 			if (vTable.version < 4)
@@ -6346,7 +6346,7 @@ public interface FbInterface extends FbClientLibrary
 
 			public static interface Callback_getInfo extends com.sun.jna.Callback
 			{
-				public void invoke(IResultSet self, IStatus status, int itemsLength, byte[] items, int bufferLength, byte[] buffer);
+				public void invoke(IResultSet self, IStatus status, int itemsLength, com.sun.jna.Pointer items, int bufferLength, com.sun.jna.Pointer buffer);
 			}
 
 			public VTable(com.sun.jna.Pointer pointer)
@@ -6551,7 +6551,7 @@ public interface FbInterface extends FbClientLibrary
 
 				getInfo = new Callback_getInfo() {
 					@Override
-					public void invoke(IResultSet self, IStatus status, int itemsLength, byte[] items, int bufferLength, byte[] buffer)
+					public void invoke(IResultSet self, IStatus status, int itemsLength, com.sun.jna.Pointer items, int bufferLength, com.sun.jna.Pointer buffer)
 					{
 						try
 						{
@@ -6748,7 +6748,7 @@ public interface FbInterface extends FbClientLibrary
 			vTable.close.invoke(this, status);
 		}
 
-		public void getInfo(IStatus status, int itemsLength, byte[] items, int bufferLength, byte[] buffer)
+		public void getInfo(IStatus status, int itemsLength, com.sun.jna.Pointer items, int bufferLength, com.sun.jna.Pointer buffer)
 		{
 			VTable vTable = getVTable();
 			if (vTable.version < 5)
@@ -6770,7 +6770,7 @@ public interface FbInterface extends FbClientLibrary
 		{
 			public static interface Callback_getInfo extends com.sun.jna.Callback
 			{
-				public void invoke(IStatement self, IStatus status, int itemsLength, byte[] items, int bufferLength, byte[] buffer);
+				public void invoke(IStatement self, IStatus status, int itemsLength, com.sun.jna.Pointer items, int bufferLength, com.sun.jna.Pointer buffer);
 			}
 
 			public static interface Callback_getType extends com.sun.jna.Callback
@@ -6780,7 +6780,7 @@ public interface FbInterface extends FbClientLibrary
 
 			public static interface Callback_getPlan extends com.sun.jna.Callback
 			{
-				public String invoke(IStatement self, IStatus status, boolean detailed);
+				public com.sun.jna.Pointer invoke(IStatement self, IStatus status, boolean detailed);
 			}
 
 			public static interface Callback_getAffectedRecords extends com.sun.jna.Callback
@@ -6810,7 +6810,7 @@ public interface FbInterface extends FbClientLibrary
 
 			public static interface Callback_setCursorName extends com.sun.jna.Callback
 			{
-				public void invoke(IStatement self, IStatus status, String name);
+				public void invoke(IStatement self, IStatus status, com.sun.jna.Pointer name);
 			}
 
 			public static interface Callback_deprecatedFree extends com.sun.jna.Callback
@@ -6835,7 +6835,7 @@ public interface FbInterface extends FbClientLibrary
 
 			public static interface Callback_createBatch extends com.sun.jna.Callback
 			{
-				public IBatch invoke(IStatement self, IStatus status, IMessageMetadata inMetadata, int parLength, byte[] par);
+				public IBatch invoke(IStatement self, IStatus status, IMessageMetadata inMetadata, int parLength, com.sun.jna.Pointer par);
 			}
 
 			public static interface Callback_free extends com.sun.jna.Callback
@@ -6856,7 +6856,7 @@ public interface FbInterface extends FbClientLibrary
 
 				getInfo = new Callback_getInfo() {
 					@Override
-					public void invoke(IStatement self, IStatus status, int itemsLength, byte[] items, int bufferLength, byte[] buffer)
+					public void invoke(IStatement self, IStatus status, int itemsLength, com.sun.jna.Pointer items, int bufferLength, com.sun.jna.Pointer buffer)
 					{
 						try
 						{
@@ -6887,7 +6887,7 @@ public interface FbInterface extends FbClientLibrary
 
 				getPlan = new Callback_getPlan() {
 					@Override
-					public String invoke(IStatement self, IStatus status, boolean detailed)
+					public com.sun.jna.Pointer invoke(IStatement self, IStatus status, boolean detailed)
 					{
 						try
 						{
@@ -6983,7 +6983,7 @@ public interface FbInterface extends FbClientLibrary
 
 				setCursorName = new Callback_setCursorName() {
 					@Override
-					public void invoke(IStatement self, IStatus status, String name)
+					public void invoke(IStatement self, IStatus status, com.sun.jna.Pointer name)
 					{
 						try
 						{
@@ -7060,7 +7060,7 @@ public interface FbInterface extends FbClientLibrary
 
 				createBatch = new Callback_createBatch() {
 					@Override
-					public IBatch invoke(IStatement self, IStatus status, IMessageMetadata inMetadata, int parLength, byte[] par)
+					public IBatch invoke(IStatement self, IStatus status, IMessageMetadata inMetadata, int parLength, com.sun.jna.Pointer par)
 					{
 						try
 						{
@@ -7137,7 +7137,7 @@ public interface FbInterface extends FbClientLibrary
 			return new VTable(cloopVTable);
 		}
 
-		public void getInfo(IStatus status, int itemsLength, byte[] items, int bufferLength, byte[] buffer)
+		public void getInfo(IStatus status, int itemsLength, com.sun.jna.Pointer items, int bufferLength, com.sun.jna.Pointer buffer)
 		{
 			VTable vTable = getVTable();
 			if (vTable.getInfo == null) {
@@ -7158,14 +7158,14 @@ public interface FbInterface extends FbClientLibrary
 			return result;
 		}
 
-		public String getPlan(IStatus status, boolean detailed)
+		public com.sun.jna.Pointer getPlan(IStatus status, boolean detailed)
 		{
 			VTable vTable = getVTable();
 			if (vTable.getPlan == null) {
 				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IStatementIntf.VERSION);
 				return null;
 			}
-			String result = vTable.getPlan.invoke(this, status, detailed);
+			com.sun.jna.Pointer result = vTable.getPlan.invoke(this, status, detailed);
 			return result;
 		}
 
@@ -7224,7 +7224,7 @@ public interface FbInterface extends FbClientLibrary
 			return result;
 		}
 
-		public void setCursorName(IStatus status, String name)
+		public void setCursorName(IStatus status, com.sun.jna.Pointer name)
 		{
 			VTable vTable = getVTable();
 			if (vTable.setCursorName == null) {
@@ -7286,7 +7286,7 @@ public interface FbInterface extends FbClientLibrary
 			vTable.setTimeout.invoke(this, status, timeOut);
 		}
 
-		public IBatch createBatch(IStatus status, IMessageMetadata inMetadata, int parLength, byte[] par)
+		public IBatch createBatch(IStatus status, IMessageMetadata inMetadata, int parLength, com.sun.jna.Pointer par)
 		{
 			VTable vTable = getVTable();
 			if (vTable.version < 4)
@@ -7333,7 +7333,7 @@ public interface FbInterface extends FbClientLibrary
 
 			public static interface Callback_addBlob extends com.sun.jna.Callback
 			{
-				public void invoke(IBatch self, IStatus status, int length, com.sun.jna.Pointer inBuffer, com.sun.jna.ptr.LongByReference blobId, int parLength, byte[] par);
+				public void invoke(IBatch self, IStatus status, int length, com.sun.jna.Pointer inBuffer, com.sun.jna.ptr.LongByReference blobId, int parLength, com.sun.jna.Pointer par);
 			}
 
 			public static interface Callback_appendBlobData extends com.sun.jna.Callback
@@ -7373,7 +7373,7 @@ public interface FbInterface extends FbClientLibrary
 
 			public static interface Callback_setDefaultBpb extends com.sun.jna.Callback
 			{
-				public void invoke(IBatch self, IStatus status, int parLength, byte[] par);
+				public void invoke(IBatch self, IStatus status, int parLength, com.sun.jna.Pointer par);
 			}
 
 			public static interface Callback_deprecatedClose extends com.sun.jna.Callback
@@ -7388,7 +7388,7 @@ public interface FbInterface extends FbClientLibrary
 
 			public static interface Callback_getInfo extends com.sun.jna.Callback
 			{
-				public void invoke(IBatch self, IStatus status, int itemsLength, byte[] items, int bufferLength, byte[] buffer);
+				public void invoke(IBatch self, IStatus status, int itemsLength, com.sun.jna.Pointer items, int bufferLength, com.sun.jna.Pointer buffer);
 			}
 
 			public VTable(com.sun.jna.Pointer pointer)
@@ -7419,7 +7419,7 @@ public interface FbInterface extends FbClientLibrary
 
 				addBlob = new Callback_addBlob() {
 					@Override
-					public void invoke(IBatch self, IStatus status, int length, com.sun.jna.Pointer inBuffer, com.sun.jna.ptr.LongByReference blobId, int parLength, byte[] par)
+					public void invoke(IBatch self, IStatus status, int length, com.sun.jna.Pointer inBuffer, com.sun.jna.ptr.LongByReference blobId, int parLength, com.sun.jna.Pointer par)
 					{
 						try
 						{
@@ -7542,7 +7542,7 @@ public interface FbInterface extends FbClientLibrary
 
 				setDefaultBpb = new Callback_setDefaultBpb() {
 					@Override
-					public void invoke(IBatch self, IStatus status, int parLength, byte[] par)
+					public void invoke(IBatch self, IStatus status, int parLength, com.sun.jna.Pointer par)
 					{
 						try
 						{
@@ -7587,7 +7587,7 @@ public interface FbInterface extends FbClientLibrary
 
 				getInfo = new Callback_getInfo() {
 					@Override
-					public void invoke(IBatch self, IStatus status, int itemsLength, byte[] items, int bufferLength, byte[] buffer)
+					public void invoke(IBatch self, IStatus status, int itemsLength, com.sun.jna.Pointer items, int bufferLength, com.sun.jna.Pointer buffer)
 					{
 						try
 						{
@@ -7656,7 +7656,7 @@ public interface FbInterface extends FbClientLibrary
 			vTable.add.invoke(this, status, count, inBuffer);
 		}
 
-		public void addBlob(IStatus status, int length, com.sun.jna.Pointer inBuffer, com.sun.jna.ptr.LongByReference blobId, int parLength, byte[] par)
+		public void addBlob(IStatus status, int length, com.sun.jna.Pointer inBuffer, com.sun.jna.ptr.LongByReference blobId, int parLength, com.sun.jna.Pointer par)
 		{
 			VTable vTable = getVTable();
 			if (vTable.addBlob == null) {
@@ -7739,7 +7739,7 @@ public interface FbInterface extends FbClientLibrary
 			return result;
 		}
 
-		public void setDefaultBpb(IStatus status, int parLength, byte[] par)
+		public void setDefaultBpb(IStatus status, int parLength, com.sun.jna.Pointer par)
 		{
 			VTable vTable = getVTable();
 			if (vTable.setDefaultBpb == null) {
@@ -7778,7 +7778,7 @@ public interface FbInterface extends FbClientLibrary
 			vTable.close.invoke(this, status);
 		}
 
-		public void getInfo(IStatus status, int itemsLength, byte[] items, int bufferLength, byte[] buffer)
+		public void getInfo(IStatus status, int itemsLength, com.sun.jna.Pointer items, int bufferLength, com.sun.jna.Pointer buffer)
 		{
 			VTable vTable = getVTable();
 			if (vTable.version < 4)
@@ -7979,7 +7979,7 @@ public interface FbInterface extends FbClientLibrary
 		{
 			public static interface Callback_process extends com.sun.jna.Callback
 			{
-				public void invoke(IReplicator self, IStatus status, int length, byte[] data);
+				public void invoke(IReplicator self, IStatus status, int length, com.sun.jna.Pointer data);
 			}
 
 			public static interface Callback_deprecatedClose extends com.sun.jna.Callback
@@ -8005,7 +8005,7 @@ public interface FbInterface extends FbClientLibrary
 
 				process = new Callback_process() {
 					@Override
-					public void invoke(IReplicator self, IStatus status, int length, byte[] data)
+					public void invoke(IReplicator self, IStatus status, int length, com.sun.jna.Pointer data)
 					{
 						try
 						{
@@ -8084,7 +8084,7 @@ public interface FbInterface extends FbClientLibrary
 			return new VTable(cloopVTable);
 		}
 
-		public void process(IStatus status, int length, byte[] data)
+		public void process(IStatus status, int length, com.sun.jna.Pointer data)
 		{
 			VTable vTable = getVTable();
 			if (vTable.process == null) {
@@ -8140,7 +8140,7 @@ public interface FbInterface extends FbClientLibrary
 
 			public static interface Callback_getInfo extends com.sun.jna.Callback
 			{
-				public void invoke(IRequest self, IStatus status, int level, int itemsLength, byte[] items, int bufferLength, byte[] buffer);
+				public void invoke(IRequest self, IStatus status, int level, int itemsLength, com.sun.jna.Pointer items, int bufferLength, com.sun.jna.Pointer buffer);
 			}
 
 			public static interface Callback_start extends com.sun.jna.Callback
@@ -8211,7 +8211,7 @@ public interface FbInterface extends FbClientLibrary
 
 				getInfo = new Callback_getInfo() {
 					@Override
-					public void invoke(IRequest self, IStatus status, int level, int itemsLength, byte[] items, int bufferLength, byte[] buffer)
+					public void invoke(IRequest self, IStatus status, int level, int itemsLength, com.sun.jna.Pointer items, int bufferLength, com.sun.jna.Pointer buffer)
 					{
 						try
 						{
@@ -8360,7 +8360,7 @@ public interface FbInterface extends FbClientLibrary
 			vTable.send.invoke(this, status, level, msgType, length, message);
 		}
 
-		public void getInfo(IStatus status, int level, int itemsLength, byte[] items, int bufferLength, byte[] buffer)
+		public void getInfo(IStatus status, int level, int itemsLength, com.sun.jna.Pointer items, int bufferLength, com.sun.jna.Pointer buffer)
 		{
 			VTable vTable = getVTable();
 			if (vTable.getInfo == null) {
@@ -8556,72 +8556,72 @@ public interface FbInterface extends FbClientLibrary
 		{
 			public static interface Callback_getInfo extends com.sun.jna.Callback
 			{
-				public void invoke(IAttachment self, IStatus status, int itemsLength, byte[] items, int bufferLength, byte[] buffer);
+				public void invoke(IAttachment self, IStatus status, int itemsLength, com.sun.jna.Pointer items, int bufferLength, com.sun.jna.Pointer buffer);
 			}
 
 			public static interface Callback_startTransaction extends com.sun.jna.Callback
 			{
-				public ITransaction invoke(IAttachment self, IStatus status, int tpbLength, byte[] tpb);
+				public ITransaction invoke(IAttachment self, IStatus status, int tpbLength, com.sun.jna.Pointer tpb);
 			}
 
 			public static interface Callback_reconnectTransaction extends com.sun.jna.Callback
 			{
-				public ITransaction invoke(IAttachment self, IStatus status, int length, byte[] id);
+				public ITransaction invoke(IAttachment self, IStatus status, int length, com.sun.jna.Pointer id);
 			}
 
 			public static interface Callback_compileRequest extends com.sun.jna.Callback
 			{
-				public IRequest invoke(IAttachment self, IStatus status, int blrLength, byte[] blr);
+				public IRequest invoke(IAttachment self, IStatus status, int blrLength, com.sun.jna.Pointer blr);
 			}
 
 			public static interface Callback_transactRequest extends com.sun.jna.Callback
 			{
-				public void invoke(IAttachment self, IStatus status, ITransaction transaction, int blrLength, byte[] blr, int inMsgLength, byte[] inMsg, int outMsgLength, byte[] outMsg);
+				public void invoke(IAttachment self, IStatus status, ITransaction transaction, int blrLength, com.sun.jna.Pointer blr, int inMsgLength, com.sun.jna.Pointer inMsg, int outMsgLength, com.sun.jna.Pointer outMsg);
 			}
 
 			public static interface Callback_createBlob extends com.sun.jna.Callback
 			{
-				public IBlob invoke(IAttachment self, IStatus status, ITransaction transaction, com.sun.jna.ptr.LongByReference id, int bpbLength, byte[] bpb);
+				public IBlob invoke(IAttachment self, IStatus status, ITransaction transaction, com.sun.jna.ptr.LongByReference id, int bpbLength, com.sun.jna.Pointer bpb);
 			}
 
 			public static interface Callback_openBlob extends com.sun.jna.Callback
 			{
-				public IBlob invoke(IAttachment self, IStatus status, ITransaction transaction, com.sun.jna.ptr.LongByReference id, int bpbLength, byte[] bpb);
+				public IBlob invoke(IAttachment self, IStatus status, ITransaction transaction, com.sun.jna.ptr.LongByReference id, int bpbLength, com.sun.jna.Pointer bpb);
 			}
 
 			public static interface Callback_getSlice extends com.sun.jna.Callback
 			{
-				public int invoke(IAttachment self, IStatus status, ITransaction transaction, com.sun.jna.ptr.LongByReference id, int sdlLength, byte[] sdl, int paramLength, byte[] param, int sliceLength, byte[] slice);
+				public int invoke(IAttachment self, IStatus status, ITransaction transaction, com.sun.jna.ptr.LongByReference id, int sdlLength, com.sun.jna.Pointer sdl, int paramLength, com.sun.jna.Pointer param, int sliceLength, com.sun.jna.Pointer slice);
 			}
 
 			public static interface Callback_putSlice extends com.sun.jna.Callback
 			{
-				public void invoke(IAttachment self, IStatus status, ITransaction transaction, com.sun.jna.ptr.LongByReference id, int sdlLength, byte[] sdl, int paramLength, byte[] param, int sliceLength, byte[] slice);
+				public void invoke(IAttachment self, IStatus status, ITransaction transaction, com.sun.jna.ptr.LongByReference id, int sdlLength, com.sun.jna.Pointer sdl, int paramLength, com.sun.jna.Pointer param, int sliceLength, com.sun.jna.Pointer slice);
 			}
 
 			public static interface Callback_executeDyn extends com.sun.jna.Callback
 			{
-				public void invoke(IAttachment self, IStatus status, ITransaction transaction, int length, byte[] dyn);
+				public void invoke(IAttachment self, IStatus status, ITransaction transaction, int length, com.sun.jna.Pointer dyn);
 			}
 
 			public static interface Callback_prepare extends com.sun.jna.Callback
 			{
-				public IStatement invoke(IAttachment self, IStatus status, ITransaction tra, int stmtLength, byte[] sqlStmt, int dialect, int flags);
+				public IStatement invoke(IAttachment self, IStatus status, ITransaction tra, int stmtLength, com.sun.jna.Pointer sqlStmt, int dialect, int flags);
 			}
 
 			public static interface Callback_execute extends com.sun.jna.Callback
 			{
-				public ITransaction invoke(IAttachment self, IStatus status, ITransaction transaction, int stmtLength, byte[] sqlStmt, int dialect, IMessageMetadata inMetadata, com.sun.jna.Pointer inBuffer, IMessageMetadata outMetadata, com.sun.jna.Pointer outBuffer);
+				public ITransaction invoke(IAttachment self, IStatus status, ITransaction transaction, int stmtLength, com.sun.jna.Pointer sqlStmt, int dialect, IMessageMetadata inMetadata, com.sun.jna.Pointer inBuffer, IMessageMetadata outMetadata, com.sun.jna.Pointer outBuffer);
 			}
 
 			public static interface Callback_openCursor extends com.sun.jna.Callback
 			{
-				public IResultSet invoke(IAttachment self, IStatus status, ITransaction transaction, int stmtLength, byte[] sqlStmt, int dialect, IMessageMetadata inMetadata, com.sun.jna.Pointer inBuffer, IMessageMetadata outMetadata, String cursorName, int cursorFlags);
+				public IResultSet invoke(IAttachment self, IStatus status, ITransaction transaction, int stmtLength, com.sun.jna.Pointer sqlStmt, int dialect, IMessageMetadata inMetadata, com.sun.jna.Pointer inBuffer, IMessageMetadata outMetadata, com.sun.jna.Pointer cursorName, int cursorFlags);
 			}
 
 			public static interface Callback_queEvents extends com.sun.jna.Callback
 			{
-				public IEvents invoke(IAttachment self, IStatus status, IEventCallback callback, int length, byte[] events);
+				public IEvents invoke(IAttachment self, IStatus status, IEventCallback callback, int length, com.sun.jna.Pointer events);
 			}
 
 			public static interface Callback_cancelOperation extends com.sun.jna.Callback
@@ -8666,7 +8666,7 @@ public interface FbInterface extends FbClientLibrary
 
 			public static interface Callback_createBatch extends com.sun.jna.Callback
 			{
-				public IBatch invoke(IAttachment self, IStatus status, ITransaction transaction, int stmtLength, byte[] sqlStmt, int dialect, IMessageMetadata inMetadata, int parLength, byte[] par);
+				public IBatch invoke(IAttachment self, IStatus status, ITransaction transaction, int stmtLength, com.sun.jna.Pointer sqlStmt, int dialect, IMessageMetadata inMetadata, int parLength, com.sun.jna.Pointer par);
 			}
 
 			public static interface Callback_createReplicator extends com.sun.jna.Callback
@@ -8686,7 +8686,7 @@ public interface FbInterface extends FbClientLibrary
 
 			public static interface Callback_reconnect extends com.sun.jna.Callback
 			{
-				public void invoke(IAttachment self, IStatus status, String password, String certificate, String pin);
+				public void invoke(IAttachment self, IStatus status, com.sun.jna.Pointer password, com.sun.jna.Pointer certificate, com.sun.jna.Pointer pin);
 			}
 
 			public VTable(com.sun.jna.Pointer pointer)
@@ -8702,7 +8702,7 @@ public interface FbInterface extends FbClientLibrary
 
 				getInfo = new Callback_getInfo() {
 					@Override
-					public void invoke(IAttachment self, IStatus status, int itemsLength, byte[] items, int bufferLength, byte[] buffer)
+					public void invoke(IAttachment self, IStatus status, int itemsLength, com.sun.jna.Pointer items, int bufferLength, com.sun.jna.Pointer buffer)
 					{
 						try
 						{
@@ -8717,7 +8717,7 @@ public interface FbInterface extends FbClientLibrary
 
 				startTransaction = new Callback_startTransaction() {
 					@Override
-					public ITransaction invoke(IAttachment self, IStatus status, int tpbLength, byte[] tpb)
+					public ITransaction invoke(IAttachment self, IStatus status, int tpbLength, com.sun.jna.Pointer tpb)
 					{
 						try
 						{
@@ -8733,7 +8733,7 @@ public interface FbInterface extends FbClientLibrary
 
 				reconnectTransaction = new Callback_reconnectTransaction() {
 					@Override
-					public ITransaction invoke(IAttachment self, IStatus status, int length, byte[] id)
+					public ITransaction invoke(IAttachment self, IStatus status, int length, com.sun.jna.Pointer id)
 					{
 						try
 						{
@@ -8749,7 +8749,7 @@ public interface FbInterface extends FbClientLibrary
 
 				compileRequest = new Callback_compileRequest() {
 					@Override
-					public IRequest invoke(IAttachment self, IStatus status, int blrLength, byte[] blr)
+					public IRequest invoke(IAttachment self, IStatus status, int blrLength, com.sun.jna.Pointer blr)
 					{
 						try
 						{
@@ -8765,7 +8765,7 @@ public interface FbInterface extends FbClientLibrary
 
 				transactRequest = new Callback_transactRequest() {
 					@Override
-					public void invoke(IAttachment self, IStatus status, ITransaction transaction, int blrLength, byte[] blr, int inMsgLength, byte[] inMsg, int outMsgLength, byte[] outMsg)
+					public void invoke(IAttachment self, IStatus status, ITransaction transaction, int blrLength, com.sun.jna.Pointer blr, int inMsgLength, com.sun.jna.Pointer inMsg, int outMsgLength, com.sun.jna.Pointer outMsg)
 					{
 						try
 						{
@@ -8780,7 +8780,7 @@ public interface FbInterface extends FbClientLibrary
 
 				createBlob = new Callback_createBlob() {
 					@Override
-					public IBlob invoke(IAttachment self, IStatus status, ITransaction transaction, com.sun.jna.ptr.LongByReference id, int bpbLength, byte[] bpb)
+					public IBlob invoke(IAttachment self, IStatus status, ITransaction transaction, com.sun.jna.ptr.LongByReference id, int bpbLength, com.sun.jna.Pointer bpb)
 					{
 						try
 						{
@@ -8796,7 +8796,7 @@ public interface FbInterface extends FbClientLibrary
 
 				openBlob = new Callback_openBlob() {
 					@Override
-					public IBlob invoke(IAttachment self, IStatus status, ITransaction transaction, com.sun.jna.ptr.LongByReference id, int bpbLength, byte[] bpb)
+					public IBlob invoke(IAttachment self, IStatus status, ITransaction transaction, com.sun.jna.ptr.LongByReference id, int bpbLength, com.sun.jna.Pointer bpb)
 					{
 						try
 						{
@@ -8812,7 +8812,7 @@ public interface FbInterface extends FbClientLibrary
 
 				getSlice = new Callback_getSlice() {
 					@Override
-					public int invoke(IAttachment self, IStatus status, ITransaction transaction, com.sun.jna.ptr.LongByReference id, int sdlLength, byte[] sdl, int paramLength, byte[] param, int sliceLength, byte[] slice)
+					public int invoke(IAttachment self, IStatus status, ITransaction transaction, com.sun.jna.ptr.LongByReference id, int sdlLength, com.sun.jna.Pointer sdl, int paramLength, com.sun.jna.Pointer param, int sliceLength, com.sun.jna.Pointer slice)
 					{
 						try
 						{
@@ -8828,7 +8828,7 @@ public interface FbInterface extends FbClientLibrary
 
 				putSlice = new Callback_putSlice() {
 					@Override
-					public void invoke(IAttachment self, IStatus status, ITransaction transaction, com.sun.jna.ptr.LongByReference id, int sdlLength, byte[] sdl, int paramLength, byte[] param, int sliceLength, byte[] slice)
+					public void invoke(IAttachment self, IStatus status, ITransaction transaction, com.sun.jna.ptr.LongByReference id, int sdlLength, com.sun.jna.Pointer sdl, int paramLength, com.sun.jna.Pointer param, int sliceLength, com.sun.jna.Pointer slice)
 					{
 						try
 						{
@@ -8843,7 +8843,7 @@ public interface FbInterface extends FbClientLibrary
 
 				executeDyn = new Callback_executeDyn() {
 					@Override
-					public void invoke(IAttachment self, IStatus status, ITransaction transaction, int length, byte[] dyn)
+					public void invoke(IAttachment self, IStatus status, ITransaction transaction, int length, com.sun.jna.Pointer dyn)
 					{
 						try
 						{
@@ -8858,7 +8858,7 @@ public interface FbInterface extends FbClientLibrary
 
 				prepare = new Callback_prepare() {
 					@Override
-					public IStatement invoke(IAttachment self, IStatus status, ITransaction tra, int stmtLength, byte[] sqlStmt, int dialect, int flags)
+					public IStatement invoke(IAttachment self, IStatus status, ITransaction tra, int stmtLength, com.sun.jna.Pointer sqlStmt, int dialect, int flags)
 					{
 						try
 						{
@@ -8874,7 +8874,7 @@ public interface FbInterface extends FbClientLibrary
 
 				execute = new Callback_execute() {
 					@Override
-					public ITransaction invoke(IAttachment self, IStatus status, ITransaction transaction, int stmtLength, byte[] sqlStmt, int dialect, IMessageMetadata inMetadata, com.sun.jna.Pointer inBuffer, IMessageMetadata outMetadata, com.sun.jna.Pointer outBuffer)
+					public ITransaction invoke(IAttachment self, IStatus status, ITransaction transaction, int stmtLength, com.sun.jna.Pointer sqlStmt, int dialect, IMessageMetadata inMetadata, com.sun.jna.Pointer inBuffer, IMessageMetadata outMetadata, com.sun.jna.Pointer outBuffer)
 					{
 						try
 						{
@@ -8890,7 +8890,7 @@ public interface FbInterface extends FbClientLibrary
 
 				openCursor = new Callback_openCursor() {
 					@Override
-					public IResultSet invoke(IAttachment self, IStatus status, ITransaction transaction, int stmtLength, byte[] sqlStmt, int dialect, IMessageMetadata inMetadata, com.sun.jna.Pointer inBuffer, IMessageMetadata outMetadata, String cursorName, int cursorFlags)
+					public IResultSet invoke(IAttachment self, IStatus status, ITransaction transaction, int stmtLength, com.sun.jna.Pointer sqlStmt, int dialect, IMessageMetadata inMetadata, com.sun.jna.Pointer inBuffer, IMessageMetadata outMetadata, com.sun.jna.Pointer cursorName, int cursorFlags)
 					{
 						try
 						{
@@ -8906,7 +8906,7 @@ public interface FbInterface extends FbClientLibrary
 
 				queEvents = new Callback_queEvents() {
 					@Override
-					public IEvents invoke(IAttachment self, IStatus status, IEventCallback callback, int length, byte[] events)
+					public IEvents invoke(IAttachment self, IStatus status, IEventCallback callback, int length, com.sun.jna.Pointer events)
 					{
 						try
 						{
@@ -9044,7 +9044,7 @@ public interface FbInterface extends FbClientLibrary
 
 				createBatch = new Callback_createBatch() {
 					@Override
-					public IBatch invoke(IAttachment self, IStatus status, ITransaction transaction, int stmtLength, byte[] sqlStmt, int dialect, IMessageMetadata inMetadata, int parLength, byte[] par)
+					public IBatch invoke(IAttachment self, IStatus status, ITransaction transaction, int stmtLength, com.sun.jna.Pointer sqlStmt, int dialect, IMessageMetadata inMetadata, int parLength, com.sun.jna.Pointer par)
 					{
 						try
 						{
@@ -9106,7 +9106,7 @@ public interface FbInterface extends FbClientLibrary
 
 				reconnect = new Callback_reconnect() {
 					@Override
-					public void invoke(IAttachment self, IStatus status, String password, String certificate, String pin)
+					public void invoke(IAttachment self, IStatus status, com.sun.jna.Pointer password, com.sun.jna.Pointer certificate, com.sun.jna.Pointer pin)
 					{
 						try
 						{
@@ -9179,7 +9179,7 @@ public interface FbInterface extends FbClientLibrary
 			return new VTable(cloopVTable);
 		}
 
-		public void getInfo(IStatus status, int itemsLength, byte[] items, int bufferLength, byte[] buffer)
+		public void getInfo(IStatus status, int itemsLength, com.sun.jna.Pointer items, int bufferLength, com.sun.jna.Pointer buffer)
 		{
 			VTable vTable = getVTable();
 			if (vTable.getInfo == null) {
@@ -9189,7 +9189,7 @@ public interface FbInterface extends FbClientLibrary
 			vTable.getInfo.invoke(this, status, itemsLength, items, bufferLength, buffer);
 		}
 
-		public ITransaction startTransaction(IStatus status, int tpbLength, byte[] tpb)
+		public ITransaction startTransaction(IStatus status, int tpbLength, com.sun.jna.Pointer tpb)
 		{
 			VTable vTable = getVTable();
 			if (vTable.startTransaction == null) {
@@ -9200,7 +9200,7 @@ public interface FbInterface extends FbClientLibrary
 			return result;
 		}
 
-		public ITransaction reconnectTransaction(IStatus status, int length, byte[] id)
+		public ITransaction reconnectTransaction(IStatus status, int length, com.sun.jna.Pointer id)
 		{
 			VTable vTable = getVTable();
 			if (vTable.reconnectTransaction == null) {
@@ -9211,7 +9211,7 @@ public interface FbInterface extends FbClientLibrary
 			return result;
 		}
 
-		public IRequest compileRequest(IStatus status, int blrLength, byte[] blr)
+		public IRequest compileRequest(IStatus status, int blrLength, com.sun.jna.Pointer blr)
 		{
 			VTable vTable = getVTable();
 			if (vTable.compileRequest == null) {
@@ -9222,7 +9222,7 @@ public interface FbInterface extends FbClientLibrary
 			return result;
 		}
 
-		public void transactRequest(IStatus status, ITransaction transaction, int blrLength, byte[] blr, int inMsgLength, byte[] inMsg, int outMsgLength, byte[] outMsg)
+		public void transactRequest(IStatus status, ITransaction transaction, int blrLength, com.sun.jna.Pointer blr, int inMsgLength, com.sun.jna.Pointer inMsg, int outMsgLength, com.sun.jna.Pointer outMsg)
 		{
 			VTable vTable = getVTable();
 			if (vTable.transactRequest == null) {
@@ -9232,7 +9232,7 @@ public interface FbInterface extends FbClientLibrary
 			vTable.transactRequest.invoke(this, status, transaction, blrLength, blr, inMsgLength, inMsg, outMsgLength, outMsg);
 		}
 
-		public IBlob createBlob(IStatus status, ITransaction transaction, com.sun.jna.ptr.LongByReference id, int bpbLength, byte[] bpb)
+		public IBlob createBlob(IStatus status, ITransaction transaction, com.sun.jna.ptr.LongByReference id, int bpbLength, com.sun.jna.Pointer bpb)
 		{
 			VTable vTable = getVTable();
 			if (vTable.createBlob == null) {
@@ -9243,7 +9243,7 @@ public interface FbInterface extends FbClientLibrary
 			return result;
 		}
 
-		public IBlob openBlob(IStatus status, ITransaction transaction, com.sun.jna.ptr.LongByReference id, int bpbLength, byte[] bpb)
+		public IBlob openBlob(IStatus status, ITransaction transaction, com.sun.jna.ptr.LongByReference id, int bpbLength, com.sun.jna.Pointer bpb)
 		{
 			VTable vTable = getVTable();
 			if (vTable.openBlob == null) {
@@ -9254,7 +9254,7 @@ public interface FbInterface extends FbClientLibrary
 			return result;
 		}
 
-		public int getSlice(IStatus status, ITransaction transaction, com.sun.jna.ptr.LongByReference id, int sdlLength, byte[] sdl, int paramLength, byte[] param, int sliceLength, byte[] slice)
+		public int getSlice(IStatus status, ITransaction transaction, com.sun.jna.ptr.LongByReference id, int sdlLength, com.sun.jna.Pointer sdl, int paramLength, com.sun.jna.Pointer param, int sliceLength, com.sun.jna.Pointer slice)
 		{
 			VTable vTable = getVTable();
 			if (vTable.getSlice == null) {
@@ -9265,7 +9265,7 @@ public interface FbInterface extends FbClientLibrary
 			return result;
 		}
 
-		public void putSlice(IStatus status, ITransaction transaction, com.sun.jna.ptr.LongByReference id, int sdlLength, byte[] sdl, int paramLength, byte[] param, int sliceLength, byte[] slice)
+		public void putSlice(IStatus status, ITransaction transaction, com.sun.jna.ptr.LongByReference id, int sdlLength, com.sun.jna.Pointer sdl, int paramLength, com.sun.jna.Pointer param, int sliceLength, com.sun.jna.Pointer slice)
 		{
 			VTable vTable = getVTable();
 			if (vTable.putSlice == null) {
@@ -9275,7 +9275,7 @@ public interface FbInterface extends FbClientLibrary
 			vTable.putSlice.invoke(this, status, transaction, id, sdlLength, sdl, paramLength, param, sliceLength, slice);
 		}
 
-		public void executeDyn(IStatus status, ITransaction transaction, int length, byte[] dyn)
+		public void executeDyn(IStatus status, ITransaction transaction, int length, com.sun.jna.Pointer dyn)
 		{
 			VTable vTable = getVTable();
 			if (vTable.executeDyn == null) {
@@ -9285,7 +9285,7 @@ public interface FbInterface extends FbClientLibrary
 			vTable.executeDyn.invoke(this, status, transaction, length, dyn);
 		}
 
-		public IStatement prepare(IStatus status, ITransaction tra, int stmtLength, byte[] sqlStmt, int dialect, int flags)
+		public IStatement prepare(IStatus status, ITransaction tra, int stmtLength, com.sun.jna.Pointer sqlStmt, int dialect, int flags)
 		{
 			VTable vTable = getVTable();
 			if (vTable.prepare == null) {
@@ -9296,7 +9296,7 @@ public interface FbInterface extends FbClientLibrary
 			return result;
 		}
 
-		public ITransaction execute(IStatus status, ITransaction transaction, int stmtLength, byte[] sqlStmt, int dialect, IMessageMetadata inMetadata, com.sun.jna.Pointer inBuffer, IMessageMetadata outMetadata, com.sun.jna.Pointer outBuffer)
+		public ITransaction execute(IStatus status, ITransaction transaction, int stmtLength, com.sun.jna.Pointer sqlStmt, int dialect, IMessageMetadata inMetadata, com.sun.jna.Pointer inBuffer, IMessageMetadata outMetadata, com.sun.jna.Pointer outBuffer)
 		{
 			VTable vTable = getVTable();
 			if (vTable.execute == null) {
@@ -9307,7 +9307,7 @@ public interface FbInterface extends FbClientLibrary
 			return result;
 		}
 
-		public IResultSet openCursor(IStatus status, ITransaction transaction, int stmtLength, byte[] sqlStmt, int dialect, IMessageMetadata inMetadata, com.sun.jna.Pointer inBuffer, IMessageMetadata outMetadata, String cursorName, int cursorFlags)
+		public IResultSet openCursor(IStatus status, ITransaction transaction, int stmtLength, com.sun.jna.Pointer sqlStmt, int dialect, IMessageMetadata inMetadata, com.sun.jna.Pointer inBuffer, IMessageMetadata outMetadata, com.sun.jna.Pointer cursorName, int cursorFlags)
 		{
 			VTable vTable = getVTable();
 			if (vTable.openCursor == null) {
@@ -9318,7 +9318,7 @@ public interface FbInterface extends FbClientLibrary
 			return result;
 		}
 
-		public IEvents queEvents(IStatus status, IEventCallback callback, int length, byte[] events)
+		public IEvents queEvents(IStatus status, IEventCallback callback, int length, com.sun.jna.Pointer events)
 		{
 			VTable vTable = getVTable();
 			if (vTable.queEvents == null) {
@@ -9431,7 +9431,7 @@ public interface FbInterface extends FbClientLibrary
 			vTable.setStatementTimeout.invoke(this, status, timeOut);
 		}
 
-		public IBatch createBatch(IStatus status, ITransaction transaction, int stmtLength, byte[] sqlStmt, int dialect, IMessageMetadata inMetadata, int parLength, byte[] par)
+		public IBatch createBatch(IStatus status, ITransaction transaction, int stmtLength, com.sun.jna.Pointer sqlStmt, int dialect, IMessageMetadata inMetadata, int parLength, com.sun.jna.Pointer par)
 		{
 			VTable vTable = getVTable();
 			if (vTable.version < 4)
@@ -9501,7 +9501,7 @@ public interface FbInterface extends FbClientLibrary
 			vTable.dropDatabase.invoke(this, status);
 		}
 
-		public void reconnect(IStatus status, String password, String certificate, String pin)
+		public void reconnect(IStatus status, com.sun.jna.Pointer password, com.sun.jna.Pointer certificate, com.sun.jna.Pointer pin)
 		{
 			VTable vTable = getVTable();
 			if (vTable.version < 6)
@@ -9528,12 +9528,12 @@ public interface FbInterface extends FbClientLibrary
 
 			public static interface Callback_query extends com.sun.jna.Callback
 			{
-				public void invoke(IService self, IStatus status, int sendLength, byte[] sendItems, int receiveLength, byte[] receiveItems, int bufferLength, byte[] buffer);
+				public void invoke(IService self, IStatus status, int sendLength, com.sun.jna.Pointer sendItems, int receiveLength, com.sun.jna.Pointer receiveItems, int bufferLength, com.sun.jna.Pointer buffer);
 			}
 
 			public static interface Callback_start extends com.sun.jna.Callback
 			{
-				public void invoke(IService self, IStatus status, int spbLength, byte[] spb);
+				public void invoke(IService self, IStatus status, int spbLength, com.sun.jna.Pointer spb);
 			}
 
 			public static interface Callback_detach extends com.sun.jna.Callback
@@ -9574,7 +9574,7 @@ public interface FbInterface extends FbClientLibrary
 
 				query = new Callback_query() {
 					@Override
-					public void invoke(IService self, IStatus status, int sendLength, byte[] sendItems, int receiveLength, byte[] receiveItems, int bufferLength, byte[] buffer)
+					public void invoke(IService self, IStatus status, int sendLength, com.sun.jna.Pointer sendItems, int receiveLength, com.sun.jna.Pointer receiveItems, int bufferLength, com.sun.jna.Pointer buffer)
 					{
 						try
 						{
@@ -9589,7 +9589,7 @@ public interface FbInterface extends FbClientLibrary
 
 				start = new Callback_start() {
 					@Override
-					public void invoke(IService self, IStatus status, int spbLength, byte[] spb)
+					public void invoke(IService self, IStatus status, int spbLength, com.sun.jna.Pointer spb)
 					{
 						try
 						{
@@ -9680,7 +9680,7 @@ public interface FbInterface extends FbClientLibrary
 			vTable.deprecatedDetach.invoke(this, status);
 		}
 
-		public void query(IStatus status, int sendLength, byte[] sendItems, int receiveLength, byte[] receiveItems, int bufferLength, byte[] buffer)
+		public void query(IStatus status, int sendLength, com.sun.jna.Pointer sendItems, int receiveLength, com.sun.jna.Pointer receiveItems, int bufferLength, com.sun.jna.Pointer buffer)
 		{
 			VTable vTable = getVTable();
 			if (vTable.query == null) {
@@ -9690,7 +9690,7 @@ public interface FbInterface extends FbClientLibrary
 			vTable.query.invoke(this, status, sendLength, sendItems, receiveLength, receiveItems, bufferLength, buffer);
 		}
 
-		public void start(IStatus status, int spbLength, byte[] spb)
+		public void start(IStatus status, int spbLength, com.sun.jna.Pointer spb)
 		{
 			VTable vTable = getVTable();
 			if (vTable.start == null) {
@@ -9741,17 +9741,17 @@ public interface FbInterface extends FbClientLibrary
 		{
 			public static interface Callback_attachDatabase extends com.sun.jna.Callback
 			{
-				public IAttachment invoke(IProvider self, IStatus status, byte[] fileName, int dpbLength, byte[] dpb);
+				public IAttachment invoke(IProvider self, IStatus status, com.sun.jna.Pointer fileName, int dpbLength, com.sun.jna.Pointer dpb);
 			}
 
 			public static interface Callback_createDatabase extends com.sun.jna.Callback
 			{
-				public IAttachment invoke(IProvider self, IStatus status, byte[] fileName, int dpbLength, byte[] dpb);
+				public IAttachment invoke(IProvider self, IStatus status, com.sun.jna.Pointer fileName, int dpbLength, com.sun.jna.Pointer dpb);
 			}
 
 			public static interface Callback_attachServiceManager extends com.sun.jna.Callback
 			{
-				public IService invoke(IProvider self, IStatus status, byte[] service, int spbLength, byte[] spb);
+				public IService invoke(IProvider self, IStatus status, com.sun.jna.Pointer service, int spbLength, com.sun.jna.Pointer spb);
 			}
 
 			public static interface Callback_shutdown extends com.sun.jna.Callback
@@ -9777,7 +9777,7 @@ public interface FbInterface extends FbClientLibrary
 
 				attachDatabase = new Callback_attachDatabase() {
 					@Override
-					public IAttachment invoke(IProvider self, IStatus status, byte[] fileName, int dpbLength, byte[] dpb)
+					public IAttachment invoke(IProvider self, IStatus status, com.sun.jna.Pointer fileName, int dpbLength, com.sun.jna.Pointer dpb)
 					{
 						try
 						{
@@ -9793,7 +9793,7 @@ public interface FbInterface extends FbClientLibrary
 
 				createDatabase = new Callback_createDatabase() {
 					@Override
-					public IAttachment invoke(IProvider self, IStatus status, byte[] fileName, int dpbLength, byte[] dpb)
+					public IAttachment invoke(IProvider self, IStatus status, com.sun.jna.Pointer fileName, int dpbLength, com.sun.jna.Pointer dpb)
 					{
 						try
 						{
@@ -9809,7 +9809,7 @@ public interface FbInterface extends FbClientLibrary
 
 				attachServiceManager = new Callback_attachServiceManager() {
 					@Override
-					public IService invoke(IProvider self, IStatus status, byte[] service, int spbLength, byte[] spb)
+					public IService invoke(IProvider self, IStatus status, com.sun.jna.Pointer service, int spbLength, com.sun.jna.Pointer spb)
 					{
 						try
 						{
@@ -9891,7 +9891,7 @@ public interface FbInterface extends FbClientLibrary
 			return new VTable(cloopVTable);
 		}
 
-		public IAttachment attachDatabase(IStatus status, byte[] fileName, int dpbLength, byte[] dpb)
+		public IAttachment attachDatabase(IStatus status, com.sun.jna.Pointer fileName, int dpbLength, com.sun.jna.Pointer dpb)
 		{
 			VTable vTable = getVTable();
 			if (vTable.attachDatabase == null) {
@@ -9902,7 +9902,7 @@ public interface FbInterface extends FbClientLibrary
 			return result;
 		}
 
-		public IAttachment createDatabase(IStatus status, byte[] fileName, int dpbLength, byte[] dpb)
+		public IAttachment createDatabase(IStatus status, com.sun.jna.Pointer fileName, int dpbLength, com.sun.jna.Pointer dpb)
 		{
 			VTable vTable = getVTable();
 			if (vTable.createDatabase == null) {
@@ -9913,7 +9913,7 @@ public interface FbInterface extends FbClientLibrary
 			return result;
 		}
 
-		public IService attachServiceManager(IStatus status, byte[] service, int spbLength, byte[] spb)
+		public IService attachServiceManager(IStatus status, com.sun.jna.Pointer service, int spbLength, com.sun.jna.Pointer spb)
 		{
 			VTable vTable = getVTable();
 			if (vTable.attachServiceManager == null) {
@@ -9956,7 +9956,7 @@ public interface FbInterface extends FbClientLibrary
 
 			public static interface Callback_addWithTpb extends com.sun.jna.Callback
 			{
-				public void invoke(IDtcStart self, IStatus status, IAttachment att, int length, byte[] tpb);
+				public void invoke(IDtcStart self, IStatus status, IAttachment att, int length, com.sun.jna.Pointer tpb);
 			}
 
 			public static interface Callback_start extends com.sun.jna.Callback
@@ -9992,7 +9992,7 @@ public interface FbInterface extends FbClientLibrary
 
 				addWithTpb = new Callback_addWithTpb() {
 					@Override
-					public void invoke(IDtcStart self, IStatus status, IAttachment att, int length, byte[] tpb)
+					public void invoke(IDtcStart self, IStatus status, IAttachment att, int length, com.sun.jna.Pointer tpb)
 					{
 						try
 						{
@@ -10067,7 +10067,7 @@ public interface FbInterface extends FbClientLibrary
 			vTable.addAttachment.invoke(this, status, att);
 		}
 
-		public void addWithTpb(IStatus status, IAttachment att, int length, byte[] tpb)
+		public void addWithTpb(IStatus status, IAttachment att, int length, com.sun.jna.Pointer tpb)
 		{
 			VTable vTable = getVTable();
 			if (vTable.addWithTpb == null) {
@@ -10263,17 +10263,17 @@ public interface FbInterface extends FbClientLibrary
 
 			public static interface Callback_add extends com.sun.jna.Callback
 			{
-				public void invoke(IWriter self, IStatus status, String name);
+				public void invoke(IWriter self, IStatus status, com.sun.jna.Pointer name);
 			}
 
 			public static interface Callback_setType extends com.sun.jna.Callback
 			{
-				public void invoke(IWriter self, IStatus status, String value);
+				public void invoke(IWriter self, IStatus status, com.sun.jna.Pointer value);
 			}
 
 			public static interface Callback_setDb extends com.sun.jna.Callback
 			{
-				public void invoke(IWriter self, IStatus status, String value);
+				public void invoke(IWriter self, IStatus status, com.sun.jna.Pointer value);
 			}
 
 			public static interface Callback_setFromLdap extends com.sun.jna.Callback
@@ -10283,12 +10283,12 @@ public interface FbInterface extends FbClientLibrary
 
 			public static interface Callback_setPassword extends com.sun.jna.Callback
 			{
-				public void invoke(IWriter self, IStatus status, String password);
+				public void invoke(IWriter self, IStatus status, com.sun.jna.Pointer password);
 			}
 
 			public static interface Callback_changeLogin extends com.sun.jna.Callback
 			{
-				public void invoke(IWriter self, IStatus status, String login);
+				public void invoke(IWriter self, IStatus status, com.sun.jna.Pointer login);
 			}
 
 			public VTable(com.sun.jna.Pointer pointer)
@@ -10312,7 +10312,7 @@ public interface FbInterface extends FbClientLibrary
 
 				add = new Callback_add() {
 					@Override
-					public void invoke(IWriter self, IStatus status, String name)
+					public void invoke(IWriter self, IStatus status, com.sun.jna.Pointer name)
 					{
 						try
 						{
@@ -10327,7 +10327,7 @@ public interface FbInterface extends FbClientLibrary
 
 				setType = new Callback_setType() {
 					@Override
-					public void invoke(IWriter self, IStatus status, String value)
+					public void invoke(IWriter self, IStatus status, com.sun.jna.Pointer value)
 					{
 						try
 						{
@@ -10342,7 +10342,7 @@ public interface FbInterface extends FbClientLibrary
 
 				setDb = new Callback_setDb() {
 					@Override
-					public void invoke(IWriter self, IStatus status, String value)
+					public void invoke(IWriter self, IStatus status, com.sun.jna.Pointer value)
 					{
 						try
 						{
@@ -10372,7 +10372,7 @@ public interface FbInterface extends FbClientLibrary
 
 				setPassword = new Callback_setPassword() {
 					@Override
-					public void invoke(IWriter self, IStatus status, String password)
+					public void invoke(IWriter self, IStatus status, com.sun.jna.Pointer password)
 					{
 						try
 						{
@@ -10387,7 +10387,7 @@ public interface FbInterface extends FbClientLibrary
 
 				changeLogin = new Callback_changeLogin() {
 					@Override
-					public void invoke(IWriter self, IStatus status, String login)
+					public void invoke(IWriter self, IStatus status, com.sun.jna.Pointer login)
 					{
 						try
 						{
@@ -10449,7 +10449,7 @@ public interface FbInterface extends FbClientLibrary
 			vTable.reset.invoke(this);
 		}
 
-		public void add(IStatus status, String name)
+		public void add(IStatus status, com.sun.jna.Pointer name)
 		{
 			VTable vTable = getVTable();
 			if (vTable.add == null) {
@@ -10459,7 +10459,7 @@ public interface FbInterface extends FbClientLibrary
 			vTable.add.invoke(this, status, name);
 		}
 
-		public void setType(IStatus status, String value)
+		public void setType(IStatus status, com.sun.jna.Pointer value)
 		{
 			VTable vTable = getVTable();
 			if (vTable.setType == null) {
@@ -10469,7 +10469,7 @@ public interface FbInterface extends FbClientLibrary
 			vTable.setType.invoke(this, status, value);
 		}
 
-		public void setDb(IStatus status, String value)
+		public void setDb(IStatus status, com.sun.jna.Pointer value)
 		{
 			VTable vTable = getVTable();
 			if (vTable.setDb == null) {
@@ -10489,7 +10489,7 @@ public interface FbInterface extends FbClientLibrary
 			vTable.setFromLdap.invoke(this, status, value);
 		}
 
-		public void setPassword(IStatus status, String password)
+		public void setPassword(IStatus status, com.sun.jna.Pointer password)
 		{
 			VTable vTable = getVTable();
 			if (vTable.setPassword == null) {
@@ -10499,7 +10499,7 @@ public interface FbInterface extends FbClientLibrary
 			vTable.setPassword.invoke(this, status, password);
 		}
 
-		public void changeLogin(IStatus status, String login)
+		public void changeLogin(IStatus status, com.sun.jna.Pointer login)
 		{
 			VTable vTable = getVTable();
 			if (vTable.changeLogin == null) {
@@ -10516,7 +10516,7 @@ public interface FbInterface extends FbClientLibrary
 		{
 			public static interface Callback_getLogin extends com.sun.jna.Callback
 			{
-				public String invoke(IServerBlock self);
+				public com.sun.jna.Pointer invoke(IServerBlock self);
 			}
 
 			public static interface Callback_getData extends com.sun.jna.Callback
@@ -10547,7 +10547,7 @@ public interface FbInterface extends FbClientLibrary
 
 				getLogin = new Callback_getLogin() {
 					@Override
-					public String invoke(IServerBlock self)
+					public com.sun.jna.Pointer invoke(IServerBlock self)
 					{
 						return obj.getLogin();
 					}
@@ -10629,13 +10629,13 @@ public interface FbInterface extends FbClientLibrary
 			return new VTable(cloopVTable);
 		}
 
-		public String getLogin()
+		public com.sun.jna.Pointer getLogin()
 		{
 			VTable vTable = getVTable();
 			if (vTable.getLogin == null) {
 				return null;
 			}
-			String result = vTable.getLogin.invoke(this);
+			com.sun.jna.Pointer result = vTable.getLogin.invoke(this);
 			return result;
 		}
 
@@ -10677,12 +10677,12 @@ public interface FbInterface extends FbClientLibrary
 		{
 			public static interface Callback_getLogin extends com.sun.jna.Callback
 			{
-				public String invoke(IClientBlock self);
+				public com.sun.jna.Pointer invoke(IClientBlock self);
 			}
 
 			public static interface Callback_getPassword extends com.sun.jna.Callback
 			{
-				public String invoke(IClientBlock self);
+				public com.sun.jna.Pointer invoke(IClientBlock self);
 			}
 
 			public static interface Callback_getData extends com.sun.jna.Callback
@@ -10707,17 +10707,17 @@ public interface FbInterface extends FbClientLibrary
 
 			public static interface Callback_getEffectiveLogin extends com.sun.jna.Callback
 			{
-				public String invoke(IClientBlock self);
+				public com.sun.jna.Pointer invoke(IClientBlock self);
 			}
 
 			public static interface Callback_getCertificate extends com.sun.jna.Callback
 			{
-				public String invoke(IClientBlock self);
+				public com.sun.jna.Pointer invoke(IClientBlock self);
 			}
 
 			public static interface Callback_getRepositoryPin extends com.sun.jna.Callback
 			{
-				public String invoke(IClientBlock self);
+				public com.sun.jna.Pointer invoke(IClientBlock self);
 			}
 
 			public static interface Callback_getVerifyServer extends com.sun.jna.Callback
@@ -10738,7 +10738,7 @@ public interface FbInterface extends FbClientLibrary
 
 				getLogin = new Callback_getLogin() {
 					@Override
-					public String invoke(IClientBlock self)
+					public com.sun.jna.Pointer invoke(IClientBlock self)
 					{
 						return obj.getLogin();
 					}
@@ -10746,7 +10746,7 @@ public interface FbInterface extends FbClientLibrary
 
 				getPassword = new Callback_getPassword() {
 					@Override
-					public String invoke(IClientBlock self)
+					public com.sun.jna.Pointer invoke(IClientBlock self)
 					{
 						return obj.getPassword();
 					}
@@ -10809,7 +10809,7 @@ public interface FbInterface extends FbClientLibrary
 
 				getEffectiveLogin = new Callback_getEffectiveLogin() {
 					@Override
-					public String invoke(IClientBlock self)
+					public com.sun.jna.Pointer invoke(IClientBlock self)
 					{
 						return obj.getEffectiveLogin();
 					}
@@ -10817,7 +10817,7 @@ public interface FbInterface extends FbClientLibrary
 
 				getCertificate = new Callback_getCertificate() {
 					@Override
-					public String invoke(IClientBlock self)
+					public com.sun.jna.Pointer invoke(IClientBlock self)
 					{
 						return obj.getCertificate();
 					}
@@ -10825,7 +10825,7 @@ public interface FbInterface extends FbClientLibrary
 
 				getRepositoryPin = new Callback_getRepositoryPin() {
 					@Override
-					public String invoke(IClientBlock self)
+					public com.sun.jna.Pointer invoke(IClientBlock self)
 					{
 						return obj.getRepositoryPin();
 					}
@@ -10882,23 +10882,23 @@ public interface FbInterface extends FbClientLibrary
 			return new VTable(cloopVTable);
 		}
 
-		public String getLogin()
+		public com.sun.jna.Pointer getLogin()
 		{
 			VTable vTable = getVTable();
 			if (vTable.getLogin == null) {
 				return null;
 			}
-			String result = vTable.getLogin.invoke(this);
+			com.sun.jna.Pointer result = vTable.getLogin.invoke(this);
 			return result;
 		}
 
-		public String getPassword()
+		public com.sun.jna.Pointer getPassword()
 		{
 			VTable vTable = getVTable();
 			if (vTable.getPassword == null) {
 				return null;
 			}
-			String result = vTable.getPassword.invoke(this);
+			com.sun.jna.Pointer result = vTable.getPassword.invoke(this);
 			return result;
 		}
 
@@ -10949,7 +10949,7 @@ public interface FbInterface extends FbClientLibrary
 			return result;
 		}
 
-		public String getEffectiveLogin()
+		public com.sun.jna.Pointer getEffectiveLogin()
 		{
 			VTable vTable = getVTable();
 			if (vTable.version < 5)
@@ -10959,11 +10959,11 @@ public interface FbInterface extends FbClientLibrary
 			if (vTable.getEffectiveLogin == null) {
 				return null;
 			}
-			String result = vTable.getEffectiveLogin.invoke(this);
+			com.sun.jna.Pointer result = vTable.getEffectiveLogin.invoke(this);
 			return result;
 		}
 
-		public String getCertificate()
+		public com.sun.jna.Pointer getCertificate()
 		{
 			VTable vTable = getVTable();
 			if (vTable.version < 5)
@@ -10973,11 +10973,11 @@ public interface FbInterface extends FbClientLibrary
 			if (vTable.getCertificate == null) {
 				return null;
 			}
-			String result = vTable.getCertificate.invoke(this);
+			com.sun.jna.Pointer result = vTable.getCertificate.invoke(this);
 			return result;
 		}
 
-		public String getRepositoryPin()
+		public com.sun.jna.Pointer getRepositoryPin()
 		{
 			VTable vTable = getVTable();
 			if (vTable.version < 5)
@@ -10987,7 +10987,7 @@ public interface FbInterface extends FbClientLibrary
 			if (vTable.getRepositoryPin == null) {
 				return null;
 			}
-			String result = vTable.getRepositoryPin.invoke(this);
+			com.sun.jna.Pointer result = vTable.getRepositoryPin.invoke(this);
 			return result;
 		}
 
@@ -11340,12 +11340,12 @@ public interface FbInterface extends FbClientLibrary
 		{
 			public static interface Callback_get extends com.sun.jna.Callback
 			{
-				public String invoke(ICharUserField self);
+				public com.sun.jna.Pointer invoke(ICharUserField self);
 			}
 
 			public static interface Callback_set extends com.sun.jna.Callback
 			{
-				public void invoke(ICharUserField self, IStatus status, String newValue);
+				public void invoke(ICharUserField self, IStatus status, com.sun.jna.Pointer newValue);
 			}
 
 			public VTable(com.sun.jna.Pointer pointer)
@@ -11361,7 +11361,7 @@ public interface FbInterface extends FbClientLibrary
 
 				get = new Callback_get() {
 					@Override
-					public String invoke(ICharUserField self)
+					public com.sun.jna.Pointer invoke(ICharUserField self)
 					{
 						return obj.get();
 					}
@@ -11369,7 +11369,7 @@ public interface FbInterface extends FbClientLibrary
 
 				set = new Callback_set() {
 					@Override
-					public void invoke(ICharUserField self, IStatus status, String newValue)
+					public void invoke(ICharUserField self, IStatus status, com.sun.jna.Pointer newValue)
 					{
 						try
 						{
@@ -11417,17 +11417,17 @@ public interface FbInterface extends FbClientLibrary
 			return new VTable(cloopVTable);
 		}
 
-		public String get()
+		public com.sun.jna.Pointer get()
 		{
 			VTable vTable = getVTable();
 			if (vTable.get == null) {
 				return null;
 			}
-			String result = vTable.get.invoke(this);
+			com.sun.jna.Pointer result = vTable.get.invoke(this);
 			return result;
 		}
 
-		public void set(IStatus status, String newValue)
+		public void set(IStatus status, com.sun.jna.Pointer newValue)
 		{
 			VTable vTable = getVTable();
 			if (vTable.set == null) {
@@ -11948,22 +11948,22 @@ public interface FbInterface extends FbClientLibrary
 		{
 			public static interface Callback_name extends com.sun.jna.Callback
 			{
-				public String invoke(ILogonInfo self);
+				public com.sun.jna.Pointer invoke(ILogonInfo self);
 			}
 
 			public static interface Callback_role extends com.sun.jna.Callback
 			{
-				public String invoke(ILogonInfo self);
+				public com.sun.jna.Pointer invoke(ILogonInfo self);
 			}
 
 			public static interface Callback_networkProtocol extends com.sun.jna.Callback
 			{
-				public String invoke(ILogonInfo self);
+				public com.sun.jna.Pointer invoke(ILogonInfo self);
 			}
 
 			public static interface Callback_remoteAddress extends com.sun.jna.Callback
 			{
-				public String invoke(ILogonInfo self);
+				public com.sun.jna.Pointer invoke(ILogonInfo self);
 			}
 
 			public static interface Callback_authBlock extends com.sun.jna.Callback
@@ -11994,7 +11994,7 @@ public interface FbInterface extends FbClientLibrary
 
 				name = new Callback_name() {
 					@Override
-					public String invoke(ILogonInfo self)
+					public com.sun.jna.Pointer invoke(ILogonInfo self)
 					{
 						return obj.name();
 					}
@@ -12002,7 +12002,7 @@ public interface FbInterface extends FbClientLibrary
 
 				role = new Callback_role() {
 					@Override
-					public String invoke(ILogonInfo self)
+					public com.sun.jna.Pointer invoke(ILogonInfo self)
 					{
 						return obj.role();
 					}
@@ -12010,7 +12010,7 @@ public interface FbInterface extends FbClientLibrary
 
 				networkProtocol = new Callback_networkProtocol() {
 					@Override
-					public String invoke(ILogonInfo self)
+					public com.sun.jna.Pointer invoke(ILogonInfo self)
 					{
 						return obj.networkProtocol();
 					}
@@ -12018,7 +12018,7 @@ public interface FbInterface extends FbClientLibrary
 
 				remoteAddress = new Callback_remoteAddress() {
 					@Override
-					public String invoke(ILogonInfo self)
+					public com.sun.jna.Pointer invoke(ILogonInfo self)
 					{
 						return obj.remoteAddress();
 					}
@@ -12104,43 +12104,43 @@ public interface FbInterface extends FbClientLibrary
 			return new VTable(cloopVTable);
 		}
 
-		public String name()
+		public com.sun.jna.Pointer name()
 		{
 			VTable vTable = getVTable();
 			if (vTable.name == null) {
 				return null;
 			}
-			String result = vTable.name.invoke(this);
+			com.sun.jna.Pointer result = vTable.name.invoke(this);
 			return result;
 		}
 
-		public String role()
+		public com.sun.jna.Pointer role()
 		{
 			VTable vTable = getVTable();
 			if (vTable.role == null) {
 				return null;
 			}
-			String result = vTable.role.invoke(this);
+			com.sun.jna.Pointer result = vTable.role.invoke(this);
 			return result;
 		}
 
-		public String networkProtocol()
+		public com.sun.jna.Pointer networkProtocol()
 		{
 			VTable vTable = getVTable();
 			if (vTable.networkProtocol == null) {
 				return null;
 			}
-			String result = vTable.networkProtocol.invoke(this);
+			com.sun.jna.Pointer result = vTable.networkProtocol.invoke(this);
 			return result;
 		}
 
-		public String remoteAddress()
+		public com.sun.jna.Pointer remoteAddress()
 		{
 			VTable vTable = getVTable();
 			if (vTable.remoteAddress == null) {
 				return null;
 			}
-			String result = vTable.remoteAddress.invoke(this);
+			com.sun.jna.Pointer result = vTable.remoteAddress.invoke(this);
 			return result;
 		}
 
@@ -12368,27 +12368,27 @@ public interface FbInterface extends FbClientLibrary
 		{
 			public static interface Callback_getType extends com.sun.jna.Callback
 			{
-				public String invoke(IAuthBlock self);
+				public com.sun.jna.Pointer invoke(IAuthBlock self);
 			}
 
 			public static interface Callback_getName extends com.sun.jna.Callback
 			{
-				public String invoke(IAuthBlock self);
+				public com.sun.jna.Pointer invoke(IAuthBlock self);
 			}
 
 			public static interface Callback_getPlugin extends com.sun.jna.Callback
 			{
-				public String invoke(IAuthBlock self);
+				public com.sun.jna.Pointer invoke(IAuthBlock self);
 			}
 
 			public static interface Callback_getSecurityDb extends com.sun.jna.Callback
 			{
-				public String invoke(IAuthBlock self);
+				public com.sun.jna.Pointer invoke(IAuthBlock self);
 			}
 
 			public static interface Callback_getOriginalPlugin extends com.sun.jna.Callback
 			{
-				public String invoke(IAuthBlock self);
+				public com.sun.jna.Pointer invoke(IAuthBlock self);
 			}
 
 			public static interface Callback_next extends com.sun.jna.Callback
@@ -12414,7 +12414,7 @@ public interface FbInterface extends FbClientLibrary
 
 				getType = new Callback_getType() {
 					@Override
-					public String invoke(IAuthBlock self)
+					public com.sun.jna.Pointer invoke(IAuthBlock self)
 					{
 						return obj.getType();
 					}
@@ -12422,7 +12422,7 @@ public interface FbInterface extends FbClientLibrary
 
 				getName = new Callback_getName() {
 					@Override
-					public String invoke(IAuthBlock self)
+					public com.sun.jna.Pointer invoke(IAuthBlock self)
 					{
 						return obj.getName();
 					}
@@ -12430,7 +12430,7 @@ public interface FbInterface extends FbClientLibrary
 
 				getPlugin = new Callback_getPlugin() {
 					@Override
-					public String invoke(IAuthBlock self)
+					public com.sun.jna.Pointer invoke(IAuthBlock self)
 					{
 						return obj.getPlugin();
 					}
@@ -12438,7 +12438,7 @@ public interface FbInterface extends FbClientLibrary
 
 				getSecurityDb = new Callback_getSecurityDb() {
 					@Override
-					public String invoke(IAuthBlock self)
+					public com.sun.jna.Pointer invoke(IAuthBlock self)
 					{
 						return obj.getSecurityDb();
 					}
@@ -12446,7 +12446,7 @@ public interface FbInterface extends FbClientLibrary
 
 				getOriginalPlugin = new Callback_getOriginalPlugin() {
 					@Override
-					public String invoke(IAuthBlock self)
+					public com.sun.jna.Pointer invoke(IAuthBlock self)
 					{
 						return obj.getOriginalPlugin();
 					}
@@ -12524,53 +12524,53 @@ public interface FbInterface extends FbClientLibrary
 			return new VTable(cloopVTable);
 		}
 
-		public String getType()
+		public com.sun.jna.Pointer getType()
 		{
 			VTable vTable = getVTable();
 			if (vTable.getType == null) {
 				return null;
 			}
-			String result = vTable.getType.invoke(this);
+			com.sun.jna.Pointer result = vTable.getType.invoke(this);
 			return result;
 		}
 
-		public String getName()
+		public com.sun.jna.Pointer getName()
 		{
 			VTable vTable = getVTable();
 			if (vTable.getName == null) {
 				return null;
 			}
-			String result = vTable.getName.invoke(this);
+			com.sun.jna.Pointer result = vTable.getName.invoke(this);
 			return result;
 		}
 
-		public String getPlugin()
+		public com.sun.jna.Pointer getPlugin()
 		{
 			VTable vTable = getVTable();
 			if (vTable.getPlugin == null) {
 				return null;
 			}
-			String result = vTable.getPlugin.invoke(this);
+			com.sun.jna.Pointer result = vTable.getPlugin.invoke(this);
 			return result;
 		}
 
-		public String getSecurityDb()
+		public com.sun.jna.Pointer getSecurityDb()
 		{
 			VTable vTable = getVTable();
 			if (vTable.getSecurityDb == null) {
 				return null;
 			}
-			String result = vTable.getSecurityDb.invoke(this);
+			com.sun.jna.Pointer result = vTable.getSecurityDb.invoke(this);
 			return result;
 		}
 
-		public String getOriginalPlugin()
+		public com.sun.jna.Pointer getOriginalPlugin()
 		{
 			VTable vTable = getVTable();
 			if (vTable.getOriginalPlugin == null) {
 				return null;
 			}
-			String result = vTable.getOriginalPlugin.invoke(this);
+			com.sun.jna.Pointer result = vTable.getOriginalPlugin.invoke(this);
 			return result;
 		}
 
@@ -12603,7 +12603,7 @@ public interface FbInterface extends FbClientLibrary
 		{
 			public static interface Callback_getKnownTypes extends com.sun.jna.Callback
 			{
-				public String invoke(IWireCryptPlugin self, IStatus status);
+				public com.sun.jna.Pointer invoke(IWireCryptPlugin self, IStatus status);
 			}
 
 			public static interface Callback_setKey extends com.sun.jna.Callback
@@ -12623,12 +12623,12 @@ public interface FbInterface extends FbClientLibrary
 
 			public static interface Callback_getSpecificData extends com.sun.jna.Callback
 			{
-				public com.sun.jna.Pointer invoke(IWireCryptPlugin self, IStatus status, String keyType, com.sun.jna.Pointer length);
+				public com.sun.jna.Pointer invoke(IWireCryptPlugin self, IStatus status, com.sun.jna.Pointer keyType, com.sun.jna.Pointer length);
 			}
 
 			public static interface Callback_setSpecificData extends com.sun.jna.Callback
 			{
-				public void invoke(IWireCryptPlugin self, IStatus status, String keyType, int length, byte[] data);
+				public void invoke(IWireCryptPlugin self, IStatus status, com.sun.jna.Pointer keyType, int length, com.sun.jna.Pointer data);
 			}
 
 			public VTable(com.sun.jna.Pointer pointer)
@@ -12644,7 +12644,7 @@ public interface FbInterface extends FbClientLibrary
 
 				getKnownTypes = new Callback_getKnownTypes() {
 					@Override
-					public String invoke(IWireCryptPlugin self, IStatus status)
+					public com.sun.jna.Pointer invoke(IWireCryptPlugin self, IStatus status)
 					{
 						try
 						{
@@ -12705,7 +12705,7 @@ public interface FbInterface extends FbClientLibrary
 
 				getSpecificData = new Callback_getSpecificData() {
 					@Override
-					public com.sun.jna.Pointer invoke(IWireCryptPlugin self, IStatus status, String keyType, com.sun.jna.Pointer length)
+					public com.sun.jna.Pointer invoke(IWireCryptPlugin self, IStatus status, com.sun.jna.Pointer keyType, com.sun.jna.Pointer length)
 					{
 						try
 						{
@@ -12721,7 +12721,7 @@ public interface FbInterface extends FbClientLibrary
 
 				setSpecificData = new Callback_setSpecificData() {
 					@Override
-					public void invoke(IWireCryptPlugin self, IStatus status, String keyType, int length, byte[] data)
+					public void invoke(IWireCryptPlugin self, IStatus status, com.sun.jna.Pointer keyType, int length, com.sun.jna.Pointer data)
 					{
 						try
 						{
@@ -12773,14 +12773,14 @@ public interface FbInterface extends FbClientLibrary
 			return new VTable(cloopVTable);
 		}
 
-		public String getKnownTypes(IStatus status)
+		public com.sun.jna.Pointer getKnownTypes(IStatus status)
 		{
 			VTable vTable = getVTable();
 			if (vTable.getKnownTypes == null) {
 				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IWireCryptPluginIntf.VERSION);
 				return null;
 			}
-			String result = vTable.getKnownTypes.invoke(this, status);
+			com.sun.jna.Pointer result = vTable.getKnownTypes.invoke(this, status);
 			return result;
 		}
 
@@ -12814,7 +12814,7 @@ public interface FbInterface extends FbClientLibrary
 			vTable.decrypt.invoke(this, status, length, from, to);
 		}
 
-		public com.sun.jna.Pointer getSpecificData(IStatus status, String keyType, com.sun.jna.Pointer length)
+		public com.sun.jna.Pointer getSpecificData(IStatus status, com.sun.jna.Pointer keyType, com.sun.jna.Pointer length)
 		{
 			VTable vTable = getVTable();
 			if (vTable.version < 5)
@@ -12830,7 +12830,7 @@ public interface FbInterface extends FbClientLibrary
 			return result;
 		}
 
-		public void setSpecificData(IStatus status, String keyType, int length, byte[] data)
+		public void setSpecificData(IStatus status, com.sun.jna.Pointer keyType, int length, com.sun.jna.Pointer data)
 		{
 			VTable vTable = getVTable();
 			if (vTable.version < 5)
@@ -12930,7 +12930,7 @@ public interface FbInterface extends FbClientLibrary
 
 			public static interface Callback_keyHandle extends com.sun.jna.Callback
 			{
-				public ICryptKeyCallback invoke(IKeyHolderPlugin self, IStatus status, String keyName);
+				public ICryptKeyCallback invoke(IKeyHolderPlugin self, IStatus status, com.sun.jna.Pointer keyName);
 			}
 
 			public static interface Callback_useOnlyOwnKeys extends com.sun.jna.Callback
@@ -12972,7 +12972,7 @@ public interface FbInterface extends FbClientLibrary
 
 				keyHandle = new Callback_keyHandle() {
 					@Override
-					public ICryptKeyCallback invoke(IKeyHolderPlugin self, IStatus status, String keyName)
+					public ICryptKeyCallback invoke(IKeyHolderPlugin self, IStatus status, com.sun.jna.Pointer keyName)
 					{
 						try
 						{
@@ -13066,7 +13066,7 @@ public interface FbInterface extends FbClientLibrary
 			return result;
 		}
 
-		public ICryptKeyCallback keyHandle(IStatus status, String keyName)
+		public ICryptKeyCallback keyHandle(IStatus status, com.sun.jna.Pointer keyName)
 		{
 			VTable vTable = getVTable();
 			if (vTable.keyHandle == null) {
@@ -13116,7 +13116,7 @@ public interface FbInterface extends FbClientLibrary
 		{
 			public static interface Callback_getDatabaseFullPath extends com.sun.jna.Callback
 			{
-				public String invoke(IDbCryptInfo self, IStatus status);
+				public com.sun.jna.Pointer invoke(IDbCryptInfo self, IStatus status);
 			}
 
 			public VTable(com.sun.jna.Pointer pointer)
@@ -13132,7 +13132,7 @@ public interface FbInterface extends FbClientLibrary
 
 				getDatabaseFullPath = new Callback_getDatabaseFullPath() {
 					@Override
-					public String invoke(IDbCryptInfo self, IStatus status)
+					public com.sun.jna.Pointer invoke(IDbCryptInfo self, IStatus status)
 					{
 						try
 						{
@@ -13180,14 +13180,14 @@ public interface FbInterface extends FbClientLibrary
 			return new VTable(cloopVTable);
 		}
 
-		public String getDatabaseFullPath(IStatus status)
+		public com.sun.jna.Pointer getDatabaseFullPath(IStatus status)
 		{
 			VTable vTable = getVTable();
 			if (vTable.getDatabaseFullPath == null) {
 				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IDbCryptInfoIntf.VERSION);
 				return null;
 			}
-			String result = vTable.getDatabaseFullPath.invoke(this, status);
+			com.sun.jna.Pointer result = vTable.getDatabaseFullPath.invoke(this, status);
 			return result;
 		}
 	}
@@ -13198,7 +13198,7 @@ public interface FbInterface extends FbClientLibrary
 		{
 			public static interface Callback_setKey extends com.sun.jna.Callback
 			{
-				public void invoke(IDbCryptPlugin self, IStatus status, int length, IKeyHolderPlugin[] sources, String keyName);
+				public void invoke(IDbCryptPlugin self, IStatus status, int length, IKeyHolderPlugin[] sources, com.sun.jna.Pointer keyName);
 			}
 
 			public static interface Callback_encrypt extends com.sun.jna.Callback
@@ -13229,7 +13229,7 @@ public interface FbInterface extends FbClientLibrary
 
 				setKey = new Callback_setKey() {
 					@Override
-					public void invoke(IDbCryptPlugin self, IStatus status, int length, IKeyHolderPlugin[] sources, String keyName)
+					public void invoke(IDbCryptPlugin self, IStatus status, int length, IKeyHolderPlugin[] sources, com.sun.jna.Pointer keyName)
 					{
 						try
 						{
@@ -13324,7 +13324,7 @@ public interface FbInterface extends FbClientLibrary
 			return new VTable(cloopVTable);
 		}
 
-		public void setKey(IStatus status, int length, IKeyHolderPlugin[] sources, String keyName)
+		public void setKey(IStatus status, int length, IKeyHolderPlugin[] sources, com.sun.jna.Pointer keyName)
 		{
 			VTable vTable = getVTable();
 			if (vTable.setKey == null) {
@@ -13396,17 +13396,17 @@ public interface FbInterface extends FbClientLibrary
 
 			public static interface Callback_getUserName extends com.sun.jna.Callback
 			{
-				public String invoke(IExternalContext self);
+				public com.sun.jna.Pointer invoke(IExternalContext self);
 			}
 
 			public static interface Callback_getDatabaseName extends com.sun.jna.Callback
 			{
-				public String invoke(IExternalContext self);
+				public com.sun.jna.Pointer invoke(IExternalContext self);
 			}
 
 			public static interface Callback_getClientCharSet extends com.sun.jna.Callback
 			{
-				public String invoke(IExternalContext self);
+				public com.sun.jna.Pointer invoke(IExternalContext self);
 			}
 
 			public static interface Callback_obtainInfoCode extends com.sun.jna.Callback
@@ -13493,7 +13493,7 @@ public interface FbInterface extends FbClientLibrary
 
 				getUserName = new Callback_getUserName() {
 					@Override
-					public String invoke(IExternalContext self)
+					public com.sun.jna.Pointer invoke(IExternalContext self)
 					{
 						return obj.getUserName();
 					}
@@ -13501,7 +13501,7 @@ public interface FbInterface extends FbClientLibrary
 
 				getDatabaseName = new Callback_getDatabaseName() {
 					@Override
-					public String invoke(IExternalContext self)
+					public com.sun.jna.Pointer invoke(IExternalContext self)
 					{
 						return obj.getDatabaseName();
 					}
@@ -13509,7 +13509,7 @@ public interface FbInterface extends FbClientLibrary
 
 				getClientCharSet = new Callback_getClientCharSet() {
 					@Override
-					public String invoke(IExternalContext self)
+					public com.sun.jna.Pointer invoke(IExternalContext self)
 					{
 						return obj.getClientCharSet();
 					}
@@ -13625,33 +13625,33 @@ public interface FbInterface extends FbClientLibrary
 			return result;
 		}
 
-		public String getUserName()
+		public com.sun.jna.Pointer getUserName()
 		{
 			VTable vTable = getVTable();
 			if (vTable.getUserName == null) {
 				return null;
 			}
-			String result = vTable.getUserName.invoke(this);
+			com.sun.jna.Pointer result = vTable.getUserName.invoke(this);
 			return result;
 		}
 
-		public String getDatabaseName()
+		public com.sun.jna.Pointer getDatabaseName()
 		{
 			VTable vTable = getVTable();
 			if (vTable.getDatabaseName == null) {
 				return null;
 			}
-			String result = vTable.getDatabaseName.invoke(this);
+			com.sun.jna.Pointer result = vTable.getDatabaseName.invoke(this);
 			return result;
 		}
 
-		public String getClientCharSet()
+		public com.sun.jna.Pointer getClientCharSet()
 		{
 			VTable vTable = getVTable();
 			if (vTable.getClientCharSet == null) {
 				return null;
 			}
-			String result = vTable.getClientCharSet.invoke(this);
+			com.sun.jna.Pointer result = vTable.getClientCharSet.invoke(this);
 			return result;
 		}
 
@@ -14147,22 +14147,22 @@ public interface FbInterface extends FbClientLibrary
 		{
 			public static interface Callback_getPackage extends com.sun.jna.Callback
 			{
-				public String invoke(IRoutineMetadata self, IStatus status);
+				public com.sun.jna.Pointer invoke(IRoutineMetadata self, IStatus status);
 			}
 
 			public static interface Callback_getName extends com.sun.jna.Callback
 			{
-				public String invoke(IRoutineMetadata self, IStatus status);
+				public com.sun.jna.Pointer invoke(IRoutineMetadata self, IStatus status);
 			}
 
 			public static interface Callback_getEntryPoint extends com.sun.jna.Callback
 			{
-				public String invoke(IRoutineMetadata self, IStatus status);
+				public com.sun.jna.Pointer invoke(IRoutineMetadata self, IStatus status);
 			}
 
 			public static interface Callback_getBody extends com.sun.jna.Callback
 			{
-				public String invoke(IRoutineMetadata self, IStatus status);
+				public com.sun.jna.Pointer invoke(IRoutineMetadata self, IStatus status);
 			}
 
 			public static interface Callback_getInputMetadata extends com.sun.jna.Callback
@@ -14182,7 +14182,7 @@ public interface FbInterface extends FbClientLibrary
 
 			public static interface Callback_getTriggerTable extends com.sun.jna.Callback
 			{
-				public String invoke(IRoutineMetadata self, IStatus status);
+				public com.sun.jna.Pointer invoke(IRoutineMetadata self, IStatus status);
 			}
 
 			public static interface Callback_getTriggerType extends com.sun.jna.Callback
@@ -14203,7 +14203,7 @@ public interface FbInterface extends FbClientLibrary
 
 				getPackage = new Callback_getPackage() {
 					@Override
-					public String invoke(IRoutineMetadata self, IStatus status)
+					public com.sun.jna.Pointer invoke(IRoutineMetadata self, IStatus status)
 					{
 						try
 						{
@@ -14219,7 +14219,7 @@ public interface FbInterface extends FbClientLibrary
 
 				getName = new Callback_getName() {
 					@Override
-					public String invoke(IRoutineMetadata self, IStatus status)
+					public com.sun.jna.Pointer invoke(IRoutineMetadata self, IStatus status)
 					{
 						try
 						{
@@ -14235,7 +14235,7 @@ public interface FbInterface extends FbClientLibrary
 
 				getEntryPoint = new Callback_getEntryPoint() {
 					@Override
-					public String invoke(IRoutineMetadata self, IStatus status)
+					public com.sun.jna.Pointer invoke(IRoutineMetadata self, IStatus status)
 					{
 						try
 						{
@@ -14251,7 +14251,7 @@ public interface FbInterface extends FbClientLibrary
 
 				getBody = new Callback_getBody() {
 					@Override
-					public String invoke(IRoutineMetadata self, IStatus status)
+					public com.sun.jna.Pointer invoke(IRoutineMetadata self, IStatus status)
 					{
 						try
 						{
@@ -14315,7 +14315,7 @@ public interface FbInterface extends FbClientLibrary
 
 				getTriggerTable = new Callback_getTriggerTable() {
 					@Override
-					public String invoke(IRoutineMetadata self, IStatus status)
+					public com.sun.jna.Pointer invoke(IRoutineMetadata self, IStatus status)
 					{
 						try
 						{
@@ -14387,47 +14387,47 @@ public interface FbInterface extends FbClientLibrary
 			return new VTable(cloopVTable);
 		}
 
-		public String getPackage(IStatus status)
+		public com.sun.jna.Pointer getPackage(IStatus status)
 		{
 			VTable vTable = getVTable();
 			if (vTable.getPackage == null) {
 				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IRoutineMetadataIntf.VERSION);
 				return null;
 			}
-			String result = vTable.getPackage.invoke(this, status);
+			com.sun.jna.Pointer result = vTable.getPackage.invoke(this, status);
 			return result;
 		}
 
-		public String getName(IStatus status)
+		public com.sun.jna.Pointer getName(IStatus status)
 		{
 			VTable vTable = getVTable();
 			if (vTable.getName == null) {
 				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IRoutineMetadataIntf.VERSION);
 				return null;
 			}
-			String result = vTable.getName.invoke(this, status);
+			com.sun.jna.Pointer result = vTable.getName.invoke(this, status);
 			return result;
 		}
 
-		public String getEntryPoint(IStatus status)
+		public com.sun.jna.Pointer getEntryPoint(IStatus status)
 		{
 			VTable vTable = getVTable();
 			if (vTable.getEntryPoint == null) {
 				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IRoutineMetadataIntf.VERSION);
 				return null;
 			}
-			String result = vTable.getEntryPoint.invoke(this, status);
+			com.sun.jna.Pointer result = vTable.getEntryPoint.invoke(this, status);
 			return result;
 		}
 
-		public String getBody(IStatus status)
+		public com.sun.jna.Pointer getBody(IStatus status)
 		{
 			VTable vTable = getVTable();
 			if (vTable.getBody == null) {
 				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IRoutineMetadataIntf.VERSION);
 				return null;
 			}
-			String result = vTable.getBody.invoke(this, status);
+			com.sun.jna.Pointer result = vTable.getBody.invoke(this, status);
 			return result;
 		}
 
@@ -14464,14 +14464,14 @@ public interface FbInterface extends FbClientLibrary
 			return result;
 		}
 
-		public String getTriggerTable(IStatus status)
+		public com.sun.jna.Pointer getTriggerTable(IStatus status)
 		{
 			VTable vTable = getVTable();
 			if (vTable.getTriggerTable == null) {
 				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IRoutineMetadataIntf.VERSION);
 				return null;
 			}
-			String result = vTable.getTriggerTable.invoke(this, status);
+			com.sun.jna.Pointer result = vTable.getTriggerTable.invoke(this, status);
 			return result;
 		}
 
@@ -14917,7 +14917,7 @@ public interface FbInterface extends FbClientLibrary
 		{
 			public static interface Callback_callback extends com.sun.jna.Callback
 			{
-				public void invoke(IVersionCallback self, IStatus status, String text);
+				public void invoke(IVersionCallback self, IStatus status, com.sun.jna.Pointer text);
 			}
 
 			public VTable(com.sun.jna.Pointer pointer)
@@ -14933,7 +14933,7 @@ public interface FbInterface extends FbClientLibrary
 
 				callback = new Callback_callback() {
 					@Override
-					public void invoke(IVersionCallback self, IStatus status, String text)
+					public void invoke(IVersionCallback self, IStatus status, com.sun.jna.Pointer text)
 					{
 						try
 						{
@@ -14980,7 +14980,7 @@ public interface FbInterface extends FbClientLibrary
 			return new VTable(cloopVTable);
 		}
 
-		public void callback(IStatus status, String text)
+		public void callback(IStatus status, com.sun.jna.Pointer text)
 		{
 			VTable vTable = getVTable();
 			if (vTable.callback == null) {
@@ -15002,22 +15002,22 @@ public interface FbInterface extends FbClientLibrary
 
 			public static interface Callback_loadBlob extends com.sun.jna.Callback
 			{
-				public void invoke(IUtil self, IStatus status, com.sun.jna.ptr.LongByReference blobId, IAttachment att, ITransaction tra, String file, boolean txt);
+				public void invoke(IUtil self, IStatus status, com.sun.jna.ptr.LongByReference blobId, IAttachment att, ITransaction tra, com.sun.jna.Pointer file, boolean txt);
 			}
 
 			public static interface Callback_dumpBlob extends com.sun.jna.Callback
 			{
-				public void invoke(IUtil self, IStatus status, com.sun.jna.ptr.LongByReference blobId, IAttachment att, ITransaction tra, String file, boolean txt);
+				public void invoke(IUtil self, IStatus status, com.sun.jna.ptr.LongByReference blobId, IAttachment att, ITransaction tra, com.sun.jna.Pointer file, boolean txt);
 			}
 
 			public static interface Callback_getPerfCounters extends com.sun.jna.Callback
 			{
-				public void invoke(IUtil self, IStatus status, IAttachment att, String countersSet, long[] counters);
+				public void invoke(IUtil self, IStatus status, IAttachment att, com.sun.jna.Pointer countersSet, com.sun.jna.Pointer counters);
 			}
 
 			public static interface Callback_executeCreateDatabase extends com.sun.jna.Callback
 			{
-				public IAttachment invoke(IUtil self, IStatus status, int stmtLength, byte[] creatDBstatement, int dialect, boolean[] stmtIsCreateDb);
+				public IAttachment invoke(IUtil self, IStatus status, int stmtLength, com.sun.jna.Pointer creatDBstatement, int dialect, com.sun.jna.Pointer stmtIsCreateDb);
 			}
 
 			public static interface Callback_decodeDate extends com.sun.jna.Callback
@@ -15052,7 +15052,7 @@ public interface FbInterface extends FbClientLibrary
 
 			public static interface Callback_getXpbBuilder extends com.sun.jna.Callback
 			{
-				public IXpbBuilder invoke(IUtil self, IStatus status, int kind, byte[] buf, int len);
+				public IXpbBuilder invoke(IUtil self, IStatus status, int kind, com.sun.jna.Pointer buf, int len);
 			}
 
 			public static interface Callback_setOffsets extends com.sun.jna.Callback
@@ -15082,12 +15082,12 @@ public interface FbInterface extends FbClientLibrary
 
 			public static interface Callback_encodeTimeTz extends com.sun.jna.Callback
 			{
-				public void invoke(IUtil self, IStatus status, ISC_TIME_TZ[] timeTz, int hours, int minutes, int seconds, int fractions, String timeZone);
+				public void invoke(IUtil self, IStatus status, ISC_TIME_TZ[] timeTz, int hours, int minutes, int seconds, int fractions, com.sun.jna.Pointer timeZone);
 			}
 
 			public static interface Callback_encodeTimeStampTz extends com.sun.jna.Callback
 			{
-				public void invoke(IUtil self, IStatus status, ISC_TIMESTAMP_TZ[] timeStampTz, int year, int month, int day, int hours, int minutes, int seconds, int fractions, String timeZone);
+				public void invoke(IUtil self, IStatus status, ISC_TIMESTAMP_TZ[] timeStampTz, int year, int month, int day, int hours, int minutes, int seconds, int fractions, com.sun.jna.Pointer timeZone);
 			}
 
 			public static interface Callback_getInt128 extends com.sun.jna.Callback
@@ -15133,7 +15133,7 @@ public interface FbInterface extends FbClientLibrary
 
 				loadBlob = new Callback_loadBlob() {
 					@Override
-					public void invoke(IUtil self, IStatus status, com.sun.jna.ptr.LongByReference blobId, IAttachment att, ITransaction tra, String file, boolean txt)
+					public void invoke(IUtil self, IStatus status, com.sun.jna.ptr.LongByReference blobId, IAttachment att, ITransaction tra, com.sun.jna.Pointer file, boolean txt)
 					{
 						try
 						{
@@ -15148,7 +15148,7 @@ public interface FbInterface extends FbClientLibrary
 
 				dumpBlob = new Callback_dumpBlob() {
 					@Override
-					public void invoke(IUtil self, IStatus status, com.sun.jna.ptr.LongByReference blobId, IAttachment att, ITransaction tra, String file, boolean txt)
+					public void invoke(IUtil self, IStatus status, com.sun.jna.ptr.LongByReference blobId, IAttachment att, ITransaction tra, com.sun.jna.Pointer file, boolean txt)
 					{
 						try
 						{
@@ -15163,7 +15163,7 @@ public interface FbInterface extends FbClientLibrary
 
 				getPerfCounters = new Callback_getPerfCounters() {
 					@Override
-					public void invoke(IUtil self, IStatus status, IAttachment att, String countersSet, long[] counters)
+					public void invoke(IUtil self, IStatus status, IAttachment att, com.sun.jna.Pointer countersSet, com.sun.jna.Pointer counters)
 					{
 						try
 						{
@@ -15178,7 +15178,7 @@ public interface FbInterface extends FbClientLibrary
 
 				executeCreateDatabase = new Callback_executeCreateDatabase() {
 					@Override
-					public IAttachment invoke(IUtil self, IStatus status, int stmtLength, byte[] creatDBstatement, int dialect, boolean[] stmtIsCreateDb)
+					public IAttachment invoke(IUtil self, IStatus status, int stmtLength, com.sun.jna.Pointer creatDBstatement, int dialect, com.sun.jna.Pointer stmtIsCreateDb)
 					{
 						try
 						{
@@ -15242,7 +15242,7 @@ public interface FbInterface extends FbClientLibrary
 
 				getXpbBuilder = new Callback_getXpbBuilder() {
 					@Override
-					public IXpbBuilder invoke(IUtil self, IStatus status, int kind, byte[] buf, int len)
+					public IXpbBuilder invoke(IUtil self, IStatus status, int kind, com.sun.jna.Pointer buf, int len)
 					{
 						try
 						{
@@ -15336,7 +15336,7 @@ public interface FbInterface extends FbClientLibrary
 
 				encodeTimeTz = new Callback_encodeTimeTz() {
 					@Override
-					public void invoke(IUtil self, IStatus status, ISC_TIME_TZ[] timeTz, int hours, int minutes, int seconds, int fractions, String timeZone)
+					public void invoke(IUtil self, IStatus status, ISC_TIME_TZ[] timeTz, int hours, int minutes, int seconds, int fractions, com.sun.jna.Pointer timeZone)
 					{
 						try
 						{
@@ -15351,7 +15351,7 @@ public interface FbInterface extends FbClientLibrary
 
 				encodeTimeStampTz = new Callback_encodeTimeStampTz() {
 					@Override
-					public void invoke(IUtil self, IStatus status, ISC_TIMESTAMP_TZ[] timeStampTz, int year, int month, int day, int hours, int minutes, int seconds, int fractions, String timeZone)
+					public void invoke(IUtil self, IStatus status, ISC_TIMESTAMP_TZ[] timeStampTz, int year, int month, int day, int hours, int minutes, int seconds, int fractions, com.sun.jna.Pointer timeZone)
 					{
 						try
 						{
@@ -15475,7 +15475,7 @@ public interface FbInterface extends FbClientLibrary
 			vTable.getFbVersion.invoke(this, status, att, callback);
 		}
 
-		public void loadBlob(IStatus status, com.sun.jna.ptr.LongByReference blobId, IAttachment att, ITransaction tra, String file, boolean txt)
+		public void loadBlob(IStatus status, com.sun.jna.ptr.LongByReference blobId, IAttachment att, ITransaction tra, com.sun.jna.Pointer file, boolean txt)
 		{
 			VTable vTable = getVTable();
 			if (vTable.loadBlob == null) {
@@ -15485,7 +15485,7 @@ public interface FbInterface extends FbClientLibrary
 			vTable.loadBlob.invoke(this, status, blobId, att, tra, file, txt);
 		}
 
-		public void dumpBlob(IStatus status, com.sun.jna.ptr.LongByReference blobId, IAttachment att, ITransaction tra, String file, boolean txt)
+		public void dumpBlob(IStatus status, com.sun.jna.ptr.LongByReference blobId, IAttachment att, ITransaction tra, com.sun.jna.Pointer file, boolean txt)
 		{
 			VTable vTable = getVTable();
 			if (vTable.dumpBlob == null) {
@@ -15495,7 +15495,7 @@ public interface FbInterface extends FbClientLibrary
 			vTable.dumpBlob.invoke(this, status, blobId, att, tra, file, txt);
 		}
 
-		public void getPerfCounters(IStatus status, IAttachment att, String countersSet, long[] counters)
+		public void getPerfCounters(IStatus status, IAttachment att, com.sun.jna.Pointer countersSet, com.sun.jna.Pointer counters)
 		{
 			VTable vTable = getVTable();
 			if (vTable.getPerfCounters == null) {
@@ -15505,7 +15505,7 @@ public interface FbInterface extends FbClientLibrary
 			vTable.getPerfCounters.invoke(this, status, att, countersSet, counters);
 		}
 
-		public IAttachment executeCreateDatabase(IStatus status, int stmtLength, byte[] creatDBstatement, int dialect, boolean[] stmtIsCreateDb)
+		public IAttachment executeCreateDatabase(IStatus status, int stmtLength, com.sun.jna.Pointer creatDBstatement, int dialect, com.sun.jna.Pointer stmtIsCreateDb)
 		{
 			VTable vTable = getVTable();
 			if (vTable.executeCreateDatabase == null) {
@@ -15574,7 +15574,7 @@ public interface FbInterface extends FbClientLibrary
 			return result;
 		}
 
-		public IXpbBuilder getXpbBuilder(IStatus status, int kind, byte[] buf, int len)
+		public IXpbBuilder getXpbBuilder(IStatus status, int kind, com.sun.jna.Pointer buf, int len)
 		{
 			VTable vTable = getVTable();
 			if (vTable.getXpbBuilder == null) {
@@ -15658,7 +15658,7 @@ public interface FbInterface extends FbClientLibrary
 			vTable.decodeTimeStampTz.invoke(this, status, timeStampTz, year, month, day, hours, minutes, seconds, fractions, timeZoneBufferLength, timeZoneBuffer);
 		}
 
-		public void encodeTimeTz(IStatus status, ISC_TIME_TZ[] timeTz, int hours, int minutes, int seconds, int fractions, String timeZone)
+		public void encodeTimeTz(IStatus status, ISC_TIME_TZ[] timeTz, int hours, int minutes, int seconds, int fractions, com.sun.jna.Pointer timeZone)
 		{
 			VTable vTable = getVTable();
 			if (vTable.version < 3)
@@ -15673,7 +15673,7 @@ public interface FbInterface extends FbClientLibrary
 			vTable.encodeTimeTz.invoke(this, status, timeTz, hours, minutes, seconds, fractions, timeZone);
 		}
 
-		public void encodeTimeStampTz(IStatus status, ISC_TIMESTAMP_TZ[] timeStampTz, int year, int month, int day, int hours, int minutes, int seconds, int fractions, String timeZone)
+		public void encodeTimeStampTz(IStatus status, ISC_TIMESTAMP_TZ[] timeStampTz, int year, int month, int day, int hours, int minutes, int seconds, int fractions, com.sun.jna.Pointer timeZone)
 		{
 			VTable vTable = getVTable();
 			if (vTable.version < 3)
@@ -15846,7 +15846,7 @@ public interface FbInterface extends FbClientLibrary
 
 			public static interface Callback_insertString extends com.sun.jna.Callback
 			{
-				public void invoke(IXpbBuilder self, IStatus status, byte tag, String str);
+				public void invoke(IXpbBuilder self, IStatus status, byte tag, com.sun.jna.Pointer str);
 			}
 
 			public static interface Callback_insertTag extends com.sun.jna.Callback
@@ -15901,7 +15901,7 @@ public interface FbInterface extends FbClientLibrary
 
 			public static interface Callback_getString extends com.sun.jna.Callback
 			{
-				public String invoke(IXpbBuilder self, IStatus status);
+				public com.sun.jna.Pointer invoke(IXpbBuilder self, IStatus status);
 			}
 
 			public static interface Callback_getBytes extends com.sun.jna.Callback
@@ -16007,7 +16007,7 @@ public interface FbInterface extends FbClientLibrary
 
 				insertString = new Callback_insertString() {
 					@Override
-					public void invoke(IXpbBuilder self, IStatus status, byte tag, String str)
+					public void invoke(IXpbBuilder self, IStatus status, byte tag, com.sun.jna.Pointer str)
 					{
 						try
 						{
@@ -16179,7 +16179,7 @@ public interface FbInterface extends FbClientLibrary
 
 				getString = new Callback_getString() {
 					@Override
-					public String invoke(IXpbBuilder self, IStatus status)
+					public com.sun.jna.Pointer invoke(IXpbBuilder self, IStatus status)
 					{
 						try
 						{
@@ -16344,7 +16344,7 @@ public interface FbInterface extends FbClientLibrary
 			vTable.insertBytes.invoke(this, status, tag, bytes, length);
 		}
 
-		public void insertString(IStatus status, byte tag, String str)
+		public void insertString(IStatus status, byte tag, com.sun.jna.Pointer str)
 		{
 			VTable vTable = getVTable();
 			if (vTable.insertString == null) {
@@ -16461,14 +16461,14 @@ public interface FbInterface extends FbClientLibrary
 			return result;
 		}
 
-		public String getString(IStatus status)
+		public com.sun.jna.Pointer getString(IStatus status)
 		{
 			VTable vTable = getVTable();
 			if (vTable.getString == null) {
 				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, IXpbBuilderIntf.VERSION);
 				return null;
 			}
-			String result = vTable.getString.invoke(this, status);
+			com.sun.jna.Pointer result = vTable.getString.invoke(this, status);
 			return result;
 		}
 
@@ -16522,32 +16522,32 @@ public interface FbInterface extends FbClientLibrary
 
 			public static interface Callback_getUserName extends com.sun.jna.Callback
 			{
-				public String invoke(ITraceConnection self);
+				public com.sun.jna.Pointer invoke(ITraceConnection self);
 			}
 
 			public static interface Callback_getRoleName extends com.sun.jna.Callback
 			{
-				public String invoke(ITraceConnection self);
+				public com.sun.jna.Pointer invoke(ITraceConnection self);
 			}
 
 			public static interface Callback_getCharSet extends com.sun.jna.Callback
 			{
-				public String invoke(ITraceConnection self);
+				public com.sun.jna.Pointer invoke(ITraceConnection self);
 			}
 
 			public static interface Callback_getRemoteProtocol extends com.sun.jna.Callback
 			{
-				public String invoke(ITraceConnection self);
+				public com.sun.jna.Pointer invoke(ITraceConnection self);
 			}
 
 			public static interface Callback_getRemoteAddress extends com.sun.jna.Callback
 			{
-				public String invoke(ITraceConnection self);
+				public com.sun.jna.Pointer invoke(ITraceConnection self);
 			}
 
 			public static interface Callback_getRemoteHwAddress extends com.sun.jna.Callback
 			{
-				public String invoke(ITraceConnection self);
+				public com.sun.jna.Pointer invoke(ITraceConnection self);
 			}
 
 			public static interface Callback_getRemoteProcessID extends com.sun.jna.Callback
@@ -16557,7 +16557,7 @@ public interface FbInterface extends FbClientLibrary
 
 			public static interface Callback_getRemoteProcessName extends com.sun.jna.Callback
 			{
-				public String invoke(ITraceConnection self);
+				public com.sun.jna.Pointer invoke(ITraceConnection self);
 			}
 
 			public VTable(com.sun.jna.Pointer pointer)
@@ -16589,7 +16589,7 @@ public interface FbInterface extends FbClientLibrary
 
 				getUserName = new Callback_getUserName() {
 					@Override
-					public String invoke(ITraceConnection self)
+					public com.sun.jna.Pointer invoke(ITraceConnection self)
 					{
 						return obj.getUserName();
 					}
@@ -16597,7 +16597,7 @@ public interface FbInterface extends FbClientLibrary
 
 				getRoleName = new Callback_getRoleName() {
 					@Override
-					public String invoke(ITraceConnection self)
+					public com.sun.jna.Pointer invoke(ITraceConnection self)
 					{
 						return obj.getRoleName();
 					}
@@ -16605,7 +16605,7 @@ public interface FbInterface extends FbClientLibrary
 
 				getCharSet = new Callback_getCharSet() {
 					@Override
-					public String invoke(ITraceConnection self)
+					public com.sun.jna.Pointer invoke(ITraceConnection self)
 					{
 						return obj.getCharSet();
 					}
@@ -16613,7 +16613,7 @@ public interface FbInterface extends FbClientLibrary
 
 				getRemoteProtocol = new Callback_getRemoteProtocol() {
 					@Override
-					public String invoke(ITraceConnection self)
+					public com.sun.jna.Pointer invoke(ITraceConnection self)
 					{
 						return obj.getRemoteProtocol();
 					}
@@ -16621,7 +16621,7 @@ public interface FbInterface extends FbClientLibrary
 
 				getRemoteAddress = new Callback_getRemoteAddress() {
 					@Override
-					public String invoke(ITraceConnection self)
+					public com.sun.jna.Pointer invoke(ITraceConnection self)
 					{
 						return obj.getRemoteAddress();
 					}
@@ -16629,7 +16629,7 @@ public interface FbInterface extends FbClientLibrary
 
 				getRemoteHwAddress = new Callback_getRemoteHwAddress() {
 					@Override
-					public String invoke(ITraceConnection self)
+					public com.sun.jna.Pointer invoke(ITraceConnection self)
 					{
 						return obj.getRemoteHwAddress();
 					}
@@ -16645,7 +16645,7 @@ public interface FbInterface extends FbClientLibrary
 
 				getRemoteProcessName = new Callback_getRemoteProcessName() {
 					@Override
-					public String invoke(ITraceConnection self)
+					public com.sun.jna.Pointer invoke(ITraceConnection self)
 					{
 						return obj.getRemoteProcessName();
 					}
@@ -16714,63 +16714,63 @@ public interface FbInterface extends FbClientLibrary
 			return result;
 		}
 
-		public String getUserName()
+		public com.sun.jna.Pointer getUserName()
 		{
 			VTable vTable = getVTable();
 			if (vTable.getUserName == null) {
 				return null;
 			}
-			String result = vTable.getUserName.invoke(this);
+			com.sun.jna.Pointer result = vTable.getUserName.invoke(this);
 			return result;
 		}
 
-		public String getRoleName()
+		public com.sun.jna.Pointer getRoleName()
 		{
 			VTable vTable = getVTable();
 			if (vTable.getRoleName == null) {
 				return null;
 			}
-			String result = vTable.getRoleName.invoke(this);
+			com.sun.jna.Pointer result = vTable.getRoleName.invoke(this);
 			return result;
 		}
 
-		public String getCharSet()
+		public com.sun.jna.Pointer getCharSet()
 		{
 			VTable vTable = getVTable();
 			if (vTable.getCharSet == null) {
 				return null;
 			}
-			String result = vTable.getCharSet.invoke(this);
+			com.sun.jna.Pointer result = vTable.getCharSet.invoke(this);
 			return result;
 		}
 
-		public String getRemoteProtocol()
+		public com.sun.jna.Pointer getRemoteProtocol()
 		{
 			VTable vTable = getVTable();
 			if (vTable.getRemoteProtocol == null) {
 				return null;
 			}
-			String result = vTable.getRemoteProtocol.invoke(this);
+			com.sun.jna.Pointer result = vTable.getRemoteProtocol.invoke(this);
 			return result;
 		}
 
-		public String getRemoteAddress()
+		public com.sun.jna.Pointer getRemoteAddress()
 		{
 			VTable vTable = getVTable();
 			if (vTable.getRemoteAddress == null) {
 				return null;
 			}
-			String result = vTable.getRemoteAddress.invoke(this);
+			com.sun.jna.Pointer result = vTable.getRemoteAddress.invoke(this);
 			return result;
 		}
 
-		public String getRemoteHwAddress()
+		public com.sun.jna.Pointer getRemoteHwAddress()
 		{
 			VTable vTable = getVTable();
 			if (vTable.getRemoteHwAddress == null) {
 				return null;
 			}
-			String result = vTable.getRemoteHwAddress.invoke(this);
+			com.sun.jna.Pointer result = vTable.getRemoteHwAddress.invoke(this);
 			return result;
 		}
 
@@ -16784,13 +16784,13 @@ public interface FbInterface extends FbClientLibrary
 			return result;
 		}
 
-		public String getRemoteProcessName()
+		public com.sun.jna.Pointer getRemoteProcessName()
 		{
 			VTable vTable = getVTable();
 			if (vTable.getRemoteProcessName == null) {
 				return null;
 			}
-			String result = vTable.getRemoteProcessName.invoke(this);
+			com.sun.jna.Pointer result = vTable.getRemoteProcessName.invoke(this);
 			return result;
 		}
 	}
@@ -16806,7 +16806,7 @@ public interface FbInterface extends FbClientLibrary
 
 			public static interface Callback_getDatabaseName extends com.sun.jna.Callback
 			{
-				public String invoke(ITraceDatabaseConnection self);
+				public com.sun.jna.Pointer invoke(ITraceDatabaseConnection self);
 			}
 
 			public VTable(com.sun.jna.Pointer pointer)
@@ -16830,7 +16830,7 @@ public interface FbInterface extends FbClientLibrary
 
 				getDatabaseName = new Callback_getDatabaseName() {
 					@Override
-					public String invoke(ITraceDatabaseConnection self)
+					public com.sun.jna.Pointer invoke(ITraceDatabaseConnection self)
 					{
 						return obj.getDatabaseName();
 					}
@@ -16881,13 +16881,13 @@ public interface FbInterface extends FbClientLibrary
 			return result;
 		}
 
-		public String getDatabaseName()
+		public com.sun.jna.Pointer getDatabaseName()
 		{
 			VTable vTable = getVTable();
 			if (vTable.getDatabaseName == null) {
 				return null;
 			}
-			String result = vTable.getDatabaseName.invoke(this);
+			com.sun.jna.Pointer result = vTable.getDatabaseName.invoke(this);
 			return result;
 		}
 	}
@@ -17133,7 +17133,7 @@ public interface FbInterface extends FbClientLibrary
 
 			public static interface Callback_getTextUTF8 extends com.sun.jna.Callback
 			{
-				public String invoke(ITraceParams self, IStatus status, int idx);
+				public com.sun.jna.Pointer invoke(ITraceParams self, IStatus status, int idx);
 			}
 
 			public VTable(com.sun.jna.Pointer pointer)
@@ -17165,7 +17165,7 @@ public interface FbInterface extends FbClientLibrary
 
 				getTextUTF8 = new Callback_getTextUTF8() {
 					@Override
-					public String invoke(ITraceParams self, IStatus status, int idx)
+					public com.sun.jna.Pointer invoke(ITraceParams self, IStatus status, int idx)
 					{
 						try
 						{
@@ -17235,7 +17235,7 @@ public interface FbInterface extends FbClientLibrary
 			return result;
 		}
 
-		public String getTextUTF8(IStatus status, int idx)
+		public com.sun.jna.Pointer getTextUTF8(IStatus status, int idx)
 		{
 			VTable vTable = getVTable();
 			if (vTable.version < 3)
@@ -17247,7 +17247,7 @@ public interface FbInterface extends FbClientLibrary
 				FbInterfaceException.setVersionError(status, this.getClass().getName(), vTable.version, ITraceParamsIntf.VERSION);
 				return null;
 			}
-			String result = vTable.getTextUTF8.invoke(this, status, idx);
+			com.sun.jna.Pointer result = vTable.getTextUTF8.invoke(this, status, idx);
 			return result;
 		}
 	}
@@ -17355,12 +17355,12 @@ public interface FbInterface extends FbClientLibrary
 		{
 			public static interface Callback_getText extends com.sun.jna.Callback
 			{
-				public String invoke(ITraceSQLStatement self);
+				public com.sun.jna.Pointer invoke(ITraceSQLStatement self);
 			}
 
 			public static interface Callback_getPlan extends com.sun.jna.Callback
 			{
-				public String invoke(ITraceSQLStatement self);
+				public com.sun.jna.Pointer invoke(ITraceSQLStatement self);
 			}
 
 			public static interface Callback_getInputs extends com.sun.jna.Callback
@@ -17370,12 +17370,12 @@ public interface FbInterface extends FbClientLibrary
 
 			public static interface Callback_getTextUTF8 extends com.sun.jna.Callback
 			{
-				public String invoke(ITraceSQLStatement self);
+				public com.sun.jna.Pointer invoke(ITraceSQLStatement self);
 			}
 
 			public static interface Callback_getExplainedPlan extends com.sun.jna.Callback
 			{
-				public String invoke(ITraceSQLStatement self);
+				public com.sun.jna.Pointer invoke(ITraceSQLStatement self);
 			}
 
 			public VTable(com.sun.jna.Pointer pointer)
@@ -17391,7 +17391,7 @@ public interface FbInterface extends FbClientLibrary
 
 				getText = new Callback_getText() {
 					@Override
-					public String invoke(ITraceSQLStatement self)
+					public com.sun.jna.Pointer invoke(ITraceSQLStatement self)
 					{
 						return obj.getText();
 					}
@@ -17399,7 +17399,7 @@ public interface FbInterface extends FbClientLibrary
 
 				getPlan = new Callback_getPlan() {
 					@Override
-					public String invoke(ITraceSQLStatement self)
+					public com.sun.jna.Pointer invoke(ITraceSQLStatement self)
 					{
 						return obj.getPlan();
 					}
@@ -17415,7 +17415,7 @@ public interface FbInterface extends FbClientLibrary
 
 				getTextUTF8 = new Callback_getTextUTF8() {
 					@Override
-					public String invoke(ITraceSQLStatement self)
+					public com.sun.jna.Pointer invoke(ITraceSQLStatement self)
 					{
 						return obj.getTextUTF8();
 					}
@@ -17423,7 +17423,7 @@ public interface FbInterface extends FbClientLibrary
 
 				getExplainedPlan = new Callback_getExplainedPlan() {
 					@Override
-					public String invoke(ITraceSQLStatement self)
+					public com.sun.jna.Pointer invoke(ITraceSQLStatement self)
 					{
 						return obj.getExplainedPlan();
 					}
@@ -17467,23 +17467,23 @@ public interface FbInterface extends FbClientLibrary
 			return new VTable(cloopVTable);
 		}
 
-		public String getText()
+		public com.sun.jna.Pointer getText()
 		{
 			VTable vTable = getVTable();
 			if (vTable.getText == null) {
 				return null;
 			}
-			String result = vTable.getText.invoke(this);
+			com.sun.jna.Pointer result = vTable.getText.invoke(this);
 			return result;
 		}
 
-		public String getPlan()
+		public com.sun.jna.Pointer getPlan()
 		{
 			VTable vTable = getVTable();
 			if (vTable.getPlan == null) {
 				return null;
 			}
-			String result = vTable.getPlan.invoke(this);
+			com.sun.jna.Pointer result = vTable.getPlan.invoke(this);
 			return result;
 		}
 
@@ -17497,23 +17497,23 @@ public interface FbInterface extends FbClientLibrary
 			return result;
 		}
 
-		public String getTextUTF8()
+		public com.sun.jna.Pointer getTextUTF8()
 		{
 			VTable vTable = getVTable();
 			if (vTable.getTextUTF8 == null) {
 				return null;
 			}
-			String result = vTable.getTextUTF8.invoke(this);
+			com.sun.jna.Pointer result = vTable.getTextUTF8.invoke(this);
 			return result;
 		}
 
-		public String getExplainedPlan()
+		public com.sun.jna.Pointer getExplainedPlan()
 		{
 			VTable vTable = getVTable();
 			if (vTable.getExplainedPlan == null) {
 				return null;
 			}
-			String result = vTable.getExplainedPlan.invoke(this);
+			com.sun.jna.Pointer result = vTable.getExplainedPlan.invoke(this);
 			return result;
 		}
 	}
@@ -17534,7 +17534,7 @@ public interface FbInterface extends FbClientLibrary
 
 			public static interface Callback_getText extends com.sun.jna.Callback
 			{
-				public String invoke(ITraceBLRStatement self);
+				public com.sun.jna.Pointer invoke(ITraceBLRStatement self);
 			}
 
 			public VTable(com.sun.jna.Pointer pointer)
@@ -17566,7 +17566,7 @@ public interface FbInterface extends FbClientLibrary
 
 				getText = new Callback_getText() {
 					@Override
-					public String invoke(ITraceBLRStatement self)
+					public com.sun.jna.Pointer invoke(ITraceBLRStatement self)
 					{
 						return obj.getText();
 					}
@@ -17628,13 +17628,13 @@ public interface FbInterface extends FbClientLibrary
 			return result;
 		}
 
-		public String getText()
+		public com.sun.jna.Pointer getText()
 		{
 			VTable vTable = getVTable();
 			if (vTable.getText == null) {
 				return null;
 			}
-			String result = vTable.getText.invoke(this);
+			com.sun.jna.Pointer result = vTable.getText.invoke(this);
 			return result;
 		}
 	}
@@ -17655,7 +17655,7 @@ public interface FbInterface extends FbClientLibrary
 
 			public static interface Callback_getText extends com.sun.jna.Callback
 			{
-				public String invoke(ITraceDYNRequest self);
+				public com.sun.jna.Pointer invoke(ITraceDYNRequest self);
 			}
 
 			public VTable(com.sun.jna.Pointer pointer)
@@ -17687,7 +17687,7 @@ public interface FbInterface extends FbClientLibrary
 
 				getText = new Callback_getText() {
 					@Override
-					public String invoke(ITraceDYNRequest self)
+					public com.sun.jna.Pointer invoke(ITraceDYNRequest self)
 					{
 						return obj.getText();
 					}
@@ -17749,13 +17749,13 @@ public interface FbInterface extends FbClientLibrary
 			return result;
 		}
 
-		public String getText()
+		public com.sun.jna.Pointer getText()
 		{
 			VTable vTable = getVTable();
 			if (vTable.getText == null) {
 				return null;
 			}
-			String result = vTable.getText.invoke(this);
+			com.sun.jna.Pointer result = vTable.getText.invoke(this);
 			return result;
 		}
 	}
@@ -17766,17 +17766,17 @@ public interface FbInterface extends FbClientLibrary
 		{
 			public static interface Callback_getNameSpace extends com.sun.jna.Callback
 			{
-				public String invoke(ITraceContextVariable self);
+				public com.sun.jna.Pointer invoke(ITraceContextVariable self);
 			}
 
 			public static interface Callback_getVarName extends com.sun.jna.Callback
 			{
-				public String invoke(ITraceContextVariable self);
+				public com.sun.jna.Pointer invoke(ITraceContextVariable self);
 			}
 
 			public static interface Callback_getVarValue extends com.sun.jna.Callback
 			{
-				public String invoke(ITraceContextVariable self);
+				public com.sun.jna.Pointer invoke(ITraceContextVariable self);
 			}
 
 			public VTable(com.sun.jna.Pointer pointer)
@@ -17792,7 +17792,7 @@ public interface FbInterface extends FbClientLibrary
 
 				getNameSpace = new Callback_getNameSpace() {
 					@Override
-					public String invoke(ITraceContextVariable self)
+					public com.sun.jna.Pointer invoke(ITraceContextVariable self)
 					{
 						return obj.getNameSpace();
 					}
@@ -17800,7 +17800,7 @@ public interface FbInterface extends FbClientLibrary
 
 				getVarName = new Callback_getVarName() {
 					@Override
-					public String invoke(ITraceContextVariable self)
+					public com.sun.jna.Pointer invoke(ITraceContextVariable self)
 					{
 						return obj.getVarName();
 					}
@@ -17808,7 +17808,7 @@ public interface FbInterface extends FbClientLibrary
 
 				getVarValue = new Callback_getVarValue() {
 					@Override
-					public String invoke(ITraceContextVariable self)
+					public com.sun.jna.Pointer invoke(ITraceContextVariable self)
 					{
 						return obj.getVarValue();
 					}
@@ -17850,33 +17850,33 @@ public interface FbInterface extends FbClientLibrary
 			return new VTable(cloopVTable);
 		}
 
-		public String getNameSpace()
+		public com.sun.jna.Pointer getNameSpace()
 		{
 			VTable vTable = getVTable();
 			if (vTable.getNameSpace == null) {
 				return null;
 			}
-			String result = vTable.getNameSpace.invoke(this);
+			com.sun.jna.Pointer result = vTable.getNameSpace.invoke(this);
 			return result;
 		}
 
-		public String getVarName()
+		public com.sun.jna.Pointer getVarName()
 		{
 			VTable vTable = getVTable();
 			if (vTable.getVarName == null) {
 				return null;
 			}
-			String result = vTable.getVarName.invoke(this);
+			com.sun.jna.Pointer result = vTable.getVarName.invoke(this);
 			return result;
 		}
 
-		public String getVarValue()
+		public com.sun.jna.Pointer getVarValue()
 		{
 			VTable vTable = getVTable();
 			if (vTable.getVarValue == null) {
 				return null;
 			}
-			String result = vTable.getVarValue.invoke(this);
+			com.sun.jna.Pointer result = vTable.getVarValue.invoke(this);
 			return result;
 		}
 	}
@@ -17887,7 +17887,7 @@ public interface FbInterface extends FbClientLibrary
 		{
 			public static interface Callback_getProcName extends com.sun.jna.Callback
 			{
-				public String invoke(ITraceProcedure self);
+				public com.sun.jna.Pointer invoke(ITraceProcedure self);
 			}
 
 			public static interface Callback_getInputs extends com.sun.jna.Callback
@@ -17913,7 +17913,7 @@ public interface FbInterface extends FbClientLibrary
 
 				getProcName = new Callback_getProcName() {
 					@Override
-					public String invoke(ITraceProcedure self)
+					public com.sun.jna.Pointer invoke(ITraceProcedure self)
 					{
 						return obj.getProcName();
 					}
@@ -17971,13 +17971,13 @@ public interface FbInterface extends FbClientLibrary
 			return new VTable(cloopVTable);
 		}
 
-		public String getProcName()
+		public com.sun.jna.Pointer getProcName()
 		{
 			VTable vTable = getVTable();
 			if (vTable.getProcName == null) {
 				return null;
 			}
-			String result = vTable.getProcName.invoke(this);
+			com.sun.jna.Pointer result = vTable.getProcName.invoke(this);
 			return result;
 		}
 
@@ -18008,7 +18008,7 @@ public interface FbInterface extends FbClientLibrary
 		{
 			public static interface Callback_getFuncName extends com.sun.jna.Callback
 			{
-				public String invoke(ITraceFunction self);
+				public com.sun.jna.Pointer invoke(ITraceFunction self);
 			}
 
 			public static interface Callback_getInputs extends com.sun.jna.Callback
@@ -18039,7 +18039,7 @@ public interface FbInterface extends FbClientLibrary
 
 				getFuncName = new Callback_getFuncName() {
 					@Override
-					public String invoke(ITraceFunction self)
+					public com.sun.jna.Pointer invoke(ITraceFunction self)
 					{
 						return obj.getFuncName();
 					}
@@ -18106,13 +18106,13 @@ public interface FbInterface extends FbClientLibrary
 			return new VTable(cloopVTable);
 		}
 
-		public String getFuncName()
+		public com.sun.jna.Pointer getFuncName()
 		{
 			VTable vTable = getVTable();
 			if (vTable.getFuncName == null) {
 				return null;
 			}
-			String result = vTable.getFuncName.invoke(this);
+			com.sun.jna.Pointer result = vTable.getFuncName.invoke(this);
 			return result;
 		}
 
@@ -18153,12 +18153,12 @@ public interface FbInterface extends FbClientLibrary
 		{
 			public static interface Callback_getTriggerName extends com.sun.jna.Callback
 			{
-				public String invoke(ITraceTrigger self);
+				public com.sun.jna.Pointer invoke(ITraceTrigger self);
 			}
 
 			public static interface Callback_getRelationName extends com.sun.jna.Callback
 			{
-				public String invoke(ITraceTrigger self);
+				public com.sun.jna.Pointer invoke(ITraceTrigger self);
 			}
 
 			public static interface Callback_getAction extends com.sun.jna.Callback
@@ -18189,7 +18189,7 @@ public interface FbInterface extends FbClientLibrary
 
 				getTriggerName = new Callback_getTriggerName() {
 					@Override
-					public String invoke(ITraceTrigger self)
+					public com.sun.jna.Pointer invoke(ITraceTrigger self)
 					{
 						return obj.getTriggerName();
 					}
@@ -18197,7 +18197,7 @@ public interface FbInterface extends FbClientLibrary
 
 				getRelationName = new Callback_getRelationName() {
 					@Override
-					public String invoke(ITraceTrigger self)
+					public com.sun.jna.Pointer invoke(ITraceTrigger self)
 					{
 						return obj.getRelationName();
 					}
@@ -18265,23 +18265,23 @@ public interface FbInterface extends FbClientLibrary
 			return new VTable(cloopVTable);
 		}
 
-		public String getTriggerName()
+		public com.sun.jna.Pointer getTriggerName()
 		{
 			VTable vTable = getVTable();
 			if (vTable.getTriggerName == null) {
 				return null;
 			}
-			String result = vTable.getTriggerName.invoke(this);
+			com.sun.jna.Pointer result = vTable.getTriggerName.invoke(this);
 			return result;
 		}
 
-		public String getRelationName()
+		public com.sun.jna.Pointer getRelationName()
 		{
 			VTable vTable = getVTable();
 			if (vTable.getRelationName == null) {
 				return null;
 			}
-			String result = vTable.getRelationName.invoke(this);
+			com.sun.jna.Pointer result = vTable.getRelationName.invoke(this);
 			return result;
 		}
 
@@ -18327,12 +18327,12 @@ public interface FbInterface extends FbClientLibrary
 
 			public static interface Callback_getServiceMgr extends com.sun.jna.Callback
 			{
-				public String invoke(ITraceServiceConnection self);
+				public com.sun.jna.Pointer invoke(ITraceServiceConnection self);
 			}
 
 			public static interface Callback_getServiceName extends com.sun.jna.Callback
 			{
-				public String invoke(ITraceServiceConnection self);
+				public com.sun.jna.Pointer invoke(ITraceServiceConnection self);
 			}
 
 			public VTable(com.sun.jna.Pointer pointer)
@@ -18356,7 +18356,7 @@ public interface FbInterface extends FbClientLibrary
 
 				getServiceMgr = new Callback_getServiceMgr() {
 					@Override
-					public String invoke(ITraceServiceConnection self)
+					public com.sun.jna.Pointer invoke(ITraceServiceConnection self)
 					{
 						return obj.getServiceMgr();
 					}
@@ -18364,7 +18364,7 @@ public interface FbInterface extends FbClientLibrary
 
 				getServiceName = new Callback_getServiceName() {
 					@Override
-					public String invoke(ITraceServiceConnection self)
+					public com.sun.jna.Pointer invoke(ITraceServiceConnection self)
 					{
 						return obj.getServiceName();
 					}
@@ -18416,23 +18416,23 @@ public interface FbInterface extends FbClientLibrary
 			return result;
 		}
 
-		public String getServiceMgr()
+		public com.sun.jna.Pointer getServiceMgr()
 		{
 			VTable vTable = getVTable();
 			if (vTable.getServiceMgr == null) {
 				return null;
 			}
-			String result = vTable.getServiceMgr.invoke(this);
+			com.sun.jna.Pointer result = vTable.getServiceMgr.invoke(this);
 			return result;
 		}
 
-		public String getServiceName()
+		public com.sun.jna.Pointer getServiceName()
 		{
 			VTable vTable = getVTable();
 			if (vTable.getServiceName == null) {
 				return null;
 			}
-			String result = vTable.getServiceName.invoke(this);
+			com.sun.jna.Pointer result = vTable.getServiceName.invoke(this);
 			return result;
 		}
 	}
@@ -18458,7 +18458,7 @@ public interface FbInterface extends FbClientLibrary
 
 			public static interface Callback_getText extends com.sun.jna.Callback
 			{
-				public String invoke(ITraceStatusVector self);
+				public com.sun.jna.Pointer invoke(ITraceStatusVector self);
 			}
 
 			public VTable(com.sun.jna.Pointer pointer)
@@ -18498,7 +18498,7 @@ public interface FbInterface extends FbClientLibrary
 
 				getText = new Callback_getText() {
 					@Override
-					public String invoke(ITraceStatusVector self)
+					public com.sun.jna.Pointer invoke(ITraceStatusVector self)
 					{
 						return obj.getText();
 					}
@@ -18571,13 +18571,13 @@ public interface FbInterface extends FbClientLibrary
 			return result;
 		}
 
-		public String getText()
+		public com.sun.jna.Pointer getText()
 		{
 			VTable vTable = getVTable();
 			if (vTable.getText == null) {
 				return null;
 			}
-			String result = vTable.getText.invoke(this);
+			com.sun.jna.Pointer result = vTable.getText.invoke(this);
 			return result;
 		}
 	}
@@ -18868,7 +18868,7 @@ public interface FbInterface extends FbClientLibrary
 		{
 			public static interface Callback_getConfigText extends com.sun.jna.Callback
 			{
-				public String invoke(ITraceInitInfo self);
+				public com.sun.jna.Pointer invoke(ITraceInitInfo self);
 			}
 
 			public static interface Callback_getTraceSessionID extends com.sun.jna.Callback
@@ -18878,7 +18878,7 @@ public interface FbInterface extends FbClientLibrary
 
 			public static interface Callback_getTraceSessionName extends com.sun.jna.Callback
 			{
-				public String invoke(ITraceInitInfo self);
+				public com.sun.jna.Pointer invoke(ITraceInitInfo self);
 			}
 
 			public static interface Callback_getTraceSessionFlags extends com.sun.jna.Callback
@@ -18893,12 +18893,12 @@ public interface FbInterface extends FbClientLibrary
 
 			public static interface Callback_getFirebirdRootDirectory extends com.sun.jna.Callback
 			{
-				public String invoke(ITraceInitInfo self);
+				public com.sun.jna.Pointer invoke(ITraceInitInfo self);
 			}
 
 			public static interface Callback_getDatabaseName extends com.sun.jna.Callback
 			{
-				public String invoke(ITraceInitInfo self);
+				public com.sun.jna.Pointer invoke(ITraceInitInfo self);
 			}
 
 			public static interface Callback_getConnection extends com.sun.jna.Callback
@@ -18929,7 +18929,7 @@ public interface FbInterface extends FbClientLibrary
 
 				getConfigText = new Callback_getConfigText() {
 					@Override
-					public String invoke(ITraceInitInfo self)
+					public com.sun.jna.Pointer invoke(ITraceInitInfo self)
 					{
 						return obj.getConfigText();
 					}
@@ -18945,7 +18945,7 @@ public interface FbInterface extends FbClientLibrary
 
 				getTraceSessionName = new Callback_getTraceSessionName() {
 					@Override
-					public String invoke(ITraceInitInfo self)
+					public com.sun.jna.Pointer invoke(ITraceInitInfo self)
 					{
 						return obj.getTraceSessionName();
 					}
@@ -18969,7 +18969,7 @@ public interface FbInterface extends FbClientLibrary
 
 				getFirebirdRootDirectory = new Callback_getFirebirdRootDirectory() {
 					@Override
-					public String invoke(ITraceInitInfo self)
+					public com.sun.jna.Pointer invoke(ITraceInitInfo self)
 					{
 						return obj.getFirebirdRootDirectory();
 					}
@@ -18977,7 +18977,7 @@ public interface FbInterface extends FbClientLibrary
 
 				getDatabaseName = new Callback_getDatabaseName() {
 					@Override
-					public String invoke(ITraceInitInfo self)
+					public com.sun.jna.Pointer invoke(ITraceInitInfo self)
 					{
 						return obj.getDatabaseName();
 					}
@@ -19050,13 +19050,13 @@ public interface FbInterface extends FbClientLibrary
 			return new VTable(cloopVTable);
 		}
 
-		public String getConfigText()
+		public com.sun.jna.Pointer getConfigText()
 		{
 			VTable vTable = getVTable();
 			if (vTable.getConfigText == null) {
 				return null;
 			}
-			String result = vTable.getConfigText.invoke(this);
+			com.sun.jna.Pointer result = vTable.getConfigText.invoke(this);
 			return result;
 		}
 
@@ -19070,13 +19070,13 @@ public interface FbInterface extends FbClientLibrary
 			return result;
 		}
 
-		public String getTraceSessionName()
+		public com.sun.jna.Pointer getTraceSessionName()
 		{
 			VTable vTable = getVTable();
 			if (vTable.getTraceSessionName == null) {
 				return null;
 			}
-			String result = vTable.getTraceSessionName.invoke(this);
+			com.sun.jna.Pointer result = vTable.getTraceSessionName.invoke(this);
 			return result;
 		}
 
@@ -19100,23 +19100,23 @@ public interface FbInterface extends FbClientLibrary
 			return result;
 		}
 
-		public String getFirebirdRootDirectory()
+		public com.sun.jna.Pointer getFirebirdRootDirectory()
 		{
 			VTable vTable = getVTable();
 			if (vTable.getFirebirdRootDirectory == null) {
 				return null;
 			}
-			String result = vTable.getFirebirdRootDirectory.invoke(this);
+			com.sun.jna.Pointer result = vTable.getFirebirdRootDirectory.invoke(this);
 			return result;
 		}
 
-		public String getDatabaseName()
+		public com.sun.jna.Pointer getDatabaseName()
 		{
 			VTable vTable = getVTable();
 			if (vTable.getDatabaseName == null) {
 				return null;
 			}
-			String result = vTable.getDatabaseName.invoke(this);
+			com.sun.jna.Pointer result = vTable.getDatabaseName.invoke(this);
 			return result;
 		}
 
@@ -19157,12 +19157,12 @@ public interface FbInterface extends FbClientLibrary
 		{
 			public static interface Callback_trace_get_error extends com.sun.jna.Callback
 			{
-				public String invoke(ITracePlugin self);
+				public com.sun.jna.Pointer invoke(ITracePlugin self);
 			}
 
 			public static interface Callback_trace_attach extends com.sun.jna.Callback
 			{
-				public boolean invoke(ITracePlugin self, ITraceDatabaseConnection connection, boolean create_db, int dpb_length, byte[] dpb, int att_result);
+				public boolean invoke(ITracePlugin self, ITraceDatabaseConnection connection, boolean create_db, int dpb_length, com.sun.jna.Pointer dpb, int att_result);
 			}
 
 			public static interface Callback_trace_detach extends com.sun.jna.Callback
@@ -19172,7 +19172,7 @@ public interface FbInterface extends FbClientLibrary
 
 			public static interface Callback_trace_transaction_start extends com.sun.jna.Callback
 			{
-				public boolean invoke(ITracePlugin self, ITraceDatabaseConnection connection, ITraceTransaction transaction, int tpb_length, byte[] tpb, int tra_result);
+				public boolean invoke(ITracePlugin self, ITraceDatabaseConnection connection, ITraceTransaction transaction, int tpb_length, com.sun.jna.Pointer tpb, int tra_result);
 			}
 
 			public static interface Callback_trace_transaction_end extends com.sun.jna.Callback
@@ -19227,17 +19227,17 @@ public interface FbInterface extends FbClientLibrary
 
 			public static interface Callback_trace_service_attach extends com.sun.jna.Callback
 			{
-				public boolean invoke(ITracePlugin self, ITraceServiceConnection service, int spb_length, byte[] spb, int att_result);
+				public boolean invoke(ITracePlugin self, ITraceServiceConnection service, int spb_length, com.sun.jna.Pointer spb, int att_result);
 			}
 
 			public static interface Callback_trace_service_start extends com.sun.jna.Callback
 			{
-				public boolean invoke(ITracePlugin self, ITraceServiceConnection service, int switches_length, String switches, int start_result);
+				public boolean invoke(ITracePlugin self, ITraceServiceConnection service, int switches_length, com.sun.jna.Pointer switches, int start_result);
 			}
 
 			public static interface Callback_trace_service_query extends com.sun.jna.Callback
 			{
-				public boolean invoke(ITracePlugin self, ITraceServiceConnection service, int send_item_length, byte[] send_items, int recv_item_length, byte[] recv_items, int query_result);
+				public boolean invoke(ITracePlugin self, ITraceServiceConnection service, int send_item_length, com.sun.jna.Pointer send_items, int recv_item_length, com.sun.jna.Pointer recv_items, int query_result);
 			}
 
 			public static interface Callback_trace_service_detach extends com.sun.jna.Callback
@@ -19247,7 +19247,7 @@ public interface FbInterface extends FbClientLibrary
 
 			public static interface Callback_trace_event_error extends com.sun.jna.Callback
 			{
-				public boolean invoke(ITracePlugin self, ITraceConnection connection, ITraceStatusVector status, String function);
+				public boolean invoke(ITracePlugin self, ITraceConnection connection, ITraceStatusVector status, com.sun.jna.Pointer function);
 			}
 
 			public static interface Callback_trace_event_sweep extends com.sun.jna.Callback
@@ -19262,7 +19262,7 @@ public interface FbInterface extends FbClientLibrary
 
 			public static interface Callback_trace_privilege_change extends com.sun.jna.Callback
 			{
-				public boolean invoke(ITracePlugin self, ITraceDatabaseConnection connection, ITraceTransaction transaction, String executor, String grantor, boolean is_grant, String object_name, String field_name, String user_name, String privileges, int options, int change_result);
+				public boolean invoke(ITracePlugin self, ITraceDatabaseConnection connection, ITraceTransaction transaction, com.sun.jna.Pointer executor, com.sun.jna.Pointer grantor, boolean is_grant, com.sun.jna.Pointer object_name, com.sun.jna.Pointer field_name, com.sun.jna.Pointer user_name, com.sun.jna.Pointer privileges, int options, int change_result);
 			}
 
 			public static interface Callback_trace_dsql_restart extends com.sun.jna.Callback
@@ -19283,7 +19283,7 @@ public interface FbInterface extends FbClientLibrary
 
 				trace_get_error = new Callback_trace_get_error() {
 					@Override
-					public String invoke(ITracePlugin self)
+					public com.sun.jna.Pointer invoke(ITracePlugin self)
 					{
 						return obj.trace_get_error();
 					}
@@ -19291,7 +19291,7 @@ public interface FbInterface extends FbClientLibrary
 
 				trace_attach = new Callback_trace_attach() {
 					@Override
-					public boolean invoke(ITracePlugin self, ITraceDatabaseConnection connection, boolean create_db, int dpb_length, byte[] dpb, int att_result)
+					public boolean invoke(ITracePlugin self, ITraceDatabaseConnection connection, boolean create_db, int dpb_length, com.sun.jna.Pointer dpb, int att_result)
 					{
 						return obj.trace_attach(connection, create_db, dpb_length, dpb, att_result);
 					}
@@ -19307,7 +19307,7 @@ public interface FbInterface extends FbClientLibrary
 
 				trace_transaction_start = new Callback_trace_transaction_start() {
 					@Override
-					public boolean invoke(ITracePlugin self, ITraceDatabaseConnection connection, ITraceTransaction transaction, int tpb_length, byte[] tpb, int tra_result)
+					public boolean invoke(ITracePlugin self, ITraceDatabaseConnection connection, ITraceTransaction transaction, int tpb_length, com.sun.jna.Pointer tpb, int tra_result)
 					{
 						return obj.trace_transaction_start(connection, transaction, tpb_length, tpb, tra_result);
 					}
@@ -19395,7 +19395,7 @@ public interface FbInterface extends FbClientLibrary
 
 				trace_service_attach = new Callback_trace_service_attach() {
 					@Override
-					public boolean invoke(ITracePlugin self, ITraceServiceConnection service, int spb_length, byte[] spb, int att_result)
+					public boolean invoke(ITracePlugin self, ITraceServiceConnection service, int spb_length, com.sun.jna.Pointer spb, int att_result)
 					{
 						return obj.trace_service_attach(service, spb_length, spb, att_result);
 					}
@@ -19403,7 +19403,7 @@ public interface FbInterface extends FbClientLibrary
 
 				trace_service_start = new Callback_trace_service_start() {
 					@Override
-					public boolean invoke(ITracePlugin self, ITraceServiceConnection service, int switches_length, String switches, int start_result)
+					public boolean invoke(ITracePlugin self, ITraceServiceConnection service, int switches_length, com.sun.jna.Pointer switches, int start_result)
 					{
 						return obj.trace_service_start(service, switches_length, switches, start_result);
 					}
@@ -19411,7 +19411,7 @@ public interface FbInterface extends FbClientLibrary
 
 				trace_service_query = new Callback_trace_service_query() {
 					@Override
-					public boolean invoke(ITracePlugin self, ITraceServiceConnection service, int send_item_length, byte[] send_items, int recv_item_length, byte[] recv_items, int query_result)
+					public boolean invoke(ITracePlugin self, ITraceServiceConnection service, int send_item_length, com.sun.jna.Pointer send_items, int recv_item_length, com.sun.jna.Pointer recv_items, int query_result)
 					{
 						return obj.trace_service_query(service, send_item_length, send_items, recv_item_length, recv_items, query_result);
 					}
@@ -19427,7 +19427,7 @@ public interface FbInterface extends FbClientLibrary
 
 				trace_event_error = new Callback_trace_event_error() {
 					@Override
-					public boolean invoke(ITracePlugin self, ITraceConnection connection, ITraceStatusVector status, String function)
+					public boolean invoke(ITracePlugin self, ITraceConnection connection, ITraceStatusVector status, com.sun.jna.Pointer function)
 					{
 						return obj.trace_event_error(connection, status, function);
 					}
@@ -19451,7 +19451,7 @@ public interface FbInterface extends FbClientLibrary
 
 				trace_privilege_change = new Callback_trace_privilege_change() {
 					@Override
-					public boolean invoke(ITracePlugin self, ITraceDatabaseConnection connection, ITraceTransaction transaction, String executor, String grantor, boolean is_grant, String object_name, String field_name, String user_name, String privileges, int options, int change_result)
+					public boolean invoke(ITracePlugin self, ITraceDatabaseConnection connection, ITraceTransaction transaction, com.sun.jna.Pointer executor, com.sun.jna.Pointer grantor, boolean is_grant, com.sun.jna.Pointer object_name, com.sun.jna.Pointer field_name, com.sun.jna.Pointer user_name, com.sun.jna.Pointer privileges, int options, int change_result)
 					{
 						return obj.trace_privilege_change(connection, transaction, executor, grantor, is_grant, object_name, field_name, user_name, privileges, options, change_result);
 					}
@@ -19521,17 +19521,17 @@ public interface FbInterface extends FbClientLibrary
 			return new VTable(cloopVTable);
 		}
 
-		public String trace_get_error()
+		public com.sun.jna.Pointer trace_get_error()
 		{
 			VTable vTable = getVTable();
 			if (vTable.trace_get_error == null) {
 				return null;
 			}
-			String result = vTable.trace_get_error.invoke(this);
+			com.sun.jna.Pointer result = vTable.trace_get_error.invoke(this);
 			return result;
 		}
 
-		public boolean trace_attach(ITraceDatabaseConnection connection, boolean create_db, int dpb_length, byte[] dpb, int att_result)
+		public boolean trace_attach(ITraceDatabaseConnection connection, boolean create_db, int dpb_length, com.sun.jna.Pointer dpb, int att_result)
 		{
 			VTable vTable = getVTable();
 			if (vTable.trace_attach == null) {
@@ -19551,7 +19551,7 @@ public interface FbInterface extends FbClientLibrary
 			return result;
 		}
 
-		public boolean trace_transaction_start(ITraceDatabaseConnection connection, ITraceTransaction transaction, int tpb_length, byte[] tpb, int tra_result)
+		public boolean trace_transaction_start(ITraceDatabaseConnection connection, ITraceTransaction transaction, int tpb_length, com.sun.jna.Pointer tpb, int tra_result)
 		{
 			VTable vTable = getVTable();
 			if (vTable.trace_transaction_start == null) {
@@ -19661,7 +19661,7 @@ public interface FbInterface extends FbClientLibrary
 			return result;
 		}
 
-		public boolean trace_service_attach(ITraceServiceConnection service, int spb_length, byte[] spb, int att_result)
+		public boolean trace_service_attach(ITraceServiceConnection service, int spb_length, com.sun.jna.Pointer spb, int att_result)
 		{
 			VTable vTable = getVTable();
 			if (vTable.trace_service_attach == null) {
@@ -19671,7 +19671,7 @@ public interface FbInterface extends FbClientLibrary
 			return result;
 		}
 
-		public boolean trace_service_start(ITraceServiceConnection service, int switches_length, String switches, int start_result)
+		public boolean trace_service_start(ITraceServiceConnection service, int switches_length, com.sun.jna.Pointer switches, int start_result)
 		{
 			VTable vTable = getVTable();
 			if (vTable.trace_service_start == null) {
@@ -19681,7 +19681,7 @@ public interface FbInterface extends FbClientLibrary
 			return result;
 		}
 
-		public boolean trace_service_query(ITraceServiceConnection service, int send_item_length, byte[] send_items, int recv_item_length, byte[] recv_items, int query_result)
+		public boolean trace_service_query(ITraceServiceConnection service, int send_item_length, com.sun.jna.Pointer send_items, int recv_item_length, com.sun.jna.Pointer recv_items, int query_result)
 		{
 			VTable vTable = getVTable();
 			if (vTable.trace_service_query == null) {
@@ -19701,7 +19701,7 @@ public interface FbInterface extends FbClientLibrary
 			return result;
 		}
 
-		public boolean trace_event_error(ITraceConnection connection, ITraceStatusVector status, String function)
+		public boolean trace_event_error(ITraceConnection connection, ITraceStatusVector status, com.sun.jna.Pointer function)
 		{
 			VTable vTable = getVTable();
 			if (vTable.trace_event_error == null) {
@@ -19731,7 +19731,7 @@ public interface FbInterface extends FbClientLibrary
 			return result;
 		}
 
-		public boolean trace_privilege_change(ITraceDatabaseConnection connection, ITraceTransaction transaction, String executor, String grantor, boolean is_grant, String object_name, String field_name, String user_name, String privileges, int options, int change_result)
+		public boolean trace_privilege_change(ITraceDatabaseConnection connection, ITraceTransaction transaction, com.sun.jna.Pointer executor, com.sun.jna.Pointer grantor, boolean is_grant, com.sun.jna.Pointer object_name, com.sun.jna.Pointer field_name, com.sun.jna.Pointer user_name, com.sun.jna.Pointer privileges, int options, int change_result)
 		{
 			VTable vTable = getVTable();
 			if (vTable.trace_privilege_change == null) {
@@ -20212,17 +20212,17 @@ public interface FbInterface extends FbClientLibrary
 
 			public static interface Callback_registerFunction extends com.sun.jna.Callback
 			{
-				public void invoke(IUdrPlugin self, IStatus status, String name, IUdrFunctionFactory factory);
+				public void invoke(IUdrPlugin self, IStatus status, com.sun.jna.Pointer name, IUdrFunctionFactory factory);
 			}
 
 			public static interface Callback_registerProcedure extends com.sun.jna.Callback
 			{
-				public void invoke(IUdrPlugin self, IStatus status, String name, IUdrProcedureFactory factory);
+				public void invoke(IUdrPlugin self, IStatus status, com.sun.jna.Pointer name, IUdrProcedureFactory factory);
 			}
 
 			public static interface Callback_registerTrigger extends com.sun.jna.Callback
 			{
-				public void invoke(IUdrPlugin self, IStatus status, String name, IUdrTriggerFactory factory);
+				public void invoke(IUdrPlugin self, IStatus status, com.sun.jna.Pointer name, IUdrTriggerFactory factory);
 			}
 
 			public VTable(com.sun.jna.Pointer pointer)
@@ -20246,7 +20246,7 @@ public interface FbInterface extends FbClientLibrary
 
 				registerFunction = new Callback_registerFunction() {
 					@Override
-					public void invoke(IUdrPlugin self, IStatus status, String name, IUdrFunctionFactory factory)
+					public void invoke(IUdrPlugin self, IStatus status, com.sun.jna.Pointer name, IUdrFunctionFactory factory)
 					{
 						try
 						{
@@ -20261,7 +20261,7 @@ public interface FbInterface extends FbClientLibrary
 
 				registerProcedure = new Callback_registerProcedure() {
 					@Override
-					public void invoke(IUdrPlugin self, IStatus status, String name, IUdrProcedureFactory factory)
+					public void invoke(IUdrPlugin self, IStatus status, com.sun.jna.Pointer name, IUdrProcedureFactory factory)
 					{
 						try
 						{
@@ -20276,7 +20276,7 @@ public interface FbInterface extends FbClientLibrary
 
 				registerTrigger = new Callback_registerTrigger() {
 					@Override
-					public void invoke(IUdrPlugin self, IStatus status, String name, IUdrTriggerFactory factory)
+					public void invoke(IUdrPlugin self, IStatus status, com.sun.jna.Pointer name, IUdrTriggerFactory factory)
 					{
 						try
 						{
@@ -20336,7 +20336,7 @@ public interface FbInterface extends FbClientLibrary
 			return result;
 		}
 
-		public void registerFunction(IStatus status, String name, IUdrFunctionFactory factory)
+		public void registerFunction(IStatus status, com.sun.jna.Pointer name, IUdrFunctionFactory factory)
 		{
 			VTable vTable = getVTable();
 			if (vTable.registerFunction == null) {
@@ -20346,7 +20346,7 @@ public interface FbInterface extends FbClientLibrary
 			vTable.registerFunction.invoke(this, status, name, factory);
 		}
 
-		public void registerProcedure(IStatus status, String name, IUdrProcedureFactory factory)
+		public void registerProcedure(IStatus status, com.sun.jna.Pointer name, IUdrProcedureFactory factory)
 		{
 			VTable vTable = getVTable();
 			if (vTable.registerProcedure == null) {
@@ -20356,7 +20356,7 @@ public interface FbInterface extends FbClientLibrary
 			vTable.registerProcedure.invoke(this, status, name, factory);
 		}
 
-		public void registerTrigger(IStatus status, String name, IUdrTriggerFactory factory)
+		public void registerTrigger(IStatus status, com.sun.jna.Pointer name, IUdrTriggerFactory factory)
 		{
 			VTable vTable = getVTable();
 			if (vTable.registerTrigger == null) {
@@ -20373,7 +20373,7 @@ public interface FbInterface extends FbClientLibrary
 		{
 			public static interface Callback_toBcd extends com.sun.jna.Callback
 			{
-				public void invoke(IDecFloat16 self, FB_DEC16[] from, com.sun.jna.Pointer sign, byte[] bcd, com.sun.jna.Pointer exp);
+				public void invoke(IDecFloat16 self, FB_DEC16[] from, com.sun.jna.Pointer sign, com.sun.jna.Pointer bcd, com.sun.jna.Pointer exp);
 			}
 
 			public static interface Callback_toString extends com.sun.jna.Callback
@@ -20383,12 +20383,12 @@ public interface FbInterface extends FbClientLibrary
 
 			public static interface Callback_fromBcd extends com.sun.jna.Callback
 			{
-				public void invoke(IDecFloat16 self, int sign, byte[] bcd, int exp, FB_DEC16[] to);
+				public void invoke(IDecFloat16 self, int sign, com.sun.jna.Pointer bcd, int exp, FB_DEC16[] to);
 			}
 
 			public static interface Callback_fromString extends com.sun.jna.Callback
 			{
-				public void invoke(IDecFloat16 self, IStatus status, String from, FB_DEC16[] to);
+				public void invoke(IDecFloat16 self, IStatus status, com.sun.jna.Pointer from, FB_DEC16[] to);
 			}
 
 			public VTable(com.sun.jna.Pointer pointer)
@@ -20404,7 +20404,7 @@ public interface FbInterface extends FbClientLibrary
 
 				toBcd = new Callback_toBcd() {
 					@Override
-					public void invoke(IDecFloat16 self, FB_DEC16[] from, com.sun.jna.Pointer sign, byte[] bcd, com.sun.jna.Pointer exp)
+					public void invoke(IDecFloat16 self, FB_DEC16[] from, com.sun.jna.Pointer sign, com.sun.jna.Pointer bcd, com.sun.jna.Pointer exp)
 					{
 						obj.toBcd(from, sign, bcd, exp);
 					}
@@ -20427,7 +20427,7 @@ public interface FbInterface extends FbClientLibrary
 
 				fromBcd = new Callback_fromBcd() {
 					@Override
-					public void invoke(IDecFloat16 self, int sign, byte[] bcd, int exp, FB_DEC16[] to)
+					public void invoke(IDecFloat16 self, int sign, com.sun.jna.Pointer bcd, int exp, FB_DEC16[] to)
 					{
 						obj.fromBcd(sign, bcd, exp, to);
 					}
@@ -20435,7 +20435,7 @@ public interface FbInterface extends FbClientLibrary
 
 				fromString = new Callback_fromString() {
 					@Override
-					public void invoke(IDecFloat16 self, IStatus status, String from, FB_DEC16[] to)
+					public void invoke(IDecFloat16 self, IStatus status, com.sun.jna.Pointer from, FB_DEC16[] to)
 					{
 						try
 						{
@@ -20485,7 +20485,7 @@ public interface FbInterface extends FbClientLibrary
 			return new VTable(cloopVTable);
 		}
 
-		public void toBcd(FB_DEC16[] from, com.sun.jna.Pointer sign, byte[] bcd, com.sun.jna.Pointer exp)
+		public void toBcd(FB_DEC16[] from, com.sun.jna.Pointer sign, com.sun.jna.Pointer bcd, com.sun.jna.Pointer exp)
 		{
 			VTable vTable = getVTable();
 			if (vTable.toBcd == null) {
@@ -20504,7 +20504,7 @@ public interface FbInterface extends FbClientLibrary
 			vTable.toString.invoke(this, status, from, bufferLength, buffer);
 		}
 
-		public void fromBcd(int sign, byte[] bcd, int exp, FB_DEC16[] to)
+		public void fromBcd(int sign, com.sun.jna.Pointer bcd, int exp, FB_DEC16[] to)
 		{
 			VTable vTable = getVTable();
 			if (vTable.fromBcd == null) {
@@ -20513,7 +20513,7 @@ public interface FbInterface extends FbClientLibrary
 			vTable.fromBcd.invoke(this, sign, bcd, exp, to);
 		}
 
-		public void fromString(IStatus status, String from, FB_DEC16[] to)
+		public void fromString(IStatus status, com.sun.jna.Pointer from, FB_DEC16[] to)
 		{
 			VTable vTable = getVTable();
 			if (vTable.fromString == null) {
@@ -20530,7 +20530,7 @@ public interface FbInterface extends FbClientLibrary
 		{
 			public static interface Callback_toBcd extends com.sun.jna.Callback
 			{
-				public void invoke(IDecFloat34 self, FB_DEC34[] from, com.sun.jna.Pointer sign, byte[] bcd, com.sun.jna.Pointer exp);
+				public void invoke(IDecFloat34 self, FB_DEC34[] from, com.sun.jna.Pointer sign, com.sun.jna.Pointer bcd, com.sun.jna.Pointer exp);
 			}
 
 			public static interface Callback_toString extends com.sun.jna.Callback
@@ -20540,12 +20540,12 @@ public interface FbInterface extends FbClientLibrary
 
 			public static interface Callback_fromBcd extends com.sun.jna.Callback
 			{
-				public void invoke(IDecFloat34 self, int sign, byte[] bcd, int exp, FB_DEC34[] to);
+				public void invoke(IDecFloat34 self, int sign, com.sun.jna.Pointer bcd, int exp, FB_DEC34[] to);
 			}
 
 			public static interface Callback_fromString extends com.sun.jna.Callback
 			{
-				public void invoke(IDecFloat34 self, IStatus status, String from, FB_DEC34[] to);
+				public void invoke(IDecFloat34 self, IStatus status, com.sun.jna.Pointer from, FB_DEC34[] to);
 			}
 
 			public VTable(com.sun.jna.Pointer pointer)
@@ -20561,7 +20561,7 @@ public interface FbInterface extends FbClientLibrary
 
 				toBcd = new Callback_toBcd() {
 					@Override
-					public void invoke(IDecFloat34 self, FB_DEC34[] from, com.sun.jna.Pointer sign, byte[] bcd, com.sun.jna.Pointer exp)
+					public void invoke(IDecFloat34 self, FB_DEC34[] from, com.sun.jna.Pointer sign, com.sun.jna.Pointer bcd, com.sun.jna.Pointer exp)
 					{
 						obj.toBcd(from, sign, bcd, exp);
 					}
@@ -20584,7 +20584,7 @@ public interface FbInterface extends FbClientLibrary
 
 				fromBcd = new Callback_fromBcd() {
 					@Override
-					public void invoke(IDecFloat34 self, int sign, byte[] bcd, int exp, FB_DEC34[] to)
+					public void invoke(IDecFloat34 self, int sign, com.sun.jna.Pointer bcd, int exp, FB_DEC34[] to)
 					{
 						obj.fromBcd(sign, bcd, exp, to);
 					}
@@ -20592,7 +20592,7 @@ public interface FbInterface extends FbClientLibrary
 
 				fromString = new Callback_fromString() {
 					@Override
-					public void invoke(IDecFloat34 self, IStatus status, String from, FB_DEC34[] to)
+					public void invoke(IDecFloat34 self, IStatus status, com.sun.jna.Pointer from, FB_DEC34[] to)
 					{
 						try
 						{
@@ -20642,7 +20642,7 @@ public interface FbInterface extends FbClientLibrary
 			return new VTable(cloopVTable);
 		}
 
-		public void toBcd(FB_DEC34[] from, com.sun.jna.Pointer sign, byte[] bcd, com.sun.jna.Pointer exp)
+		public void toBcd(FB_DEC34[] from, com.sun.jna.Pointer sign, com.sun.jna.Pointer bcd, com.sun.jna.Pointer exp)
 		{
 			VTable vTable = getVTable();
 			if (vTable.toBcd == null) {
@@ -20661,7 +20661,7 @@ public interface FbInterface extends FbClientLibrary
 			vTable.toString.invoke(this, status, from, bufferLength, buffer);
 		}
 
-		public void fromBcd(int sign, byte[] bcd, int exp, FB_DEC34[] to)
+		public void fromBcd(int sign, com.sun.jna.Pointer bcd, int exp, FB_DEC34[] to)
 		{
 			VTable vTable = getVTable();
 			if (vTable.fromBcd == null) {
@@ -20670,7 +20670,7 @@ public interface FbInterface extends FbClientLibrary
 			vTable.fromBcd.invoke(this, sign, bcd, exp, to);
 		}
 
-		public void fromString(IStatus status, String from, FB_DEC34[] to)
+		public void fromString(IStatus status, com.sun.jna.Pointer from, FB_DEC34[] to)
 		{
 			VTable vTable = getVTable();
 			if (vTable.fromString == null) {
@@ -20692,7 +20692,7 @@ public interface FbInterface extends FbClientLibrary
 
 			public static interface Callback_fromString extends com.sun.jna.Callback
 			{
-				public void invoke(IInt128 self, IStatus status, int scale, String from, FB_I128[] to);
+				public void invoke(IInt128 self, IStatus status, int scale, com.sun.jna.Pointer from, FB_I128[] to);
 			}
 
 			public VTable(com.sun.jna.Pointer pointer)
@@ -20723,7 +20723,7 @@ public interface FbInterface extends FbClientLibrary
 
 				fromString = new Callback_fromString() {
 					@Override
-					public void invoke(IInt128 self, IStatus status, int scale, String from, FB_I128[] to)
+					public void invoke(IInt128 self, IStatus status, int scale, com.sun.jna.Pointer from, FB_I128[] to)
 					{
 						try
 						{
@@ -20781,7 +20781,7 @@ public interface FbInterface extends FbClientLibrary
 			vTable.toString.invoke(this, status, from, scale, bufferLength, buffer);
 		}
 
-		public void fromString(IStatus status, int scale, String from, FB_I128[] to)
+		public void fromString(IStatus status, int scale, com.sun.jna.Pointer from, FB_I128[] to)
 		{
 			VTable vTable = getVTable();
 			if (vTable.fromString == null) {
@@ -20798,7 +20798,7 @@ public interface FbInterface extends FbClientLibrary
 		{
 			public static interface Callback_getName extends com.sun.jna.Callback
 			{
-				public String invoke(IReplicatedField self);
+				public com.sun.jna.Pointer invoke(IReplicatedField self);
 			}
 
 			public static interface Callback_getType extends com.sun.jna.Callback
@@ -20844,7 +20844,7 @@ public interface FbInterface extends FbClientLibrary
 
 				getName = new Callback_getName() {
 					@Override
-					public String invoke(IReplicatedField self)
+					public com.sun.jna.Pointer invoke(IReplicatedField self)
 					{
 						return obj.getName();
 					}
@@ -20938,13 +20938,13 @@ public interface FbInterface extends FbClientLibrary
 			return new VTable(cloopVTable);
 		}
 
-		public String getName()
+		public com.sun.jna.Pointer getName()
 		{
 			VTable vTable = getVTable();
 			if (vTable.getName == null) {
 				return null;
 			}
-			String result = vTable.getName.invoke(this);
+			com.sun.jna.Pointer result = vTable.getName.invoke(this);
 			return result;
 		}
 
@@ -21190,27 +21190,27 @@ public interface FbInterface extends FbClientLibrary
 
 			public static interface Callback_insertRecord extends com.sun.jna.Callback
 			{
-				public void invoke(IReplicatedTransaction self, IStatus status, String name, IReplicatedRecord record);
+				public void invoke(IReplicatedTransaction self, IStatus status, com.sun.jna.Pointer name, IReplicatedRecord record);
 			}
 
 			public static interface Callback_updateRecord extends com.sun.jna.Callback
 			{
-				public void invoke(IReplicatedTransaction self, IStatus status, String name, IReplicatedRecord orgRecord, IReplicatedRecord newRecord);
+				public void invoke(IReplicatedTransaction self, IStatus status, com.sun.jna.Pointer name, IReplicatedRecord orgRecord, IReplicatedRecord newRecord);
 			}
 
 			public static interface Callback_deleteRecord extends com.sun.jna.Callback
 			{
-				public void invoke(IReplicatedTransaction self, IStatus status, String name, IReplicatedRecord record);
+				public void invoke(IReplicatedTransaction self, IStatus status, com.sun.jna.Pointer name, IReplicatedRecord record);
 			}
 
 			public static interface Callback_executeSql extends com.sun.jna.Callback
 			{
-				public void invoke(IReplicatedTransaction self, IStatus status, String sql);
+				public void invoke(IReplicatedTransaction self, IStatus status, com.sun.jna.Pointer sql);
 			}
 
 			public static interface Callback_executeSqlIntl extends com.sun.jna.Callback
 			{
-				public void invoke(IReplicatedTransaction self, IStatus status, int charset, String sql);
+				public void invoke(IReplicatedTransaction self, IStatus status, int charset, com.sun.jna.Pointer sql);
 			}
 
 			public VTable(com.sun.jna.Pointer pointer)
@@ -21316,7 +21316,7 @@ public interface FbInterface extends FbClientLibrary
 
 				insertRecord = new Callback_insertRecord() {
 					@Override
-					public void invoke(IReplicatedTransaction self, IStatus status, String name, IReplicatedRecord record)
+					public void invoke(IReplicatedTransaction self, IStatus status, com.sun.jna.Pointer name, IReplicatedRecord record)
 					{
 						try
 						{
@@ -21331,7 +21331,7 @@ public interface FbInterface extends FbClientLibrary
 
 				updateRecord = new Callback_updateRecord() {
 					@Override
-					public void invoke(IReplicatedTransaction self, IStatus status, String name, IReplicatedRecord orgRecord, IReplicatedRecord newRecord)
+					public void invoke(IReplicatedTransaction self, IStatus status, com.sun.jna.Pointer name, IReplicatedRecord orgRecord, IReplicatedRecord newRecord)
 					{
 						try
 						{
@@ -21346,7 +21346,7 @@ public interface FbInterface extends FbClientLibrary
 
 				deleteRecord = new Callback_deleteRecord() {
 					@Override
-					public void invoke(IReplicatedTransaction self, IStatus status, String name, IReplicatedRecord record)
+					public void invoke(IReplicatedTransaction self, IStatus status, com.sun.jna.Pointer name, IReplicatedRecord record)
 					{
 						try
 						{
@@ -21361,7 +21361,7 @@ public interface FbInterface extends FbClientLibrary
 
 				executeSql = new Callback_executeSql() {
 					@Override
-					public void invoke(IReplicatedTransaction self, IStatus status, String sql)
+					public void invoke(IReplicatedTransaction self, IStatus status, com.sun.jna.Pointer sql)
 					{
 						try
 						{
@@ -21376,7 +21376,7 @@ public interface FbInterface extends FbClientLibrary
 
 				executeSqlIntl = new Callback_executeSqlIntl() {
 					@Override
-					public void invoke(IReplicatedTransaction self, IStatus status, int charset, String sql)
+					public void invoke(IReplicatedTransaction self, IStatus status, int charset, com.sun.jna.Pointer sql)
 					{
 						try
 						{
@@ -21493,7 +21493,7 @@ public interface FbInterface extends FbClientLibrary
 			vTable.rollbackSavepoint.invoke(this, status);
 		}
 
-		public void insertRecord(IStatus status, String name, IReplicatedRecord record)
+		public void insertRecord(IStatus status, com.sun.jna.Pointer name, IReplicatedRecord record)
 		{
 			VTable vTable = getVTable();
 			if (vTable.insertRecord == null) {
@@ -21503,7 +21503,7 @@ public interface FbInterface extends FbClientLibrary
 			vTable.insertRecord.invoke(this, status, name, record);
 		}
 
-		public void updateRecord(IStatus status, String name, IReplicatedRecord orgRecord, IReplicatedRecord newRecord)
+		public void updateRecord(IStatus status, com.sun.jna.Pointer name, IReplicatedRecord orgRecord, IReplicatedRecord newRecord)
 		{
 			VTable vTable = getVTable();
 			if (vTable.updateRecord == null) {
@@ -21513,7 +21513,7 @@ public interface FbInterface extends FbClientLibrary
 			vTable.updateRecord.invoke(this, status, name, orgRecord, newRecord);
 		}
 
-		public void deleteRecord(IStatus status, String name, IReplicatedRecord record)
+		public void deleteRecord(IStatus status, com.sun.jna.Pointer name, IReplicatedRecord record)
 		{
 			VTable vTable = getVTable();
 			if (vTable.deleteRecord == null) {
@@ -21523,7 +21523,7 @@ public interface FbInterface extends FbClientLibrary
 			vTable.deleteRecord.invoke(this, status, name, record);
 		}
 
-		public void executeSql(IStatus status, String sql)
+		public void executeSql(IStatus status, com.sun.jna.Pointer sql)
 		{
 			VTable vTable = getVTable();
 			if (vTable.executeSql == null) {
@@ -21533,7 +21533,7 @@ public interface FbInterface extends FbClientLibrary
 			vTable.executeSql.invoke(this, status, sql);
 		}
 
-		public void executeSqlIntl(IStatus status, int charset, String sql)
+		public void executeSqlIntl(IStatus status, int charset, com.sun.jna.Pointer sql)
 		{
 			VTable vTable = getVTable();
 			if (vTable.executeSqlIntl == null) {
@@ -21565,7 +21565,7 @@ public interface FbInterface extends FbClientLibrary
 
 			public static interface Callback_setSequence extends com.sun.jna.Callback
 			{
-				public void invoke(IReplicatedSession self, IStatus status, String name, long value);
+				public void invoke(IReplicatedSession self, IStatus status, com.sun.jna.Pointer name, long value);
 			}
 
 			public VTable(com.sun.jna.Pointer pointer)
@@ -21628,7 +21628,7 @@ public interface FbInterface extends FbClientLibrary
 
 				setSequence = new Callback_setSequence() {
 					@Override
-					public void invoke(IReplicatedSession self, IStatus status, String name, long value)
+					public void invoke(IReplicatedSession self, IStatus status, com.sun.jna.Pointer name, long value)
 					{
 						try
 						{
@@ -21710,7 +21710,7 @@ public interface FbInterface extends FbClientLibrary
 			vTable.cleanupTransaction.invoke(this, status, number);
 		}
 
-		public void setSequence(IStatus status, String name, long value)
+		public void setSequence(IStatus status, com.sun.jna.Pointer name, long value)
 		{
 			VTable vTable = getVTable();
 			if (vTable.setSequence == null) {
@@ -21732,7 +21732,7 @@ public interface FbInterface extends FbClientLibrary
 
 			public static interface Callback_startSession extends com.sun.jna.Callback
 			{
-				public IProfilerSession invoke(IProfilerPlugin self, IStatus status, String description, String options, ISC_TIMESTAMP_TZ timestamp);
+				public IProfilerSession invoke(IProfilerPlugin self, IStatus status, com.sun.jna.Pointer description, com.sun.jna.Pointer options, ISC_TIMESTAMP_TZ timestamp);
 			}
 
 			public static interface Callback_flush extends com.sun.jna.Callback
@@ -21768,7 +21768,7 @@ public interface FbInterface extends FbClientLibrary
 
 				startSession = new Callback_startSession() {
 					@Override
-					public IProfilerSession invoke(IProfilerPlugin self, IStatus status, String description, String options, ISC_TIMESTAMP_TZ timestamp)
+					public IProfilerSession invoke(IProfilerPlugin self, IStatus status, com.sun.jna.Pointer description, com.sun.jna.Pointer options, ISC_TIMESTAMP_TZ timestamp)
 					{
 						try
 						{
@@ -21843,7 +21843,7 @@ public interface FbInterface extends FbClientLibrary
 			vTable.init.invoke(this, status, attachment);
 		}
 
-		public IProfilerSession startSession(IStatus status, String description, String options, ISC_TIMESTAMP_TZ timestamp)
+		public IProfilerSession startSession(IStatus status, com.sun.jna.Pointer description, com.sun.jna.Pointer options, ISC_TIMESTAMP_TZ timestamp)
 		{
 			VTable vTable = getVTable();
 			if (vTable.startSession == null) {
@@ -21891,17 +21891,17 @@ public interface FbInterface extends FbClientLibrary
 
 			public static interface Callback_defineStatement extends com.sun.jna.Callback
 			{
-				public void invoke(IProfilerSession self, IStatus status, long statementId, long parentStatementId, String type, String packageName, String routineName, String sqlText);
+				public void invoke(IProfilerSession self, IStatus status, long statementId, long parentStatementId, com.sun.jna.Pointer type, com.sun.jna.Pointer packageName, com.sun.jna.Pointer routineName, com.sun.jna.Pointer sqlText);
 			}
 
 			public static interface Callback_defineCursor extends com.sun.jna.Callback
 			{
-				public void invoke(IProfilerSession self, long statementId, int cursorId, String name, int line, int column);
+				public void invoke(IProfilerSession self, long statementId, int cursorId, com.sun.jna.Pointer name, int line, int column);
 			}
 
 			public static interface Callback_defineRecordSource extends com.sun.jna.Callback
 			{
-				public void invoke(IProfilerSession self, long statementId, int cursorId, int recSourceId, String accessPath, int parentRecSourceId);
+				public void invoke(IProfilerSession self, long statementId, int cursorId, int recSourceId, com.sun.jna.Pointer accessPath, int parentRecSourceId);
 			}
 
 			public static interface Callback_onRequestStart extends com.sun.jna.Callback
@@ -22003,7 +22003,7 @@ public interface FbInterface extends FbClientLibrary
 
 				defineStatement = new Callback_defineStatement() {
 					@Override
-					public void invoke(IProfilerSession self, IStatus status, long statementId, long parentStatementId, String type, String packageName, String routineName, String sqlText)
+					public void invoke(IProfilerSession self, IStatus status, long statementId, long parentStatementId, com.sun.jna.Pointer type, com.sun.jna.Pointer packageName, com.sun.jna.Pointer routineName, com.sun.jna.Pointer sqlText)
 					{
 						try
 						{
@@ -22018,7 +22018,7 @@ public interface FbInterface extends FbClientLibrary
 
 				defineCursor = new Callback_defineCursor() {
 					@Override
-					public void invoke(IProfilerSession self, long statementId, int cursorId, String name, int line, int column)
+					public void invoke(IProfilerSession self, long statementId, int cursorId, com.sun.jna.Pointer name, int line, int column)
 					{
 						obj.defineCursor(statementId, cursorId, name, line, column);
 					}
@@ -22026,7 +22026,7 @@ public interface FbInterface extends FbClientLibrary
 
 				defineRecordSource = new Callback_defineRecordSource() {
 					@Override
-					public void invoke(IProfilerSession self, long statementId, int cursorId, int recSourceId, String accessPath, int parentRecSourceId)
+					public void invoke(IProfilerSession self, long statementId, int cursorId, int recSourceId, com.sun.jna.Pointer accessPath, int parentRecSourceId)
 					{
 						obj.defineRecordSource(statementId, cursorId, recSourceId, accessPath, parentRecSourceId);
 					}
@@ -22198,7 +22198,7 @@ public interface FbInterface extends FbClientLibrary
 			vTable.finish.invoke(this, status, timestamp);
 		}
 
-		public void defineStatement(IStatus status, long statementId, long parentStatementId, String type, String packageName, String routineName, String sqlText)
+		public void defineStatement(IStatus status, long statementId, long parentStatementId, com.sun.jna.Pointer type, com.sun.jna.Pointer packageName, com.sun.jna.Pointer routineName, com.sun.jna.Pointer sqlText)
 		{
 			VTable vTable = getVTable();
 			if (vTable.defineStatement == null) {
@@ -22208,7 +22208,7 @@ public interface FbInterface extends FbClientLibrary
 			vTable.defineStatement.invoke(this, status, statementId, parentStatementId, type, packageName, routineName, sqlText);
 		}
 
-		public void defineCursor(long statementId, int cursorId, String name, int line, int column)
+		public void defineCursor(long statementId, int cursorId, com.sun.jna.Pointer name, int line, int column)
 		{
 			VTable vTable = getVTable();
 			if (vTable.defineCursor == null) {
@@ -22217,7 +22217,7 @@ public interface FbInterface extends FbClientLibrary
 			vTable.defineCursor.invoke(this, statementId, cursorId, name, line, column);
 		}
 
-		public void defineRecordSource(long statementId, int cursorId, int recSourceId, String accessPath, int parentRecSourceId)
+		public void defineRecordSource(long statementId, int cursorId, int recSourceId, com.sun.jna.Pointer accessPath, int parentRecSourceId)
 		{
 			VTable vTable = getVTable();
 			if (vTable.defineRecordSource == null) {
@@ -22385,7 +22385,7 @@ public interface FbInterface extends FbClientLibrary
 
 			public static interface Callback_loadFromFile extends com.sun.jna.Callback
 			{
-				public int invoke(ICryptoKey self, String fileName);
+				public int invoke(ICryptoKey self, com.sun.jna.Pointer fileName);
 			}
 
 			public static interface Callback_loadFromBuffer extends com.sun.jna.Callback
@@ -22400,7 +22400,7 @@ public interface FbInterface extends FbClientLibrary
 
 			public static interface Callback_saveToFile extends com.sun.jna.Callback
 			{
-				public int invoke(ICryptoKey self, String fileName);
+				public int invoke(ICryptoKey self, com.sun.jna.Pointer fileName);
 			}
 
 			public static interface Callback_saveToBuffer extends com.sun.jna.Callback
@@ -22410,7 +22410,7 @@ public interface FbInterface extends FbClientLibrary
 
 			public static interface Callback_saveToRepository extends com.sun.jna.Callback
 			{
-				public int invoke(ICryptoKey self, ICryptoRepository repository, String name);
+				public int invoke(ICryptoKey self, ICryptoRepository repository, com.sun.jna.Pointer name);
 			}
 
 			public static interface Callback_setAgreeKeyFromRepository extends com.sun.jna.Callback
@@ -22430,17 +22430,17 @@ public interface FbInterface extends FbClientLibrary
 
 			public static interface Callback_getIV extends com.sun.jna.Callback
 			{
-				public int invoke(ICryptoKey self, byte[] iv, int length, com.sun.jna.Pointer realLength);
+				public int invoke(ICryptoKey self, com.sun.jna.Pointer iv, int length, com.sun.jna.Pointer realLength);
 			}
 
 			public static interface Callback_setIV extends com.sun.jna.Callback
 			{
-				public int invoke(ICryptoKey self, byte[] iv, int length);
+				public int invoke(ICryptoKey self, com.sun.jna.Pointer iv, int length);
 			}
 
 			public static interface Callback_createFromBuffer extends com.sun.jna.Callback
 			{
-				public int invoke(ICryptoKey self, byte[] buffer, int length);
+				public int invoke(ICryptoKey self, com.sun.jna.Pointer buffer, int length);
 			}
 
 			public VTable(com.sun.jna.Pointer pointer)
@@ -22464,7 +22464,7 @@ public interface FbInterface extends FbClientLibrary
 
 				loadFromFile = new Callback_loadFromFile() {
 					@Override
-					public int invoke(ICryptoKey self, String fileName)
+					public int invoke(ICryptoKey self, com.sun.jna.Pointer fileName)
 					{
 						return obj.loadFromFile(fileName);
 					}
@@ -22488,7 +22488,7 @@ public interface FbInterface extends FbClientLibrary
 
 				saveToFile = new Callback_saveToFile() {
 					@Override
-					public int invoke(ICryptoKey self, String fileName)
+					public int invoke(ICryptoKey self, com.sun.jna.Pointer fileName)
 					{
 						return obj.saveToFile(fileName);
 					}
@@ -22504,7 +22504,7 @@ public interface FbInterface extends FbClientLibrary
 
 				saveToRepository = new Callback_saveToRepository() {
 					@Override
-					public int invoke(ICryptoKey self, ICryptoRepository repository, String name)
+					public int invoke(ICryptoKey self, ICryptoRepository repository, com.sun.jna.Pointer name)
 					{
 						return obj.saveToRepository(repository, name);
 					}
@@ -22536,7 +22536,7 @@ public interface FbInterface extends FbClientLibrary
 
 				getIV = new Callback_getIV() {
 					@Override
-					public int invoke(ICryptoKey self, byte[] iv, int length, com.sun.jna.Pointer realLength)
+					public int invoke(ICryptoKey self, com.sun.jna.Pointer iv, int length, com.sun.jna.Pointer realLength)
 					{
 						return obj.getIV(iv, length, realLength);
 					}
@@ -22544,7 +22544,7 @@ public interface FbInterface extends FbClientLibrary
 
 				setIV = new Callback_setIV() {
 					@Override
-					public int invoke(ICryptoKey self, byte[] iv, int length)
+					public int invoke(ICryptoKey self, com.sun.jna.Pointer iv, int length)
 					{
 						return obj.setIV(iv, length);
 					}
@@ -22552,7 +22552,7 @@ public interface FbInterface extends FbClientLibrary
 
 				createFromBuffer = new Callback_createFromBuffer() {
 					@Override
-					public int invoke(ICryptoKey self, byte[] buffer, int length)
+					public int invoke(ICryptoKey self, com.sun.jna.Pointer buffer, int length)
 					{
 						return obj.createFromBuffer(buffer, length);
 					}
@@ -22614,7 +22614,7 @@ public interface FbInterface extends FbClientLibrary
 			return result;
 		}
 
-		public int loadFromFile(String fileName)
+		public int loadFromFile(com.sun.jna.Pointer fileName)
 		{
 			VTable vTable = getVTable();
 			if (vTable.loadFromFile == null) {
@@ -22644,7 +22644,7 @@ public interface FbInterface extends FbClientLibrary
 			return result;
 		}
 
-		public int saveToFile(String fileName)
+		public int saveToFile(com.sun.jna.Pointer fileName)
 		{
 			VTable vTable = getVTable();
 			if (vTable.saveToFile == null) {
@@ -22664,7 +22664,7 @@ public interface FbInterface extends FbClientLibrary
 			return result;
 		}
 
-		public int saveToRepository(ICryptoRepository repository, String name)
+		public int saveToRepository(ICryptoRepository repository, com.sun.jna.Pointer name)
 		{
 			VTable vTable = getVTable();
 			if (vTable.saveToRepository == null) {
@@ -22704,7 +22704,7 @@ public interface FbInterface extends FbClientLibrary
 			return result;
 		}
 
-		public int getIV(byte[] iv, int length, com.sun.jna.Pointer realLength)
+		public int getIV(com.sun.jna.Pointer iv, int length, com.sun.jna.Pointer realLength)
 		{
 			VTable vTable = getVTable();
 			if (vTable.getIV == null) {
@@ -22714,7 +22714,7 @@ public interface FbInterface extends FbClientLibrary
 			return result;
 		}
 
-		public int setIV(byte[] iv, int length)
+		public int setIV(com.sun.jna.Pointer iv, int length)
 		{
 			VTable vTable = getVTable();
 			if (vTable.setIV == null) {
@@ -22724,7 +22724,7 @@ public interface FbInterface extends FbClientLibrary
 			return result;
 		}
 
-		public int createFromBuffer(byte[] buffer, int length)
+		public int createFromBuffer(com.sun.jna.Pointer buffer, int length)
 		{
 			VTable vTable = getVTable();
 			if (vTable.createFromBuffer == null) {
@@ -22746,7 +22746,7 @@ public interface FbInterface extends FbClientLibrary
 
 			public static interface Callback_loadFromFile extends com.sun.jna.Callback
 			{
-				public int invoke(ICryptoKeyPair self, String fileName);
+				public int invoke(ICryptoKeyPair self, com.sun.jna.Pointer fileName);
 			}
 
 			public static interface Callback_loadFromBuffer extends com.sun.jna.Callback
@@ -22756,7 +22756,7 @@ public interface FbInterface extends FbClientLibrary
 
 			public static interface Callback_loadFromRepository extends com.sun.jna.Callback
 			{
-				public int invoke(ICryptoKeyPair self, ICryptoRepository repository, String name);
+				public int invoke(ICryptoKeyPair self, ICryptoRepository repository, com.sun.jna.Pointer name);
 			}
 
 			public static interface Callback_loadFromCurrentRepository extends com.sun.jna.Callback
@@ -22766,7 +22766,7 @@ public interface FbInterface extends FbClientLibrary
 
 			public static interface Callback_saveToFile extends com.sun.jna.Callback
 			{
-				public int invoke(ICryptoKeyPair self, String fileName);
+				public int invoke(ICryptoKeyPair self, com.sun.jna.Pointer fileName);
 			}
 
 			public static interface Callback_saveToBuffer extends com.sun.jna.Callback
@@ -22776,7 +22776,7 @@ public interface FbInterface extends FbClientLibrary
 
 			public static interface Callback_saveToRepository extends com.sun.jna.Callback
 			{
-				public int invoke(ICryptoKeyPair self, ICryptoRepository repository, String name);
+				public int invoke(ICryptoKeyPair self, ICryptoRepository repository, com.sun.jna.Pointer name);
 			}
 
 			public static interface Callback_setAgreeKeyFromRepository extends com.sun.jna.Callback
@@ -22830,7 +22830,7 @@ public interface FbInterface extends FbClientLibrary
 
 				loadFromFile = new Callback_loadFromFile() {
 					@Override
-					public int invoke(ICryptoKeyPair self, String fileName)
+					public int invoke(ICryptoKeyPair self, com.sun.jna.Pointer fileName)
 					{
 						return obj.loadFromFile(fileName);
 					}
@@ -22846,7 +22846,7 @@ public interface FbInterface extends FbClientLibrary
 
 				loadFromRepository = new Callback_loadFromRepository() {
 					@Override
-					public int invoke(ICryptoKeyPair self, ICryptoRepository repository, String name)
+					public int invoke(ICryptoKeyPair self, ICryptoRepository repository, com.sun.jna.Pointer name)
 					{
 						return obj.loadFromRepository(repository, name);
 					}
@@ -22862,7 +22862,7 @@ public interface FbInterface extends FbClientLibrary
 
 				saveToFile = new Callback_saveToFile() {
 					@Override
-					public int invoke(ICryptoKeyPair self, String fileName)
+					public int invoke(ICryptoKeyPair self, com.sun.jna.Pointer fileName)
 					{
 						return obj.saveToFile(fileName);
 					}
@@ -22878,7 +22878,7 @@ public interface FbInterface extends FbClientLibrary
 
 				saveToRepository = new Callback_saveToRepository() {
 					@Override
-					public int invoke(ICryptoKeyPair self, ICryptoRepository repository, String name)
+					public int invoke(ICryptoKeyPair self, ICryptoRepository repository, com.sun.jna.Pointer name)
 					{
 						return obj.saveToRepository(repository, name);
 					}
@@ -22989,7 +22989,7 @@ public interface FbInterface extends FbClientLibrary
 			return result;
 		}
 
-		public int loadFromFile(String fileName)
+		public int loadFromFile(com.sun.jna.Pointer fileName)
 		{
 			VTable vTable = getVTable();
 			if (vTable.loadFromFile == null) {
@@ -23009,7 +23009,7 @@ public interface FbInterface extends FbClientLibrary
 			return result;
 		}
 
-		public int loadFromRepository(ICryptoRepository repository, String name)
+		public int loadFromRepository(ICryptoRepository repository, com.sun.jna.Pointer name)
 		{
 			VTable vTable = getVTable();
 			if (vTable.loadFromRepository == null) {
@@ -23029,7 +23029,7 @@ public interface FbInterface extends FbClientLibrary
 			return result;
 		}
 
-		public int saveToFile(String fileName)
+		public int saveToFile(com.sun.jna.Pointer fileName)
 		{
 			VTable vTable = getVTable();
 			if (vTable.saveToFile == null) {
@@ -23049,7 +23049,7 @@ public interface FbInterface extends FbClientLibrary
 			return result;
 		}
 
-		public int saveToRepository(ICryptoRepository repository, String name)
+		public int saveToRepository(ICryptoRepository repository, com.sun.jna.Pointer name)
 		{
 			VTable vTable = getVTable();
 			if (vTable.saveToRepository == null) {
@@ -23131,7 +23131,7 @@ public interface FbInterface extends FbClientLibrary
 
 			public static interface Callback_generateRandom extends com.sun.jna.Callback
 			{
-				public int invoke(ICryptoRandomFactory self, byte[] buffer, int length, ICryptoProvider providerName);
+				public int invoke(ICryptoRandomFactory self, com.sun.jna.Pointer buffer, int length, ICryptoProvider providerName);
 			}
 
 			public VTable(com.sun.jna.Pointer pointer)
@@ -23155,7 +23155,7 @@ public interface FbInterface extends FbClientLibrary
 
 				generateRandom = new Callback_generateRandom() {
 					@Override
-					public int invoke(ICryptoRandomFactory self, byte[] buffer, int length, ICryptoProvider providerName)
+					public int invoke(ICryptoRandomFactory self, com.sun.jna.Pointer buffer, int length, ICryptoProvider providerName)
 					{
 						return obj.generateRandom(buffer, length, providerName);
 					}
@@ -23206,7 +23206,7 @@ public interface FbInterface extends FbClientLibrary
 			return result;
 		}
 
-		public int generateRandom(byte[] buffer, int length, ICryptoProvider providerName)
+		public int generateRandom(com.sun.jna.Pointer buffer, int length, ICryptoProvider providerName)
 		{
 			VTable vTable = getVTable();
 			if (vTable.generateRandom == null) {
@@ -23228,7 +23228,7 @@ public interface FbInterface extends FbClientLibrary
 
 			public static interface Callback_createHash extends com.sun.jna.Callback
 			{
-				public int invoke(ICryptoHashFactory self, byte[] buffer, int bufferLength, byte[] hash, int hashLength, com.sun.jna.Pointer realHashLength, boolean asString);
+				public int invoke(ICryptoHashFactory self, com.sun.jna.Pointer buffer, int bufferLength, com.sun.jna.Pointer hash, int hashLength, com.sun.jna.Pointer realHashLength, boolean asString);
 			}
 
 			public static interface Callback_setKeyForHash extends com.sun.jna.Callback
@@ -23257,7 +23257,7 @@ public interface FbInterface extends FbClientLibrary
 
 				createHash = new Callback_createHash() {
 					@Override
-					public int invoke(ICryptoHashFactory self, byte[] buffer, int bufferLength, byte[] hash, int hashLength, com.sun.jna.Pointer realHashLength, boolean asString)
+					public int invoke(ICryptoHashFactory self, com.sun.jna.Pointer buffer, int bufferLength, com.sun.jna.Pointer hash, int hashLength, com.sun.jna.Pointer realHashLength, boolean asString)
 					{
 						return obj.createHash(buffer, bufferLength, hash, hashLength, realHashLength, asString);
 					}
@@ -23317,7 +23317,7 @@ public interface FbInterface extends FbClientLibrary
 			return result;
 		}
 
-		public int createHash(byte[] buffer, int bufferLength, byte[] hash, int hashLength, com.sun.jna.Pointer realHashLength, boolean asString)
+		public int createHash(com.sun.jna.Pointer buffer, int bufferLength, com.sun.jna.Pointer hash, int hashLength, com.sun.jna.Pointer realHashLength, boolean asString)
 		{
 			VTable vTable = getVTable();
 			if (vTable.createHash == null) {
@@ -23349,22 +23349,22 @@ public interface FbInterface extends FbClientLibrary
 
 			public static interface Callback_encrypt extends com.sun.jna.Callback
 			{
-				public int invoke(ICryptoSymmetricFactory self, byte[] data, int dataLength, byte[] cryptData, int cryptDataLength, com.sun.jna.Pointer realCryptDataLength, ICryptoKey key);
+				public int invoke(ICryptoSymmetricFactory self, com.sun.jna.Pointer data, int dataLength, com.sun.jna.Pointer cryptData, int cryptDataLength, com.sun.jna.Pointer realCryptDataLength, ICryptoKey key);
 			}
 
 			public static interface Callback_decrypt extends com.sun.jna.Callback
 			{
-				public int invoke(ICryptoSymmetricFactory self, byte[] cryptData, int cryptDataLength, byte[] data, int dataLength, com.sun.jna.Pointer realDataLength, ICryptoKey key);
+				public int invoke(ICryptoSymmetricFactory self, com.sun.jna.Pointer cryptData, int cryptDataLength, com.sun.jna.Pointer data, int dataLength, com.sun.jna.Pointer realDataLength, ICryptoKey key);
 			}
 
 			public static interface Callback_encryptFinal extends com.sun.jna.Callback
 			{
-				public int invoke(ICryptoSymmetricFactory self, byte[] data, int dataLength, byte[] cryptData, int cryptDataLength, com.sun.jna.Pointer realCryptDataLength, ICryptoKey key, boolean finalValue);
+				public int invoke(ICryptoSymmetricFactory self, com.sun.jna.Pointer data, int dataLength, com.sun.jna.Pointer cryptData, int cryptDataLength, com.sun.jna.Pointer realCryptDataLength, ICryptoKey key, boolean finalValue);
 			}
 
 			public static interface Callback_decryptFinal extends com.sun.jna.Callback
 			{
-				public int invoke(ICryptoSymmetricFactory self, byte[] cryptData, int cryptDataLength, byte[] data, int dataLength, com.sun.jna.Pointer realDataLength, ICryptoKey key, boolean finalValue);
+				public int invoke(ICryptoSymmetricFactory self, com.sun.jna.Pointer cryptData, int cryptDataLength, com.sun.jna.Pointer data, int dataLength, com.sun.jna.Pointer realDataLength, ICryptoKey key, boolean finalValue);
 			}
 
 			public static interface Callback_createKey extends com.sun.jna.Callback
@@ -23398,7 +23398,7 @@ public interface FbInterface extends FbClientLibrary
 
 				encrypt = new Callback_encrypt() {
 					@Override
-					public int invoke(ICryptoSymmetricFactory self, byte[] data, int dataLength, byte[] cryptData, int cryptDataLength, com.sun.jna.Pointer realCryptDataLength, ICryptoKey key)
+					public int invoke(ICryptoSymmetricFactory self, com.sun.jna.Pointer data, int dataLength, com.sun.jna.Pointer cryptData, int cryptDataLength, com.sun.jna.Pointer realCryptDataLength, ICryptoKey key)
 					{
 						return obj.encrypt(data, dataLength, cryptData, cryptDataLength, realCryptDataLength, key);
 					}
@@ -23406,7 +23406,7 @@ public interface FbInterface extends FbClientLibrary
 
 				decrypt = new Callback_decrypt() {
 					@Override
-					public int invoke(ICryptoSymmetricFactory self, byte[] cryptData, int cryptDataLength, byte[] data, int dataLength, com.sun.jna.Pointer realDataLength, ICryptoKey key)
+					public int invoke(ICryptoSymmetricFactory self, com.sun.jna.Pointer cryptData, int cryptDataLength, com.sun.jna.Pointer data, int dataLength, com.sun.jna.Pointer realDataLength, ICryptoKey key)
 					{
 						return obj.decrypt(cryptData, cryptDataLength, data, dataLength, realDataLength, key);
 					}
@@ -23414,7 +23414,7 @@ public interface FbInterface extends FbClientLibrary
 
 				encryptFinal = new Callback_encryptFinal() {
 					@Override
-					public int invoke(ICryptoSymmetricFactory self, byte[] data, int dataLength, byte[] cryptData, int cryptDataLength, com.sun.jna.Pointer realCryptDataLength, ICryptoKey key, boolean finalValue)
+					public int invoke(ICryptoSymmetricFactory self, com.sun.jna.Pointer data, int dataLength, com.sun.jna.Pointer cryptData, int cryptDataLength, com.sun.jna.Pointer realCryptDataLength, ICryptoKey key, boolean finalValue)
 					{
 						return obj.encryptFinal(data, dataLength, cryptData, cryptDataLength, realCryptDataLength, key, finalValue);
 					}
@@ -23422,7 +23422,7 @@ public interface FbInterface extends FbClientLibrary
 
 				decryptFinal = new Callback_decryptFinal() {
 					@Override
-					public int invoke(ICryptoSymmetricFactory self, byte[] cryptData, int cryptDataLength, byte[] data, int dataLength, com.sun.jna.Pointer realDataLength, ICryptoKey key, boolean finalValue)
+					public int invoke(ICryptoSymmetricFactory self, com.sun.jna.Pointer cryptData, int cryptDataLength, com.sun.jna.Pointer data, int dataLength, com.sun.jna.Pointer realDataLength, ICryptoKey key, boolean finalValue)
 					{
 						return obj.decryptFinal(cryptData, cryptDataLength, data, dataLength, realDataLength, key, finalValue);
 					}
@@ -23494,7 +23494,7 @@ public interface FbInterface extends FbClientLibrary
 			return result;
 		}
 
-		public int encrypt(byte[] data, int dataLength, byte[] cryptData, int cryptDataLength, com.sun.jna.Pointer realCryptDataLength, ICryptoKey key)
+		public int encrypt(com.sun.jna.Pointer data, int dataLength, com.sun.jna.Pointer cryptData, int cryptDataLength, com.sun.jna.Pointer realCryptDataLength, ICryptoKey key)
 		{
 			VTable vTable = getVTable();
 			if (vTable.encrypt == null) {
@@ -23504,7 +23504,7 @@ public interface FbInterface extends FbClientLibrary
 			return result;
 		}
 
-		public int decrypt(byte[] cryptData, int cryptDataLength, byte[] data, int dataLength, com.sun.jna.Pointer realDataLength, ICryptoKey key)
+		public int decrypt(com.sun.jna.Pointer cryptData, int cryptDataLength, com.sun.jna.Pointer data, int dataLength, com.sun.jna.Pointer realDataLength, ICryptoKey key)
 		{
 			VTable vTable = getVTable();
 			if (vTable.decrypt == null) {
@@ -23514,7 +23514,7 @@ public interface FbInterface extends FbClientLibrary
 			return result;
 		}
 
-		public int encryptFinal(byte[] data, int dataLength, byte[] cryptData, int cryptDataLength, com.sun.jna.Pointer realCryptDataLength, ICryptoKey key, boolean finalValue)
+		public int encryptFinal(com.sun.jna.Pointer data, int dataLength, com.sun.jna.Pointer cryptData, int cryptDataLength, com.sun.jna.Pointer realCryptDataLength, ICryptoKey key, boolean finalValue)
 		{
 			VTable vTable = getVTable();
 			if (vTable.encryptFinal == null) {
@@ -23524,7 +23524,7 @@ public interface FbInterface extends FbClientLibrary
 			return result;
 		}
 
-		public int decryptFinal(byte[] cryptData, int cryptDataLength, byte[] data, int dataLength, com.sun.jna.Pointer realDataLength, ICryptoKey key, boolean finalValue)
+		public int decryptFinal(com.sun.jna.Pointer cryptData, int cryptDataLength, com.sun.jna.Pointer data, int dataLength, com.sun.jna.Pointer realDataLength, ICryptoKey key, boolean finalValue)
 		{
 			VTable vTable = getVTable();
 			if (vTable.decryptFinal == null) {
@@ -23576,12 +23576,12 @@ public interface FbInterface extends FbClientLibrary
 
 			public static interface Callback_sign extends com.sun.jna.Callback
 			{
-				public int invoke(ICryptoSignatureFactory self, byte[] data, int dataLength, ICryptoSignature signature, ICryptoKeyPair privateKey, int keySpec);
+				public int invoke(ICryptoSignatureFactory self, com.sun.jna.Pointer data, int dataLength, ICryptoSignature signature, ICryptoKeyPair privateKey, int keySpec);
 			}
 
 			public static interface Callback_verifySign extends com.sun.jna.Callback
 			{
-				public int invoke(ICryptoSignatureFactory self, byte[] data, int dataLength, ICryptoSignature signature, ICryptoKey publicKey);
+				public int invoke(ICryptoSignatureFactory self, com.sun.jna.Pointer data, int dataLength, ICryptoSignature signature, ICryptoKey publicKey);
 			}
 
 			public static interface Callback_createSignature extends com.sun.jna.Callback
@@ -23631,7 +23631,7 @@ public interface FbInterface extends FbClientLibrary
 
 				sign = new Callback_sign() {
 					@Override
-					public int invoke(ICryptoSignatureFactory self, byte[] data, int dataLength, ICryptoSignature signature, ICryptoKeyPair privateKey, int keySpec)
+					public int invoke(ICryptoSignatureFactory self, com.sun.jna.Pointer data, int dataLength, ICryptoSignature signature, ICryptoKeyPair privateKey, int keySpec)
 					{
 						return obj.sign(data, dataLength, signature, privateKey, keySpec);
 					}
@@ -23639,7 +23639,7 @@ public interface FbInterface extends FbClientLibrary
 
 				verifySign = new Callback_verifySign() {
 					@Override
-					public int invoke(ICryptoSignatureFactory self, byte[] data, int dataLength, ICryptoSignature signature, ICryptoKey publicKey)
+					public int invoke(ICryptoSignatureFactory self, com.sun.jna.Pointer data, int dataLength, ICryptoSignature signature, ICryptoKey publicKey)
 					{
 						return obj.verifySign(data, dataLength, signature, publicKey);
 					}
@@ -23731,7 +23731,7 @@ public interface FbInterface extends FbClientLibrary
 			return result;
 		}
 
-		public int sign(byte[] data, int dataLength, ICryptoSignature signature, ICryptoKeyPair privateKey, int keySpec)
+		public int sign(com.sun.jna.Pointer data, int dataLength, ICryptoSignature signature, ICryptoKeyPair privateKey, int keySpec)
 		{
 			VTable vTable = getVTable();
 			if (vTable.sign == null) {
@@ -23741,7 +23741,7 @@ public interface FbInterface extends FbClientLibrary
 			return result;
 		}
 
-		public int verifySign(byte[] data, int dataLength, ICryptoSignature signature, ICryptoKey publicKey)
+		public int verifySign(com.sun.jna.Pointer data, int dataLength, ICryptoSignature signature, ICryptoKey publicKey)
 		{
 			VTable vTable = getVTable();
 			if (vTable.verifySign == null) {
@@ -23783,7 +23783,7 @@ public interface FbInterface extends FbClientLibrary
 
 			public static interface Callback_saveToFile extends com.sun.jna.Callback
 			{
-				public int invoke(ICryptoSignature self, String fileName);
+				public int invoke(ICryptoSignature self, com.sun.jna.Pointer fileName);
 			}
 
 			public static interface Callback_saveToBuffer extends com.sun.jna.Callback
@@ -23793,7 +23793,7 @@ public interface FbInterface extends FbClientLibrary
 
 			public static interface Callback_loadFromFile extends com.sun.jna.Callback
 			{
-				public int invoke(ICryptoSignature self, String fileName);
+				public int invoke(ICryptoSignature self, com.sun.jna.Pointer fileName);
 			}
 
 			public static interface Callback_loadFromBuffer extends com.sun.jna.Callback
@@ -23822,7 +23822,7 @@ public interface FbInterface extends FbClientLibrary
 
 				saveToFile = new Callback_saveToFile() {
 					@Override
-					public int invoke(ICryptoSignature self, String fileName)
+					public int invoke(ICryptoSignature self, com.sun.jna.Pointer fileName)
 					{
 						return obj.saveToFile(fileName);
 					}
@@ -23838,7 +23838,7 @@ public interface FbInterface extends FbClientLibrary
 
 				loadFromFile = new Callback_loadFromFile() {
 					@Override
-					public int invoke(ICryptoSignature self, String fileName)
+					public int invoke(ICryptoSignature self, com.sun.jna.Pointer fileName)
 					{
 						return obj.loadFromFile(fileName);
 					}
@@ -23900,7 +23900,7 @@ public interface FbInterface extends FbClientLibrary
 			return result;
 		}
 
-		public int saveToFile(String fileName)
+		public int saveToFile(com.sun.jna.Pointer fileName)
 		{
 			VTable vTable = getVTable();
 			if (vTable.saveToFile == null) {
@@ -23920,7 +23920,7 @@ public interface FbInterface extends FbClientLibrary
 			return result;
 		}
 
-		public int loadFromFile(String fileName)
+		public int loadFromFile(com.sun.jna.Pointer fileName)
 		{
 			VTable vTable = getVTable();
 			if (vTable.loadFromFile == null) {
@@ -23962,12 +23962,12 @@ public interface FbInterface extends FbClientLibrary
 
 			public static interface Callback_encrypt extends com.sun.jna.Callback
 			{
-				public int invoke(ICryptoCertificateFactory self, byte[] data, int dataLength, byte[] cryptData, int cryptDataLength, com.sun.jna.Pointer realCryptDataLength, ICryptoCertificate certificate);
+				public int invoke(ICryptoCertificateFactory self, com.sun.jna.Pointer data, int dataLength, com.sun.jna.Pointer cryptData, int cryptDataLength, com.sun.jna.Pointer realCryptDataLength, ICryptoCertificate certificate);
 			}
 
 			public static interface Callback_decrypt extends com.sun.jna.Callback
 			{
-				public int invoke(ICryptoCertificateFactory self, byte[] cryptData, int cryptDataLength, byte[] data, int dataLength, com.sun.jna.Pointer realDataLength, ICryptoRepository repository);
+				public int invoke(ICryptoCertificateFactory self, com.sun.jna.Pointer cryptData, int cryptDataLength, com.sun.jna.Pointer data, int dataLength, com.sun.jna.Pointer realDataLength, ICryptoRepository repository);
 			}
 
 			public VTable(com.sun.jna.Pointer pointer)
@@ -24007,7 +24007,7 @@ public interface FbInterface extends FbClientLibrary
 
 				encrypt = new Callback_encrypt() {
 					@Override
-					public int invoke(ICryptoCertificateFactory self, byte[] data, int dataLength, byte[] cryptData, int cryptDataLength, com.sun.jna.Pointer realCryptDataLength, ICryptoCertificate certificate)
+					public int invoke(ICryptoCertificateFactory self, com.sun.jna.Pointer data, int dataLength, com.sun.jna.Pointer cryptData, int cryptDataLength, com.sun.jna.Pointer realCryptDataLength, ICryptoCertificate certificate)
 					{
 						return obj.encrypt(data, dataLength, cryptData, cryptDataLength, realCryptDataLength, certificate);
 					}
@@ -24015,7 +24015,7 @@ public interface FbInterface extends FbClientLibrary
 
 				decrypt = new Callback_decrypt() {
 					@Override
-					public int invoke(ICryptoCertificateFactory self, byte[] cryptData, int cryptDataLength, byte[] data, int dataLength, com.sun.jna.Pointer realDataLength, ICryptoRepository repository)
+					public int invoke(ICryptoCertificateFactory self, com.sun.jna.Pointer cryptData, int cryptDataLength, com.sun.jna.Pointer data, int dataLength, com.sun.jna.Pointer realDataLength, ICryptoRepository repository)
 					{
 						return obj.decrypt(cryptData, cryptDataLength, data, dataLength, realDataLength, repository);
 					}
@@ -24089,7 +24089,7 @@ public interface FbInterface extends FbClientLibrary
 			return result;
 		}
 
-		public int encrypt(byte[] data, int dataLength, byte[] cryptData, int cryptDataLength, com.sun.jna.Pointer realCryptDataLength, ICryptoCertificate certificate)
+		public int encrypt(com.sun.jna.Pointer data, int dataLength, com.sun.jna.Pointer cryptData, int cryptDataLength, com.sun.jna.Pointer realCryptDataLength, ICryptoCertificate certificate)
 		{
 			VTable vTable = getVTable();
 			if (vTable.encrypt == null) {
@@ -24099,7 +24099,7 @@ public interface FbInterface extends FbClientLibrary
 			return result;
 		}
 
-		public int decrypt(byte[] cryptData, int cryptDataLength, byte[] data, int dataLength, com.sun.jna.Pointer realDataLength, ICryptoRepository repository)
+		public int decrypt(com.sun.jna.Pointer cryptData, int cryptDataLength, com.sun.jna.Pointer data, int dataLength, com.sun.jna.Pointer realDataLength, ICryptoRepository repository)
 		{
 			VTable vTable = getVTable();
 			if (vTable.decrypt == null) {
@@ -24121,7 +24121,7 @@ public interface FbInterface extends FbClientLibrary
 
 			public static interface Callback_loadFromFile extends com.sun.jna.Callback
 			{
-				public int invoke(ICryptoCertificate self, String fileName);
+				public int invoke(ICryptoCertificate self, com.sun.jna.Pointer fileName);
 			}
 
 			public static interface Callback_loadFromBuffer extends com.sun.jna.Callback
@@ -24136,12 +24136,12 @@ public interface FbInterface extends FbClientLibrary
 
 			public static interface Callback_loadFromRepository extends com.sun.jna.Callback
 			{
-				public int invoke(ICryptoCertificate self, ICryptoRepository repository, String name);
+				public int invoke(ICryptoCertificate self, ICryptoRepository repository, com.sun.jna.Pointer name);
 			}
 
 			public static interface Callback_saveToFile extends com.sun.jna.Callback
 			{
-				public int invoke(ICryptoCertificate self, String fileName);
+				public int invoke(ICryptoCertificate self, com.sun.jna.Pointer fileName);
 			}
 
 			public static interface Callback_saveToBuffer extends com.sun.jna.Callback
@@ -24161,12 +24161,12 @@ public interface FbInterface extends FbClientLibrary
 
 			public static interface Callback_getId extends com.sun.jna.Callback
 			{
-				public int invoke(ICryptoCertificate self, byte[] id, com.sun.jna.Pointer length);
+				public int invoke(ICryptoCertificate self, com.sun.jna.Pointer id, com.sun.jna.Pointer length);
 			}
 
 			public static interface Callback_getIssuerName extends com.sun.jna.Callback
 			{
-				public int invoke(ICryptoCertificate self, byte[] issuerName, com.sun.jna.Pointer length);
+				public int invoke(ICryptoCertificate self, com.sun.jna.Pointer issuerName, com.sun.jna.Pointer length);
 			}
 
 			public static interface Callback_getPublicKey extends com.sun.jna.Callback
@@ -24191,12 +24191,12 @@ public interface FbInterface extends FbClientLibrary
 
 			public static interface Callback_getSerialNumber extends com.sun.jna.Callback
 			{
-				public int invoke(ICryptoCertificate self, byte[] serialNumber, com.sun.jna.Pointer length);
+				public int invoke(ICryptoCertificate self, com.sun.jna.Pointer serialNumber, com.sun.jna.Pointer length);
 			}
 
 			public static interface Callback_getOwnerName extends com.sun.jna.Callback
 			{
-				public int invoke(ICryptoCertificate self, com.sun.jna.Pointer ownerName, com.sun.jna.Pointer length, String user_dn);
+				public int invoke(ICryptoCertificate self, com.sun.jna.Pointer ownerName, com.sun.jna.Pointer length, com.sun.jna.Pointer user_dn);
 			}
 
 			public static interface Callback_getKeyContainer extends com.sun.jna.Callback
@@ -24225,7 +24225,7 @@ public interface FbInterface extends FbClientLibrary
 
 				loadFromFile = new Callback_loadFromFile() {
 					@Override
-					public int invoke(ICryptoCertificate self, String fileName)
+					public int invoke(ICryptoCertificate self, com.sun.jna.Pointer fileName)
 					{
 						return obj.loadFromFile(fileName);
 					}
@@ -24249,7 +24249,7 @@ public interface FbInterface extends FbClientLibrary
 
 				loadFromRepository = new Callback_loadFromRepository() {
 					@Override
-					public int invoke(ICryptoCertificate self, ICryptoRepository repository, String name)
+					public int invoke(ICryptoCertificate self, ICryptoRepository repository, com.sun.jna.Pointer name)
 					{
 						return obj.loadFromRepository(repository, name);
 					}
@@ -24257,7 +24257,7 @@ public interface FbInterface extends FbClientLibrary
 
 				saveToFile = new Callback_saveToFile() {
 					@Override
-					public int invoke(ICryptoCertificate self, String fileName)
+					public int invoke(ICryptoCertificate self, com.sun.jna.Pointer fileName)
 					{
 						return obj.saveToFile(fileName);
 					}
@@ -24289,7 +24289,7 @@ public interface FbInterface extends FbClientLibrary
 
 				getId = new Callback_getId() {
 					@Override
-					public int invoke(ICryptoCertificate self, byte[] id, com.sun.jna.Pointer length)
+					public int invoke(ICryptoCertificate self, com.sun.jna.Pointer id, com.sun.jna.Pointer length)
 					{
 						return obj.getId(id, length);
 					}
@@ -24297,7 +24297,7 @@ public interface FbInterface extends FbClientLibrary
 
 				getIssuerName = new Callback_getIssuerName() {
 					@Override
-					public int invoke(ICryptoCertificate self, byte[] issuerName, com.sun.jna.Pointer length)
+					public int invoke(ICryptoCertificate self, com.sun.jna.Pointer issuerName, com.sun.jna.Pointer length)
 					{
 						return obj.getIssuerName(issuerName, length);
 					}
@@ -24337,7 +24337,7 @@ public interface FbInterface extends FbClientLibrary
 
 				getSerialNumber = new Callback_getSerialNumber() {
 					@Override
-					public int invoke(ICryptoCertificate self, byte[] serialNumber, com.sun.jna.Pointer length)
+					public int invoke(ICryptoCertificate self, com.sun.jna.Pointer serialNumber, com.sun.jna.Pointer length)
 					{
 						return obj.getSerialNumber(serialNumber, length);
 					}
@@ -24345,7 +24345,7 @@ public interface FbInterface extends FbClientLibrary
 
 				getOwnerName = new Callback_getOwnerName() {
 					@Override
-					public int invoke(ICryptoCertificate self, com.sun.jna.Pointer ownerName, com.sun.jna.Pointer length, String user_dn)
+					public int invoke(ICryptoCertificate self, com.sun.jna.Pointer ownerName, com.sun.jna.Pointer length, com.sun.jna.Pointer user_dn)
 					{
 						return obj.getOwnerName(ownerName, length, user_dn);
 					}
@@ -24420,7 +24420,7 @@ public interface FbInterface extends FbClientLibrary
 			return result;
 		}
 
-		public int loadFromFile(String fileName)
+		public int loadFromFile(com.sun.jna.Pointer fileName)
 		{
 			VTable vTable = getVTable();
 			if (vTable.loadFromFile == null) {
@@ -24450,7 +24450,7 @@ public interface FbInterface extends FbClientLibrary
 			return result;
 		}
 
-		public int loadFromRepository(ICryptoRepository repository, String name)
+		public int loadFromRepository(ICryptoRepository repository, com.sun.jna.Pointer name)
 		{
 			VTable vTable = getVTable();
 			if (vTable.loadFromRepository == null) {
@@ -24460,7 +24460,7 @@ public interface FbInterface extends FbClientLibrary
 			return result;
 		}
 
-		public int saveToFile(String fileName)
+		public int saveToFile(com.sun.jna.Pointer fileName)
 		{
 			VTable vTable = getVTable();
 			if (vTable.saveToFile == null) {
@@ -24500,7 +24500,7 @@ public interface FbInterface extends FbClientLibrary
 			return result;
 		}
 
-		public int getId(byte[] id, com.sun.jna.Pointer length)
+		public int getId(com.sun.jna.Pointer id, com.sun.jna.Pointer length)
 		{
 			VTable vTable = getVTable();
 			if (vTable.getId == null) {
@@ -24510,7 +24510,7 @@ public interface FbInterface extends FbClientLibrary
 			return result;
 		}
 
-		public int getIssuerName(byte[] issuerName, com.sun.jna.Pointer length)
+		public int getIssuerName(com.sun.jna.Pointer issuerName, com.sun.jna.Pointer length)
 		{
 			VTable vTable = getVTable();
 			if (vTable.getIssuerName == null) {
@@ -24560,7 +24560,7 @@ public interface FbInterface extends FbClientLibrary
 			return result;
 		}
 
-		public int getSerialNumber(byte[] serialNumber, com.sun.jna.Pointer length)
+		public int getSerialNumber(com.sun.jna.Pointer serialNumber, com.sun.jna.Pointer length)
 		{
 			VTable vTable = getVTable();
 			if (vTable.getSerialNumber == null) {
@@ -24570,7 +24570,7 @@ public interface FbInterface extends FbClientLibrary
 			return result;
 		}
 
-		public int getOwnerName(com.sun.jna.Pointer ownerName, com.sun.jna.Pointer length, String user_dn)
+		public int getOwnerName(com.sun.jna.Pointer ownerName, com.sun.jna.Pointer length, com.sun.jna.Pointer user_dn)
 		{
 			VTable vTable = getVTable();
 			if (vTable.getOwnerName == null) {
@@ -24607,7 +24607,7 @@ public interface FbInterface extends FbClientLibrary
 
 			public static interface Callback_open extends com.sun.jna.Callback
 			{
-				public int invoke(ICryptoRepository self, String path, int openMode, int repositoryLocation, int providerType);
+				public int invoke(ICryptoRepository self, com.sun.jna.Pointer path, int openMode, int repositoryLocation, int providerType);
 			}
 
 			public static interface Callback_close extends com.sun.jna.Callback
@@ -24664,7 +24664,7 @@ public interface FbInterface extends FbClientLibrary
 
 				open = new Callback_open() {
 					@Override
-					public int invoke(ICryptoRepository self, String path, int openMode, int repositoryLocation, int providerType)
+					public int invoke(ICryptoRepository self, com.sun.jna.Pointer path, int openMode, int repositoryLocation, int providerType)
 					{
 						return obj.open(path, openMode, repositoryLocation, providerType);
 					}
@@ -24771,7 +24771,7 @@ public interface FbInterface extends FbClientLibrary
 			return result;
 		}
 
-		public int open(String path, int openMode, int repositoryLocation, int providerType)
+		public int open(com.sun.jna.Pointer path, int openMode, int repositoryLocation, int providerType)
 		{
 			VTable vTable = getVTable();
 			if (vTable.open == null) {
@@ -24843,7 +24843,7 @@ public interface FbInterface extends FbClientLibrary
 
 			public static interface Callback_createRepository extends com.sun.jna.Callback
 			{
-				public int invoke(ICryptoProvider self, ICryptoRepository[] repository, int type, String pin);
+				public int invoke(ICryptoProvider self, ICryptoRepository[] repository, int type, com.sun.jna.Pointer pin);
 			}
 
 			public static interface Callback_deleteRepository extends com.sun.jna.Callback
@@ -24872,7 +24872,7 @@ public interface FbInterface extends FbClientLibrary
 
 				createRepository = new Callback_createRepository() {
 					@Override
-					public int invoke(ICryptoProvider self, ICryptoRepository[] repository, int type, String pin)
+					public int invoke(ICryptoProvider self, ICryptoRepository[] repository, int type, com.sun.jna.Pointer pin)
 					{
 						return obj.createRepository(repository, type, pin);
 					}
@@ -24932,7 +24932,7 @@ public interface FbInterface extends FbClientLibrary
 			return result;
 		}
 
-		public int createRepository(ICryptoRepository[] repository, int type, String pin)
+		public int createRepository(ICryptoRepository[] repository, int type, com.sun.jna.Pointer pin)
 		{
 			VTable vTable = getVTable();
 			if (vTable.createRepository == null) {
@@ -25310,57 +25310,57 @@ public interface FbInterface extends FbClientLibrary
 
 			public static interface Callback_bind_as extends com.sun.jna.Callback
 			{
-				public boolean invoke(ILdapPlugin self, String user, String password);
+				public boolean invoke(ILdapPlugin self, com.sun.jna.Pointer user, com.sun.jna.Pointer password);
 			}
 
 			public static interface Callback_find_user extends com.sun.jna.Callback
 			{
-				public boolean invoke(ILdapPlugin self, String name, com.sun.jna.Pointer password, com.sun.jna.Pointer gost_password, com.sun.jna.Pointer hash_alg);
+				public boolean invoke(ILdapPlugin self, com.sun.jna.Pointer name, com.sun.jna.Pointer password, com.sun.jna.Pointer gost_password, com.sun.jna.Pointer hash_alg);
 			}
 
 			public static interface Callback_find_srp_user extends com.sun.jna.Callback
 			{
-				public boolean invoke(ILdapPlugin self, String name, com.sun.jna.Pointer verifier, com.sun.jna.Pointer salt);
+				public boolean invoke(ILdapPlugin self, com.sun.jna.Pointer name, com.sun.jna.Pointer verifier, com.sun.jna.Pointer salt);
 			}
 
 			public static interface Callback_get_certificate extends com.sun.jna.Callback
 			{
-				public int invoke(ILdapPlugin self, IStatus status, String name, com.sun.jna.Pointer buffer, com.sun.jna.Pointer buffer_length, String attr_name);
+				public int invoke(ILdapPlugin self, IStatus status, com.sun.jna.Pointer name, com.sun.jna.Pointer buffer, com.sun.jna.Pointer buffer_length, com.sun.jna.Pointer attr_name);
 			}
 
 			public static interface Callback_get_user_attr extends com.sun.jna.Callback
 			{
-				public boolean invoke(ILdapPlugin self, IStatus status, String name, String attr, com.sun.jna.Pointer value);
+				public boolean invoke(ILdapPlugin self, IStatus status, com.sun.jna.Pointer name, com.sun.jna.Pointer attr, com.sun.jna.Pointer value);
 			}
 
 			public static interface Callback_get_policy extends com.sun.jna.Callback
 			{
-				public boolean invoke(ILdapPlugin self, String name, com.sun.jna.Pointer policy, com.sun.jna.Pointer failed_count, ISC_TIMESTAMP[] access_time);
+				public boolean invoke(ILdapPlugin self, com.sun.jna.Pointer name, com.sun.jna.Pointer policy, com.sun.jna.Pointer failed_count, ISC_TIMESTAMP[] access_time);
 			}
 
 			public static interface Callback_set_policy extends com.sun.jna.Callback
 			{
-				public boolean invoke(ILdapPlugin self, String name, String policy, com.sun.jna.Pointer failed_count, ISC_TIMESTAMP[] access_time);
+				public boolean invoke(ILdapPlugin self, com.sun.jna.Pointer name, com.sun.jna.Pointer policy, com.sun.jna.Pointer failed_count, ISC_TIMESTAMP[] access_time);
 			}
 
 			public static interface Callback_get_password_history extends com.sun.jna.Callback
 			{
-				public boolean invoke(ILdapPlugin self, String name, String plugin, com.sun.jna.Pointer buffer, com.sun.jna.Pointer buffer_length);
+				public boolean invoke(ILdapPlugin self, com.sun.jna.Pointer name, com.sun.jna.Pointer plugin, com.sun.jna.Pointer buffer, com.sun.jna.Pointer buffer_length);
 			}
 
 			public static interface Callback_get_user_info extends com.sun.jna.Callback
 			{
-				public void invoke(ILdapPlugin self, com.sun.jna.Pointer userId, boolean[] active);
+				public void invoke(ILdapPlugin self, com.sun.jna.Pointer userId, com.sun.jna.Pointer active);
 			}
 
 			public static interface Callback_get_groups_list extends com.sun.jna.Callback
 			{
-				public void invoke(ILdapPlugin self, com.sun.jna.Pointer strlist, String userName, String groupFilter);
+				public void invoke(ILdapPlugin self, com.sun.jna.Pointer strlist, com.sun.jna.Pointer userName, com.sun.jna.Pointer groupFilter);
 			}
 
 			public static interface Callback_get_users_list extends com.sun.jna.Callback
 			{
-				public void invoke(ILdapPlugin self, com.sun.jna.Pointer strlist, String groupName);
+				public void invoke(ILdapPlugin self, com.sun.jna.Pointer strlist, com.sun.jna.Pointer groupName);
 			}
 
 			public static interface Callback_find_user_groups extends com.sun.jna.Callback
@@ -25370,27 +25370,27 @@ public interface FbInterface extends FbClientLibrary
 
 			public static interface Callback_change_legacy_password extends com.sun.jna.Callback
 			{
-				public int invoke(ILdapPlugin self, String name, String password, boolean[] active);
+				public int invoke(ILdapPlugin self, com.sun.jna.Pointer name, com.sun.jna.Pointer password, com.sun.jna.Pointer active);
 			}
 
 			public static interface Callback_change_gost_password extends com.sun.jna.Callback
 			{
-				public int invoke(ILdapPlugin self, String name, String password, com.sun.jna.Pointer hash, boolean[] active);
+				public int invoke(ILdapPlugin self, com.sun.jna.Pointer name, com.sun.jna.Pointer password, com.sun.jna.Pointer hash, com.sun.jna.Pointer active);
 			}
 
 			public static interface Callback_change_srp_password extends com.sun.jna.Callback
 			{
-				public int invoke(ILdapPlugin self, String name, String password, com.sun.jna.Pointer verifier, com.sun.jna.Pointer salt, boolean[] active);
+				public int invoke(ILdapPlugin self, com.sun.jna.Pointer name, com.sun.jna.Pointer password, com.sun.jna.Pointer verifier, com.sun.jna.Pointer salt, com.sun.jna.Pointer active);
 			}
 
 			public static interface Callback_is_password_expired extends com.sun.jna.Callback
 			{
-				public boolean invoke(ILdapPlugin self, String name, String plugin, int valid_days);
+				public boolean invoke(ILdapPlugin self, com.sun.jna.Pointer name, com.sun.jna.Pointer plugin, int valid_days);
 			}
 
 			public static interface Callback_change_active_attr extends com.sun.jna.Callback
 			{
-				public int invoke(ILdapPlugin self, String name, boolean[] active);
+				public int invoke(ILdapPlugin self, com.sun.jna.Pointer name, com.sun.jna.Pointer active);
 			}
 
 			public static interface Callback_check_idle extends com.sun.jna.Callback
@@ -25435,7 +25435,7 @@ public interface FbInterface extends FbClientLibrary
 
 				bind_as = new Callback_bind_as() {
 					@Override
-					public boolean invoke(ILdapPlugin self, String user, String password)
+					public boolean invoke(ILdapPlugin self, com.sun.jna.Pointer user, com.sun.jna.Pointer password)
 					{
 						return obj.bind_as(user, password);
 					}
@@ -25443,7 +25443,7 @@ public interface FbInterface extends FbClientLibrary
 
 				find_user = new Callback_find_user() {
 					@Override
-					public boolean invoke(ILdapPlugin self, String name, com.sun.jna.Pointer password, com.sun.jna.Pointer gost_password, com.sun.jna.Pointer hash_alg)
+					public boolean invoke(ILdapPlugin self, com.sun.jna.Pointer name, com.sun.jna.Pointer password, com.sun.jna.Pointer gost_password, com.sun.jna.Pointer hash_alg)
 					{
 						return obj.find_user(name, password, gost_password, hash_alg);
 					}
@@ -25451,7 +25451,7 @@ public interface FbInterface extends FbClientLibrary
 
 				find_srp_user = new Callback_find_srp_user() {
 					@Override
-					public boolean invoke(ILdapPlugin self, String name, com.sun.jna.Pointer verifier, com.sun.jna.Pointer salt)
+					public boolean invoke(ILdapPlugin self, com.sun.jna.Pointer name, com.sun.jna.Pointer verifier, com.sun.jna.Pointer salt)
 					{
 						return obj.find_srp_user(name, verifier, salt);
 					}
@@ -25459,7 +25459,7 @@ public interface FbInterface extends FbClientLibrary
 
 				get_certificate = new Callback_get_certificate() {
 					@Override
-					public int invoke(ILdapPlugin self, IStatus status, String name, com.sun.jna.Pointer buffer, com.sun.jna.Pointer buffer_length, String attr_name)
+					public int invoke(ILdapPlugin self, IStatus status, com.sun.jna.Pointer name, com.sun.jna.Pointer buffer, com.sun.jna.Pointer buffer_length, com.sun.jna.Pointer attr_name)
 					{
 						try
 						{
@@ -25475,7 +25475,7 @@ public interface FbInterface extends FbClientLibrary
 
 				get_user_attr = new Callback_get_user_attr() {
 					@Override
-					public boolean invoke(ILdapPlugin self, IStatus status, String name, String attr, com.sun.jna.Pointer value)
+					public boolean invoke(ILdapPlugin self, IStatus status, com.sun.jna.Pointer name, com.sun.jna.Pointer attr, com.sun.jna.Pointer value)
 					{
 						try
 						{
@@ -25491,7 +25491,7 @@ public interface FbInterface extends FbClientLibrary
 
 				get_policy = new Callback_get_policy() {
 					@Override
-					public boolean invoke(ILdapPlugin self, String name, com.sun.jna.Pointer policy, com.sun.jna.Pointer failed_count, ISC_TIMESTAMP[] access_time)
+					public boolean invoke(ILdapPlugin self, com.sun.jna.Pointer name, com.sun.jna.Pointer policy, com.sun.jna.Pointer failed_count, ISC_TIMESTAMP[] access_time)
 					{
 						return obj.get_policy(name, policy, failed_count, access_time);
 					}
@@ -25499,7 +25499,7 @@ public interface FbInterface extends FbClientLibrary
 
 				set_policy = new Callback_set_policy() {
 					@Override
-					public boolean invoke(ILdapPlugin self, String name, String policy, com.sun.jna.Pointer failed_count, ISC_TIMESTAMP[] access_time)
+					public boolean invoke(ILdapPlugin self, com.sun.jna.Pointer name, com.sun.jna.Pointer policy, com.sun.jna.Pointer failed_count, ISC_TIMESTAMP[] access_time)
 					{
 						return obj.set_policy(name, policy, failed_count, access_time);
 					}
@@ -25507,7 +25507,7 @@ public interface FbInterface extends FbClientLibrary
 
 				get_password_history = new Callback_get_password_history() {
 					@Override
-					public boolean invoke(ILdapPlugin self, String name, String plugin, com.sun.jna.Pointer buffer, com.sun.jna.Pointer buffer_length)
+					public boolean invoke(ILdapPlugin self, com.sun.jna.Pointer name, com.sun.jna.Pointer plugin, com.sun.jna.Pointer buffer, com.sun.jna.Pointer buffer_length)
 					{
 						return obj.get_password_history(name, plugin, buffer, buffer_length);
 					}
@@ -25515,7 +25515,7 @@ public interface FbInterface extends FbClientLibrary
 
 				get_user_info = new Callback_get_user_info() {
 					@Override
-					public void invoke(ILdapPlugin self, com.sun.jna.Pointer userId, boolean[] active)
+					public void invoke(ILdapPlugin self, com.sun.jna.Pointer userId, com.sun.jna.Pointer active)
 					{
 						obj.get_user_info(userId, active);
 					}
@@ -25523,7 +25523,7 @@ public interface FbInterface extends FbClientLibrary
 
 				get_groups_list = new Callback_get_groups_list() {
 					@Override
-					public void invoke(ILdapPlugin self, com.sun.jna.Pointer strlist, String userName, String groupFilter)
+					public void invoke(ILdapPlugin self, com.sun.jna.Pointer strlist, com.sun.jna.Pointer userName, com.sun.jna.Pointer groupFilter)
 					{
 						obj.get_groups_list(strlist, userName, groupFilter);
 					}
@@ -25531,7 +25531,7 @@ public interface FbInterface extends FbClientLibrary
 
 				get_users_list = new Callback_get_users_list() {
 					@Override
-					public void invoke(ILdapPlugin self, com.sun.jna.Pointer strlist, String groupName)
+					public void invoke(ILdapPlugin self, com.sun.jna.Pointer strlist, com.sun.jna.Pointer groupName)
 					{
 						obj.get_users_list(strlist, groupName);
 					}
@@ -25547,7 +25547,7 @@ public interface FbInterface extends FbClientLibrary
 
 				change_legacy_password = new Callback_change_legacy_password() {
 					@Override
-					public int invoke(ILdapPlugin self, String name, String password, boolean[] active)
+					public int invoke(ILdapPlugin self, com.sun.jna.Pointer name, com.sun.jna.Pointer password, com.sun.jna.Pointer active)
 					{
 						return obj.change_legacy_password(name, password, active);
 					}
@@ -25555,7 +25555,7 @@ public interface FbInterface extends FbClientLibrary
 
 				change_gost_password = new Callback_change_gost_password() {
 					@Override
-					public int invoke(ILdapPlugin self, String name, String password, com.sun.jna.Pointer hash, boolean[] active)
+					public int invoke(ILdapPlugin self, com.sun.jna.Pointer name, com.sun.jna.Pointer password, com.sun.jna.Pointer hash, com.sun.jna.Pointer active)
 					{
 						return obj.change_gost_password(name, password, hash, active);
 					}
@@ -25563,7 +25563,7 @@ public interface FbInterface extends FbClientLibrary
 
 				change_srp_password = new Callback_change_srp_password() {
 					@Override
-					public int invoke(ILdapPlugin self, String name, String password, com.sun.jna.Pointer verifier, com.sun.jna.Pointer salt, boolean[] active)
+					public int invoke(ILdapPlugin self, com.sun.jna.Pointer name, com.sun.jna.Pointer password, com.sun.jna.Pointer verifier, com.sun.jna.Pointer salt, com.sun.jna.Pointer active)
 					{
 						return obj.change_srp_password(name, password, verifier, salt, active);
 					}
@@ -25571,7 +25571,7 @@ public interface FbInterface extends FbClientLibrary
 
 				is_password_expired = new Callback_is_password_expired() {
 					@Override
-					public boolean invoke(ILdapPlugin self, String name, String plugin, int valid_days)
+					public boolean invoke(ILdapPlugin self, com.sun.jna.Pointer name, com.sun.jna.Pointer plugin, int valid_days)
 					{
 						return obj.is_password_expired(name, plugin, valid_days);
 					}
@@ -25579,7 +25579,7 @@ public interface FbInterface extends FbClientLibrary
 
 				change_active_attr = new Callback_change_active_attr() {
 					@Override
-					public int invoke(ILdapPlugin self, String name, boolean[] active)
+					public int invoke(ILdapPlugin self, com.sun.jna.Pointer name, com.sun.jna.Pointer active)
 					{
 						return obj.change_active_attr(name, active);
 					}
@@ -25676,7 +25676,7 @@ public interface FbInterface extends FbClientLibrary
 			return result;
 		}
 
-		public boolean bind_as(String user, String password)
+		public boolean bind_as(com.sun.jna.Pointer user, com.sun.jna.Pointer password)
 		{
 			VTable vTable = getVTable();
 			if (vTable.bind_as == null) {
@@ -25686,7 +25686,7 @@ public interface FbInterface extends FbClientLibrary
 			return result;
 		}
 
-		public boolean find_user(String name, com.sun.jna.Pointer password, com.sun.jna.Pointer gost_password, com.sun.jna.Pointer hash_alg)
+		public boolean find_user(com.sun.jna.Pointer name, com.sun.jna.Pointer password, com.sun.jna.Pointer gost_password, com.sun.jna.Pointer hash_alg)
 		{
 			VTable vTable = getVTable();
 			if (vTable.find_user == null) {
@@ -25696,7 +25696,7 @@ public interface FbInterface extends FbClientLibrary
 			return result;
 		}
 
-		public boolean find_srp_user(String name, com.sun.jna.Pointer verifier, com.sun.jna.Pointer salt)
+		public boolean find_srp_user(com.sun.jna.Pointer name, com.sun.jna.Pointer verifier, com.sun.jna.Pointer salt)
 		{
 			VTable vTable = getVTable();
 			if (vTable.find_srp_user == null) {
@@ -25706,7 +25706,7 @@ public interface FbInterface extends FbClientLibrary
 			return result;
 		}
 
-		public int get_certificate(IStatus status, String name, com.sun.jna.Pointer buffer, com.sun.jna.Pointer buffer_length, String attr_name)
+		public int get_certificate(IStatus status, com.sun.jna.Pointer name, com.sun.jna.Pointer buffer, com.sun.jna.Pointer buffer_length, com.sun.jna.Pointer attr_name)
 		{
 			VTable vTable = getVTable();
 			if (vTable.get_certificate == null) {
@@ -25717,7 +25717,7 @@ public interface FbInterface extends FbClientLibrary
 			return result;
 		}
 
-		public boolean get_user_attr(IStatus status, String name, String attr, com.sun.jna.Pointer value)
+		public boolean get_user_attr(IStatus status, com.sun.jna.Pointer name, com.sun.jna.Pointer attr, com.sun.jna.Pointer value)
 		{
 			VTable vTable = getVTable();
 			if (vTable.get_user_attr == null) {
@@ -25728,7 +25728,7 @@ public interface FbInterface extends FbClientLibrary
 			return result;
 		}
 
-		public boolean get_policy(String name, com.sun.jna.Pointer policy, com.sun.jna.Pointer failed_count, ISC_TIMESTAMP[] access_time)
+		public boolean get_policy(com.sun.jna.Pointer name, com.sun.jna.Pointer policy, com.sun.jna.Pointer failed_count, ISC_TIMESTAMP[] access_time)
 		{
 			VTable vTable = getVTable();
 			if (vTable.get_policy == null) {
@@ -25738,7 +25738,7 @@ public interface FbInterface extends FbClientLibrary
 			return result;
 		}
 
-		public boolean set_policy(String name, String policy, com.sun.jna.Pointer failed_count, ISC_TIMESTAMP[] access_time)
+		public boolean set_policy(com.sun.jna.Pointer name, com.sun.jna.Pointer policy, com.sun.jna.Pointer failed_count, ISC_TIMESTAMP[] access_time)
 		{
 			VTable vTable = getVTable();
 			if (vTable.set_policy == null) {
@@ -25748,7 +25748,7 @@ public interface FbInterface extends FbClientLibrary
 			return result;
 		}
 
-		public boolean get_password_history(String name, String plugin, com.sun.jna.Pointer buffer, com.sun.jna.Pointer buffer_length)
+		public boolean get_password_history(com.sun.jna.Pointer name, com.sun.jna.Pointer plugin, com.sun.jna.Pointer buffer, com.sun.jna.Pointer buffer_length)
 		{
 			VTable vTable = getVTable();
 			if (vTable.get_password_history == null) {
@@ -25758,7 +25758,7 @@ public interface FbInterface extends FbClientLibrary
 			return result;
 		}
 
-		public void get_user_info(com.sun.jna.Pointer userId, boolean[] active)
+		public void get_user_info(com.sun.jna.Pointer userId, com.sun.jna.Pointer active)
 		{
 			VTable vTable = getVTable();
 			if (vTable.get_user_info == null) {
@@ -25767,7 +25767,7 @@ public interface FbInterface extends FbClientLibrary
 			vTable.get_user_info.invoke(this, userId, active);
 		}
 
-		public void get_groups_list(com.sun.jna.Pointer strlist, String userName, String groupFilter)
+		public void get_groups_list(com.sun.jna.Pointer strlist, com.sun.jna.Pointer userName, com.sun.jna.Pointer groupFilter)
 		{
 			VTable vTable = getVTable();
 			if (vTable.get_groups_list == null) {
@@ -25776,7 +25776,7 @@ public interface FbInterface extends FbClientLibrary
 			vTable.get_groups_list.invoke(this, strlist, userName, groupFilter);
 		}
 
-		public void get_users_list(com.sun.jna.Pointer strlist, String groupName)
+		public void get_users_list(com.sun.jna.Pointer strlist, com.sun.jna.Pointer groupName)
 		{
 			VTable vTable = getVTable();
 			if (vTable.get_users_list == null) {
@@ -25794,7 +25794,7 @@ public interface FbInterface extends FbClientLibrary
 			vTable.find_user_groups.invoke(this, userId);
 		}
 
-		public int change_legacy_password(String name, String password, boolean[] active)
+		public int change_legacy_password(com.sun.jna.Pointer name, com.sun.jna.Pointer password, com.sun.jna.Pointer active)
 		{
 			VTable vTable = getVTable();
 			if (vTable.change_legacy_password == null) {
@@ -25804,7 +25804,7 @@ public interface FbInterface extends FbClientLibrary
 			return result;
 		}
 
-		public int change_gost_password(String name, String password, com.sun.jna.Pointer hash, boolean[] active)
+		public int change_gost_password(com.sun.jna.Pointer name, com.sun.jna.Pointer password, com.sun.jna.Pointer hash, com.sun.jna.Pointer active)
 		{
 			VTable vTable = getVTable();
 			if (vTable.change_gost_password == null) {
@@ -25814,7 +25814,7 @@ public interface FbInterface extends FbClientLibrary
 			return result;
 		}
 
-		public int change_srp_password(String name, String password, com.sun.jna.Pointer verifier, com.sun.jna.Pointer salt, boolean[] active)
+		public int change_srp_password(com.sun.jna.Pointer name, com.sun.jna.Pointer password, com.sun.jna.Pointer verifier, com.sun.jna.Pointer salt, com.sun.jna.Pointer active)
 		{
 			VTable vTable = getVTable();
 			if (vTable.change_srp_password == null) {
@@ -25824,7 +25824,7 @@ public interface FbInterface extends FbClientLibrary
 			return result;
 		}
 
-		public boolean is_password_expired(String name, String plugin, int valid_days)
+		public boolean is_password_expired(com.sun.jna.Pointer name, com.sun.jna.Pointer plugin, int valid_days)
 		{
 			VTable vTable = getVTable();
 			if (vTable.is_password_expired == null) {
@@ -25834,7 +25834,7 @@ public interface FbInterface extends FbClientLibrary
 			return result;
 		}
 
-		public int change_active_attr(String name, boolean[] active)
+		public int change_active_attr(com.sun.jna.Pointer name, com.sun.jna.Pointer active)
 		{
 			VTable vTable = getVTable();
 			if (vTable.version < 4)
@@ -25956,7 +25956,7 @@ public interface FbInterface extends FbClientLibrary
 
 			public static interface Callback_verifyPassword extends com.sun.jna.Callback
 			{
-				public boolean invoke(IPolicyPlugin self, String secDbName, String user, String password, boolean isNew, String plugin, com.sun.jna.Pointer isEqual);
+				public boolean invoke(IPolicyPlugin self, com.sun.jna.Pointer secDbName, com.sun.jna.Pointer user, com.sun.jna.Pointer password, boolean isNew, com.sun.jna.Pointer plugin, com.sun.jna.Pointer isEqual);
 			}
 
 			public VTable(com.sun.jna.Pointer pointer)
@@ -25988,7 +25988,7 @@ public interface FbInterface extends FbClientLibrary
 
 				verifyPassword = new Callback_verifyPassword() {
 					@Override
-					public boolean invoke(IPolicyPlugin self, String secDbName, String user, String password, boolean isNew, String plugin, com.sun.jna.Pointer isEqual)
+					public boolean invoke(IPolicyPlugin self, com.sun.jna.Pointer secDbName, com.sun.jna.Pointer user, com.sun.jna.Pointer password, boolean isNew, com.sun.jna.Pointer plugin, com.sun.jna.Pointer isEqual)
 					{
 						return obj.verifyPassword(secDbName, user, password, isNew, plugin, isEqual);
 					}
@@ -26040,7 +26040,7 @@ public interface FbInterface extends FbClientLibrary
 			return result;
 		}
 
-		public boolean verifyPassword(String secDbName, String user, String password, boolean isNew, String plugin, com.sun.jna.Pointer isEqual)
+		public boolean verifyPassword(com.sun.jna.Pointer secDbName, com.sun.jna.Pointer user, com.sun.jna.Pointer password, boolean isNew, com.sun.jna.Pointer plugin, com.sun.jna.Pointer isEqual)
 		{
 			VTable vTable = getVTable();
 			if (vTable.verifyPassword == null) {

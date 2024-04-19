@@ -24,6 +24,7 @@ import org.firebirdsql.gds.ng.WarningMessageCallback;
 import org.firebirdsql.gds.ng.listeners.TransactionListener;
 import org.firebirdsql.jdbc.FBDriverNotCapableException;
 import org.firebirdsql.jdbc.SQLStateConstants;
+import org.firebirdsql.jna.fbclient.CloseableMemory;
 import org.firebirdsql.jna.fbclient.FbClientLibrary;
 import org.firebirdsql.jna.fbclient.FbInterface;
 import org.firebirdsql.jna.fbclient.ISC_STATUS;
@@ -62,7 +63,7 @@ public class IDatabaseImpl extends AbstractFbDatabase<NativeDatabaseConnection>
     protected IProvider provider;
     protected IUtil util;
     protected IAttachment attachment;
-    private final Map<EventHandle, IEvents> events = new HashMap<>();
+    private final Map<EventHandle, IEventImpl> events = new HashMap<>();
     protected IStatus status;
 
 
@@ -173,8 +174,10 @@ public class IDatabaseImpl extends AbstractFbDatabase<NativeDatabaseConnection>
         try {
             checkConnected();
             final byte[] tpbArray = tpb.toBytesWithType();
-            try (LockCloseable ignored = withLock()) {
-                ITransaction transaction = attachment.startTransaction(getStatus(), tpbArray.length, tpbArray);
+            try (LockCloseable ignored = withLock();
+                 CloseableMemory memTPBArr = new CloseableMemory(tpbArray.length)) {
+                memTPBArr.write(0, tpbArray, 0, tpbArray.length);
+                ITransaction transaction = attachment.startTransaction(getStatus(), tpbArray.length, memTPBArr);
                 processStatus();
                 final ITransactionImpl transactionImpl = new ITransactionImpl(this, transaction,
                         TransactionState.ACTIVE);
@@ -192,11 +195,13 @@ public class IDatabaseImpl extends AbstractFbDatabase<NativeDatabaseConnection>
         try {
             checkConnected();
             byte[] statementArray = getEncoding().encodeToCharset(statementText);
-            try (LockCloseable ignored = withLock()) {
+            try (LockCloseable ignored = withLock();
+                 CloseableMemory memStatementArray = new CloseableMemory(statementArray.length)) {
+                memStatementArray.write(0, statementArray, 0, statementArray.length);
                 final ITransaction transaction = attachment.execute(getStatus(),
                         null,
                         statementArray.length,
-                        statementArray, getConnectionDialect(), null, null,
+                        memStatementArray, getConnectionDialect(), null, null,
                         null, null);
                 processStatus();
                 final ITransactionImpl transactionImpl = new ITransactionImpl(this, transaction,
@@ -216,9 +221,11 @@ public class IDatabaseImpl extends AbstractFbDatabase<NativeDatabaseConnection>
             checkConnected();
             final byte[] transactionIdBuffer = getTransactionIdBuffer(transactionId);
 
-            try (LockCloseable ignored = withLock()) {
+            try (LockCloseable ignored = withLock();
+                 CloseableMemory memTrIDArray = new CloseableMemory(transactionIdBuffer.length)) {
+                memTrIDArray.write(0, transactionIdBuffer, 0, transactionIdBuffer.length);
                 ITransaction iTransaction = attachment.reconnectTransaction(getStatus(), transactionIdBuffer.length,
-                        transactionIdBuffer);
+                        memTrIDArray);
                 processStatus();
                 final ITransactionImpl transaction =
                         new ITransactionImpl(this, iTransaction, TransactionState.PREPARED);
@@ -272,12 +279,14 @@ public class IDatabaseImpl extends AbstractFbDatabase<NativeDatabaseConnection>
     @Override
     public byte[] getDatabaseInfo(byte[] requestItems, int maxBufferLength) throws SQLException {
         try {
-            final byte[] responseArray = new byte[maxBufferLength];
-            try (LockCloseable ignored = withLock()) {
-                attachment.getInfo(getStatus(), requestItems.length, requestItems, (short) maxBufferLength, responseArray);
+            try (LockCloseable ignored = withLock();
+                 CloseableMemory memRequestItems = new CloseableMemory(requestItems.length);
+                 CloseableMemory memResponseArray = new CloseableMemory(maxBufferLength)) {
+                memRequestItems.write(0, requestItems, 0, requestItems.length);
+                attachment.getInfo(getStatus(), requestItems.length, memRequestItems, (short) maxBufferLength, memResponseArray);
+                processStatus();
+                return memResponseArray.getByteArray(0, maxBufferLength);
             }
-            processStatus();
-            return responseArray;
         } catch (SQLException e) {
             exceptionListenerDispatcher.errorOccurred(new SQLException(e));
             throw new SQLException(e);
@@ -305,16 +314,21 @@ public class IDatabaseImpl extends AbstractFbDatabase<NativeDatabaseConnection>
                         .toFlatSQLException();
             }
             final byte[] statementArray = getEncoding().encodeToCharset(statementText);
-            try (LockCloseable ignored = withLock()) {
+            final byte[] booleans = new byte[]{0};
+            try (LockCloseable ignored = withLock();
+                 CloseableMemory memStatementArray = new CloseableMemory(statementArray.length);
+                 CloseableMemory memBooleanArray = new CloseableMemory(booleans.length)) {
+                memStatementArray.write(0, statementArray, 0, statementArray.length);
+                memBooleanArray.write(0, booleans, 0, booleans.length);
                 if (attachment == null) {
                     attachment = util.executeCreateDatabase(getStatus(), statementArray.length,
-                            statementArray, getConnectionDialect(), new boolean[]{false});
+                            memStatementArray, getConnectionDialect(), memBooleanArray);
                 } else {
                     attachment.execute(getStatus(),
                             transaction != null ? ((ITransactionImpl) transaction).getTransaction() :
                                     null,
                             statementArray.length,
-                            statementArray, getConnectionDialect(), null, null,
+                            memStatementArray, getConnectionDialect(), null, null,
                             null, null);
                 }
                 if (!isAttached()) {
@@ -394,11 +408,13 @@ public class IDatabaseImpl extends AbstractFbDatabase<NativeDatabaseConnection>
             try (LockCloseable ignored = withLock()) {
                 synchronized (event) {
                     int length = event.getSize();
-                    byte[] array = event.getEventBuffer().getValue().getByteArray(0, length);
+//                    byte[] array = event.getEventBuffer().getValue().getByteArray(0, length);
                     IEvents iEvents = attachment.queEvents(getStatus(), event.getCallback(),
                             length,
-                            array);
-                    events.put(eventHandle, iEvents);
+                            event.getEventBuffer().getValue());
+                    iEvents.addRef();
+                    event.addQueuedEvent(iEvents);
+                    events.put(eventHandle, event);
                 }
             }
         } catch (SQLException e) {
@@ -416,8 +432,8 @@ public class IDatabaseImpl extends AbstractFbDatabase<NativeDatabaseConnection>
             try (LockCloseable ignored = withLock()) {
                 synchronized (event) {
                     try {
-                        IEvents iEvents = events.remove(eventHandle);
-                        iEvents.cancel(getStatus());
+                        final IEventImpl eventImpl = events.remove(eventHandle);
+                        eventImpl.releaseQueuedEvents(getStatus());
                     } finally {
                         event.releaseMemory();
                     }
@@ -462,12 +478,16 @@ public class IDatabaseImpl extends AbstractFbDatabase<NativeDatabaseConnection>
         final byte[] dbName = getEncoding().encodeToCharset(connection.getAttachUrl().concat("\0"));
         final byte[] dpbArray = dpb.toBytesWithType();
 
-        try (LockCloseable ignored = withLock()) {
+        try (LockCloseable ignored = withLock();
+             CloseableMemory memDBName = new CloseableMemory(dbName.length);
+             CloseableMemory memDBPArr = new CloseableMemory(dpbArray.length)) {
+            memDBName.write(0, dbName, 0, dbName.length);
+            memDBPArr.write(0, dpbArray, 0, dpbArray.length);
             try {
                 if (create) {
-                    attachment = provider.createDatabase(getStatus(), dbName, (short) dpbArray.length, dpbArray);
+                    attachment = provider.createDatabase(getStatus(), memDBName, (short) dpbArray.length, memDBPArr);
                 } else {
-                    attachment = provider.attachDatabase(getStatus(), dbName, (short) dpbArray.length, dpbArray);
+                    attachment = provider.attachDatabase(getStatus(), memDBName, (short) dpbArray.length, memDBPArr);
                 }
                 processStatus();
             } catch (SQLException e) {
