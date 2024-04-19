@@ -41,7 +41,9 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.sql.SQLNonTransientException;
 import java.sql.SQLTransientException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.firebirdsql.gds.ISCConstants.fb_cancel_abort;
@@ -63,7 +65,8 @@ public class IDatabaseImpl extends AbstractFbDatabase<NativeDatabaseConnection>
     protected IProvider provider;
     protected IUtil util;
     protected IAttachment attachment;
-    private final Map<EventHandle, IEventImpl> events = new HashMap<>();
+    private final Map<EventHandle, IEvents> events = new HashMap<>();
+    private final List<IEvents> iEvents = new ArrayList<>();
     protected IStatus status;
 
 
@@ -107,6 +110,10 @@ public class IDatabaseImpl extends AbstractFbDatabase<NativeDatabaseConnection>
     @Override
     protected void internalDetach() throws SQLException {
         try (LockCloseable ignored = withLock()) {
+            for (IEvents e : iEvents) {
+                e.cancel(getStatus());
+                processStatus();
+            }
             attachment.detach(getStatus());
             processStatus();
             status.dispose();
@@ -404,17 +411,14 @@ public class IDatabaseImpl extends AbstractFbDatabase<NativeDatabaseConnection>
         try {
             checkConnected();
             final IEventImpl event = validateEventHandle(eventHandle);
-
             try (LockCloseable ignored = withLock()) {
                 synchronized (event) {
                     int length = event.getSize();
-//                    byte[] array = event.getEventBuffer().getValue().getByteArray(0, length);
-                    IEvents iEvents = attachment.queEvents(getStatus(), event.getCallback(),
+                    IEvents iEvent = attachment.queEvents(getStatus(), event.getCallback(),
                             length,
                             event.getEventBuffer().getValue());
-                    iEvents.addRef();
-                    event.addQueuedEvent(iEvents);
-                    events.put(eventHandle, event);
+                    iEvents.add(iEvent);
+                    events.put(eventHandle, iEvent);
                 }
             }
         } catch (SQLException e) {
@@ -432,8 +436,10 @@ public class IDatabaseImpl extends AbstractFbDatabase<NativeDatabaseConnection>
             try (LockCloseable ignored = withLock()) {
                 synchronized (event) {
                     try {
-                        final IEventImpl eventImpl = events.remove(eventHandle);
-                        eventImpl.releaseQueuedEvents(getStatus());
+                        IEvents iEvent = events.remove(eventHandle);
+                        iEvents.remove(iEvent);
+                        iEvent.cancel(getStatus());
+                        processStatus();
                     } finally {
                         event.releaseMemory();
                     }
