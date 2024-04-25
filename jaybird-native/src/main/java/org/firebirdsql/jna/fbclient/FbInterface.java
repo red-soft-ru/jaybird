@@ -367,7 +367,7 @@ public interface FbInterface extends FbClientLibrary
 		public IMessageMetadata getInputMetadata(IStatus status);
 		public IMessageMetadata getOutputMetadata(IStatus status);
 		public ITransaction execute(IStatus status, ITransaction transaction, IMessageMetadata inMetadata, com.sun.jna.Pointer inBuffer, IMessageMetadata outMetadata, com.sun.jna.Pointer outBuffer);
-		public IResultSet openCursor(IStatus status, ITransaction transaction, IMessageMetadata inMetadata, com.sun.jna.Pointer inBuffer, IMessageMetadata outMetadata, int flags);
+		public IResultSet openCursor(IStatus status, ITransaction transaction, IMessageMetadata inMetadata, com.sun.jna.Pointer inBuffer, com.sun.jna.Pointer outMetadata, int flags);
 		public void setCursorName(IStatus status, com.sun.jna.Pointer name);
 		public void deprecatedFree(IStatus status);
 		public int getFlags(IStatus status);
@@ -6805,7 +6805,7 @@ public interface FbInterface extends FbClientLibrary
 
 			public static interface Callback_openCursor extends com.sun.jna.Callback
 			{
-				public IResultSet invoke(IStatement self, IStatus status, ITransaction transaction, IMessageMetadata inMetadata, com.sun.jna.Pointer inBuffer, IMessageMetadata outMetadata, int flags);
+				public IResultSet invoke(IStatement self, IStatus status, ITransaction transaction, IMessageMetadata inMetadata, com.sun.jna.Pointer inBuffer, com.sun.jna.Pointer outMetadata, int flags);
 			}
 
 			public static interface Callback_setCursorName extends com.sun.jna.Callback
@@ -6967,7 +6967,7 @@ public interface FbInterface extends FbClientLibrary
 
 				openCursor = new Callback_openCursor() {
 					@Override
-					public IResultSet invoke(IStatement self, IStatus status, ITransaction transaction, IMessageMetadata inMetadata, com.sun.jna.Pointer inBuffer, IMessageMetadata outMetadata, int flags)
+					public IResultSet invoke(IStatement self, IStatus status, ITransaction transaction, IMessageMetadata inMetadata, com.sun.jna.Pointer inBuffer, com.sun.jna.Pointer outMetadata, int flags)
 					{
 						try
 						{
@@ -7213,7 +7213,7 @@ public interface FbInterface extends FbClientLibrary
 			return result;
 		}
 
-		public IResultSet openCursor(IStatus status, ITransaction transaction, IMessageMetadata inMetadata, com.sun.jna.Pointer inBuffer, IMessageMetadata outMetadata, int flags)
+		public IResultSet openCursor(IStatus status, ITransaction transaction, IMessageMetadata inMetadata, com.sun.jna.Pointer inBuffer, com.sun.jna.Pointer outMetadata, int flags)
 		{
 			VTable vTable = getVTable();
 			if (vTable.openCursor == null) {

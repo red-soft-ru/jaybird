@@ -202,7 +202,7 @@ public class IStatementImpl extends AbstractFbStatement {
                 }
                 if ((statement.getFlags(getStatus()) & IStatement.FLAG_HAS_CURSOR) == IStatement.FLAG_HAS_CURSOR) {
                     cursor = statement.openCursor(getStatus(), transaction.getTransaction(), inMetadata, inPtr,
-                            outMetadata, 0);
+                            outMetadata.getPointer(), 0);
                 } else {
                     ByteBuffer outMessage = ByteBuffer.allocate(getMaxSqlInfoSize());
                     outLength = outMessage.array().length;
