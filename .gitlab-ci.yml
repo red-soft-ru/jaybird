@@ -146,22 +146,22 @@ build_and_test:
         TEST_JAVA_JVM: /usr/java17/bin/java
         GDS_TYPE: "FBOONATIVE"
         REPORT_PREFIX: jdk17_fboonative_
-        RDB_VERSION: $RDB5_VERSION
+        RDB_VERSION: $RDB6_VERSION
       - TYPE: JDK17_native_only
         TEST_JAVA_JVM: /usr/java17/bin/java
         GDS_TYPE: "NATIVE"
         REPORT_PREFIX: jdk17_native_
-        RDB_VERSION: $RDB5_VERSION
+        RDB_VERSION: $RDB6_VERSION
       - TYPE: JDK17_fbooembedded_only
         TEST_JAVA_JVM: /usr/java17/bin/java
         GDS_TYPE: "FBOOEMBEDDED"
         REPORT_PREFIX: jdk17_fbooembedded_
-        RDB_VERSION: $RDB5_VERSION
+        RDB_VERSION: $RDB6_VERSION
       - TYPE: JDK17_embedded_only
         TEST_JAVA_JVM: /usr/java17/bin/java
         GDS_TYPE: "EMBEDDED"
         REPORT_PREFIX: jdk17_embedded_
-        RDB_VERSION: $RDB5_VERSION
+        RDB_VERSION: $RDB6_VERSION
 #      - TYPE: JDK17_rdb3_liberica_17
 #        TEST_JAVA_JVM: /usr/java17/bin/java
 #        JDK_VER: 17
