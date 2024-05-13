@@ -533,8 +533,12 @@ public final class FirebirdSupportInfo {
             return 54;
         } else if (databaseMajorVersion == 5) {
             if (isRDB)
-                return 64;
+                return 65;
             return 56;
+        } else if (databaseMajorVersion == 6) {
+            if (isRDB)
+                return 65;
+            return 57;
         } else {
             return -1;
         }
