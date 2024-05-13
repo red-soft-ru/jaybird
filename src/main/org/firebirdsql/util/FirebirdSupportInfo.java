@@ -367,6 +367,13 @@ public final class FirebirdSupportInfo {
     }
 
     /**
+     * @return {@code true} when generated always as identity columns are supported.
+     */
+    public boolean supportsGeneratedAlwaysAsIdentityColumns() {
+        return isVersionEqualOrAbove(4);
+    }
+
+    /**
      * @return {@code true} when identity columns are supported.
      */
     public boolean supportsIdentityColumns() {

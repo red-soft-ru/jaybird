@@ -447,7 +447,7 @@ class FBResultSetMetaDataTest {
     @ParameterizedTest
     @EnumSource(value = JDBCType.class, names = { "SMALLINT", "INTEGER", "BIGINT" })
     void isAutoIncrement_identityColumn(JDBCType columnType) throws Exception {
-        assumeFeature(FirebirdSupportInfo::supportsIdentityColumns, "Test requires identity column support");
+        assumeFeature(FirebirdSupportInfo::supportsGeneratedAlwaysAsIdentityColumns, "Test requires identity column support");
         try (var connection = getConnectionViaDriverManager();
              var stmt = connection.createStatement()) {
             stmt.execute(RECREATE_AUTO_INC_TABLE_TEMPLATE.formatted(columnType.name()));
@@ -461,7 +461,7 @@ class FBResultSetMetaDataTest {
     @ParameterizedTest
     @EnumSource(value = JDBCType.class, names = { "SMALLINT", "INTEGER", "BIGINT" })
     void isAutoIncrement_extendedMetadataDisabled(JDBCType columnType) throws Exception {
-        assumeFeature(FirebirdSupportInfo::supportsIdentityColumns, "Test requires identity column support");
+        assumeFeature(FirebirdSupportInfo::supportsGeneratedAlwaysAsIdentityColumns, "Test requires identity column support");
         try (var connection = getConnectionViaDriverManager(PropertyNames.extendedMetadata, "false");
              var stmt = connection.createStatement()) {
             stmt.execute(RECREATE_AUTO_INC_TABLE_TEMPLATE.formatted(columnType.name()));
