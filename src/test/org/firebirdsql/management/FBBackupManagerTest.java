@@ -429,7 +429,7 @@ class FBBackupManagerTest {
 
         var logOutput = loggingStream.toString(StandardCharsets.ISO_8859_1);
         assertThat(logOutput, containsString(
-                "gbak: WARNING:Wrong parallel workers value %d, valid range are from 1 to %d"
+                "gbak: WARNING:    Wrong parallel workers value %d, valid range are from 1 to %d"
                         .formatted(maxParallelWorkers + 1, maxParallelWorkers)));
         System.out.println(logOutput);
     }
