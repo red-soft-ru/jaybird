@@ -515,7 +515,9 @@ public final class FirebirdSupportInfo {
         } else if (databaseMajorVersion == 4) {
             return 54;
         } else if (databaseMajorVersion == 5) {
-            return 64;
+            return 65;
+        } else if (databaseMajorVersion == 6) {
+            return 65;
         } else {
             return -1;
         }
