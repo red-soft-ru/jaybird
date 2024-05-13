@@ -141,6 +141,7 @@ class FBDatabaseMetaDataCatalogsTest {
                 expectedCatalogNames.add("RDB$TIME_ZONE_UTIL");
             }
             if (supportInfo.isVersionEqualOrAbove(5)) {
+                expectedCatalogNames.add("RDB$SQL");
                 expectedCatalogNames.add("RDB$BLOB_UTIL");
                 expectedCatalogNames.add("RDB$PROFILER");
             }
