@@ -103,7 +103,7 @@ if [[ "$RDB_MAJOR_VERSION" == "6" ]]; then
   sed -i 's/#AuthClient = Srp256, Srp, Legacy_Auth, GostPassword, Certificate, Gss\s*#Non Windows clients/AuthClient = Srp256, Srp224, Srp384, Srp512, Srp, Legacy_Auth, GostPassword, Certificate, Gss/g' "${INSTALLDIR}"/firebird.conf
   sed -i 's/#UserManager = Srp/UserManager = Srp, Legacy_UserManager, GostPassword_Manager /g' "${INSTALLDIR}"/firebird.conf
   sed -i 's/#WireCrypt = Enabled (for client) \/ Required (for server)/WireCrypt = Enabled/g' "${INSTALLDIR}"/firebird.conf
-  sed -i 's/#WireCryptPlugin = ChaCha, Arc4/WireCryptPlugin = Wire_WinCrypt/g' "${INSTALLDIR}"/firebird.conf
+  sed -i 's/#WireCryptPlugin = ChaCha64, ChaCha, Arc4/WireCryptPlugin = ChaCha64, ChaCha, Arc4, Wire_WinCrypt/g' "${INSTALLDIR}"/firebird.conf
   sed -i 's/#GssServerKeyfile/GssServerKeyfile/g' "${INSTALLDIR}"/firebird.conf
   sed -i 's/#GssServiceName/GssServiceName/g' "${INSTALLDIR}"/firebird.conf
   sed -i 's/#GssHostName =/GssHostName = localhost/g' "${INSTALLDIR}"/firebird.conf
@@ -125,7 +125,7 @@ elif [[ "$RDB_MAJOR_VERSION" == "5" ]]; then
   sed -i 's/#AuthClient = Srp256, Srp, Legacy_Auth, GostPassword, Certificate, Gss\s*#Non Windows clients/AuthClient = Srp256, Srp224, Srp384, Srp512, Srp, Legacy_Auth, GostPassword, Certificate, Gss/g' "${INSTALLDIR}"/firebird.conf
   sed -i 's/#UserManager = Srp/UserManager = Srp, Legacy_UserManager, GostPassword_Manager /g' "${INSTALLDIR}"/firebird.conf
   sed -i 's/#WireCrypt = Enabled (for client) \/ Required (for server)/WireCrypt = Enabled/g' "${INSTALLDIR}"/firebird.conf
-  sed -i 's/#WireCryptPlugin = ChaCha, Arc4/WireCryptPlugin = Wire_WinCrypt/g' "${INSTALLDIR}"/firebird.conf
+  sed -i 's/#WireCryptPlugin = ChaCha64, ChaCha, Arc4/WireCryptPlugin = ChaCha64, ChaCha, Arc4, Wire_WinCrypt/g' "${INSTALLDIR}"/firebird.conf
   sed -i 's/#GssServerKeyfile/GssServerKeyfile/g' "${INSTALLDIR}"/firebird.conf
   sed -i 's/#GssServiceName/GssServiceName/g' "${INSTALLDIR}"/firebird.conf
   sed -i 's/#GssHostName =/GssHostName = localhost/g' "${INSTALLDIR}"/firebird.conf
