@@ -121,18 +121,18 @@ public class ITransactionImpl extends AbstractFbTransaction {
     @Override
     public byte[] getTransactionInfo(byte[] requestItems, int maxBufferLength) throws SQLException {
         try {
-            final byte[] responseArray = new byte[maxBufferLength];
+            byte[] responseArray;
             try (LockCloseable ignored = withLock();
                  CloseableMemory memRequestItems = new CloseableMemory(requestItems.length);
-                 CloseableMemory memResponseArray = new CloseableMemory(responseArray.length)
+                 CloseableMemory memResponseArray = new CloseableMemory(maxBufferLength)
             ) {
                 memRequestItems.write(0, requestItems, 0, requestItems.length);
-                memResponseArray.write(0, responseArray, 0, responseArray.length);
                 final IDatabaseImpl db = getDatabase();
                 db.checkConnected();
                 transaction.getInfo(getStatus(), (short) requestItems.length, memRequestItems,
                         (short) maxBufferLength, memResponseArray);
                 processStatus();
+                responseArray = memResponseArray.getByteArray(0, maxBufferLength);
             }
             return responseArray;
         } catch (SQLException e) {
