@@ -514,7 +514,7 @@ public class IDatabaseImpl extends AbstractFbDatabase<NativeDatabaseConnection>
     }
 
     public IStatus getStatus() {
-        status.clear();
+        status.init();
         return status;
     }
 
