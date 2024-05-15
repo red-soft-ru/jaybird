@@ -1,22 +1,48 @@
+# v5.0.18
+
+## Fixed
+
+* Expected system tables count for RDB 5 and RDB 6. RS-173247
+* Initializing status before obtaining it to avoid state overwrite. RS-173245
+
+## Ported from Jaybird
+
+Backport GH-786. Account for Java expecting offset name to be prefixed by GMT. GH-787
+Fix for Java 8 compatibility. GH-787
+Fix executeBatch() of statement without parameters throws isc_batch_param. GH-788
+FBResultSetMetaData.getExtendedFieldInfo will query same set of fields when there are more than 70 fields. GH-731
+Optimize FBResultSetMetaData.getExtendedFieldInfo. GH-732
+Report true for ResultSetMetaData.isAutoIncrement for identity columns. GH-793
+Add connection property to disable retrieval of extended field info for ResultSetMetaData. GH-795
+Backport GH-797. GH-801
+
+
+# v5.0.17
+
+## Fixed
+
+* Work with time types if GMT time zone format is used. RS-162340
+
+
 # v5.0.16
 
 ## Fixed
 
-* Clear transaction map associated with managed connection if attachment has been shutdown. See RS-63070
+* Clear transaction map associated with managed connection if attachment has been shutdown. RS-63070
 
 
 # v5.0.15
 
 ## Fixed
 
-* Red Database 5.0 system table count. See RS-158806
+* Red Database 5.0 system table count. RS-158806
 
 
 # v5.0.14
 
 ## Improvements
 
-* Remove printing to `System.out` from trace manager. See RS-154172
+* Remove printing to `System.out` from trace manager. RS-154172
 
 ## Ported from Jaybird
 
@@ -30,50 +56,50 @@ jaybird-fbclient 4.0.4.0
 
 ## Fixed
 
-* Map time zone with GMT offset for V13 protocol only. See RS-150549
+* Map time zone with GMT offset for V13 protocol only. RS-150549
 
 
 # v5.0.12
 
 ## Fixed
 
-* Allow the use of parallel workers, starting with Red Database 3.0. See RS-150245
+* Allow the use of parallel workers, starting with Red Database 3.0. RS-150245
 
 
 # v5.0.11
 
 ## Fixed
 
-* Fix creation of temporary blobs. See RS-150077
-* Fix memory release in native OO API implementation of database, statement and service. See RS-150127
+* Fix creation of temporary blobs. RS-150077
+* Fix memory release in native OO API implementation of database, statement and service. RS-150127
 
 
 # v5.0.10
 
 ## Improvements
 
-* Add alias for encrypted password property. See RS-148217
+* Add alias for encrypted password property. RS-148217
 
 
 # v5.0.9
 
 ## Fixed
 
-* Fix working with time zone set in GMT format for 18 protocol version. See RS-145943
+* Fix working with time zone set in GMT format for 18 protocol version. RS-145943
 
 
 # v5.0.8
 
 ## Fixed
 
-* Fix working with time zone set in GMT format. See RS-94039 RS-145787
+* Fix working with time zone set in GMT format. RS-94039 RS-145787
 
 
 # v5.0.7
 
 ## Improvements
 
-* Add parallel workers option in statistics manager. See RS-98332
+* Add parallel workers option in statistics manager. RS-98332
 
 
 ## Ported from Jaybird
@@ -93,37 +119,37 @@ jaybird-fbclient 4.0.4.0
 
 ## Fixed
 
-* Do not duplicate connection properties when connecting using protocol v12 (RDB 2.6). See RS-98277
+* Do not duplicate connection properties when connecting using protocol v12 (RDB 2.6). RS-98277
 
 
 # v5.0.5
 
 ## Fixed
 
-* Multifactor authentication with protocol below 13 (RDB 2.6). See RS-98277
+* Multifactor authentication with protocol below 13 (RDB 2.6). RS-98277
 
 
 # v5.0.4
 
 ## Improvements
 
-* Use JDK 8 to build JDK 8 artifacts. See RS-96160
+* Use JDK 8 to build JDK 8 artifacts. RS-96160
 
 
 # v5.0.3
 
 ## Fixed
 
-* Fix condition to continue authentication in `GostPasswordAuthenticationPlugin`. See RS-95205
+* Fix condition to continue authentication in `GostPasswordAuthenticationPlugin`. RS-95205
 
 
 # v5.0.2
 
 ## Fixed
 
-* Frontported multithreaded backup/restore and sweep via services. See RS-95035
-* Add ability to set property for non-encrypted password passing. See RS-95205
-* Skip authentication in `GostPassword` plugin if no username and password are set. See RS-95205
+* Frontported multithreaded backup/restore and sweep via services. RS-95035
+* Add ability to set property for non-encrypted password passing. RS-95205
+* Skip authentication in `GostPassword` plugin if no username and password are set. RS-95205
 
 
 # v5.0.1
@@ -144,7 +170,7 @@ jaybird-fbclient 4.0.4.0
 
 * Checking statement cursor before closing it. RS-89306
 * Parameter buffer creation for service when connecting via native interfaces. RS-90026
-* Release of statement when prepare call if it is not null. See RS-90056
+* Release of statement when prepare call if it is not null. RS-90056
 
 
 ## Improvements
@@ -153,7 +179,7 @@ jaybird-fbclient 4.0.4.0
 * Add descriptions of missing error codes. RS-87191
 * Add message for `bad_trig_BLR` error code. RS-87191
 * Simplify code in creating metadata for native OO API statement. RS-24827
-* Implement support server-side batch updates for native OO API statement. See RS-24827
+* Implement support server-side batch updates for native OO API statement. RS-24827
 
 
 ## Ported from Jaybird
