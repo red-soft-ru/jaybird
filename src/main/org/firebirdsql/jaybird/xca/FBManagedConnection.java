@@ -143,7 +143,7 @@ public final class FBManagedConnection implements ExceptionListener {
         this.parent = mc;
         this.mcf = mc.mcf;
         this.cri = mc.cri;
-        this.tpb = new FBTpb(mc.tpb);
+        this.tpb = mc.tpb;
         this.transactionIsolation = mc.transactionIsolation;
         this.database = mc.database;
         this.database.addExceptionListener(this);
