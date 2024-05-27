@@ -25,7 +25,6 @@ import org.firebirdsql.gds.ng.fields.RowDescriptor;
 import org.firebirdsql.gds.ng.fields.RowValue;
 import org.firebirdsql.gds.ng.listeners.*;
 import org.firebirdsql.jdbc.FBDriverNotCapableException;
-import org.firebirdsql.jdbc.SQLStateConstants;
 
 import java.sql.SQLException;
 import java.sql.SQLNonTransientException;
@@ -756,8 +755,9 @@ public abstract class AbstractFbStatement implements FbStatement {
                     }
                 }
             } else {
-                throw new SQLNonTransientException(format("Invalid transaction handle type, got \"%s\"",
-                        newTransaction.getClass().getName()), SQLStateConstants.SQL_STATE_GENERAL_ERROR);
+                throw FbExceptionBuilder.forNonTransientException(JaybirdErrorCodes.jb_invalidTransactionHandleType)
+                        .messageParameter(newTransaction.getClass())
+                        .toSQLException();
             }
         } catch (SQLNonTransientException e) {
             exceptionListenerDispatcher.errorOccurred(e);
