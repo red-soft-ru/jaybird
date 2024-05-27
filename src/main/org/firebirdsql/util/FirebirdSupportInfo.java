@@ -20,9 +20,6 @@ package org.firebirdsql.util;
 
 import org.firebirdsql.gds.impl.GDSServerVersion;
 import org.firebirdsql.gds.ng.FbAttachment;
-import org.firebirdsql.gds.ng.wire.auth.CertificateAuthenticationPluginSpi;
-import org.firebirdsql.gds.ng.wire.auth.GostPasswordAuthenticationPluginSpi;
-import org.firebirdsql.gds.ng.wire.auth.MultifactorAuthenticationPluginSpi;
 import org.firebirdsql.gds.ng.wire.auth.legacy.LegacyAuthenticationPluginSpi;
 import org.firebirdsql.gds.ng.wire.auth.srp.Srp224AuthenticationPluginSpi;
 import org.firebirdsql.gds.ng.wire.auth.srp.Srp256AuthenticationPluginSpi;
@@ -367,13 +364,6 @@ public final class FirebirdSupportInfo {
     }
 
     /**
-     * @return {@code true} when generated always as identity columns are supported.
-     */
-    public boolean supportsGeneratedAlwaysAsIdentityColumns() {
-        return isVersionEqualOrAbove(4);
-    }
-
-    /**
      * @return {@code true} when identity columns are supported.
      */
     public boolean supportsIdentityColumns() {
@@ -497,10 +487,7 @@ public final class FirebirdSupportInfo {
             case LegacyAuthenticationPluginSpi.LEGACY_AUTH_NAME -> true;
             case SrpAuthenticationPluginSpi.SRP_AUTH_NAME -> isVersionEqualOrAbove(3);
             case Srp224AuthenticationPluginSpi.SRP_224_AUTH_NAME, Srp256AuthenticationPluginSpi.SRP_256_AUTH_NAME,
-                    Srp384AuthenticationPluginSpi.SRP_384_AUTH_NAME, Srp512AuthenticationPluginSpi.SRP_512_AUTH_NAME,
-                    MultifactorAuthenticationPluginSpi.MULTIFACTOR_AUTH_NAME,
-                    CertificateAuthenticationPluginSpi.CERTIFICATE_AUTH_NAME,
-                    GostPasswordAuthenticationPluginSpi.GOST_PASSWORD_AUTH_NAME ->
+                    Srp384AuthenticationPluginSpi.SRP_384_AUTH_NAME, Srp512AuthenticationPluginSpi.SRP_512_AUTH_NAME ->
                     isVersionEqualOrAbove(3, 0, 4);
             default -> false;
         };
@@ -519,36 +506,42 @@ public final class FirebirdSupportInfo {
      * @return Number of system tables, or {@code -1} if the Firebird version is not known/supported.
      */
     public int getSystemTableCount() {
-        final int databaseMajorVersion = serverVersion.getMajorVersion();
-        final int databaseMinorVersion = serverVersion.getMinorVersion();
         final boolean isRDB = serverVersion.getServerName().contains("RedDatabase");
-        if (databaseMajorVersion < 2) {
-            return 32;
-        } else if (databaseMajorVersion == 2 && databaseMinorVersion == 0) {
-            return 33;
-        } else if (databaseMajorVersion == 2 && databaseMinorVersion == 1) {
-            return 40;
-        } else if (databaseMajorVersion == 2 && databaseMinorVersion == 5) {
-            return 42;
-        } else if (databaseMajorVersion == 3) {
-            if (isRDB)
-                return 51;
-            return 50;
-        } else if (databaseMajorVersion == 4) {
-            if (isRDB)
-                return 58;
-            return 54;
-        } else if (databaseMajorVersion == 5) {
-            if (isRDB)
-                return 65;
-            return 56;
-        } else if (databaseMajorVersion == 6) {
-            if (isRDB)
-                return 65;
-            return 57;
-        } else {
-            return -1;
-        }
+        return switch (serverVersion.getMajorVersion()) {
+            case 0, 1 -> 32;
+            case 2 -> switch (serverVersion.getMinorVersion()) {
+                case 0 -> 33;
+                case 1 -> 40;
+                case 5 -> 42;
+                default -> -1;
+            };
+            case 3 -> {
+                if (isRDB)
+                    yield 51;
+                else
+                    yield 50;
+            }
+            case 4 -> {
+                if (isRDB)
+                    yield 58;
+                else
+                    yield 54;
+            }
+            case 5 -> {
+                if (isRDB)
+                    yield 65;
+                else
+                    yield 56;
+            }
+            // Intentionally not merged with case 5 as it is likely to change during Firebird 6 development
+            case 6 -> {
+                if (isRDB)
+                    yield 65;
+                else
+                    yield 56;
+            }
+            default -> -1;
+        };
     }
 
     /**
@@ -674,7 +667,7 @@ public final class FirebirdSupportInfo {
      * @return {@code true} when this Firebird version supports parallel workers
      */
     public boolean supportsParallelWorkers() {
-        return isVersionEqualOrAbove(3);
+        return isVersionEqualOrAbove(5);
     }
 
     /**
