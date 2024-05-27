@@ -25,6 +25,7 @@ import org.firebirdsql.gds.TransactionParameterBuffer;
 import org.firebirdsql.gds.impl.GDSType;
 import org.firebirdsql.gds.ng.FbDatabase;
 import org.firebirdsql.gds.ng.FbTransaction;
+import org.firebirdsql.gds.ng.OdsVersion;
 import org.firebirdsql.jdbc.FBConnection;
 import org.firebirdsql.jdbc.FirebirdDatabaseMetaData;
 import org.junit.jupiter.api.BeforeEach;
@@ -602,8 +603,8 @@ class FBMaintenanceManagerTest {
         // Verify ODS before upgrade
         try (var connection = DriverManager.getConnection(jdbcUrl, props)) {
             var dbmd = connection.getMetaData().unwrap(FirebirdDatabaseMetaData.class);
-            assertEquals(13, dbmd.getOdsMajorVersion(), "ODS major before upgrade");
-            assertEquals(0, dbmd.getOdsMinorVersion(), "ODS minor before upgrade");
+            assertEquals(OdsVersion.of(13, 0), OdsVersion.of(dbmd.getOdsMajorVersion(), dbmd.getOdsMinorVersion()),
+                    "ODS before upgrade");
         }
 
         maintenanceManager.upgradeOds();
@@ -611,9 +612,8 @@ class FBMaintenanceManagerTest {
         // Verify ODS after upgrade
         try (var connection = DriverManager.getConnection(jdbcUrl, props)) {
             var dbmd = connection.getMetaData().unwrap(FirebirdDatabaseMetaData.class);
-            assertEquals(13, dbmd.getOdsMajorVersion(), "ODS major after upgrade");
-            // NOTE: applies to Firebird 5.0.0, may need to be made dynamic
-            assertEquals(1, dbmd.getOdsMinorVersion(), "ODS minor after upgrade");
+            assertEquals(getDefaultSupportInfo().getDefaultOdsVersion(),
+                    OdsVersion.of(dbmd.getOdsMajorVersion(), dbmd.getOdsMinorVersion()), "ODS after upgrade");
         }
     }
 

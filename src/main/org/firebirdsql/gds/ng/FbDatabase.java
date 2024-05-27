@@ -330,6 +330,14 @@ public interface FbDatabase extends FbAttachment {
     int getOdsMinor();
 
     /**
+     * @return ODS version
+     * @since 6
+     */
+    default OdsVersion getOdsVersion() {
+        return OdsVersion.of(getOdsMajor(), getOdsMinor());
+    }
+
+    /**
      * Adds a {@link DatabaseListener} instance to this database.
      *
      * @param listener
