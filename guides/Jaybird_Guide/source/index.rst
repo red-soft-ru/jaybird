@@ -14,7 +14,13 @@ Welcome to Jaybird_Guide documentation!
    sec-services
    sec-events
    sec-connection_reference
-
+   sec-statement_reference
+   sec-general
+   sec-datatype_reference
+   app-connection_properties
+   app-system_properties
+   app_data_type_conversion
+   app-character_encodings
 
 
 
