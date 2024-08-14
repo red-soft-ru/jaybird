@@ -206,5 +206,15 @@ class OperationMonitorTest {
         public void cancel() {
             // does nothing
         }
+
+        @Override
+        public FbAttachment getAttachment() {
+            return null;
+        }
+
+        @Override
+        public FbTransaction getTransaction() {
+            return null;
+        }
     }
 }

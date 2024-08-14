@@ -24,6 +24,9 @@
  */
 package org.firebirdsql.gds.ng.monitor;
 
+import org.firebirdsql.gds.ng.FbAttachment;
+import org.firebirdsql.gds.ng.FbTransaction;
+
 import java.sql.SQLException;
 
 /**
@@ -53,6 +56,16 @@ public interface Operation {
      *         If the cancellation failed or if this operation is no longer cancellable.
      */
     void cancel() throws SQLException;
+
+    /**
+     * @return The attachment associated with this operation.
+     */
+    FbAttachment getAttachment();
+
+    /**
+     * @return The transaction associated with this operation.
+     */
+    FbTransaction getTransaction();
 
     /**
      * Type of operation.

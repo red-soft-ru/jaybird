@@ -72,7 +72,7 @@ class FbDatabaseOperationTest {
 
     @Test
     void signalExecuteNotifiesExecuteStart() {
-        OperationCloseHandle handle = FbDatabaseOperation.signalExecute(fbDatabase);
+        OperationCloseHandle handle = FbDatabaseOperation.signalExecute(fbDatabase, null);
         assertEquals(1, reportedOperations.size(), "reported operations");
         assertOperationReport(reportedOperations.get(0), OperationReport.Type.START, Operation.Type.STATEMENT_EXECUTE,
                 handle);
@@ -80,7 +80,7 @@ class FbDatabaseOperationTest {
 
     @Test
     void signalFetchNotifiesFetchStart() {
-        OperationCloseHandle handle = FbDatabaseOperation.signalFetch(fbDatabase, () -> {});
+        OperationCloseHandle handle = FbDatabaseOperation.signalFetch(fbDatabase, null, () -> {});
         assertEquals(1, reportedOperations.size(), "reported operations");
         assertOperationReport(reportedOperations.get(0), OperationReport.Type.START, Operation.Type.STATEMENT_FETCH,
                 handle);
@@ -88,7 +88,7 @@ class FbDatabaseOperationTest {
 
     @Test
     void closeOfExecuteNotifiesExecuteEnd() {
-        OperationCloseHandle handle = FbDatabaseOperation.signalExecute(fbDatabase);
+        OperationCloseHandle handle = FbDatabaseOperation.signalExecute(fbDatabase, null);
         handle.close();
         assertEquals(2, reportedOperations.size(), "reported operations");
         assertOperationReport(reportedOperations.get(1), OperationReport.Type.END, Operation.Type.STATEMENT_EXECUTE,
@@ -106,7 +106,7 @@ class FbDatabaseOperationTest {
             }
         }
         CompletionHandler completionHandler = new CompletionHandler();
-        OperationCloseHandle handle = FbDatabaseOperation.signalFetch(fbDatabase, completionHandler);
+        OperationCloseHandle handle = FbDatabaseOperation.signalFetch(fbDatabase, null, completionHandler);
         handle.close();
         assertEquals(2, reportedOperations.size(), "reported operations");
         assertOperationReport(reportedOperations.get(1), OperationReport.Type.END, Operation.Type.STATEMENT_FETCH,
@@ -116,7 +116,7 @@ class FbDatabaseOperationTest {
 
     @Test
     void unclosedExecuteAllowsCancellation() throws Exception {
-        FbDatabaseOperation.signalExecute(fbDatabase);
+        FbDatabaseOperation.signalExecute(fbDatabase, null);
         Operation operation = reportedOperations.get(0).getOperation();
 
         operation.cancel();
@@ -125,7 +125,7 @@ class FbDatabaseOperationTest {
 
     @Test
     void unclosedFetchAllowsCancellation() throws Exception {
-        FbDatabaseOperation.signalFetch(fbDatabase, () -> {});
+        FbDatabaseOperation.signalFetch(fbDatabase, null, () -> {});
         Operation operation = reportedOperations.get(0).getOperation();
 
         operation.cancel();
@@ -134,7 +134,7 @@ class FbDatabaseOperationTest {
 
     @Test
     void closedExecuteDisallowsCancellation() throws Exception {
-        OperationCloseHandle handle = FbDatabaseOperation.signalExecute(fbDatabase);
+        OperationCloseHandle handle = FbDatabaseOperation.signalExecute(fbDatabase, null);
         Operation operation = reportedOperations.get(0).getOperation();
         handle.close();
 
@@ -147,7 +147,7 @@ class FbDatabaseOperationTest {
 
     @Test
     void closedFetchDisallowsCancellation() throws Exception {
-        OperationCloseHandle handle = FbDatabaseOperation.signalFetch(fbDatabase, () -> {});
+        OperationCloseHandle handle = FbDatabaseOperation.signalFetch(fbDatabase, null, () -> {});
         Operation operation = reportedOperations.get(0).getOperation();
         handle.close();
 
