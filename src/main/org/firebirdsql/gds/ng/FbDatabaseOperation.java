@@ -43,13 +43,16 @@ final class FbDatabaseOperation implements Operation, OperationCloseHandle {
     private final Type type;
     @SuppressWarnings("java:S3077")
     private volatile FbDatabase fbDatabase;
+    private volatile FbTransaction fbTransaction;
     private volatile boolean cancelled;
     private Runnable onCompletion;
 
-    private FbDatabaseOperation(Operation.Type type, FbDatabase fbDatabase, Runnable onCompletion) {
+    private FbDatabaseOperation(Operation.Type type, FbDatabase fbDatabase, FbTransaction fbTransaction,
+                                Runnable onCompletion) {
         this.type = requireNonNull(type, "type");
         this.onCompletion = onCompletion != null ? onCompletion : NO_OP;
         this.fbDatabase = requireNonNull(fbDatabase, "fbDatabase");
+        this.fbTransaction = fbTransaction;
     }
 
     @Override
@@ -76,6 +79,16 @@ final class FbDatabaseOperation implements Operation, OperationCloseHandle {
     }
 
     @Override
+    public FbAttachment getAttachment() {
+        return fbDatabase;
+    }
+
+    @Override
+    public FbTransaction getTransaction() {
+        return fbTransaction;
+    }
+
+    @Override
     public boolean isCancelled() {
         return cancelled;
     }
@@ -98,28 +111,30 @@ final class FbDatabaseOperation implements Operation, OperationCloseHandle {
         }
     }
 
-    static OperationCloseHandle signalExecute(FbDatabase fbDatabase) {
-        return signalOperation(fbDatabase, Type.STATEMENT_EXECUTE);
+    static OperationCloseHandle signalExecute(FbDatabase fbDatabase, FbTransaction fbTransaction) {
+        return signalOperation(fbDatabase, fbTransaction, Type.STATEMENT_EXECUTE);
     }
 
-    static OperationCloseHandle signalFetch(FbDatabase fbDatabase, Runnable onCompletion) {
-        return signalOperation(fbDatabase, Type.STATEMENT_FETCH, onCompletion);
+    static OperationCloseHandle signalFetch(FbDatabase fbDatabase, FbTransaction fbTransaction, Runnable onCompletion) {
+        return signalOperation(fbDatabase, fbTransaction, Type.STATEMENT_FETCH, onCompletion);
     }
 
-    static OperationCloseHandle signalAsyncFetchStart(FbDatabase fbDatabase, Runnable onCompletion) {
-        return signalOperation(fbDatabase, Type.STATEMENT_ASYNC_FETCH_START, onCompletion);
+    static OperationCloseHandle signalAsyncFetchStart(FbDatabase fbDatabase, FbTransaction fbTransaction,
+                                                      Runnable onCompletion) {
+        return signalOperation(fbDatabase, fbTransaction, Type.STATEMENT_ASYNC_FETCH_START, onCompletion);
     }
 
-    static OperationCloseHandle signalAsyncFetchComplete(FbDatabase fbDatabase) {
-        return signalOperation(fbDatabase, Type.STATEMENT_ASYNC_FETCH_COMPLETE);
+    static OperationCloseHandle signalAsyncFetchComplete(FbDatabase fbDatabase, FbTransaction fbTransaction) {
+        return signalOperation(fbDatabase, fbTransaction, Type.STATEMENT_ASYNC_FETCH_COMPLETE);
     }
 
-    private static OperationCloseHandle signalOperation(FbDatabase fbDatabase, Type type) {
-        return signalOperation(fbDatabase, type, NO_OP);
+    private static OperationCloseHandle signalOperation(FbDatabase fbDatabase, FbTransaction fbTransaction, Type type) {
+        return signalOperation(fbDatabase, fbTransaction, type, NO_OP);
     }
 
-    private static OperationCloseHandle signalOperation(FbDatabase fbDatabase, Type type, Runnable onCompletion) {
-        FbDatabaseOperation fbDatabaseOperation = new FbDatabaseOperation(type, fbDatabase, onCompletion);
+    private static OperationCloseHandle signalOperation(FbDatabase fbDatabase, FbTransaction fbTransaction,
+                                                        Type type, Runnable onCompletion) {
+        FbDatabaseOperation fbDatabaseOperation = new FbDatabaseOperation(type, fbDatabase, fbTransaction, onCompletion);
         OperationMonitor.startOperation(fbDatabaseOperation);
         return fbDatabaseOperation;
     }

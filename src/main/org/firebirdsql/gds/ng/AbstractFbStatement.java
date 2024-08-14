@@ -892,7 +892,7 @@ public abstract class AbstractFbStatement implements FbStatement {
      * @return {@code OperationCloseHandle} handle for the operation
      */
     protected final OperationCloseHandle signalExecute() {
-        return FbDatabaseOperation.signalExecute(getDatabase());
+        return FbDatabaseOperation.signalExecute(getDatabase(), getTransaction());
     }
 
     /**
@@ -901,15 +901,15 @@ public abstract class AbstractFbStatement implements FbStatement {
      * @return {@code OperationCloseHandle} handle for the operation
      */
     protected final OperationCloseHandle signalFetch() {
-        return FbDatabaseOperation.signalFetch(getDatabase(), this::fetchExecuted);
+        return FbDatabaseOperation.signalFetch(getDatabase(), getTransaction(), this::fetchExecuted);
     }
 
     protected final OperationCloseHandle signalAsyncFetchStart() {
-        return FbDatabaseOperation.signalAsyncFetchStart(getDatabase(), this::fetchExecuted);
+        return FbDatabaseOperation.signalAsyncFetchStart(getDatabase(), getTransaction(), this::fetchExecuted);
     }
 
     protected final OperationCloseHandle signalAsyncFetchComplete() {
-        return FbDatabaseOperation.signalAsyncFetchComplete(getDatabase());
+        return FbDatabaseOperation.signalAsyncFetchComplete(getDatabase(), getTransaction());
     }
 
     private void fetchExecuted() {
