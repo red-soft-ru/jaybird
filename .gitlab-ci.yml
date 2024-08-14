@@ -129,7 +129,7 @@ build_and_test:
     - wget https://archive.apache.org/dist/maven/maven-3/$MAVEN_VERSION/binaries/apache-maven-$MAVEN_VERSION-bin.tar.gz && tar -xvf apache-maven-$MAVEN_VERSION-bin.tar.gz && mv apache-maven-$MAVEN_VERSION /opt/
     - ln -s /opt/apache-maven-$MAVEN_VERSION/bin/mvn /usr/bin/mvn
     - wget https://download.oracle.com/java/17/latest/jdk-17_linux-x64_bin.rpm && rpm -Uvh jdk-17_linux-x64_bin.rpm
-    - yum install -y https://dl.min.io/client/mc/release/linux-amd64/archive/mcli-20210613174822.0.0.x86_64.rpm
+    - wget https://dl.min.io/client/mc/release/linux-amd64/archive/mcli-20210613174822.0.0.x86_64.rpm && rpm -Uvh mcli-20210613174822.0.0.x86_64.rpm
     - /opt/cprocsp/sbin/amd64/cpconfig -license -set $LICENSE_CRYPTOPRO4
     - ./ci/configure_kerberos.sh
     - export VERSION=`cat .ci/version`
