@@ -50,7 +50,9 @@ public final class FbEmbeddedDatabaseFactory extends AbstractNativeDatabaseFacto
     private static final System.Logger log = System.getLogger(FbEmbeddedDatabaseFactory.class.getName());
     // Note Firebird 3+ embedded is fbclient + engineNN (e.g. engine12 for Firebird 3.0 / ODS 12)
     private static final List<String> LIBRARIES_TO_TRY =
-            List.of("fbembed", FbClientDatabaseFactory.LIBRARY_NAME_FBCLIENT);
+            List.of("fbembed",
+                    FbClientDatabaseFactory.LIBRARY_NAME_FBCLIENT,
+                    FbClientDatabaseFactory.LIBRARY_NAME_RDBCLIENT);
     private static final FbEmbeddedDatabaseFactory INSTANCE = new FbEmbeddedDatabaseFactory();
 
     private FbEmbeddedDatabaseFactory() {

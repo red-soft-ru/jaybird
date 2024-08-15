@@ -24,8 +24,12 @@ import org.firebirdsql.gds.JaybirdSystemProperties;
 import org.firebirdsql.jna.fbclient.FbClientLibrary;
 import org.firebirdsql.jna.fbclient.WinFbClientLibrary;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+
+import static java.lang.System.Logger.Level.DEBUG;
+import static java.lang.System.Logger.Level.ERROR;
 
 /**
  * Implementation of {@link org.firebirdsql.gds.ng.FbDatabaseFactory} for establishing connection using the
@@ -39,8 +43,10 @@ import java.util.List;
  */
 public final class FbClientDatabaseFactory extends AbstractNativeDatabaseFactory {
 
+    private static final System.Logger log = System.getLogger(FbClientDatabaseFactory.class.getName());
     private static final FbClientDatabaseFactory INSTANCE = new FbClientDatabaseFactory();
     static final String LIBRARY_NAME_FBCLIENT = "fbclient";
+    static final String LIBRARY_NAME_RDBCLIENT = "rdbclient";
 
     private FbClientDatabaseFactory() {
         // only through getInstance()
@@ -52,22 +58,36 @@ public final class FbClientDatabaseFactory extends AbstractNativeDatabaseFactory
 
     @Override
     protected FbClientLibrary createClientLibrary() {
-        try {
-            final String fbclient = JaybirdSystemProperties.getNativeLibraryFbclient() != null ?
-                    JaybirdSystemProperties.getNativeLibraryFbclient() : "fbclient";
-            if (Platform.isWindows()) {
-                return Native.load(fbclient, WinFbClientLibrary.class);
-            } else {
-                return Native.load(fbclient, FbClientLibrary.class);
+        final List<Throwable> throwables = new ArrayList<>();
+        final List<String> librariesToTry = JaybirdSystemProperties.getNativeLibraryFbclient() != null ?
+                List.of(JaybirdSystemProperties.getNativeLibraryFbclient()) : (List<String>) defaultLibraryNames();
+        for (String libraryName : librariesToTry) {
+            try {
+                if (Platform.isWindows()) {
+                    return Native.load(libraryName, WinFbClientLibrary.class);
+                } else {
+                    return Native.load(libraryName, FbClientLibrary.class);
+                }
+            } catch (RuntimeException | UnsatisfiedLinkError e) {
+                throwables.add(e);
+                log.log(DEBUG, () -> "Attempt to load %s failed".formatted(libraryName), e);
+                // continue with next
             }
-        } catch (RuntimeException | UnsatisfiedLinkError e) {
-            throw new NativeLibraryLoadException("Could not load fbclient", e);
         }
+        assert throwables.size() == librariesToTry.size();
+        if (log.isLoggable(ERROR)) {
+            log.log(ERROR, "Could not load any of the libraries in {0}:", librariesToTry);
+            for (int idx = 0; idx < librariesToTry.size(); idx++) {
+                log.log(ERROR, "Loading %s failed".formatted(librariesToTry.get(idx)), throwables.get(idx));
+            }
+        }
+        throw new NativeLibraryLoadException("Could not load any of " + librariesToTry + "; linking first exception",
+                throwables.get(0));
     }
 
     @Override
     protected Collection<String> defaultLibraryNames() {
-        return List.of(LIBRARY_NAME_FBCLIENT);
+        return List.of(LIBRARY_NAME_FBCLIENT, LIBRARY_NAME_RDBCLIENT);
     }
 
 }
