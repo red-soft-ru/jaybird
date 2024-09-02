@@ -16,7 +16,7 @@ Welcome to Jaybird_Guide documentation!
    sec-connection_reference
    sec-statement_reference
    sec-general
-   sec-datatype_reference
+   app-datatype_reference
    app-connection_properties
    app-system_properties
    app_data_type_conversion

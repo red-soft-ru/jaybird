@@ -2,6 +2,8 @@
 
   \appcount
 
+.. _data_type_conversion:
+
 Таблица преобразования типов данных
 =========================================
 
@@ -12,7 +14,7 @@
 Также для каждого типа данных ``JDBC`` приведен экземпляр класса, который возвращается методом ``ResultSet.getObject``.
 
 .. tabularcolumns:: |>{\ttfamily\arraybackslash}\X{6}{18}|>{\ttfamily\arraybackslash}\X{6}{18}|>{\ttfamily\arraybackslash}\X{6}{18}|
-.. list-table::
+.. list-table:: Отображение типов данных
    :class: longtable
    :header-rows: 1
 
