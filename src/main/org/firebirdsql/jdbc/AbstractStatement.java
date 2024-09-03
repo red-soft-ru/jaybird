@@ -19,14 +19,17 @@
 package org.firebirdsql.jdbc;
 
 import org.firebirdsql.gds.ng.FbAttachment;
+import org.firebirdsql.gds.ng.FbStatement;
 import org.firebirdsql.gds.ng.LockCloseable;
 import org.firebirdsql.util.InternalApi;
 
 import java.sql.SQLException;
 import java.sql.SQLNonTransientException;
+import java.sql.SQLWarning;
 import java.sql.Statement;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static org.firebirdsql.jdbc.SQLStateConstants.SQL_STATE_INVALID_ATTR_VALUE;
 import static org.firebirdsql.jdbc.SQLStateConstants.SQL_STATE_INVALID_STATEMENT_ID;
 
 /**
@@ -45,19 +48,50 @@ public abstract class AbstractStatement implements Statement, FirebirdStatement 
     private static final AtomicInteger STATEMENT_ID_GENERATOR = new AtomicInteger();
 
     private final int localStatementId = STATEMENT_ID_GENERATOR.incrementAndGet();
+    private String cursorName;
+    @SuppressWarnings("java:S3077")
+    private volatile SQLWarning warning;
+    private FetchConfig fetchConfig;
 
     private volatile boolean closed;
     private boolean poolable;
     private boolean closeOnCompletion;
 
+    protected AbstractStatement(ResultSetBehavior resultSetBehavior) {
+        fetchConfig = new FetchConfig(resultSetBehavior);
+    }
+
+    /**
+     * @return instance of {@link FbStatement} associated with this statement; can be {@code null} if no statement has
+     * been prepared or executed yet.
+     * @throws SQLException
+     *         if this statement is closed
+     * @throws java.sql.SQLFeatureNotSupportedException
+     *         if this statement implementation does not use statement handles
+     */
+    protected abstract FbStatement getStatementHandle() throws SQLException;
+
+    /**
+     * Get the current statement type of this statement.
+     * <p>
+     * The returned value is one of the {@code TYPE_*} constant values defined in {@link FirebirdPreparedStatement}, or
+     * {@code 0} if the statement currently does not have a statement type.
+     * </p>
+     *
+     * @return The identifier for the given statement's type
+     */
+    public abstract int getStatementType();
+
     /**
      * {@inheritDoc}
      * <p>
-     * Subclasses overriding this method are expected to call this method at an appropriate point to mark it closed.
+     * Subclasses overriding this method are expected to call this method with {@code super.close()} at an appropriate
+     * point to mark it closed.
      * </p>
      */
     @Override
     public void close() throws SQLException {
+        warning = null;
         closed = true;
     }
 
@@ -79,10 +113,34 @@ public abstract class AbstractStatement implements Statement, FirebirdStatement 
      *         if this Statement has been closed and cannot be used anymore.
      */
     protected final void checkValidity() throws SQLException {
-        if (isClosed()) {
+        if (closed) {
             throw new SQLNonTransientException("Statement is already closed", SQL_STATE_INVALID_STATEMENT_ID);
         }
     }
+
+    /**
+     * Completes this statement with {@link CompletionReason#OTHER}.
+     *
+     * @throws SQLException
+     *         for failures completing this statement
+     * @see #completeStatement(CompletionReason)
+     */
+    public final void completeStatement() throws SQLException {
+        completeStatement(CompletionReason.OTHER);
+    }
+
+    /**
+     * Completes this statement with {@code reason}.
+     * <p>
+     * On completion, any open result set will be closed, and possibly the statement itself may be closed.
+     * </p>
+     *
+     * @param reason
+     *         completion reason
+     * @throws SQLException
+     *         for failures completing this statement
+     */
+    public abstract void completeStatement(CompletionReason reason) throws SQLException;
 
     @Override
     public final boolean isPoolable() throws SQLException {
@@ -127,6 +185,156 @@ public abstract class AbstractStatement implements Statement, FirebirdStatement 
     protected final void performCloseOnCompletion() throws SQLException {
         if (closeOnCompletion) {
             close();
+        }
+    }
+
+    /**
+     * @return current fetch config for this statement
+     * @since 6
+     */
+    protected final FetchConfig fetchConfig() {
+        try (var ignored = withLock()) {
+            return fetchConfig;
+        }
+    }
+
+    /**
+     * @return result set behavior for this statement
+     * @since 6
+     */
+    protected final ResultSetBehavior resultSetBehavior() {
+        return fetchConfig().resultSetBehavior();
+    }
+
+    @SuppressWarnings("MagicConstant")
+    @Override
+    public final int getResultSetType() throws SQLException {
+        checkValidity();
+        return resultSetBehavior().type();
+    }
+
+    @SuppressWarnings("MagicConstant")
+    @Override
+    public final int getResultSetConcurrency() throws SQLException {
+        checkValidity();
+        return resultSetBehavior().concurrency();
+    }
+
+    @Override
+    public final int getResultSetHoldability() throws SQLException {
+        checkValidity();
+        return resultSetBehavior().holdability();
+    }
+
+    @Override
+    public final int getMaxRows() throws SQLException {
+        checkValidity();
+        return fetchConfig().maxRows();
+    }
+
+    @Override
+    public final void setMaxRows(int max) throws SQLException {
+        checkValidity();
+        try (var ignored = withLock()) {
+            fetchConfig = fetchConfig.withMaxRows(max);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Jaybird does not support maxRows exceeding {@link Integer#MAX_VALUE}, if a larger value is set, Jaybird will
+     * add a warning to the statement and reset the maximum to 0.
+     * </p>
+     */
+    @Override
+    public final void setLargeMaxRows(long max) throws SQLException {
+        if (max > Integer.MAX_VALUE) {
+            addWarning(new SQLWarning(
+                    "Implementation limit: maxRows cannot exceed Integer.MAX_VALUE, value was %d, reset to 0"
+                            .formatted(max), SQL_STATE_INVALID_ATTR_VALUE));
+            max = 0;
+        }
+        setMaxRows((int) max);
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Jaybird does not support maxRows exceeding {@link Integer#MAX_VALUE}, the return value of this method is the
+     * same as {@link #getMaxRows()}.
+     * </p>
+     */
+    @Override
+    public final long getLargeMaxRows() throws SQLException {
+        return getMaxRows();
+    }
+
+    @Override
+    public final int getFetchSize() throws SQLException {
+        checkValidity();
+        return fetchConfig().fetchSize();
+    }
+
+    @Override
+    public final void setFetchSize(int rows) throws SQLException {
+        checkValidity();
+        try (var ignored = withLock()) {
+            fetchConfig = fetchConfig.withFetchSize(rows);
+        }
+    }
+
+    @SuppressWarnings("MagicConstant")
+    @Override
+    public final int getFetchDirection() throws SQLException {
+        checkValidity();
+        return fetchConfig().direction();
+    }
+
+    @Override
+    public final void setFetchDirection(int direction) throws SQLException {
+        checkValidity();
+        try (var ignored = withLock()) {
+            fetchConfig = fetchConfig.withDirection(direction);
+        }
+    }
+
+    @Override
+    public final void setCursorName(String cursorName) throws SQLException {
+        checkValidity();
+        try (var ignored = withLock()) {
+            this.cursorName = cursorName;
+        }
+    }
+
+    /**
+     * @return current value of {@code cursorName}
+     * @see #setCursorName(String)
+     */
+    protected final String getCursorName() {
+        return cursorName;
+    }
+
+    @Override
+    public final SQLWarning getWarnings() throws SQLException {
+        checkValidity();
+        return warning;
+    }
+
+    @Override
+    public final void clearWarnings() throws SQLException {
+        checkValidity();
+        warning = null;
+    }
+
+    protected final void addWarning(SQLWarning warning) {
+        try (var ignored = withLock()) {
+            SQLWarning currentWarning = this.warning;
+            if (currentWarning == null) {
+                this.warning = warning;
+            } else {
+                currentWarning.setNextWarning(warning);
+            }
         }
     }
 

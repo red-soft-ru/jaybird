@@ -20,6 +20,7 @@ package org.firebirdsql.jdbc;
 
 import org.firebirdsql.gds.JaybirdErrorCodes;
 import org.firebirdsql.gds.ng.FbExceptionBuilder;
+import org.firebirdsql.gds.ng.FbStatement;
 import org.firebirdsql.gds.ng.LockCloseable;
 import org.firebirdsql.jaybird.parser.LocalStatementClass;
 import org.firebirdsql.jaybird.parser.LocalStatementType;
@@ -56,10 +57,10 @@ final class FBTxPreparedStatement extends AbstractStatement implements FirebirdP
     private final FBConnection connection;
     private final LocalStatementType statementType;
     private final String sql;
-    private final ResultSetBehavior rsBehavior;
 
     FBTxPreparedStatement(FBConnection connection, LocalStatementType statementType, String sql,
             ResultSetBehavior rsBehavior) throws SQLException {
+        super(rsBehavior);
         if (statementType.statementClass() != LocalStatementClass.TRANSACTION_BOUNDARY) {
             throw new IllegalArgumentException("Unsupported value for statementType (implementation bug): "
                     + statementType);
@@ -67,8 +68,12 @@ final class FBTxPreparedStatement extends AbstractStatement implements FirebirdP
         this.connection = requireNonNull(connection, "connection");
         this.statementType = statementType;
         this.sql = sql;
-        this.rsBehavior = rsBehavior;
         setPoolable(true);
+    }
+
+    @Override
+    protected FbStatement getStatementHandle() throws SQLException {
+        throw new SQLFeatureNotSupportedException("This statement implementation does not use a statement handle");
     }
 
     @Override
@@ -103,6 +108,13 @@ final class FBTxPreparedStatement extends AbstractStatement implements FirebirdP
         try (var ignored = withLock()) {
             super.close();
             connection.notifyStatementClosed(this);
+        }
+    }
+
+    @Override
+    public void completeStatement(CompletionReason reason) throws SQLException {
+        if (reason == CompletionReason.CONNECTION_ABORT) {
+            super.close();
         }
     }
 
@@ -176,6 +188,7 @@ final class FBTxPreparedStatement extends AbstractStatement implements FirebirdP
         return new long[0];
     }
 
+    @SuppressWarnings("java:S4144")
     @Override
     public ResultSetMetaData getMetaData() throws SQLException {
         checkValidity();
@@ -188,26 +201,6 @@ final class FBTxPreparedStatement extends AbstractStatement implements FirebirdP
         checkValidity();
         // Zero parameters, so empty parameter metadata
         return new FBParameterMetaData(connection.getFbDatabase().emptyRowDescriptor(), connection);
-    }
-
-    @SuppressWarnings("MagicConstant")
-    @Override
-    public int getResultSetType() throws SQLException {
-        checkValidity();
-        return rsBehavior.type();
-    }
-
-    @SuppressWarnings("MagicConstant")
-    @Override
-    public int getResultSetConcurrency() throws SQLException {
-        checkValidity();
-        return rsBehavior.concurrency();
-    }
-
-    @Override
-    public int getResultSetHoldability() throws SQLException {
-        checkValidity();
-        return rsBehavior.holdability();
     }
 
     @Override
@@ -582,32 +575,6 @@ final class FBTxPreparedStatement extends AbstractStatement implements FirebirdP
         // silently ignored
     }
 
-    @SuppressWarnings("java:S4144")
-    @Override
-    public int getMaxRows() throws SQLException {
-        checkValidity();
-        return 0;
-    }
-
-    @Override
-    public void setMaxRows(int max) throws SQLException {
-        checkValidity();
-        // silently ignored
-    }
-
-    @SuppressWarnings("java:S4144")
-    @Override
-    public long getLargeMaxRows() throws SQLException {
-        checkValidity();
-        return 0;
-    }
-
-    @Override
-    public void setLargeMaxRows(long max) throws SQLException {
-        checkValidity();
-        // silently ignored
-    }
-
     @Override
     public void setEscapeProcessing(boolean enable) throws SQLException {
         checkValidity();
@@ -635,25 +602,6 @@ final class FBTxPreparedStatement extends AbstractStatement implements FirebirdP
 
     @SuppressWarnings("java:S4144")
     @Override
-    public SQLWarning getWarnings() throws SQLException {
-        checkValidity();
-        return null;
-    }
-
-    @Override
-    public void clearWarnings() throws SQLException {
-        checkValidity();
-        // silently ignored
-    }
-
-    @Override
-    public void setCursorName(String name) throws SQLException {
-        checkValidity();
-        // silently ignored
-    }
-
-    @SuppressWarnings("java:S4144")
-    @Override
     public ResultSet getResultSet() throws SQLException {
         checkValidity();
         return null;
@@ -677,31 +625,6 @@ final class FBTxPreparedStatement extends AbstractStatement implements FirebirdP
     public boolean getMoreResults() throws SQLException {
         checkValidity();
         return false;
-    }
-
-    @Override
-    public void setFetchDirection(int direction) throws SQLException {
-        checkValidity();
-        // silently ignored
-    }
-
-    @Override
-    public int getFetchDirection() throws SQLException {
-        checkValidity();
-        return ResultSet.FETCH_FORWARD;
-    }
-
-    @Override
-    public void setFetchSize(int rows) throws SQLException {
-        checkValidity();
-        // silently ignored
-    }
-
-    @SuppressWarnings("java:S4144")
-    @Override
-    public int getFetchSize() throws SQLException {
-        checkValidity();
-        return 1;
     }
 
     @Override
