@@ -1,3 +1,28 @@
+# v5.0.21
+
+## Fixed
+
+* Do not close connection when a file blob read error was received. RS-195023
+
+## Ported from Jaybird
+
+Fix: ResultSet wasNull throws exception on insert row. GH-816
+
+
+# v5.0.20
+
+## Improvements
+
+Search for `rdbclient` as native library. RS-190507
+
+
+# v5.0.19
+
+## Improvements
+
+Implement ability to get a transaction and attachment from a monitoring operation. RS-189609
+
+
 # v5.0.18
 
 ## Fixed
