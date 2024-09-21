@@ -194,7 +194,7 @@ public class FBEventManager implements EventManager {
                 chain.append(e);
             }
         }
-        if (chain.hasException()) throw chain.getException();
+        chain.throwIfPresent();
     }
 
     private void terminateDispatcher() throws SQLException {
