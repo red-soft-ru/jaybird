@@ -508,13 +508,21 @@ public class FBPreparedStatement extends FBStatement implements FirebirdPrepared
     /**
      * {@inheritDoc}
      * <p>
-     * Implementation note: ignores {@code scale} and {@code targetSqlType} and works as
-     * {@link #setObject(int, Object)}.
+     * Implementation note: ignores {@code scaleOrLength} and {@code targetSqlType} and works as
+     * {@link #setObject(int, Object)}, {@code scaleOrLength} is not ignored if {@code x} is a {@link Reader} or
+     * {@link InputStream}.
      * </p>
      */
     @Override
-    public void setObject(int parameterIndex, @Nullable Object x, int targetSqlType, int scale) throws SQLException {
-        setObject(parameterIndex, x);
+    public void setObject(int parameterIndex, @Nullable Object x, int targetSqlType, int scaleOrLength)
+            throws SQLException {
+        if (x instanceof InputStream) {
+            setBinaryStream(parameterIndex, (InputStream) x, scaleOrLength);
+        } else if (x instanceof Reader) {
+            setCharacterStream(parameterIndex, (Reader) x, scaleOrLength);
+        } else {
+            setObject(parameterIndex, x);
+        }
     }
 
     /**
@@ -794,11 +802,11 @@ public class FBPreparedStatement extends FBStatement implements FirebirdPrepared
             final int fieldPosition = i;
 
             FieldDataProvider dataProvider = new FieldDataProvider() {
-                public byte[] getFieldData() {
+                public byte @Nullable [] getFieldData() {
                     return fieldValues.getFieldData(fieldPosition);
                 }
 
-                public void setFieldData(byte[] data) {
+                public void setFieldData(byte @Nullable [] data) {
                     fieldValues.setFieldData(fieldPosition, data);
                 }
             };
