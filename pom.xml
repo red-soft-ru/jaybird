@@ -40,6 +40,7 @@
 		<junit.jupiter.version>5.10.2</junit.jupiter.version>
 		<awaitility.version>4.2.1</awaitility.version>
 		<asciidoctorj.version>2.5.11</asciidoctorj.version>
+		<com.spotify.version>1.3.2</com.spotify.version>
 	</properties>
 	<modules>
 		<module>modules/cryptoapi-security-jdk17</module>
@@ -160,6 +161,12 @@
 
 	<dependencyManagement>
 		<dependencies>
+			<dependency>
+				<groupId>com.spotify</groupId>
+				<artifactId>hamcrest-optional</artifactId>
+				<version>${com.spotify.version}</version>
+				<scope>test</scope>
+			</dependency>
 			<dependency>
 				<groupId>org.antlr</groupId>
 				<artifactId>antlr4-runtime</artifactId>
