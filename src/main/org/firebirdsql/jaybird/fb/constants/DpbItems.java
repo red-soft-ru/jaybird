@@ -165,6 +165,9 @@ public final class DpbItems {
     public static final int isc_dpb_parallel_workers_rs = 167;
     public static final int isc_dpb_worker_attach_rs = 168;
     public static final int isc_dpb_certificate_base64 = 169;
+    public static final int isc_dpb_nbackup_test_attach = 174;
+    public static final int isc_dpb_suspend_timeout = 175;
+    public static final int isc_dpb_sweep_timeout = 176;
     public static final int isc_dpb_exclude_crypto_plugins = 1001;
     public static final int isc_dpb_provider_id = 1002;
     public static final int isc_dpb_not_encrypt_password = 1003;

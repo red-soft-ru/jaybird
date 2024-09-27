@@ -436,6 +436,15 @@ class FBMaintenanceManagerTest {
     }
 
     @Test
+    void testSweepDatabaseTimeout() {
+        // Just run it to see if it throws an exception
+        assertDoesNotThrow(() -> {
+            maintenanceManager.setProperty("sweep_timeout", "2");
+            maintenanceManager.sweepDatabase();
+        });
+    }
+
+    @Test
     public void testSweepDatabaseParallelWorkersParameter() throws Exception {
         FBMaintenanceManager localMaintenanceManager = new FBMaintenanceManager(getGdsType(), 8);
         if (getGdsType() == GDSType.getType("PURE_JAVA") || getGdsType() == GDSType.getType("NATIVE")) {
@@ -461,7 +470,7 @@ class FBMaintenanceManagerTest {
     @Test
     public void testSweepDatabaseParallelWorkersRunMethod() throws Exception {
         // Just run it to see if it throws an exception
-        maintenanceManager.sweepDatabase(8);
+        maintenanceManager.sweepDatabase(8, 0);
     }
 
     @Test

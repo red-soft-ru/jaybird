@@ -321,7 +321,8 @@ public interface ISCConstants {
     int isc_spb_rpr_par_workers     =   52;
 
     // Red Database specific
-    int isc_spb_rpr_par_workers_rs     =   100;
+    int isc_spb_rpr_par_workers_rs  =   100;
+    int isc_spb_prp_sweep_timeout   =   101;
 
     int isc_spb_rpr_validate_db		=	0x01;
     int isc_spb_rpr_sweep_db		=	0x02;

@@ -226,6 +226,7 @@ public class ClumpletReader {
                     return ClumpletType.StringSpb;
                 case ISCConstants.isc_spb_prp_page_buffers:
                 case ISCConstants.isc_spb_prp_sweep_interval:
+                case ISCConstants.isc_spb_prp_sweep_timeout:
                 case ISCConstants.isc_spb_prp_shutdown_db:
                 case ISCConstants.isc_spb_prp_deny_new_attachments:
                 case ISCConstants.isc_spb_prp_deny_new_transactions:

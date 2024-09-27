@@ -311,35 +311,41 @@ public class FBMaintenanceManager extends FBServiceManager implements Maintenanc
 
     @Override
     public void sweepDatabase() throws SQLException {
-
-        if (getParallelWorkers() > 0) {
-            try (FbService service = attachServiceManager()) {
-                ServiceRequestBuffer srb = createRepairSRB(service, isc_spb_rpr_sweep_db);
+        try (FbService service = attachServiceManager()) {
+            ServiceRequestBuffer srb = createRepairSRB(service, isc_spb_rpr_sweep_db);
+            if (getParallelWorkers() > 0) {
                 if (supportInfoFor(service).isVersionEqualOrAbove(5, 0)) {
                     srb.addArgument(isc_spb_rpr_par_workers, getParallelWorkers());
                 } else {
                     srb.addArgument(isc_spb_rpr_par_workers_rs, getParallelWorkers());
                 }
-                executeServicesOperation(service, srb);
             }
-        } else {
-            executeRepairOperation(isc_spb_rpr_sweep_db);
+            final int timeout = getIntProperty("sweep_timeout");
+            if (timeout > 0) {
+                if (supportInfoFor(service).isVersionEqualOrAbove(6, 0)) {
+                    srb.addArgument(isc_spb_prp_sweep_timeout, timeout);
+                }
+            }
+            executeServicesOperation(service, srb);
         }
     }
 
-    public void sweepDatabase(int parallelWorkers) throws SQLException {
-        if (parallelWorkers > 0) {
-            try (FbService service = attachServiceManager()) {
-                ServiceRequestBuffer srb = createRepairSRB(service, isc_spb_rpr_sweep_db);
-                if (supportInfoFor(service).isVersionEqualOrAbove(5, 0)) {
-                    srb.addArgument(isc_spb_rpr_par_workers, parallelWorkers);
-                } else {
-                    srb.addArgument(isc_spb_rpr_par_workers_rs, parallelWorkers);
-                }
-                executeServicesOperation(service, srb);
-            }
-        } else {
+    public void sweepDatabase(int parallelWorkers, int timeout) throws SQLException {
+        if (parallelWorkers <= 0)
             throw new IllegalArgumentException("Parallel workers number must be >= 1");
+        if (timeout < 0)
+            throw new IllegalArgumentException("Sweep timeout must be >= 0");
+
+        try (FbService service = attachServiceManager()) {
+            ServiceRequestBuffer srb = createRepairSRB(service, isc_spb_rpr_sweep_db);
+            if (supportInfoFor(service).isVersionEqualOrAbove(5, 0)) {
+                srb.addArgument(isc_spb_rpr_par_workers, parallelWorkers);
+            } else {
+                srb.addArgument(isc_spb_rpr_par_workers_rs, parallelWorkers);
+            }
+            if (supportInfoFor(service).isVersionEqualOrAbove(6, 0))
+                srb.addArgument(isc_spb_prp_sweep_timeout, timeout);
+            executeServicesOperation(service, srb);
         }
     }
 

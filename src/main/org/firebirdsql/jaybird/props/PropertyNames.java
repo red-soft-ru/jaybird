@@ -73,6 +73,7 @@ public final class PropertyNames {
     public static final String repositoryPin = "repositoryPin";
     public static final String serverCertificate = "serverCertificate";
     public static final String verifyServerCertificate = "verifyServerCertificate";
+    public static final String sweepTimeout = "sweepTimeout";
 
     // database connection
     public static final String sqlDialect = "sqlDialect";

@@ -499,5 +499,4 @@ public abstract class AbstractConnectionPropertiesDataSource extends RootCommonD
     public void setUserName(String userName) {
         FirebirdConnectionProperties.super.setUserName(userName);
     }
-
 }

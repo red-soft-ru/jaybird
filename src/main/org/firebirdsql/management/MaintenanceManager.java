@@ -412,11 +412,13 @@ public interface MaintenanceManager extends ServiceManager {
      *
      * @param parallelWorkers
      *         Number of parallel workers.
+     * @param timeout
+     *         Sweep interrupt timeout in seconds.
      *
      * @throws SQLException
      *         if a database access error occurs
      */
-    void sweepDatabase(int parallelWorkers) throws SQLException;
+    void sweepDatabase(int parallelWorkers, int timeout) throws SQLException;
 
     // ----------- Shadow Files ------------------------------------
 

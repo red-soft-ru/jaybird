@@ -536,5 +536,4 @@ public interface AttachmentProperties extends BaseProperties {
     default void setVerifyServerCertificate(boolean verifyServerCertificate) {
         setBooleanProperty(PropertyNames.verifyServerCertificate, verifyServerCertificate);
     }
-
 }
