@@ -320,7 +320,7 @@ public class FBMaintenanceManager extends FBServiceManager implements Maintenanc
                     srb.addArgument(isc_spb_rpr_par_workers_rs, getParallelWorkers());
                 }
             }
-            final int timeout = getIntProperty("sweep_timeout");
+            final int timeout = getIntProperty("sweep_timeout", 0);
             if (timeout > 0) {
                 if (supportInfoFor(service).isVersionEqualOrAbove(6, 0)) {
                     srb.addArgument(isc_spb_prp_sweep_timeout, timeout);
