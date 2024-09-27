@@ -28,6 +28,9 @@ import static org.firebirdsql.jdbc.escape.FBEscapedCallParser.ParserState.*;
 
 /**
  * Parser for escaped procedure call.
+ * <p>
+ * This class is not thread-safe.
+ * </p>
  */
 @InternalApi
 public final class FBEscapedCallParser {
@@ -43,7 +46,7 @@ public final class FBEscapedCallParser {
 
     private int openBraceCount;
 
-    private FBProcedureCall procedureCall;
+    private FBProcedureCall procedureCall = new FBProcedureCall();
 
     /**
      * Test the character to be the state switching character and switches the state if necessary.
