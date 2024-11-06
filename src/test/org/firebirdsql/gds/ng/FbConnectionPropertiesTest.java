@@ -269,10 +269,35 @@ class FbConnectionPropertiesTest {
     @ParameterizedTest
     @NullAndEmptySource
     @ValueSource(strings = { "*", "11" })
-    void enableProtocolDefaultDerivedFromSystemProperty(String defaultValue) throws Exception {
+    void enableProtocolDefaultDerivedFromSystemProperty(String defaultValue) {
         try (var ignored = withTemporarySystemProperty(JaybirdSystemProperties.DEFAULT_ENABLE_PROTOCOL, defaultValue)) {
             assertEquals(defaultValue, new FbConnectionProperties().getEnableProtocol(),
                     "Unexpected enableProtocol value");
+        }
+    }
+
+    @Test
+    void defaultReportSQLWarningsValue() {
+        assertEquals(PropertyConstants.DEFAULT_REPORT_SQL_WARNINGS, info.getReportSQLWarnings(),
+                "Unexpected reportSQLWarnings value");
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = { "ALL", "NONE" })
+    void reportSQLWarningsDefaultDerivedFromSystemProperty(String defaultValue) {
+        try (var ignored = withTemporarySystemProperty(
+                JaybirdSystemProperties.DEFAULT_REPORT_SQL_WARNINGS, defaultValue)) {
+            assertEquals(defaultValue, new FbConnectionProperties().getReportSQLWarnings(),
+                    "Unexpected reportSQLWarnings value");
+        }
+    }
+
+    @Test
+    void reportSQLWarnings_invalidSystemPropertyValue_reportsALL() {
+        try (var ignored = withTemporarySystemProperty(
+                JaybirdSystemProperties.DEFAULT_REPORT_SQL_WARNINGS, "INVALID_VALUE")) {
+            assertEquals(PropertyConstants.DEFAULT_REPORT_SQL_WARNINGS,
+                    new FbConnectionProperties().getReportSQLWarnings(), "Unexpected reportSQLWarnings value");
         }
     }
 
