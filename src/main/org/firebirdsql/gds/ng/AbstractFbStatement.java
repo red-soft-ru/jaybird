@@ -34,6 +34,7 @@ import java.util.Set;
 
 import static java.lang.String.format;
 import static java.lang.System.Logger.Level.DEBUG;
+import static org.firebirdsql.gds.ng.TransactionHelper.checkTransactionActive;
 
 /**
  * @author Mark Rotteveel
@@ -398,6 +399,29 @@ public abstract class AbstractFbStatement implements FbStatement {
      */
     protected boolean isPrepareAllowed(final StatementState state) {
         return PREPARE_ALLOWED_STATES.contains(state);
+    }
+
+    /**
+     * Checks if prepare is allowed, returning the current statement state.
+     * <p>
+     * This method checks if the current transaction is active, and if the current statement state allows preparing
+     * a new statement.
+     * </p>
+     *
+     * @return statement state
+     * @throws SQLException
+     *         if there is no active transaction, or the current state does not allow statement prepare
+     * @since 6
+     */
+    protected final StatementState checkPrepareAllowed() throws SQLException {
+        checkTransactionActive(getTransaction());
+        final StatementState initialState = getState();
+        if (!isPrepareAllowed(initialState)) {
+            throw FbExceptionBuilder.forNonTransientException(JaybirdErrorCodes.jb_prepareNotAllowedByState)
+                    .messageParameter(initialState)
+                    .toSQLException();
+        }
+        return initialState;
     }
 
     @Override
