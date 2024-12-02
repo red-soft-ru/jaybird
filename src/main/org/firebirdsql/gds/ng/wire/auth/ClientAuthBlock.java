@@ -36,6 +36,7 @@ import java.util.regex.Pattern;
 import static java.lang.System.Logger.Level.DEBUG;
 import static java.lang.System.Logger.Level.TRACE;
 import static java.lang.System.Logger.Level.WARNING;
+import static org.firebirdsql.gds.JaybirdErrorCodes.jb_noAuthenticationPlugin;
 import static org.firebirdsql.gds.impl.wire.WireProtocolConstants.*;
 import static org.firebirdsql.jaybird.props.PropertyConstants.DEFAULT_AUTH_PLUGINS;
 
@@ -310,7 +311,7 @@ public final class ClientAuthBlock {
      */
     public boolean supportsEncryption() throws SQLException {
         if (currentPlugin == null) {
-            throw new SQLException("No authentication plugin available");
+            throw FbExceptionBuilder.toNonTransientConnectionException(jb_noAuthenticationPlugin);
         }
         return currentPlugin.generatesSessionKey();
     }
@@ -322,7 +323,7 @@ public final class ClientAuthBlock {
      */
     public byte[] getSessionKey() throws SQLException {
         if (currentPlugin == null) {
-            throw new SQLException("No authentication plugin available");
+            throw FbExceptionBuilder.toNonTransientConnectionException(jb_noAuthenticationPlugin);
         }
         // Have we already generated session key? If we have, return it.
         if (lastSessionKey != null)
@@ -418,7 +419,7 @@ public final class ClientAuthBlock {
 
         if (pluginProviders.isEmpty()) {
             throw FbExceptionBuilder.forException(JaybirdErrorCodes.jb_noKnownAuthPlugins)
-                    .messageParameter(requestedPluginNames.toString())
+                    .messageParameter(requestedPluginNames)
                     .toSQLException();
         }
         return pluginProviders;

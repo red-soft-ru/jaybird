@@ -141,10 +141,17 @@ public interface JaybirdErrorCodes {
     int jb_noActiveTransaction      = 337248333;
     int jb_pooledConnectionClosed   = 337248334;
     int jb_noManagedConnection      = 337248335;
-    int jb_logicalConnectionClosed  = 337248336;
+    int jb_connectionClosed         = 337248336;
     int jb_logicalConnectionForciblyClosed               = 337248337;
     int jb_unableToUnwrap           = 337248338;
     int jb_resultSetClosed          = 337248339;
+    int jb_invalidConnectionEncoding                     = 337248340;
+    int jb_noConnectionEncoding     = 337248341;
+    int jb_clientInfoInvalidPropertyName                 = 337248342;
+    int jb_clientInfoSystemContextReadOnly               = 337248343;
+    int jb_noAuthenticationPlugin   = 337248344;
+    int jb_asyncChannelAlreadyEstablished                = 337248345;
+    int jb_asyncChannelNotConnected = 337248346;
 
     @SuppressWarnings("unused")
     int jb_range_end                = 337264639;

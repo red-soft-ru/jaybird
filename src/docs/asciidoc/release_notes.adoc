@@ -32,6 +32,12 @@ Changes per Jaybird 6 release.
 See also <<whats-new-in-jaybird-6>>.
 For known issues, consult <<known-issues>>.
 
+=== Jaybird 6.0.0
+
+The following was fixed or changed after 6.0.0-beta-1:
+
+* Improvement: stacktraces produced by `FbExceptionBuilder` no longer include `StackTraceElements` of the builder itself (https://github.com/FirebirdSQL/jaybird/issues/827[#827])
+
 [#jaybird-6-0-0-beta-1-changelog]
 === Jaybird 6.0.0-beta-1
 
@@ -1873,6 +1879,10 @@ there is no replacement
 * `QuoteStrategy` -- due to addition of methods `appendLiteral` and `quoteLiteral` the original enum names no longer made sense
 ** `NO_QUOTES` -- use `DIALECT_1`
 ** `QUOTES` -- use `DIALECT_3`
+* `SQLStateConstants`
+** `SQL_STATE_CONNECTION_CLOSED` (`08003`);
+use `SQL_STATE_CONNECTION_FAILURE` (`08006`).
+The use of `08003` for a closed connection error was wrong, and has been updated to use `08006`.
 
 [#compatibility-notes]
 == Compatibility notes

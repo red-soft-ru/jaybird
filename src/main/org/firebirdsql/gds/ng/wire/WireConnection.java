@@ -101,7 +101,7 @@ public abstract class WireConnection<T extends IAttachProperties<T>, C extends F
             if (isConnected() && xdrIn != null) {
                 return xdrIn;
             } else {
-                throw new SQLException("Connection closed or no connection available");
+                throw FbExceptionBuilder.connectionClosed();
             }
         }
 
@@ -110,7 +110,7 @@ public abstract class WireConnection<T extends IAttachProperties<T>, C extends F
             if (isConnected() && xdrOut != null) {
                 return xdrOut;
             } else {
-                throw new SQLException("Connection closed or no connection available");
+                throw FbExceptionBuilder.connectionClosed();
             }
         }
     };
@@ -419,7 +419,7 @@ public abstract class WireConnection<T extends IAttachProperties<T>, C extends F
             }
             log.log(DEBUG, "Reached end of identify without error or connection, last operation: {0}", operation);
             // If we reach here, authentication failed (or never authenticated for lack of username and password)
-            return FbExceptionBuilder.forException(ISCConstants.isc_login).toSQLException();
+            return FbExceptionBuilder.toException(ISCConstants.isc_login);
         } catch (SQLException e) {
             return e;
         } finally {
