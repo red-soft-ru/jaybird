@@ -294,10 +294,4 @@
 		</pluginManagement>
 	</build>
 
-	<pluginRepositories>
-		<pluginRepository>
-			<id>apache.snapshots</id>
-			<url>https://repository.apache.org/snapshots/</url>
-		</pluginRepository>
-	</pluginRepositories>
 </project>
