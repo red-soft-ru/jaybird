@@ -117,6 +117,25 @@ public class TestBackupManager {
     }
 
     @Test
+    public void testReplaceBackupFile() throws Exception {
+        usesDatabase.createDefaultDatabase();
+        backupManager.backupDatabase();
+        backupManager.setBackupReplace(true);
+        backupManager.backupDatabase();
+
+        final Path restorePath = Paths.get(tempFolder.getAbsolutePath(), "testrestore.fdb");
+
+        backupManager.clearRestorePaths();
+        usesDatabase.addDatabase(restorePath.toString());
+        backupManager.setDatabase(restorePath.toString());
+        backupManager.restoreDatabase();
+
+        try (Connection c = DriverManager.getConnection(getUrl(restorePath.toString()), getDefaultPropertiesForConnection())) {
+            assertTrue(c.isValid(0));
+        }
+    }
+
+    @Test
     public void testMultithreadingBackupConstructorParameter() throws Exception {
         FBBackupManager localBackupManager = new FBBackupManager(getGdsType(), 8);
         if (getGdsType() == GDSType.getType("PURE_JAVA") || getGdsType() == GDSType.getType("NATIVE")) {

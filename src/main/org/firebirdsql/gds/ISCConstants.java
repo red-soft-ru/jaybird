@@ -446,7 +446,8 @@ public interface ISCConstants {
     int isc_spb_bkp_no_triggers        =  0x8000;
 
     // Red Database specific
-    int isc_spb_bkp_parallel_workers_rs   =  101;
+    int isc_spb_bkp_parallel_workers_rs=  101;
+    int isc_spb_bkp_replace            =  103;
 
     /********************************************
      * Parameters for isc_action_svc_properties *
