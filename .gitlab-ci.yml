@@ -24,6 +24,7 @@ variables:
   tags:
     - docker
     - builder
+    - x86_64
   stage: prepare
   image: openjdk:8-jdk-alpine
   script:
@@ -68,6 +69,7 @@ prepare:release:
   tags:
     - docker
     - builder
+    - x86_64
   stage: deploy
   before_script:
     - export VERSION=`cat .ci/version`
