@@ -93,12 +93,7 @@ build_and_test:
       elif [[ "${RDB_VERSION:0:1}" -eq "3" ]]; then
         export RDB_MAJOR_VERSION="3"
         export REPORT_PREFIX=${TYPE}_RDB3_
-        if [[ "${TEST_JAVA8_JVM}" == *"bellsoft-java8"* ]]; then
-          export REPORT_PREFIX=${TYPE}_8_RDB3_
-        elif [[ "${TEST_JAVA8_JVM}" == *"bellsoft-java11"* ]]; then
-          export REPORT_PREFIX=${TYPE}_11_RDB3_
-        fi
-        export EXTRA_DEPENDENCIES="$EXTRA_DEPENDENCIES icu" # Remove icu library dependency after 3.0.7 release
+        export EXTRA_DEPENDENCIES=$EXTRA_DEPENDENCIES
       elif [[ "${RDB_VERSION:0:1}" -eq "2" ]]; then
         export RDB_MAJOR_VERSION="2"
         export REPORT_PREFIX=${TYPE}_RDB2_6_
@@ -112,16 +107,6 @@ build_and_test:
       else
         die "Do not know how to test RDB ${RDB_VERSION}"
       fi
-    - |
-      cat << EOF > /etc/yum.repos.d/bellsoft.repo
-      [BellSoft]
-      name=BellSoft Repository
-      baseurl=https://yum.bell-sw.com
-      enabled=1
-      gpgcheck=1
-      gpgkey=https://download.bell-sw.com/pki/GPG-KEY-bellsoft
-      priority=1
-      EOF
     - echo proxy=$http_proxy >> /etc/yum.conf
     - yum install -y oracle-epel-release-el7
     - yum install -y maven krb5-server krb5-workstation expect git $EXTRA_DEPENDENCIES
@@ -144,12 +129,6 @@ build_and_test:
         TEST_LIST: "**"
         TEST_JAVA8_JVM: /usr/java11/bin/java
         EXTRA_DEPENDENCIES: java-11-openjdk
-        RDB_VERSION: $RDB3_VERSION
-      - TYPE: Liberica
-        JAVA_HOME: /usr/lib/jvm/jre-1.8.0
-        TEST_LIST: "**"
-        TEST_JAVA8_JVM: [ "/usr/lib/jvm/bellsoft-java8-runtime.x86_64/bin/java", "/usr/lib/jvm/bellsoft-java11-runtime.x86_64/bin/java" ]
-        EXTRA_DEPENDENCIES: bellsoft-java8-runtime bellsoft-java11-runtime
         RDB_VERSION: $RDB3_VERSION
 
 deploy:internal:
