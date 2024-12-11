@@ -231,6 +231,17 @@ public interface BackupManager extends ServiceManager {
     void backupDatabase(int options, int parallelWorkers) throws SQLException;
 
     /**
+     * Set the backup operation to create a new backup, as opposed to
+     * overwriting an existing backup.
+     *
+     * @param replace
+     *         If {@code true}, the backup operation will attempt to create a new backup if it does not exit or
+     *         overwrite an existing one when it exists, {@code false} when backup should fail if backup already
+     *         exist (if it doesn't, a backup will be successfully created).
+     */
+    void setBackupReplace(boolean replace);
+
+    /**
      * Set whether the operations of this {@code BackupManager} will result in verbose logging to the configured logger.
      *
      * @param verbose

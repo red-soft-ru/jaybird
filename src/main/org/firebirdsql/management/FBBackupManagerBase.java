@@ -83,6 +83,7 @@ public abstract class FBBackupManagerBase extends FBServiceManager implements Ba
 
     private int restoreBufferCount = -1;
     private int restorePageSize = -1;
+    private boolean backupReplace;
     private boolean restoreReadOnly;
     private boolean restoreReplace;
 
@@ -153,6 +154,19 @@ public abstract class FBBackupManagerBase extends FBServiceManager implements Ba
         backupDatabase(options);
     }
 
+    /**
+     * Set the backup operation to create a new backup, as opposed to overwriting an existing backup. This is false
+     * by default.
+     *
+     * @param replace
+     *         If <code>true</code>, the backup operation will attempt to create a new backup, otherwise the backup
+     *         operation will overwrite an existing backup
+     */
+    @Override
+    public void setBackupReplace(boolean replace) {
+        this.backupReplace = replace;
+    }
+
     @Override
     public void backupMetadata() throws SQLException {
         backupDatabase(BACKUP_METADATA_ONLY);
@@ -183,6 +197,10 @@ public abstract class FBBackupManagerBase extends FBServiceManager implements Ba
             } else {
                 backupSPB.addArgument(isc_spb_bkp_parallel_workers_rs, getParallelWorkers());
             }
+        }
+
+        if (backupReplace) {
+            backupSPB.addArgument(isc_spb_bkp_replace);
         }
 
         backupSPB.addArgument(SpbItems.isc_spb_options, options);
