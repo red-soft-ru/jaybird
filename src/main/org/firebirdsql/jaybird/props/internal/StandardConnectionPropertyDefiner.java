@@ -92,6 +92,7 @@ class StandardConnectionPropertyDefiner implements ConnectionPropertyDefinerSpi 
                 builder(enableProtocol),
                 builder(parallelWorkers).type(INT).aliases("parallel_workers", "isc_dpb_parallel_workers")
                         .dpbItem(isc_dpb_parallel_workers),
+                builder(socketFactory),
                 builder(sweepTimeout).type(INT).aliases("sweep_timeout", "isc_dpb_sweep_timeout").dpbItem(isc_dpb_sweep_timeout),
 
                 // Database properties

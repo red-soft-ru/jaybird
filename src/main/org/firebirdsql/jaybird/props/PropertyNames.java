@@ -63,6 +63,7 @@ public final class PropertyNames {
     public static final String wireCompression = "wireCompression";
     public static final String enableProtocol = "enableProtocol";
     public static final String parallelWorkers = "parallelWorkers";
+    public static final String socketFactory = "socketFactory";
     public static final String certificate = "certificate";
     public static final String certificateBase64 = "certificateBase64";
     public static final String effectiveLogin = "effectiveLogin";
