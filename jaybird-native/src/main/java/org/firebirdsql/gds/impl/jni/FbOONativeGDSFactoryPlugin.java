@@ -12,9 +12,10 @@ import java.util.List;
  *
  * @since 4.0
  */
-public class FbOONativeGDSFactoryPlugin extends BaseGDSFactoryPlugin {
+public final class FbOONativeGDSFactoryPlugin extends BaseGDSFactoryPlugin {
 
     public static final String NATIVE_TYPE_NAME = "FBOONATIVE";
+    private static final List<String> TYPE_ALIASES = List.of("TYPE2", "LOCAL");
     private static final String DEFAULT_PROTOCOL = "jdbc:firebirdsql:fboo:native:";
     private static final List<String> JDBC_PROTOCOLS = List.of(DEFAULT_PROTOCOL, "jdbc:firebird:fboo:native:");
 
@@ -28,18 +29,9 @@ public class FbOONativeGDSFactoryPlugin extends BaseGDSFactoryPlugin {
         return NATIVE_TYPE_NAME;
     }
 
-    @SuppressWarnings("removal")
-    @Deprecated(since = "6", forRemoval = true)
     @Override
-    public String[] getTypeAliases() {
-        return new String[0];
-    }
-
-    @SuppressWarnings("removal")
-    @Deprecated(since = "6", forRemoval = true)
-    @Override
-    public String[] getSupportedProtocols() {
-        return JDBC_PROTOCOLS.toArray(new String[0]);
+    public List<String> getTypeAliasList() {
+        return TYPE_ALIASES;
     }
 
     @Override
@@ -54,9 +46,7 @@ public class FbOONativeGDSFactoryPlugin extends BaseGDSFactoryPlugin {
 
     @Override
     public String getDatabasePath(String server, Integer port, String path) throws SQLException {
-        if (path == null) {
-            throw new SQLNonTransientConnectionException("Server name/address is required for native implementation.");
-        }
+        requirePath(path);
         if (server == null) {
             return path;
         }

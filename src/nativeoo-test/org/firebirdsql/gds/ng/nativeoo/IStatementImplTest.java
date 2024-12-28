@@ -242,6 +242,6 @@ class IStatementImplTest extends AbstractStatementTest {
         statement.getSqlCounts();
 
         assertNotNull(listener.getSqlCounts(), "Expected SQL counts");
-        assertEquals(listener.getRows().size(), listener.getSqlCounts().getLongSelectCount(), "Unexpected select count");
+        assertEquals(listener.getRows().size(), listener.getSqlCounts().selectCount(), "Unexpected select count");
     }
 }

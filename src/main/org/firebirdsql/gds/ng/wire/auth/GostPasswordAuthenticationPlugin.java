@@ -45,11 +45,7 @@ public class GostPasswordAuthenticationPlugin implements AuthenticationPlugin {
             authFactorGostPassword.setPassword(password);
             authFactorGostPassword.setPasswordEnc(Arrays.toString(LegacyHash.fbCrypt(password)));
             authSspi.addFactor(authFactorGostPassword);
-            try {
-                authSspi.request(data);
-            } catch (GDSAuthException e) {
-                throw new SQLException(e);
-            }
+            authSspi.request(data);
 
             clientData = Arrays.copyOf(data.getData(), data.getLength());
 
@@ -60,11 +56,8 @@ public class GostPasswordAuthenticationPlugin implements AuthenticationPlugin {
         ByteBuffer data = new ByteBuffer(0);
         if (serverData != null)
             data.add(serverData);
-        try {
-            authSspi.request(data);
-        } catch (GDSAuthException e) {
-            throw new SQLException(e);
-        }
+
+        authSspi.request(data);
 
         if (authSspi.getWireKeyData() != null)
             clientAuthBlock.saveSessionKey();
@@ -99,7 +92,7 @@ public class GostPasswordAuthenticationPlugin implements AuthenticationPlugin {
             return authSspi.getWireKeyData();
         try {
             return AuthMethods.generateRandom(null, 20);
-        } catch (GDSAuthException e) {
+        } catch (SQLException e) {
             throw new SQLException("Can't generate session key", e);
         }
     }

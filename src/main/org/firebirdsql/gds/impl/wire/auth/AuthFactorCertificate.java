@@ -6,7 +6,6 @@ import java.io.InputStream;
 import java.sql.SQLException;
 
 import org.firebirdsql.gds.ClumpletReader;
-import org.firebirdsql.gds.GDSException;
 import org.firebirdsql.gds.ISCConstants;
 import org.firebirdsql.gds.impl.wire.ByteBuffer;
 import org.firebirdsql.gds.ng.FbExceptionBuilder;

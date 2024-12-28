@@ -11,7 +11,7 @@ import java.sql.SQLException;
  *          Time: 23:45
  */
 public interface Stage {
-  public abstract boolean stage(ByteBuffer data) throws SQLException;
+  boolean stage(ByteBuffer data) throws SQLException;
 
-  public abstract Stage nextStage();
+  Stage nextStage();
 }

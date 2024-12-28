@@ -1,6 +1,5 @@
 package org.firebirdsql.gds.ng.wire.auth;
 
-import org.firebirdsql.gds.GDSException;
 import org.firebirdsql.gds.impl.wire.ByteBuffer;
 import org.firebirdsql.gds.impl.wire.auth.*;
 
@@ -36,7 +35,7 @@ public class CertificateAuthenticationPlugin implements AuthenticationPlugin {
             if(repositoryPin != null && !repositoryPin.isEmpty()) {
                 try {
                     authSspi.setRepositoryPin(repositoryPin);
-                } catch (GDSAuthException e) {
+                } catch (SQLException e) {
                     throw new SQLException("Can not set the pin-code for the container", e);
                 }
             }
@@ -53,16 +52,14 @@ public class CertificateAuthenticationPlugin implements AuthenticationPlugin {
                     (certificateBase64 != null && !certificateBase64.isEmpty())) {
                 AuthFactorCertificate authFactorCertificate = new AuthFactorCertificate(authSspi);
                 authFactorCertificate.setSdRandomNumber(1);
-                try {
-                    if (certificate != null && !certificate.isEmpty())
-                        authFactorCertificate.loadFromFile(certificate);
-                    else
-                        authFactorCertificate.setCertBase64(certificateBase64);
-                    authSspi.addFactor(authFactorCertificate);
-                    authSspi.request(data);
-                } catch (GDSException e) {
-                    throw new SQLException(e);
-                }
+
+                if (certificate != null && !certificate.isEmpty())
+                    authFactorCertificate.loadFromFile(certificate);
+                else
+                    authFactorCertificate.setCertBase64(certificateBase64);
+
+                authSspi.addFactor(authFactorCertificate);
+                authSspi.request(data);
             }
 
             if (clientAuthBlock.getVerifyServerCertificate()) {
@@ -80,11 +77,8 @@ public class CertificateAuthenticationPlugin implements AuthenticationPlugin {
         ByteBuffer data = new ByteBuffer(0);
         if (serverData != null)
             data.add(serverData);
-        try {
-            authSspi.request(data);
-        } catch (GDSAuthException e) {
-            throw new SQLException(e);
-        }
+
+        authSspi.request(data);
 
         if (authSspi.getWireKeyData() != null)
             clientAuthBlock.saveSessionKey();
@@ -119,7 +113,7 @@ public class CertificateAuthenticationPlugin implements AuthenticationPlugin {
             return authSspi.getWireKeyData();
         try {
             return AuthMethods.generateRandom(null, 20);
-        } catch (GDSAuthException e) {
+        } catch (SQLException e) {
             throw new SQLException("Can't generate session key", e);
         }
     }

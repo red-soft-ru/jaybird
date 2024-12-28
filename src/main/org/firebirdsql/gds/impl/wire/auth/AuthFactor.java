@@ -23,7 +23,7 @@ public abstract class AuthFactor {
 
   public static Stage STAGE_OVER = new Stage() {
     @Override
-    public boolean stage(final ByteBuffer data) throws GDSAuthException {
+    public boolean stage(final ByteBuffer data) throws SQLException {
       return false;
     }
 

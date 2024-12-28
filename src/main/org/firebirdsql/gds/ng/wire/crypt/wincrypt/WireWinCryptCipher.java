@@ -1,7 +1,6 @@
 package org.firebirdsql.gds.ng.wire.crypt.wincrypt;
 
 import org.firebirdsql.gds.impl.wire.auth.AuthMethods;
-import org.firebirdsql.gds.impl.wire.auth.GDSAuthException;
 
 import javax.crypto.*;
 import java.security.*;

@@ -449,7 +449,7 @@ class FBMaintenanceManagerTest {
         FBMaintenanceManager localMaintenanceManager = new FBMaintenanceManager(getGdsType(), 8);
         if (getGdsType() == GDSType.getType("PURE_JAVA") || getGdsType() == GDSType.getType("NATIVE")) {
             localMaintenanceManager.setServerName(DB_SERVER_URL);
-            localMaintenanceManager.setPort(DB_SERVER_PORT);
+            localMaintenanceManager.setPortNumber(DB_SERVER_PORT);
         }
 
         localMaintenanceManager.setUser(DB_USER);

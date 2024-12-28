@@ -26,23 +26,9 @@ public class FbOOEmbeddedGDSFactoryPlugin extends BaseGDSFactoryPlugin {
         return EMBEDDED_TYPE_NAME;
     }
 
-    @SuppressWarnings("removal")
-    @Deprecated(since = "6", forRemoval = true)
-    @Override
-    public String[] getTypeAliases() {
-        return new String[0];
-    }
-
     @Override
     public List<String> getTypeAliasList() {
         return List.of();
-    }
-
-    @SuppressWarnings("removal")
-    @Deprecated(since = "6", forRemoval = true)
-    @Override
-    public String[] getSupportedProtocols() {
-        return JDBC_PROTOCOLS.toArray(new String[0]);
     }
 
     @Override
@@ -56,10 +42,7 @@ public class FbOOEmbeddedGDSFactoryPlugin extends BaseGDSFactoryPlugin {
     }
 
     public String getDatabasePath(String server, Integer port, String path) throws SQLException {
-        if (path == null) {
-            throw new SQLNonTransientConnectionException("Database name/path is required.");
-        }
-
+        requirePath(path);
         return path;
     }
 
