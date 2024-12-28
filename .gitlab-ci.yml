@@ -16,8 +16,8 @@ variables:
   MAVEN_CLI_OPTS: "-s .m2/settings.xml --batch-mode -U"
   MAVEN_OPTS: "-Dmaven.repo.local=.m2/repository"
   RDB3_VERSION: "3.0.18"
-  RDB5_VERSION: "5.0.0"
-  RDB6_VERSION: "6.0.0-SNAPSHOT.708"
+  RDB5_VERSION: "5.0.1"
+  RDB6_VERSION: "6.0.0-SNAPSHOT.735"
   MAVEN_VERSION: "3.9.4"
   http_proxy: http://git.red-soft.biz:3128
   https_proxy: http://git.red-soft.biz:3128
@@ -114,16 +114,6 @@ build_and_test:
       else
         die "Do not know how to test RDB ${RDB_VERSION}"
       fi
-    - |
-#      cat << EOF > /etc/yum.repos.d/bellsoft.repo
-#      [BellSoft]
-#      name=BellSoft Repository
-#      baseurl=https://yum.bell-sw.com
-#      enabled=1
-#      gpgcheck=1
-#      gpgkey=https://download.bell-sw.com/pki/GPG-KEY-bellsoft
-#      priority=1
-#      EOF
     - echo proxy=$http_proxy >> /etc/yum.conf
     - yum install -y krb5-server krb5-workstation expect git $EXTRA_DEPENDENCIES
     - wget https://dlcdn.apache.org/maven/maven-3/$MAVEN_VERSION/binaries/apache-maven-$MAVEN_VERSION-bin.tar.gz && tar -xvf apache-maven-$MAVEN_VERSION-bin.tar.gz && mv apache-maven-$MAVEN_VERSION /opt/
@@ -162,13 +152,6 @@ build_and_test:
         GDS_TYPE: "EMBEDDED"
         REPORT_PREFIX: jdk17_embedded_
         RDB_VERSION: $RDB6_VERSION
-#      - TYPE: JDK17_rdb3_liberica_17
-#        TEST_JAVA_JVM: /usr/java17/bin/java
-#        JDK_VER: 17
-#        GDS_TYPE: "PURE_JAVA"
-#        EXTRA_DEPENDENCIES: bellsoft-java17
-#        REPORT_PREFIX: liberica_jdk17_
-#        RDB_VERSION: $RDB3_VERSION
 
 deploy:internal:
   <<: *deploy_template
